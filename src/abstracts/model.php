@@ -1,5 +1,5 @@
 <?php
-namespace minimalism\abstracts;
+namespace carlonicora\minimalism\abstracts;
 
 abstract class model {
     /** @var configurations */

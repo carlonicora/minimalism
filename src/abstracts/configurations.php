@@ -1,10 +1,10 @@
 <?php
-namespace minimalism\abstracts;
+namespace carlonicora\minimalism\abstracts;
 
 use CarloNicora\cryogen\connectionBuilder;
 use CarloNicora\cryogen\cryogenBuilder;
 use Dotenv\Dotenv;
-use minimalism\helpers\errorReporter;
+use carlonicora\minimalism\helpers\errorReporter;
 
 abstract class configurations{
     /** @var string $namespace */

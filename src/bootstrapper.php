@@ -1,8 +1,8 @@
 <?php
-namespace minimalism;
+namespace carlonicora\minimalism;
 
-use minimalism\abstracts\configurations;
-use minimalism\helpers\errorReporter;
+use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\helpers\errorReporter;
 
 class bootstrapper{
     /** @var configurations $configurations */

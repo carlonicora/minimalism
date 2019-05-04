@@ -1,7 +1,7 @@
 <?php
-namespace minimalism\helpers;
+namespace carlonicora\minimalism\helpers;
 
-use minimalism\abstracts\configurations;
+use carlonicora\minimalism\abstracts\configurations;
 
 class errorReporter {
     /**

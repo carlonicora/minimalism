@@ -1,6 +1,5 @@
 <?php
-namespace minimalism\abstracts;
-
+namespace carlonicora\minimalism\abstracts;
 
 abstract class functions {
     /** @var  configurations */

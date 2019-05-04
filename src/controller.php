@@ -1,9 +1,9 @@
 <?php
-namespace minimalism;
+namespace carlonicora\minimalism;
 
-use minimalism\abstracts\configurations;
-use minimalism\abstracts\model;
-use minimalism\helpers\errorReporter;
+use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\abstracts\model;
+use carlonicora\minimalism\helpers\errorReporter;
 
 class controller {
     /** @var string */
