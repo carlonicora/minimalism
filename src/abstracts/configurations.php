@@ -26,7 +26,7 @@ abstract class configurations{
     protected $debugKey;
 
     /** @var array */
-    protected $cryogen = array();
+    public $cryogen = array();
 
     /**
      * configurations constructor.
