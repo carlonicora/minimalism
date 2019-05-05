@@ -63,8 +63,6 @@ abstract class configurations{
                 list($databaseConfiguration['databasename'], $databaseConfiguration['type'], $databaseConfiguration['host'], $databaseConfiguration['user'], $databaseConfiguration['password']) = explode(',', $databaseConnection);
 
                 if (!$this->initialiseDatabase($databaseConfiguration)) errorReporter::report($this, 2);
-
-                $this->initialiseDatabaseFactories($databaseConfiguration['databasename']);
             }
         }
     }
@@ -105,6 +103,8 @@ abstract class configurations{
         try {
             $connectionBuilder = connectionBuilder::bootstrap($databaseConfiguration);
             $this->cryogen[$databaseConfiguration['name']] = cryogenBuilder::bootstrap($connectionBuilder);
+
+            $this->initialiseDatabaseFactories($databaseConfiguration['name']);
         } catch (\Exception $exception){
             return (false);
         }
@@ -112,7 +112,7 @@ abstract class configurations{
         return(true);
     }
 
-    protected function initialiseDatabaseFactories($databaseName){
+    private function initialiseDatabaseFactories($databaseName){
         $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . $databaseName;
 
         if (!file_exists($databaseConfigFiles)) return(true);
