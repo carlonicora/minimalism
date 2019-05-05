@@ -25,8 +25,8 @@
   "require": {
     "vlucas/phpdotenv":"*",
     "twig/twig":"^2.0",
-    "carlo-nicora/cryogen": "~3.0",
-    "carlo-nicora/cryogen-mySql": "~2.2"
+    "carlonicora/cryogen": "dev-master",
+    "carlonicora/mysqlcryogen": "dev-master"
   },
   "require-dev": {
   },
