@@ -34,6 +34,7 @@ class errorReporter {
             case 4: $returnValue = 'Views not found'; break;
             case 5: $returnValue = 'Views not found'; break;
             case 6: $returnValue = 'Cannot load functions'; break;
+            case 7: $returnValue = 'Error loading the database files'; break;
             default: $returnValue = 'Generic Error'; break;
         }
 

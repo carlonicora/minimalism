@@ -16,9 +16,6 @@ abstract class configurations{
     /** @var string */
     public $appDirectory;
 
-    /** @var string $databaseConnection */
-    public $databaseConnection;
-
     /** @var Dotenv $env */
     protected $env;
 
@@ -27,6 +24,9 @@ abstract class configurations{
 
     /** @var string $debugKey */
     protected $debugKey;
+
+    /** @var array */
+    protected $cryogen = array();
 
     /**
      * configurations constructor.
@@ -51,18 +51,22 @@ abstract class configurations{
         }
 
         $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
-        $this->databaseConnection = getenv('DATABASE');
+        $databaseNames = getenv('DATABASE');
         $this->debugKey = getenv('DEBUG');
 
-        /**
-         * @TODO reinstantiate
-         */
-        /*
-        if ($this->databaseConnection != false){
-            if (!$this->initialiseDatabase()) errorReporter::report($this, 2);
-            $this->initialiseDatabaseFactories();
+        if ($databaseNames != false){
+            $databases = explode(',', $databaseNames);
+            foreach ($databases as $databaseName){
+                $databaseConnection = getenv($databaseName);
+
+                $databaseConfiguration = array();
+                list($databaseConfiguration['databasename'], $databaseConfiguration['type'], $databaseConfiguration['host'], $databaseConfiguration['user'], $databaseConfiguration['password']) = explode(',', $databaseConnection);
+
+                if (!$this->initialiseDatabase($databaseConfiguration)) errorReporter::report($this, 2);
+
+                $this->initialiseDatabaseFactories($databaseConfiguration['databasename']);
+            }
         }
-        */
     }
 
     /**
@@ -97,18 +101,10 @@ abstract class configurations{
         return($this->baseUrl);
     }
 
-    /**
-     * @TODO check database intialisation
-     */
-    private function initialiseDatabase(){
-        if (!$this->databaseConnection) return (true);
-
-        $databaseConfiguration = array();
-        list($databaseConfiguration['databasename'], $databaseConfiguration['type'], $databaseConfiguration['host'], $databaseConfiguration['user'], $databaseConfiguration['password']) = explode(',', $this->databaseConnection);
-
+    protected function initialiseDatabase($databaseConfiguration){
         try {
             $connectionBuilder = connectionBuilder::bootstrap($databaseConfiguration);
-            $this->cryogen = cryogenBuilder::bootstrap($connectionBuilder);
+            $this->cryogen[$databaseConfiguration['name']] = cryogenBuilder::bootstrap($connectionBuilder);
         } catch (\Exception $exception){
             return (false);
         }
@@ -116,29 +112,26 @@ abstract class configurations{
         return(true);
     }
 
-    /**
-     * @TODO check database factories initialisation
-     */
-    /*
-    private function initialiseDatabaseFactories(){
-        if (!file_exists($this->directoryDatabase)) return(true);
+    protected function initialiseDatabaseFactories($databaseName){
+        $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . $databaseName;
+
+        if (!file_exists($databaseConfigFiles)) return(true);
 
         try {
-            foreach (new DirectoryIterator($this->directoryDatabase) as $file) {
+            foreach (new \DirectoryIterator($databaseConfigFiles) as $file) {
                 if ($file->isDot()) continue;
 
                 $fileName = $file->getBasename();
                 if (strlen($fileName) >= 12 && strtolower(substr($fileName, -12, 8)) == 'dbloader') {
                     $class = substr($fileName, 0, -4);
-                    $fullClassName = '\\' . $this->appNamespace . '\\databases\\' . $class;
+                    $fullClassName = '\\' . $this->namespace . '\\databases\\' . $class;
                     $fullClassName::initialise($this->cryogen);
                 }
             }
-        } catch (Exception $exception){
-            return($this->errorManager->reportError(errorManager::ERROR_CRYOGEN_INITIALISATION, $exception->getMessage()));
+        } catch (\Exception $exception){
+            errorReporter::report($this, 7);
         }
 
         return(true);
     }
-    */
 }
