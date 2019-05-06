@@ -127,7 +127,7 @@ abstract class configurations{
     }
 
     private function initialiseDatabaseFactories($databaseName){
-        $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . $databaseName;
+        $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
 
         if (!file_exists($databaseConfigFiles)) return(true);
 

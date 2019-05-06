@@ -26,6 +26,7 @@ class bootstrapper{
 
         if (isset($_SESSION['configurations'])){
             $this->configurations = $_SESSION['configurations'];
+            $this->configurations->refreshConnections();
         } else {
             $this->configurations->loadConfigurations();
             $_SESSION['configurations'] = $this->configurations;
