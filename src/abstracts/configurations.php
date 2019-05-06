@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use CarloNicora\cryogen\connectionBuilder;
-use CarloNicora\cryogen\cryogenBuilder;
+use carlonicora\cryogen\connectionBuilder;
+use carlonicora\cryogen\cryogenBuilder;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 
@@ -102,9 +102,9 @@ abstract class configurations{
     protected function initialiseDatabase($databaseConfiguration){
         try {
             $connectionBuilder = connectionBuilder::bootstrap($databaseConfiguration);
-            $this->cryogen[$databaseConfiguration['name']] = cryogenBuilder::bootstrap($connectionBuilder);
+            $this->cryogen[$databaseConfiguration['databasename']] = cryogenBuilder::bootstrap($connectionBuilder);
 
-            $this->initialiseDatabaseFactories($databaseConfiguration['name']);
+            $this->initialiseDatabaseFactories($databaseConfiguration['databasename']);
         } catch (\Exception $exception){
             return (false);
         }
@@ -133,5 +133,9 @@ abstract class configurations{
         }
 
         return(true);
+    }
+
+    protected function refreshSessionConfigurations(){
+        $_SESSION['configurations'] = $this;
     }
 }
