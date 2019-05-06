@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\cryogen\connectionBuilder;
+use carlonicora\cryogen\cryogen;
 use carlonicora\cryogen\cryogenBuilder;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
@@ -27,6 +28,9 @@ abstract class configurations{
 
     /** @var array */
     public $cryogen = array();
+
+    /** @var array */
+    public $cryogenConnections = array();
 
     /**
      * configurations constructor.
@@ -99,8 +103,18 @@ abstract class configurations{
         return($this->baseUrl);
     }
 
+    public function refreshConnections(){
+        if (isset($this->cryogen) && sizeof($this->cryogen) > 0){
+            /** @var cryogen $cryogen */
+            foreach ($this->cryogenConnections as $cryogenConnection){
+                $this->initialiseDatabase($cryogenConnection);
+            }
+        }
+    }
+
     protected function initialiseDatabase($databaseConfiguration){
         try {
+            $this->cryogenConnections[$databaseConfiguration['databasename']] = $databaseConfiguration;
             $connectionBuilder = connectionBuilder::bootstrap($databaseConfiguration);
             $this->cryogen[$databaseConfiguration['databasename']] = cryogenBuilder::bootstrap($connectionBuilder);
 
