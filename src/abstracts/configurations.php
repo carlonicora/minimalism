@@ -8,6 +8,9 @@ use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 
 abstract class configurations{
+    const MINIMALISM_APP = 1;
+    const MINIMALISM_API = 2;
+
     /** @var string $namespace */
     private $namespace;
 
@@ -32,6 +35,15 @@ abstract class configurations{
     /** @var array */
     public $cryogenConnections = array();
 
+    /** @var int */
+    public $applicationType;
+
+    /** @var string */
+    public $verb;
+
+    /** @var string */
+    public $bearer;
+
     /**
      * configurations constructor.
      * @param $namespace
@@ -43,6 +55,23 @@ abstract class configurations{
 
         $this->namespace = $namespace;
         $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
+
+        $this->verb = $_SERVER['REQUEST_METHOD'];
+        if ($this->verb == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+            if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
+                $this->verb = 'DELETE';
+            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
+                $this->verb = 'PUT';
+            }
+        }
+
+        $headers = getallheaders();
+        $bearer = isset($headers["Authorization"]) ? $headers["Authorization"] : null;
+        if (substr($bearer, 0, 7) == 'Bearer ') {
+            $this->bearer = substr($bearer, 7);
+        } else {
+            $this->bearer = null;
+        }
     }
 
     public function loadConfigurations(){
@@ -52,6 +81,16 @@ abstract class configurations{
             $this->env->load();
         } catch (\Exception $exception) {
             errorReporter::report($this, 1, $exception->getMessage());
+        }
+
+        switch (getenv('APPLICATION_TYPE')){
+            case 'API':
+                $this->applicationType = self::MINIMALISM_API;
+                break;
+            case 'APP':
+            default:
+                $this->applicationType = self::MINIMALISM_APP;
+                break;
         }
 
         $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
@@ -151,5 +190,22 @@ abstract class configurations{
 
     protected function refreshSessionConfigurations(){
         $_SESSION['configurations'] = $this;
+    }
+}
+
+if (!function_exists('getallheaders'))  {
+    function getallheaders()
+    {
+        if (!is_array($_SERVER)) {
+            return array();
+        }
+
+        $headers = array();
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
     }
 }

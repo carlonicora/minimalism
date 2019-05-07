@@ -29,7 +29,9 @@ class bootstrapper{
             $this->configurations->refreshConnections();
         } else {
             $this->configurations->loadConfigurations();
-            $_SESSION['configurations'] = $this->configurations;
+            if ($this->configurations->applicationType == configurations::MINIMALISM_APP){
+                $_SESSION['configurations'] = $this->configurations;
+            }
         }
     }
 

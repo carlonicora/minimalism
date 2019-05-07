@@ -4,6 +4,8 @@ namespace carlonicora\minimalism;
 use carlonicora\minimalism\abstracts\configurations;
 use carlonicora\minimalism\abstracts\model;
 use carlonicora\minimalism\helpers\errorReporter;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class controller {
     /** @var string */
@@ -15,7 +17,7 @@ class controller {
     /** @var model */
     private $model;
 
-    /** @var \Twig_Environment */
+    /** @var Environment */
     private $view;
 
     /** @var array */
@@ -47,12 +49,20 @@ class controller {
             exit;
         }
 
-        $data['page'] = $this->model->data;
+        switch ($this->configurations->applicationType){
+            case configurations::MINIMALISM_API:
+                $returnValue = json_encode($this->model->data);
+                break;
+            case configurations::MINIMALISM_APP:
+            default:
+                    $data['page'] = $this->model->data;
 
-        if ($this->model->getViewName() != ''){
-            $returnValue = $this->view->render($data);
-        } else {
-            $returnValue = json_encode($data);
+                    if ($this->model->getViewName() != ''){
+                        $returnValue = $this->view->render($data);
+                    } else {
+                        $returnValue = json_encode($data);
+                    }
+                    break;
         }
 
         return($returnValue);
@@ -106,8 +116,8 @@ class controller {
     private function initialiseView(){
         if ($this->model->getViewName() != '') {
             try {
-                $twigLoader = new \Twig_Loader_Filesystem($this->configurations->appDirectory . DIRECTORY_SEPARATOR . 'views');
-                $this->view = new \Twig_Environment($twigLoader);
+                $twigLoader = new FilesystemLoader($this->configurations->appDirectory . DIRECTORY_SEPARATOR . 'views');
+                $this->view = new Environment($twigLoader);
             } catch (\Exception $exception) {
                 errorReporter::report($this->configurations, 4, null, 404);
             }

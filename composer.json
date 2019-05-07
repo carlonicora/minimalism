@@ -7,7 +7,7 @@
   },
   "require": {
     "vlucas/phpdotenv":"*",
-    "twig/twig":"^2.0",
+    "twig/twig":"^2.9",
     "carlonicora/cryogen": "dev-master",
     "carlonicora/mysqlcryogen": "dev-master"
   },

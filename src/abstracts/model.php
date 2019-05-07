@@ -17,6 +17,18 @@ abstract class model {
     /** @var string */
     public $redirectPage;
 
+    /** @var bool */
+    protected $requiresAuthDELETE=false;
+
+    /** @var bool */
+    protected $requiresAuthGET=false;
+
+    /** @var bool */
+    protected $requiresAuthPOST=false;
+
+    /** @var bool */
+    protected $requiresAuthPUSH=false;
+
     /**
      * model constructor.
      * @param configurations $configurations
@@ -44,5 +56,23 @@ abstract class model {
         return(false);
     }
 
-    public abstract function run();
+    public function run(){
+        return(true);
+    }
+
+    public function DELETE(){
+        return(true);
+    }
+
+    public function GET(){
+        return(true);
+    }
+
+    public function POST(){
+        return(true);
+    }
+
+    public function PUT(){
+        return(true);
+    }
 }
