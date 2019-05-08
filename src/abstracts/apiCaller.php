@@ -1,9 +1,9 @@
 <?php
-namespace carlonicora\minimalism\helpers;
+namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\abstracts\configurations;
 
-class api {
+abstract class apiCaller {
     /** @var configurations */
     private $configurations;
 
@@ -17,7 +17,7 @@ class api {
         $this->configurations = $configurations;
     }
 
-    public function callAPI($verb, $uri, $body=null){
+    private function callAPI($verb, $uri, $body=null){
         if (!empty($this->configurations->getDebugKey())){
             $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . 'XDEBUG_SESSION_START='.$this->configurations->getDebugKey();
         }
