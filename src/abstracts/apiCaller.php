@@ -5,7 +5,7 @@ use carlonicora\minimalism\abstracts\configurations;
 
 abstract class apiCaller {
     /** @var configurations */
-    private $configurations;
+    protected $configurations;
 
     /** @var int */
     private $httpCode;
