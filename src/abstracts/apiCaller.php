@@ -17,7 +17,7 @@ abstract class apiCaller {
         $this->configurations = $configurations;
     }
 
-    private function callAPI($verb, $uri, $body=null){
+    protected function callAPI($verb, $uri, $body=null){
         if (!empty($this->configurations->getDebugKey())){
             $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . 'XDEBUG_SESSION_START='.$this->configurations->getDebugKey();
         }
