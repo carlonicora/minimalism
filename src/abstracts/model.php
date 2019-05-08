@@ -42,6 +42,12 @@ abstract class model {
         $this->redirectPage = null;
     }
 
+    public function requiresAuth($verb){
+        $authName = 'requiresAuth' . $verb;
+
+        return($this->$authName);
+    }
+
     public function getViewName(){
         $returnValue = $this->viewName;
 

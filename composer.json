@@ -6,6 +6,8 @@
     }
   },
   "require": {
+    "ext-curl": "*",
+    "ext-json": "*",
     "vlucas/phpdotenv":"*",
     "twig/twig":"^2.9",
     "carlonicora/cryogen": "dev-master",

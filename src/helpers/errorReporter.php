@@ -12,7 +12,7 @@ class errorReporter {
      */
     public static function report($configurations, $errorCode, $errorMessage=null, $httpCode=null){
         $errorLog = date('d.m.Y H:i:s') . ' | ' . $errorCode . ' | ' . self::returnErrorMessage($errorCode) . PHP_EOL;
-        if (isset($errorMessage)){
+        if (!empty($errorMessage)){
             $errorLog .= ' (' . $errorMessage . ')' . PHP_EOL;
         }
 
@@ -35,6 +35,10 @@ class errorReporter {
             case 5: $returnValue = 'Views not found'; break;
             case 6: $returnValue = 'Cannot load functions'; break;
             case 7: $returnValue = 'Error loading the database files'; break;
+            case 8: $returnValue = 'Invalid Token'; break;
+            case 9: $returnValue = 'Invalid Request Time'; break;
+            case 10: $returnValue = 'Invalid Client'; break;
+            case 11: $returnValue = 'Invalid Auth'; break;
             default: $returnValue = 'Generic Error'; break;
         }
 
@@ -85,7 +89,7 @@ class errorReporter {
                 break;
         }
 
-        $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+        $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1');
 
         header($protocol . ' ' . $code . ' ' . $text);
 

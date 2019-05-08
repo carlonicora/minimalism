@@ -26,7 +26,7 @@ abstract class configurations{
     /** @var string $baseUrl */
     private $baseUrl;
 
-    /** @var string $debugKey */
+    /** @var string */
     protected $debugKey;
 
     /** @var array */
@@ -39,15 +39,17 @@ abstract class configurations{
     public $applicationType;
 
     /** @var string */
-    public $verb;
+    public $privateKey;
 
     /** @var string */
-    public $bearer;
+    public $publicKey;
 
-    /**
-     * configurations constructor.
-     * @param $namespace
-     */
+    /** @var string */
+    public $clientId;
+
+    /** @var string */
+    public $clientSecret;
+
     public function __construct($namespace){
         $child = get_called_class();
         $class_info = new \ReflectionClass($child);
@@ -56,21 +58,12 @@ abstract class configurations{
         $this->namespace = $namespace;
         $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
 
-        $this->verb = $_SERVER['REQUEST_METHOD'];
-        if ($this->verb == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
-            if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
-                $this->verb = 'DELETE';
-            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
-                $this->verb = 'PUT';
-            }
-        }
-
         $headers = getallheaders();
         $bearer = isset($headers["Authorization"]) ? $headers["Authorization"] : null;
         if (substr($bearer, 0, 7) == 'Bearer ') {
-            $this->bearer = substr($bearer, 7);
+            $this->token = substr($bearer, 7);
         } else {
-            $this->bearer = null;
+            $this->token = null;
         }
     }
 
@@ -96,6 +89,10 @@ abstract class configurations{
         $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
         $databaseNames = getenv('DATABASE');
         $this->debugKey = getenv('DEBUG');
+
+        $this->clientId = getenv('CLIENT_ID');
+        $this->clientSecret = getenv('CLIENT_SECRET');
+
 
         if ($databaseNames != false){
             $databases = explode(',', $databaseNames);
@@ -166,7 +163,13 @@ abstract class configurations{
     }
 
     private function initialiseDatabaseFactories($databaseName){
-        $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
+        if ($databaseName == 'minimalism'){
+            $namespace = 'carlonicora\\minimalism\\databases\\minimalism';
+            $databaseConfigFiles = __dir__ .'..'. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
+        } else {
+            $namespace = $this->namespace . '\\databases\\' . $databaseName;
+            $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
+        }
 
         if (!file_exists($databaseConfigFiles)) return(true);
 
@@ -177,8 +180,8 @@ abstract class configurations{
                 $fileName = $file->getBasename();
                 if (strlen($fileName) >= 12 && strtolower(substr($fileName, -12, 8)) == 'dbloader') {
                     $class = substr($fileName, 0, -4);
-                    $fullClassName = '\\' . $this->namespace . '\\databases\\' . $class;
-                    $fullClassName::initialise($this->cryogen);
+                    $fullClassName = '\\' . $namespace . $class;
+                    $fullClassName::initialise($this->cryogen[$databaseName]);
                 }
             }
         } catch (\Exception $exception){

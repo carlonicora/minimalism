@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\abstracts\functions;
 use carlonicora\minimalism\abstracts\model;
 use carlonicora\minimalism\helpers\errorReporter;
 use Twig\Environment;
@@ -23,7 +24,15 @@ class controller {
     /** @var array */
     private $parameterValues;
 
+    /** @var  */
+    private $file;
+
+    /** @var string */
+    public $verb;
+
     public function __construct($configurations, $modelName=null, $parameters=null){
+        $this->initialiseVerb();
+
         $this->configurations = $configurations;
 
         if (isset($parameters)) {
@@ -55,19 +64,30 @@ class controller {
                 break;
             case configurations::MINIMALISM_APP:
             default:
-                    $data['page'] = $this->model->data;
+                $data['page'] = $this->model->data;
 
-                    if ($this->model->getViewName() != ''){
-                        $returnValue = $this->view->render($data);
-                    } else {
-                        $returnValue = json_encode($data);
-                    }
-                    break;
+                if ($this->model->getViewName() != ''){
+                    $returnValue = $this->view->render($data);
+                } else {
+                    $returnValue = json_encode($data);
+                }
+                break;
         }
 
         return($returnValue);
     }
-    
+
+    private function initialiseVerb(){
+        $this->verb = $_SERVER['REQUEST_METHOD'];
+        if ($this->verb == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+            if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
+                $this->verb = 'DELETE';
+            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
+                $this->verb = 'PUT';
+            }
+        }
+    }
+
     private function initialiseParameters(){
         $this->modelName = 'index';
         $this->parameterValues = array();
@@ -88,12 +108,25 @@ class controller {
             }
         }
 
-        foreach ($_GET as $parameter=>$value){
-            if ($parameter != 'path') $this->parameterValues[$parameter] = $value;
-        }
+        switch ($this->configurations->verb){
+            case 'DELETE':
+            case 'POST':
+            case 'PUT':
+                $this->data = json_decode(file_get_contents("php://input"));
 
-        foreach ($_POST as $parameter=>$value){
-            $this->parameterValues[$parameter] = $value;
+                if (isset($_FILES) && sizeof($_FILES) == 1){
+                    $this->file = array_values($_FILES)[0];
+                }
+
+                foreach ($_POST as $parameter=>$value){
+                    $this->parameterValues[$parameter] = $value;
+                }
+                break;
+            case 'GET':
+                foreach ($_GET as $parameter=>$value){
+                    if ($parameter != 'path') $this->parameterValues[$parameter] = $value;
+                }
+                break;
         }
     }
 
@@ -110,6 +143,12 @@ class controller {
         if ($this->model->redirect() != false){
             $this->modelName = $this->model->redirect();
             $this->initialiseModel();
+        }
+
+        if ($this->configurations->applicationType == configurations::MINIMALISM_API){
+            if($this->model->requiresAuth($this->verb)){
+                // TODO
+            }
         }
     }
 
