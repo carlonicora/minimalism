@@ -5,6 +5,8 @@ use carlonicora\minimalism\abstracts\configurations;
 use carlonicora\minimalism\abstracts\functions;
 use carlonicora\minimalism\abstracts\model;
 use carlonicora\minimalism\helpers\errorReporter;
+use carlonicora\minimalism\helpers\security;
+use Exception;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -30,6 +32,9 @@ class controller {
     /** @var string */
     public $verb;
 
+    /** @var string */
+    private $signature;
+
     public function __construct($configurations, $modelName=null, $parameters=null){
         $this->initialiseVerb();
 
@@ -42,6 +47,8 @@ class controller {
         }
 
         if (isset($modelName)) $this->modelName = $modelName;
+
+        $this->validateSignature();
 
         $this->initialiseModel();
         $this->initialiseView();
@@ -88,6 +95,14 @@ class controller {
         }
     }
 
+    private function validateSignature(){
+        $headers = getallheaders();
+        $this->signature = isset($headers["minimalism-signature"]) ? $headers["minimalism-signature"] : null;
+
+        $security = new security($this->configurations);
+        //$security->validateSignature($this->signature, $this->verb, )
+    }
+
     private function initialiseParameters(){
         $this->modelName = 'index';
         $this->parameterValues = array();
@@ -108,7 +123,7 @@ class controller {
             }
         }
 
-        switch ($this->configurations->verb){
+        switch ($this->verb){
             case 'DELETE':
             case 'POST':
             case 'PUT':
@@ -157,7 +172,7 @@ class controller {
             try {
                 $twigLoader = new FilesystemLoader($this->configurations->appDirectory . DIRECTORY_SEPARATOR . 'views');
                 $this->view = new Environment($twigLoader);
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 errorReporter::report($this->configurations, 4, null, 404);
             }
 
@@ -167,5 +182,22 @@ class controller {
                 errorReporter::report($this->configurations, 5, null, 404);
             }
         }
+    }
+}
+
+if (!function_exists('getallheaders'))  {
+    function getallheaders()
+    {
+        if (!is_array($_SERVER)) {
+            return array();
+        }
+
+        $headers = array();
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
     }
 }

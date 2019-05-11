@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\helpers\security;
 
 abstract class apiCaller {
     /** @var configurations */

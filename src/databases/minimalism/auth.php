@@ -4,6 +4,7 @@ namespace carlonicora\minimalism\databases\minimalism;
 use carlonicora\cryogen\entity;
 use carlonicora\cryogen\metaTable;
 use carlonicora\cryogen\metaField;
+use stdClass;
 
 class auth extends entity{
     protected $_initialValues;
@@ -49,7 +50,7 @@ class auth extends entity{
     }
 
     public function returnPublicObject(){
-        $returnValue = new \stdClass();
+        $returnValue = new stdClass();
         $returnValue->privateKey = $this->privateKey;
 
         return($returnValue);

@@ -4,12 +4,8 @@ namespace carlonicora\minimalism\databases\minimalism;
 use carlonicora\cryogen\entity;
 use carlonicora\cryogen\metaTable;
 use carlonicora\cryogen\metaField;
+use stdClass;
 
-/**
- * Class clients
- *
- * @package phlow\core\library\databases
- */
 class clients extends entity{
     protected $_initialValues;
 
@@ -58,7 +54,7 @@ class clients extends entity{
     }
 
     public function returnJSON(){
-        $json = new \stdClass();
+        $json = new stdClass();
 
         $returnValue = json_encode($json);
 

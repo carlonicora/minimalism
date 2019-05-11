@@ -4,8 +4,11 @@ namespace carlonicora\minimalism\abstracts;
 use carlonicora\cryogen\connectionBuilder;
 use carlonicora\cryogen\cryogen;
 use carlonicora\cryogen\cryogenBuilder;
+use DirectoryIterator;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
+use Exception;
+use ReflectionClass;
 
 abstract class configurations{
     const MINIMALISM_APP = 1;
@@ -52,7 +55,11 @@ abstract class configurations{
 
     public function __construct($namespace){
         $child = get_called_class();
-        $class_info = new \ReflectionClass($child);
+        try {
+            $class_info = new ReflectionClass($child);
+        } catch (\ReflectionException $e) {
+            return(null);
+        }
         $this->appDirectory = dirname($class_info->getFileName());
 
         $this->namespace = $namespace;
@@ -72,7 +79,7 @@ abstract class configurations{
 
         try{
             $this->env->load();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             errorReporter::report($this, 1, $exception->getMessage());
         }
 
@@ -155,7 +162,7 @@ abstract class configurations{
             $this->cryogen[$databaseConfiguration['databasename']] = cryogenBuilder::bootstrap($connectionBuilder);
 
             $this->initialiseDatabaseFactories($databaseConfiguration['databasename']);
-        } catch (\Exception $exception){
+        } catch (Exception $exception){
             return (false);
         }
 
@@ -174,7 +181,7 @@ abstract class configurations{
         if (!file_exists($databaseConfigFiles)) return(true);
 
         try {
-            foreach (new \DirectoryIterator($databaseConfigFiles) as $file) {
+            foreach (new DirectoryIterator($databaseConfigFiles) as $file) {
                 if ($file->isDot()) continue;
 
                 $fileName = $file->getBasename();
@@ -184,7 +191,7 @@ abstract class configurations{
                     $fullClassName::initialise($this->cryogen[$databaseName]);
                 }
             }
-        } catch (\Exception $exception){
+        } catch (Exception $exception){
             errorReporter::report($this, 7);
         }
 
@@ -193,22 +200,5 @@ abstract class configurations{
 
     protected function refreshSessionConfigurations(){
         $_SESSION['configurations'] = $this;
-    }
-}
-
-if (!function_exists('getallheaders'))  {
-    function getallheaders()
-    {
-        if (!is_array($_SERVER)) {
-            return array();
-        }
-
-        $headers = array();
-        foreach ($_SERVER as $name => $value) {
-            if (substr($name, 0, 5) == 'HTTP_') {
-                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-            }
-        }
-        return $headers;
     }
 }

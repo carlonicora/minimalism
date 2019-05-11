@@ -3,6 +3,7 @@ namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\configurations;
 use carlonicora\minimalism\helpers\errorReporter;
+use carlonicora\minimalism\helpers\security;
 
 class bootstrapper{
     /** @var configurations $configurations */
