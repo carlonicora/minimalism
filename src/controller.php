@@ -47,7 +47,9 @@ class controller {
 
         if (isset($modelName)) $this->modelName = $modelName;
 
-        $this->validateSignature();
+        if ($this->configurations->applicationType == configurations::MINIMALISM_API){
+            $this->validateSignature();
+        }
 
         $this->initialiseModel();
         $this->initialiseView();
