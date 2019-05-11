@@ -59,7 +59,13 @@ class controller {
         $data = array();
         $data['baseUrl'] = $this->configurations->getBaseUrl();
 
-        if (!$this->model->run()) errorReporter::returnHttpCode(500);
+        if ($this->configurations->applicationType == configurations::MINIMALISM_APP){
+            $returnValue = $this->model->run();
+        } else {
+            $returnValue = $this->model->{$this->verb}();
+        }
+
+        if (!$returnValue) errorReporter::returnHttpCode(500);
 
         if (array_key_exists('forceRedirect', $this->model->data)){
             header('Location:' . $this->model->data['forceRedirect']);
