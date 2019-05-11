@@ -43,6 +43,7 @@ class errorReporter {
             case 13: $returnValue = 'Inactive password'; break;
             case 14: $returnValue = 'Invalid account'; break;
             case 15: $returnValue = 'Error generating new auth record in the database'; break;
+            case 16: $returnValue = 'Error deleting the session'; break;
             default: $returnValue = 'Generic Error'; break;
         }
 
