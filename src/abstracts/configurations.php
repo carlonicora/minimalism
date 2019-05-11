@@ -66,7 +66,7 @@ abstract class configurations{
         $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
 
         $headers = getallheaders();
-        $bearer = isset($headers["Authorization"]) ? $headers["Authorization"] : null;
+        $bearer = isset($headers["minimalism-signature"]) ? $headers["minimalism-signature"] : null;
         if (substr($bearer, 0, 7) == 'Bearer ') {
             $this->token = substr($bearer, 7);
         } else {
