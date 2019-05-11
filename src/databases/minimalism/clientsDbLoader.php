@@ -2,12 +2,13 @@
 namespace carlonicora\minimalism\databases\minimalism;
 
 use carlonicora\cryogen\dbLoader;
+use Exception;
 
 class clientsDbLoader extends dbLoader {
     public static function loadFromClientId($clientId){
         try {
             parent::init();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return(null);
         }
 
@@ -15,7 +16,7 @@ class clientsDbLoader extends dbLoader {
 
         try {
             return (parent::getSingle());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return(null);
         }
     }

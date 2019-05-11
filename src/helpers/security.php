@@ -42,20 +42,18 @@ class security {
     public function validateSignature($signature, $verb, $uri, $body){
         $clientId = '';
         $publicKey = '';
+        $time = null;
 
         if (strlen($signature) == 138){
             $clientId = substr($signature, 0, 32);
             $publicKey = substr($signature, 32, 32);
             $time = substr($signature, 64, 10);
-            $checksum = substr($signature, 74, 64);
         } elseif (strlen($signature) == 106){
             $clientId = substr($signature, 0, 32);
             $time = substr($signature, 32, 10);
-            $checksum = substr($signature, 42, 64);
         }
 
         $timeDifference = time() - $time;
-
 
         if ($timeDifference > 10 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
 

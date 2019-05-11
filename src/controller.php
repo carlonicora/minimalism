@@ -2,7 +2,6 @@
 namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\configurations;
-use carlonicora\minimalism\abstracts\functions;
 use carlonicora\minimalism\abstracts\model;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
@@ -101,7 +100,9 @@ class controller {
 
         $security = new security($this->configurations);
         $url = ($_SERVER['SERVER_PORT'] == '80' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        $security->validateSignature($this->signature, $this->verb, $url,  $this->parameterValues);
+        if (!$security->validateSignature($this->signature, $this->verb, $url,  $this->parameterValues)){
+            errorReporter::report($this->configurations,  11, 'Failure in validating signature', 401);
+        }
     }
 
     private function initialiseParameters(){

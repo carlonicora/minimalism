@@ -9,6 +9,7 @@ use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
 use ReflectionClass;
+use ReflectionException;
 
 abstract class configurations{
     const MINIMALISM_APP = 1;
@@ -55,11 +56,8 @@ abstract class configurations{
 
     public function __construct($namespace){
         $child = get_called_class();
-        try {
-            $class_info = new ReflectionClass($child);
-        } catch (\ReflectionException $e) {
-            return(null);
-        }
+
+        $class_info = new ReflectionClass($child);
         $this->appDirectory = dirname($class_info->getFileName());
 
         $this->namespace = $namespace;
