@@ -40,16 +40,16 @@ class security {
     }
 
     public function validateSignature($signature, $verb, $uri, $body){
-        $clientId = '';
-        $publicKey = '';
+        $this->configurations->clientId = '';
+        $this->configurations->publicKey = '';
         $time = null;
 
         if (strlen($signature) == 138){
-            $clientId = substr($signature, 0, 32);
-            $publicKey = substr($signature, 32, 32);
+            $this->configurations->clientId = substr($signature, 0, 32);
+            $this->configurations->publicKey = substr($signature, 32, 32);
             $time = substr($signature, 64, 10);
         } elseif (strlen($signature) == 106){
-            $clientId = substr($signature, 0, 32);
+            $this->configurations->clientId = substr($signature, 0, 32);
             $time = substr($signature, 32, 10);
         }
 
@@ -58,23 +58,54 @@ class security {
         if ($timeDifference > 10 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
 
         /** @var clients $client */
-        $client = clientsDbLoader::loadFromClientId($clientId);
+        $client = clientsDbLoader::loadFromClientId($this->configurations->clientId);
 
         if (empty($client)) errorReporter::report($this->configurations, 10, null, 401);
 
-        $privateKey=null;
-        if (!empty($publicKey)){
+        $this->configurations->clientSecret = $client->clientSecret;
+
+        $this->configurations->privateKey=null;
+        if (!empty($this->configurations->publicKey)){
             /** @var auth $auth */
-            $auth = authDbLoader::loadFromPublicKeyAndClientId($publicKey, $client->id);
+            $auth = authDbLoader::loadFromPublicKeyAndClientId($this->configurations->publicKey, $client->id);
             if (empty($auth)) errorReporter::report($this->configurations, 11, null, 401);
             if (time() > strtotime($auth->expirationDate) ) errorReporter::report($this->configurations, 11, 'Expired', 401);
 
-            $privateKey = $auth->privateKey;
+            $this->configurations->privateKey = $auth->privateKey;
         }
 
-        $validatedSignature = $this->generateSignature($verb, $uri, $body, $clientId, $client->clientSecret, $publicKey, $privateKey, $time);
+        $validatedSignature = $this->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey, $time);
 
         $returnValue = $validatedSignature == $signature;
+
+        return($returnValue);
+    }
+
+    /**
+     * Encrypts a string in order to generate a password
+     *
+     * @param string $password
+     * @return string
+     */
+    public static function encryptPassword($password){
+        $returnValue = password_hash($password, PASSWORD_BCRYPT);
+
+        return($returnValue);
+    }
+
+    /**
+     * Verifies if a password matches its hash
+     *
+     * @param string $password
+     * @param string $hash
+     * @return bool
+     */
+    public static function decryptPassword($password, $hash) {
+        $returnValue = false;
+
+        if (password_verify($password, $hash)){
+            $returnValue = true;
+        }
 
         return($returnValue);
     }
