@@ -109,4 +109,22 @@ class security {
 
         return($returnValue);
     }
+
+    /**
+     * Generates a pair of public and private keys
+     *
+     * @param $publicKey
+     * @param $privateKey
+     */
+    public static function generateApiKeys(&$publicKey, &$privateKey){
+        $resource = openssl_pkey_new(["private_key_bits" => 512,"private_key_type" => OPENSSL_KEYTYPE_RSA]);
+
+        openssl_pkey_export($resource, $privateKey);
+
+        $publicKey = openssl_pkey_get_details($resource);
+        $publicKey = $publicKey["key"];
+
+        $publicKey = md5($publicKey);
+        $privateKey = md5($privateKey);
+    }
 }

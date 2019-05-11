@@ -8,6 +8,7 @@
   "require": {
     "ext-curl": "*",
     "ext-json": "*",
+    "ext-openssl": "*",
     "vlucas/phpdotenv":"*",
     "twig/twig":"^2.9",
     "carlonicora/cryogen": "dev-master",
