@@ -62,12 +62,17 @@ class security {
 
         if (empty($client)) errorReporter::report($this->configurations, 10, null, 401);
 
-        /** @var auth $auth */
-        $auth = authDbLoader::loadFromPublicKeyAndClientId($publicKey, $client->id);
-        if (empty($auth)) errorReporter::report($this->configurations, 11, null, 401);
-        if (time() > strtotime($auth->expirationDate) ) errorReporter::report($this->configurations, 11, 'Expired', 401);
+        $privateKey=null;
+        if (!empty($publicKey)){
+            /** @var auth $auth */
+            $auth = authDbLoader::loadFromPublicKeyAndClientId($publicKey, $client->id);
+            if (empty($auth)) errorReporter::report($this->configurations, 11, null, 401);
+            if (time() > strtotime($auth->expirationDate) ) errorReporter::report($this->configurations, 11, 'Expired', 401);
 
-        $validatedSignature = $this->generateSignature($verb, $uri, $body, $clientId, $client->clientSecret, $publicKey, $auth->privateKey, $time);
+            $privateKey = $auth->privateKey;
+        }
+
+        $validatedSignature = $this->generateSignature($verb, $uri, $body, $clientId, $client->clientSecret, $publicKey, $privateKey, $time);
 
         $returnValue = $validatedSignature == $signature;
 

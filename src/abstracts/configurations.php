@@ -84,7 +84,7 @@ abstract class configurations{
         }
 
         $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
-        $databaseNames = getenv('DATABASE');
+        $databaseNames = getenv('DATABASES');
         $this->debugKey = getenv('DEBUG');
 
         $this->clientId = getenv('CLIENT_ID');
