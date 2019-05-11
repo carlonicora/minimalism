@@ -78,6 +78,10 @@ class security {
 
         $returnValue = $validatedSignature == $signature;
 
+        if ($returnValue && !empty($this->configurations->publicKey)){
+            $this->configurations->userId = $auth->userId;
+        }
+
         return($returnValue);
     }
 

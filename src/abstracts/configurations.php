@@ -54,6 +54,9 @@ abstract class configurations{
     /** @var string */
     public $clientSecret;
 
+    /** @var string */
+    public $userId;
+
     public function __construct($namespace){
         $child = get_called_class();
 
