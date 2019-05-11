@@ -166,7 +166,7 @@ abstract class configurations{
     private function initialiseDatabaseFactories($databaseName){
         if ($databaseName == 'minimalism'){
             $namespace = 'carlonicora\\minimalism\\databases\\minimalism\\';
-            $databaseConfigFiles = __dir__ .'..'. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
+            $databaseConfigFiles = __dir__ . DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
         } else {
             $namespace = $this->namespace . '\\databases\\' . $databaseName . '\\';
             $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
