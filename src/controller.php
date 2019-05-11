@@ -82,6 +82,10 @@ class controller {
                 break;
         }
 
+        if ($returnValue && $this->configurations->applicationType == configurations::MINIMALISM_APP){
+            $_SESSION['configurations'] = $this->configurations;
+        }
+
         return($returnValue);
     }
 
