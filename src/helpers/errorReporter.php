@@ -39,6 +39,10 @@ class errorReporter {
             case 9: $returnValue = 'Invalid Request Time'; break;
             case 10: $returnValue = 'Invalid Client'; break;
             case 11: $returnValue = 'Invalid Auth'; break;
+            case 12: $returnValue = 'Inactive account'; break;
+            case 13: $returnValue = 'Inactive password'; break;
+            case 14: $returnValue = 'Invalid account'; break;
+            case 15: $returnValue = 'Error generating new auth record in the database'; break;
             default: $returnValue = 'Generic Error'; break;
         }
 
