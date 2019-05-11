@@ -72,6 +72,8 @@ abstract class apiCaller {
         if ($this->httpCode != 200) {
             $this->errorMessage = $returnValue;
             $returnValue = false;
+        } else {
+            $returnValue = json_decode($returnValue, true);
         }
 
         return ($returnValue);
