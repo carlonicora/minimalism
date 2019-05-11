@@ -1,7 +1,6 @@
 <?php
 namespace carlonicora\minimalism\databases\minimalism;
 
-use carlonicora\cryogen\dbLoader;
 use Exception;
 
 class clientsDbLoader extends dbLoader {
