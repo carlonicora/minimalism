@@ -100,7 +100,8 @@ class controller {
         $this->signature = isset($headers["minimalism-signature"]) ? $headers["minimalism-signature"] : null;
 
         $security = new security($this->configurations);
-        //$security->validateSignature($this->signature, $this->verb, )
+        $url = ($_SERVER['SERVER_PORT'] == '80' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $security->validateSignature($this->signature, $this->verb, $url,  $this->parameterValues);
     }
 
     private function initialiseParameters(){
@@ -127,14 +128,16 @@ class controller {
             case 'DELETE':
             case 'POST':
             case 'PUT':
-                $this->data = json_decode(file_get_contents("php://input"));
+                $this->parameterValues = json_decode(file_get_contents("php://input"));
 
                 if (isset($_FILES) && sizeof($_FILES) == 1){
                     $this->file = array_values($_FILES)[0];
                 }
 
-                foreach ($_POST as $parameter=>$value){
-                    $this->parameterValues[$parameter] = $value;
+                if (!isset($this->parameterValues)) {
+                    foreach ($_POST as $parameter => $value) {
+                        $this->parameterValues[$parameter] = $value;
+                    }
                 }
                 break;
             case 'GET':

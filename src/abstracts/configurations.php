@@ -64,14 +64,6 @@ abstract class configurations{
 
         $this->namespace = $namespace;
         $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
-
-        $headers = getallheaders();
-        $bearer = isset($headers["minimalism-signature"]) ? $headers["minimalism-signature"] : null;
-        if (substr($bearer, 0, 7) == 'Bearer ') {
-            $this->token = substr($bearer, 7);
-        } else {
-            $this->token = null;
-        }
     }
 
     public function loadConfigurations(){
