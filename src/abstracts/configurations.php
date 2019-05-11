@@ -97,7 +97,8 @@ abstract class configurations{
                 $databaseConnection = getenv($databaseName);
 
                 $databaseConfiguration = array();
-                list($databaseConfiguration['databasename'], $databaseConfiguration['type'], $databaseConfiguration['host'], $databaseConfiguration['user'], $databaseConfiguration['password']) = explode(',', $databaseConnection);
+                $databaseConfiguration['databasename'] = $databaseName;
+                list($databaseConfiguration['type'], $databaseConfiguration['host'], $databaseConfiguration['user'], $databaseConfiguration['password']) = explode(',', $databaseConnection);
 
                 if (!$this->initialiseDatabase($databaseConfiguration)) errorReporter::report($this, 2);
             }
@@ -161,10 +162,10 @@ abstract class configurations{
 
     private function initialiseDatabaseFactories($databaseName){
         if ($databaseName == 'minimalism'){
-            $namespace = 'carlonicora\\minimalism\\databases\\minimalism';
+            $namespace = 'carlonicora\\minimalism\\databases\\minimalism\\';
             $databaseConfigFiles = __dir__ .'..'. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
         } else {
-            $namespace = $this->namespace . '\\databases\\' . $databaseName;
+            $namespace = $this->namespace . '\\databases\\' . $databaseName . '\\';
             $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
         }
 
