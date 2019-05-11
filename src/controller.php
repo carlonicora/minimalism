@@ -141,7 +141,7 @@ class controller {
             case 'DELETE':
             case 'POST':
             case 'PUT':
-                $this->parameterValues = json_decode(file_get_contents("php://input"));
+                $this->parameterValues = json_decode(file_get_contents("php://input"), true);
 
                 if (isset($_FILES) && sizeof($_FILES) == 1){
                     $this->file = array_values($_FILES)[0];
