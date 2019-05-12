@@ -30,7 +30,7 @@ abstract class model {
     protected $requiresAuthPOST=false;
 
     /** @var bool */
-    protected $requiresAuthPUSH=false;
+    protected $requiresAuthPUT=false;
 
     /**
      * model constructor.
