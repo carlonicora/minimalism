@@ -18,10 +18,6 @@ abstract class apiCaller {
     }
 
     protected function callAPI($verb, $uri, $body=null){
-        if (!empty($this->configurations->getDebugKey())){
-            $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . 'XDEBUG_SESSION_START='.$this->configurations->getDebugKey();
-        }
-
         $curl = curl_init();
         $httpHeaders = array();
 
@@ -39,6 +35,13 @@ abstract class apiCaller {
             case 'DELETE':
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
                 break;
+            case 'GET':
+                $query = http_build_query($body);
+                if (!empty($query)) $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . $query;
+        }
+
+        if (!empty($this->configurations->getDebugKey())){
+            $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . 'XDEBUG_SESSION_START='.$this->configurations->getDebugKey();
         }
 
         $security = new security($this->configurations);
