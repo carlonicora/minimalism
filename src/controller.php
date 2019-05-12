@@ -155,7 +155,7 @@ class controller {
                 break;
             case 'GET':
                 foreach ($_GET as $parameter=>$value){
-                    if ($parameter != 'path') $this->parameterValues[$parameter] = $value;
+                    if ($parameter != 'path' && $parameter != 'XDEBUG_SESSION_START') $this->parameterValues[$parameter] = $value;
                 }
                 break;
         }
