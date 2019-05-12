@@ -55,7 +55,7 @@ class security {
 
         $timeDifference = time() - $time;
 
-        if ($timeDifference > 10 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
+        if ($timeDifference > 100 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
 
         /** @var clients $client */
         $client = clientsDbLoader::loadFromClientId($this->configurations->clientId);
