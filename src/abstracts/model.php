@@ -8,6 +8,9 @@ abstract class model {
     /** @var array */
     protected $parameterValues;
 
+    /** @var array */
+    protected $parameterValueList;
+
     /** @var string */
     protected $viewName;
 
@@ -33,10 +36,12 @@ abstract class model {
      * model constructor.
      * @param configurations $configurations
      * @param array $parameterValues
+     * @param array $parameterValueList
      */
-    public function __construct($configurations, $parameterValues){
+    public function __construct($configurations, $parameterValues, $parameterValueList){
         $this->configurations = $configurations;
         $this->parameterValues = $parameterValues;
+        $this->parameterValueList = $parameterValueList;
 
         $this->data = array();
         $this->redirectPage = null;

@@ -25,6 +25,9 @@ class controller {
     /** @var array */
     private $parameterValues;
 
+    /** @var array */
+    private $parameterValueList;
+
     /** @var  */
     private $file;
 
@@ -120,6 +123,7 @@ class controller {
     private function initialiseParameters(){
         $this->modelName = 'index';
         $this->parameterValues = array();
+        $this->parameterValueList = array();
 
         $uri = strtok($_SERVER["REQUEST_URI"],'?');
 
@@ -131,7 +135,7 @@ class controller {
                 if ($isModelVariable &&!(is_numeric($variable))){
                     $this->modelName = $variable;
                 } else {
-                    $this->parameterValues[] = $variable;
+                    $this->parameterValueList[] = $variable;
                 }
                 $isModelVariable = false;
             }
@@ -168,7 +172,7 @@ class controller {
         if (!class_exists($modelClass)){
             errorReporter::report($this->configurations, 3, null, 404);
         } else {
-            $this->model = new $modelClass($this->configurations, $this->parameterValues);
+            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList);
         }
 
         if ($this->model->redirect() != false){
