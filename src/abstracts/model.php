@@ -67,8 +67,11 @@ abstract class model {
         return(false);
     }
 
+    /**
+     * @return array
+     */
     public function generateData(){
-        return(null);
+        return(array());
     }
 
     public function DELETE(){
