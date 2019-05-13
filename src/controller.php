@@ -63,12 +63,11 @@ class controller {
 
     public function render(){
         $data = array();
-        $data['baseUrl'] = $this->configurations->getBaseUrl();
-
         if ($this->configurations->applicationType == configurations::MINIMALISM_APP){
+            $data['baseUrl'] = $this->configurations->getBaseUrl();
             $data['page'] = $this->model->generateData();
         } else {
-            $data['page'] = $this->model->{$this->verb}();
+            $data = $this->model->{$this->verb}();
         }
 
         if (array_key_exists('forceRedirect', $data)){
