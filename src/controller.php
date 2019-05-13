@@ -46,7 +46,7 @@ class controller {
         $this->configurations = $configurations;
 
         if (isset($parameters)) {
-            $this->parameterValues = $parameters;
+            $this->parameterValueList = $parameters;
         } else {
             $this->initialiseParameters();
         }
