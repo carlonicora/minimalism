@@ -44,6 +44,9 @@ class errorReporter {
             case 14: $returnValue = 'Invalid account'; break;
             case 15: $returnValue = 'Error generating new auth record in the database'; break;
             case 16: $returnValue = 'Error deleting the session'; break;
+            case 17: $returnValue = 'Invalid Security Code'; break;
+            case 18: $returnValue = 'Security Code expired'; break;
+            case 19: $returnValue = 'Security Code and User mismatch'; break;
             default: $returnValue = 'Generic Error'; break;
         }
 
