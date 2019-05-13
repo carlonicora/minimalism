@@ -8,10 +8,10 @@ abstract class apiCaller {
     protected $configurations;
 
     /** @var int */
-    private $httpCode;
+    public $httpCode;
 
     /** @var string */
-    private $errorMessage;
+    public $errorMessage;
 
     public function __construct($configurations) {
         $this->configurations = $configurations;
