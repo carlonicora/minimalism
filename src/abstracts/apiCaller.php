@@ -1,6 +1,8 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\helpers\apiReturn;
+use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
 
 abstract class apiCaller {
@@ -12,6 +14,18 @@ abstract class apiCaller {
 
     /** @var string */
     public $errorMessage;
+
+    /** @var array */
+    public $returnedValue;
+
+    /** @var string */
+    protected $verb;
+
+    /** @var string */
+    protected $uri;
+
+    /** @var array */
+    protected $body;
 
     public function __construct($configurations) {
         $this->configurations = $configurations;
@@ -44,6 +58,10 @@ abstract class apiCaller {
             $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . 'XDEBUG_SESSION_START='.$this->configurations->getDebugKey();
         }
 
+        $this->verb = $verb;
+        $this->body = is_array($body) ? json_encode($body) : '';
+        $this->uri = $uri;
+
         $security = new security($this->configurations);
         $signature = $security->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey);
         $httpHeaders[] = 'minimalism-signature:' . $signature;
@@ -63,20 +81,27 @@ abstract class apiCaller {
 
         $response = curl_exec($curl);
 
+        $returnValue = new apiReturn();
+
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $returnValue = substr($response, $header_size);
+        $returnedJson = substr($response, $header_size);
 
         $info = curl_getinfo($curl);
 
         if (isset($curl)) curl_close($curl);
 
-        $this->httpCode = $info['http_code'];
+        $returnValue->errorId = $info['http_code'];
 
-        if ($this->httpCode != 200) {
-            $this->errorMessage = $returnValue;
-            $returnValue = false;
+        if ($returnValue->errorId != 200) {
+            $returnValue->isSuccess = false;
+            $returnValue->returnedValue = null;
+            $returnValue->errorMessage = $returnedJson;
+
+            $errorDescription = 'API call ' . $this->verb . ' ' . $this->uri . ' with parameters ' . json_encode($this->body) . ' returned error ' . $returnValue->errorId . ' ' . $returnValue->errorMessage;
+            errorReporter::report($this->configurations, 20, $errorDescription);
         } else {
-            $returnValue = json_decode($returnValue, true);
+            $returnValue->isSuccess = true;
+            $returnValue->returnedValue = json_decode($returnedJson, true);
         }
 
         return ($returnValue);
