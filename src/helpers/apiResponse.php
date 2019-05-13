@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\helpers;
 
 
-class apiReturn {
+class apiResponse {
     /** @var bool */
     public $isSuccess;
 

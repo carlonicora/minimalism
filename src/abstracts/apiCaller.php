@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\helpers\apiReturn;
+use carlonicora\minimalism\helpers\apiResponse;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
 
@@ -81,7 +81,7 @@ abstract class apiCaller {
 
         $response = curl_exec($curl);
 
-        $returnValue = new apiReturn();
+        $returnValue = new apiResponse();
 
         $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $returnedJson = substr($response, $header_size);
