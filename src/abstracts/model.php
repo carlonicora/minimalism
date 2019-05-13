@@ -14,9 +14,6 @@ abstract class model {
     /** @var string */
     protected $viewName;
 
-    /** @var array */
-    public $data;
-
     /** @var string */
     public $redirectPage;
 
@@ -43,7 +40,6 @@ abstract class model {
         $this->parameterValues = $parameterValues;
         $this->parameterValueList = $parameterValueList;
 
-        $this->data = array();
         $this->redirectPage = null;
     }
 

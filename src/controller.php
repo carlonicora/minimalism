@@ -68,14 +68,14 @@ class controller {
             $data['page'] = $this->model->{$this->verb}();
         }
 
-        if (array_key_exists('forceRedirect', $this->model->data)){
-            header('Location:' . $this->model->data['forceRedirect']);
+        if (array_key_exists('forceRedirect', $data)){
+            header('Location:' . $data['forceRedirect']);
             exit;
         }
 
         switch ($this->configurations->applicationType){
             case configurations::MINIMALISM_API:
-                $returnValue = json_encode($this->model->data);
+                $returnValue = json_encode($data);
                 break;
             case configurations::MINIMALISM_APP:
             default:
