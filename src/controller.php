@@ -63,12 +63,10 @@ class controller {
         $data['baseUrl'] = $this->configurations->getBaseUrl();
 
         if ($this->configurations->applicationType == configurations::MINIMALISM_APP){
-            $returnValue = $this->model->run();
+            $data['page'] = $this->model->generateData();
         } else {
-            $returnValue = $this->model->{$this->verb}();
+            $data['page'] = $this->model->{$this->verb}();
         }
-
-        if (!$returnValue) errorReporter::returnHttpCode(500);
 
         if (array_key_exists('forceRedirect', $this->model->data)){
             header('Location:' . $this->model->data['forceRedirect']);
@@ -81,8 +79,6 @@ class controller {
                 break;
             case configurations::MINIMALISM_APP:
             default:
-                $data['page'] = $this->model->data;
-
                 if ($this->model->getViewName() != ''){
                     $returnValue = $this->view->render($data);
                 } else {
