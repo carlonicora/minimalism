@@ -65,6 +65,8 @@ class security {
         $this->configurations->clientSecret = $client->clientSecret;
 
         $this->configurations->privateKey=null;
+
+        $auth = null;
         if (!empty($this->configurations->publicKey)){
             /** @var auth $auth */
             $auth = authDbLoader::loadFromPublicKeyAndClientId($this->configurations->publicKey, $client->id);

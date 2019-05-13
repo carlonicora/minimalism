@@ -60,7 +60,11 @@ abstract class configurations{
     public function __construct($namespace){
         $child = get_called_class();
 
-        $class_info = new ReflectionClass($child);
+        try {
+            $class_info = new ReflectionClass($child);
+        } catch (ReflectionException $e) {
+        }
+
         $this->appDirectory = dirname($class_info->getFileName());
 
         $this->namespace = $namespace;
