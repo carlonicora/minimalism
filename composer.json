@@ -11,17 +11,17 @@
     "ext-openssl": "*",
     "vlucas/phpdotenv":"*",
     "twig/twig":"^2.9",
-    "carlonicora/cryogen": "dev-master",
-    "carlonicora/mysqlcryogen": "dev-master"
+    "carlonicora/cryogen": ">=4.0.0",
+    "carlonicora/mysqlcryogen": ">=3.0.0"
   },
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://carlo_nicora@bitbucket.org/carlo_nicora/carlonicora-mysqlcryogen.git"
+      "url": "https://bitbucket.org/carlo_nicora/carlonicora-mysqlcryogen.git"
     },
     {
       "type": "vcs",
-      "url": "https://carlo_nicora@bitbucket.org/carlo_nicora/carlonicora-cryogen.git"
+      "url": "https://bitbucket.org/carlo_nicora/carlonicora-cryogen.git"
     }
   ]
 }
