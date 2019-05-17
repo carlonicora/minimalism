@@ -64,7 +64,7 @@ abstract class apiCaller {
 
         $security = new security($this->configurations);
         $signature = $security->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey);
-        $httpHeaders[] = 'minimalism-signature:' . $signature;
+        $httpHeaders[] = 'Minimalism-Signature:' . $signature;
 
         $info = null;
         $httpCode = null;
