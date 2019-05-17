@@ -40,13 +40,14 @@ class controller {
     /** @var string */
     private $signature;
 
-    public function __construct($configurations, $modelName=null, $parameters=null){
+    public function __construct($configurations, $modelName=null, $parameterValueList=null, $parameterValues=null){
         $this->initialiseVerb();
 
         $this->configurations = $configurations;
 
-        if (isset($parameters)) {
-            $this->parameterValueList = $parameters;
+        if (!empty($parameterValueList) || !empty($parameterValues)) {
+            $this->parameterValueList = $parameterValueList;
+            $this->parameterValues = $parameterValues;
         } else {
             $this->initialiseParameters();
         }
