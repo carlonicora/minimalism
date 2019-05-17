@@ -1,5 +1,17 @@
 {
   "name": "carlonicora/minimalism",
+  "description": "Minimal MVC framework",
+  "version": "0.3.1",
+  "homepage": "https://carlonicora.com",
+  "time": "2019-05-14",
+  "authors": [
+    {
+      "name": "Carlo Nicora",
+      "email": "carlo@carlonicora.com",
+      "homepage": "http://carlonicora.com",
+      "role": "Developer"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "carlonicora\\minimalism\\":"src/"
@@ -10,18 +22,8 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "vlucas/phpdotenv":"*",
+    "php": "^7.0",
     "twig/twig":"^2.9",
-    "carlonicora/cryogen": ">=4.0.0",
     "carlonicora/mysqlcryogen": ">=3.0.0"
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://bitbucket.org/carlo_nicora/carlonicora-mysqlcryogen.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://bitbucket.org/carlo_nicora/carlonicora-cryogen.git"
-    }
-  ]
+  }
 }

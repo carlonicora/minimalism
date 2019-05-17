@@ -148,7 +148,6 @@ class controller {
         }
 
         switch ($this->verb){
-            case 'DELETE':
             case 'POST':
             case 'PUT':
                 $this->parameterValues = json_decode(file_get_contents("php://input"), true);
@@ -163,6 +162,7 @@ class controller {
                     }
                 }
                 break;
+            case 'DELETE':
             case 'GET':
                 foreach ($_GET as $parameter=>$value){
                     if ($parameter != 'path' && $parameter != 'XDEBUG_SESSION_START') $this->parameterValues[$parameter] = $value;
