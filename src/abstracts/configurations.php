@@ -63,6 +63,7 @@ abstract class configurations{
         try {
             $class_info = new ReflectionClass($child);
         } catch (ReflectionException $e) {
+            $class_info = '';
         }
 
         $this->appDirectory = dirname($class_info->getFileName());
