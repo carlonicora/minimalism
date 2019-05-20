@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\campaignbuilder\api\databases\campaignbuilder;
+namespace carlonicora\minimalism\databases\minimalism;
 
 use carlonicora\cryogen\cryogen;
 use carlonicora\cryogen\entity;
