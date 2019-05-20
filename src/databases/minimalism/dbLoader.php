@@ -1,12 +1,11 @@
 <?php
-namespace carlonicora\minimalism\databases\minimalism;
+namespace carlonicora\campaignbuilder\api\databases\campaignbuilder;
 
 use carlonicora\cryogen\cryogen;
-use carlonicora\cryogen\queryEngine;
-use carlonicora\cryogen\entityList;
 use carlonicora\cryogen\entity;
+use carlonicora\cryogen\entityList;
 use carlonicora\cryogen\metaTable;
-use Exception;
+use carlonicora\cryogen\queryEngine;
 
 abstract class dbLoader{
     /**
@@ -38,7 +37,6 @@ abstract class dbLoader{
      * Initialises the dbLoader
      *
      * @param bool $reset
-     * @throws Exception
      */
     protected static function init($reset=true){
         if ($reset) {
@@ -55,7 +53,6 @@ abstract class dbLoader{
      * Returns a single stream matching the engine's specifications
      *
      * @return entity
-     * @throws Exception
      */
     protected static function getSingle(){
         return(self::$cryogen->readSingle(self::$engine));
@@ -65,7 +62,6 @@ abstract class dbLoader{
      * Returns a list of streams matching the engine's specifications
      *
      * @return entityList
-     * @throws Exception
      */
     protected static function getList(){
         return(self::$cryogen->read(self::$engine));
@@ -75,7 +71,6 @@ abstract class dbLoader{
      * Returns a list of streams matching the engine's specifications
      *
      * @return entityList
-     * @throws Exception
      */
     protected static function getListComplete(){
         $returnValue = self::$cryogen->read(self::$engine);
@@ -90,7 +85,6 @@ abstract class dbLoader{
      *
      * @param bool $reset
      * @return int
-     * @throws Exception
      */
     public static function count($reset=true){
         self::init($reset);
@@ -107,12 +101,11 @@ abstract class dbLoader{
     /**
      * @param $id
      * @return entity
-     * @throws Exception
      */
     public static function loadFromId($id){
         self::init();
 
-        if (sizeof(self::$metaTable->getKeyFields()) != 1) throw new Exception('');
+        if (sizeof(self::$metaTable->getKeyFields()) != 1) return(null);
 
         self::$engine->setDiscriminant(self::$metaTable->getKeyFields()[0], $id);
 
@@ -125,7 +118,6 @@ abstract class dbLoader{
      * @param entity|entityList|null $entity
      * @param bool $reset
      * @return bool
-     * @throws Exception
      */
     public static function delete($entity, $reset=true){
         self::init($reset);
@@ -144,7 +136,6 @@ abstract class dbLoader{
      *
      * @param entity|entityList $entity
      * @return bool
-     * @throws Exception
      */
     public static function update(&$entity){
         self::init();
@@ -156,7 +147,6 @@ abstract class dbLoader{
      * Truncates the table
      *
      * @return bool
-     * @throws Exception
      */
     public static function truncate(){
         self::init();
