@@ -1,8 +1,6 @@
 <?php
 namespace carlonicora\minimalism\databases\minimalism;
 
-use Exception;
-
 class clientsDbLoader extends dbLoader {
     public static function loadFromClientId($clientId){
         try {
