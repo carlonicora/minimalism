@@ -1,38 +1,24 @@
 <?php
 namespace carlonicora\minimalism\databases\minimalism;
 
-use Exception;
+use carlonicora\minimalism\abstracts\databaseLoader;
 
-class authDbLoader extends dbLoader {
-    public static function loadFromPublicKeyAndClientId($publicKey, $clientId){
-        try {
-            parent::init();
-        } catch (Exception $e) {
-        }
+class authDbLoader extends databaseLoader {
 
-        self::$engine->setDiscriminant(auth::$field_publicKey, $publicKey);
-        self::$engine->setDiscriminant(auth::$field_clientId, $clientId);
+    public function loadFromPublicKeyAndClientId($publicKey, $clientId){
+        $this->engine->setDiscriminant(auth::$field_publicKey, $publicKey);
+        $this->engine->setDiscriminant(auth::$field_clientId, $clientId);
 
-        try {
-            return (parent::getSingle());
-        } catch (Exception $e) {
-            return(null);
-        }
+        $response = $this->getSingle();
+
+        return($response);
     }
 
-    public static function deleteOldTokens(){
-        try {
-            parent::init();
-        } catch (Exception $e) {
-            return(null);
-        }
+    public function deleteOldTokens(){
+        $this->engine->setDiscriminant(auth::$field_expirationDate, time(), "<");
 
-        self::$engine->setDiscriminant(auth::$field_expirationDate, time(), "<");
+        $response = $this->delete(null, false);
 
-        try {
-            return (parent::delete(null, false));
-        } catch (Exception $e) {
-            return(null);
-        }
+        return($response);
     }
 }

@@ -110,6 +110,9 @@ abstract class configurations{
 
                 if (!$this->initialiseDatabase($databaseConfiguration)) errorReporter::report($this, 2);
             }
+
+            $databaseFactoryFile = '\\' . $this->namespace . '\\databases\\databaseFactory';
+            $databaseFactoryFile::initialise($this);
         }
     }
 
@@ -159,39 +162,9 @@ abstract class configurations{
             $this->cryogenConnections[$databaseConfiguration['databasename']] = $databaseConfiguration;
             $connectionBuilder = connectionBuilder::bootstrap($databaseConfiguration);
             $this->cryogen[$databaseConfiguration['databasename']] = cryogenBuilder::bootstrap($connectionBuilder);
-
-            $this->initialiseDatabaseFactories($databaseConfiguration['databasename']);
+            
         } catch (Exception $exception){
             return (false);
-        }
-
-        return(true);
-    }
-
-    private function initialiseDatabaseFactories($databaseName){
-        if ($databaseName == 'minimalism'){
-            $namespace = 'carlonicora\\minimalism\\databases\\minimalism\\';
-            $databaseConfigFiles = __dir__ . DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
-        } else {
-            $namespace = $this->namespace . '\\databases\\' . $databaseName . '\\';
-            $databaseConfigFiles = $this->appDirectory. DIRECTORY_SEPARATOR . 'databases' . DIRECTORY_SEPARATOR . $databaseName;
-        }
-
-        if (!file_exists($databaseConfigFiles)) return(true);
-
-        try {
-            foreach (new DirectoryIterator($databaseConfigFiles) as $file) {
-                if ($file->isDot()) continue;
-
-                $fileName = $file->getBasename();
-                if (strlen($fileName) >= 12 && strtolower(substr($fileName, -12, 8)) == 'dbloader') {
-                    $class = substr($fileName, 0, -4);
-                    $fullClassName = '\\' . $namespace . $class;
-                    $fullClassName::initialise($this->cryogen[$databaseName]);
-                }
-            }
-        } catch (Exception $exception){
-            errorReporter::report($this, 7);
         }
 
         return(true);

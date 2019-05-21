@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\databases\minimalism\authDbLoader;
 use carlonicora\minimalism\helpers\errorReporter;
 
 class bootstrapper{

@@ -1,20 +1,14 @@
 <?php
 namespace carlonicora\minimalism\databases\minimalism;
 
-class clientsDbLoader extends dbLoader {
-    public static function loadFromClientId($clientId){
-        try {
-            parent::init();
-        } catch (Exception $e) {
-            return(null);
-        }
+use carlonicora\minimalism\abstracts\databaseLoader;
 
-        self::$engine->setDiscriminant(clients::$field_clientId, $clientId);
+class clientsDbLoader extends databaseLoader {
+    public function loadFromClientId($clientId){
+        $this->engine->setDiscriminant(clients::$field_clientId, $clientId);
 
-        try {
-            return (parent::getSingle());
-        } catch (Exception $e) {
-            return(null);
-        }
+        $response = $this->getSingle();
+
+        return($response);
     }
 }
