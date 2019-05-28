@@ -5,7 +5,6 @@ use carlonicora\minimalism\abstracts\configurations;
 use carlonicora\minimalism\abstracts\databaseFactory;
 use carlonicora\minimalism\databases\minimalism\auth;
 use carlonicora\minimalism\databases\minimalism\clients;
-use carlonicora\minimalism\databases\minimalism\clientsDbLoader;
 
 class security {
     /** @var configurations */
@@ -58,8 +57,7 @@ class security {
         if ($timeDifference > 100 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
 
         /** @var clients $client */
-        $clientsDbLoader = new clientsDbLoader($this->configurations);
-        $client = $clientsDbLoader->loadFromClientId($this->configurations->clientId);
+        $client = databaseFactory::getClientsDbLoader()->loadFromClientId($this->configurations->clientId);
 
         if (empty($client)) errorReporter::report($this->configurations, 10, null, 401);
 
@@ -70,8 +68,6 @@ class security {
         $auth = null;
         if (!empty($this->configurations->publicKey)){
             /** @var auth $auth */
-            //$authDbLoader = new authDbLoader($this->configurations);
-            //$auth = $authDbLoader->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client->id);
             $auth = databaseFactory::getAuthDbLoader()->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client->id);
 
             if (empty($auth)) errorReporter::report($this->configurations, 11, null, 401);
