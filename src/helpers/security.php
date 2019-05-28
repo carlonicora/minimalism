@@ -4,7 +4,6 @@ namespace carlonicora\minimalism\helpers;
 use carlonicora\minimalism\abstracts\configurations;
 use carlonicora\minimalism\abstracts\databaseFactory;
 use carlonicora\minimalism\databases\minimalism\auth;
-use carlonicora\minimalism\databases\minimalism\authDbLoader;
 use carlonicora\minimalism\databases\minimalism\clients;
 use carlonicora\minimalism\databases\minimalism\clientsDbLoader;
 

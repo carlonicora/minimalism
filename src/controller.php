@@ -41,9 +41,11 @@ class controller {
     private $signature;
 
     public function __construct($configurations, $modelName=null, $parameterValueList=null, $parameterValues=null){
-        $this->initialiseVerb();
-
         $this->configurations = $configurations;
+
+        if ($this->configurations->applicationType != configurations::MINIMALISM_CLI) {
+            $this->initialiseVerb();
+        }
 
         if (!empty($parameterValueList) || !empty($parameterValues)) {
             $this->parameterValueList = $parameterValueList;
@@ -64,16 +66,18 @@ class controller {
 
     public function render(){
         $data = array();
-        if ($this->configurations->applicationType == configurations::MINIMALISM_APP){
-            $data['baseUrl'] = $this->configurations->getBaseUrl();
-            $data['page'] = $this->model->generateData();
-        } else {
-            $data = $this->model->{$this->verb}();
-        }
 
-        if (array_key_exists('forceRedirect', $data)){
-            header('Location:' . $data['forceRedirect']);
-            exit;
+        switch ($this->configurations->applicationType){
+            case configurations::MINIMALISM_APP:
+                $data['baseUrl'] = $this->configurations->getBaseUrl();
+                $data['page'] = $this->model->generateData();
+                break;
+            case configurations::MINIMALISM_API:
+                $data = $this->model->{$this->verb}();
+                break;
+            case configurations::MINIMALISM_CLI:
+                $data = $this->model->generateData();
+                break;
         }
 
         switch ($this->configurations->applicationType){
@@ -82,6 +86,11 @@ class controller {
                 break;
             case configurations::MINIMALISM_APP:
             default:
+                if (array_key_exists('forceRedirect', $data)){
+                    header('Location:' . $data['forceRedirect']);
+                    exit;
+                }
+
                 if ($this->model->getViewName() != ''){
                     try {
                         $returnValue = $this->view->render($data);
@@ -132,43 +141,49 @@ class controller {
         $this->parameterValues = array();
         $this->parameterValueList = array();
 
-        $uri = strtok($_SERVER["REQUEST_URI"],'?');
-
-        if (!(isset($uri) && strlen($uri) == 1 && $uri == '/')) {
-            $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');
-
-            $isModelVariable = true;
-            foreach($variables as $variable){
-                if ($isModelVariable &&!(is_numeric($variable))){
-                    $this->modelName = $variable;
-                } else {
-                    $this->parameterValueList[] = $variable;
-                }
-                $isModelVariable = false;
+        if ($this->configurations->applicationType == configurations::MINIMALISM_CLI){
+            if (isset($_SERVER['argv'][1])){
+                $this->parameterValues = json_decode($_SERVER['argv'][1], true);
             }
-        }
+        } else {
+            $uri = strtok($_SERVER["REQUEST_URI"], '?');
 
-        switch ($this->verb){
-            case 'POST':
-            case 'PUT':
-                $this->parameterValues = json_decode(file_get_contents("php://input"), true);
+            if (!(isset($uri) && strlen($uri) == 1 && $uri == '/')) {
+                $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');
 
-                if (isset($_FILES) && sizeof($_FILES) == 1){
-                    $this->file = array_values($_FILES)[0];
-                }
-
-                if (!isset($this->parameterValues)) {
-                    foreach ($_POST as $parameter => $value) {
-                        $this->parameterValues[$parameter] = $value;
+                $isModelVariable = true;
+                foreach ($variables as $variable) {
+                    if ($isModelVariable && !(is_numeric($variable))) {
+                        $this->modelName = $variable;
+                    } else {
+                        $this->parameterValueList[] = $variable;
                     }
+                    $isModelVariable = false;
                 }
-                break;
-            case 'DELETE':
-            case 'GET':
-                foreach ($_GET as $parameter=>$value){
-                    if ($parameter != 'path' && $parameter != 'XDEBUG_SESSION_START') $this->parameterValues[$parameter] = $value;
-                }
-                break;
+            }
+
+            switch ($this->verb) {
+                case 'POST':
+                case 'PUT':
+                    $this->parameterValues = json_decode(file_get_contents("php://input"), true);
+
+                    if (isset($_FILES) && sizeof($_FILES) == 1) {
+                        $this->file = array_values($_FILES)[0];
+                    }
+
+                    if (!isset($this->parameterValues)) {
+                        foreach ($_POST as $parameter => $value) {
+                            $this->parameterValues[$parameter] = $value;
+                        }
+                    }
+                    break;
+                case 'DELETE':
+                case 'GET':
+                    foreach ($_GET as $parameter => $value) {
+                        if ($parameter != 'path' && $parameter != 'XDEBUG_SESSION_START') $this->parameterValues[$parameter] = $value;
+                    }
+                    break;
+            }
         }
     }
 

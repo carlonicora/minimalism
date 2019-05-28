@@ -4,7 +4,6 @@ namespace carlonicora\minimalism\abstracts;
 use carlonicora\cryogen\connectionBuilder;
 use carlonicora\cryogen\cryogen;
 use carlonicora\cryogen\cryogenBuilder;
-use DirectoryIterator;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
@@ -14,6 +13,7 @@ use ReflectionException;
 abstract class configurations{
     const MINIMALISM_APP = 1;
     const MINIMALISM_API = 2;
+    const MINIMALISM_CLI = 3;
 
     /** @var string $namespace */
     private $namespace;
@@ -60,6 +60,8 @@ abstract class configurations{
     public function __construct($namespace){
         $child = get_called_class();
 
+        $this->initialiseDirectoryStructure();
+
         try {
             $class_info = new ReflectionClass($child);
         } catch (ReflectionException $e) {
@@ -69,11 +71,10 @@ abstract class configurations{
         $this->appDirectory = dirname($class_info->getFileName());
 
         $this->namespace = $namespace;
-        $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
     }
 
     public function loadConfigurations(){
-        $this->env = Dotenv::create($_SERVER["DOCUMENT_ROOT"]);
+        $this->env = Dotenv::create($this->rootDirectory);
 
         try{
             $this->env->load();
@@ -85,13 +86,15 @@ abstract class configurations{
             case 'API':
                 $this->applicationType = self::MINIMALISM_API;
                 break;
+            case 'CLI':
+                $this->applicationType = self::MINIMALISM_CLI;
+                break;
             case 'APP':
             default:
                 $this->applicationType = self::MINIMALISM_APP;
                 break;
         }
-
-        $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
+        if ($this->applicationType != self::MINIMALISM_CLI) $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
         $databaseNames = getenv('DATABASES');
         $this->debugKey = getenv('DEBUG');
 
@@ -114,6 +117,19 @@ abstract class configurations{
             $databaseFactoryFile = '\\' . $this->namespace . '\\databases\\databaseFactory';
             $databaseFactoryFile::initialise($this);
         }
+    }
+
+    /**
+     * Initialises the directory structure required by minimalism
+     */
+    private function initialiseDirectoryStructure(){
+        $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
+
+        if (empty($this->rootDirectory)) $this->rootDirectory = getenv('PWD');
+
+        $directoryLog = $this->rootDirectory . DIRECTORY_SEPARATOR . 'logs';
+
+        if (!file_exists($directoryLog) && !mkdir($directoryLog)) errorReporter::returnHttpCode('Cannot create log directory');
     }
 
     /**

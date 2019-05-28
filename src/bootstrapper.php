@@ -2,8 +2,6 @@
 namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\configurations;
-use carlonicora\minimalism\databases\minimalism\authDbLoader;
-use carlonicora\minimalism\helpers\errorReporter;
 
 class bootstrapper{
     /** @var configurations $configurations */
@@ -18,8 +16,6 @@ class bootstrapper{
      */
     public function __construct($namespace){
         $this->namespace = $namespace;
-
-        $this->initialiseDirectoryStructure();
 
         $this->initialiseConfigurations();
 
@@ -37,15 +33,6 @@ class bootstrapper{
         $controller = new controller($this->configurations);
 
         return($controller);
-    }
-
-    /**
-     * Initialises the directory structure required by minimalism
-     */
-    private function initialiseDirectoryStructure(){
-        $directoryLog = $_SERVER["DOCUMENT_ROOT"] . DIRECTORY_SEPARATOR . 'logs';
-
-        if (!file_exists($directoryLog) && !mkdir($directoryLog)) errorReporter::returnHttpCode('Cannot create log directory');
     }
 
     /**
