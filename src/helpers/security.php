@@ -5,6 +5,7 @@ use carlonicora\minimalism\abstracts\configurations;
 use carlonicora\minimalism\abstracts\databaseFactory;
 use carlonicora\minimalism\databases\minimalism\auth;
 use carlonicora\minimalism\databases\minimalism\clients;
+use Exception;
 
 class security {
     /** @var configurations */
@@ -43,13 +44,13 @@ class security {
         $this->configurations->publicKey = '';
         $time = null;
 
-        if (strlen($signature) == 138){
-            $this->configurations->clientId = substr($signature, 0, 32);
-            $this->configurations->publicKey = substr($signature, 32, 32);
+        if (strlen($signature) == 202){
+            $this->configurations->clientId = substr($signature, 0, 64);
+            $this->configurations->publicKey = substr($signature, 64, 64);
+            $time = substr($signature, 128, 10);
+        } elseif (strlen($signature) == 138){
+            $this->configurations->clientId = substr($signature, 0, 64);
             $time = substr($signature, 64, 10);
-        } elseif (strlen($signature) == 106){
-            $this->configurations->clientId = substr($signature, 0, 32);
-            $time = substr($signature, 32, 10);
         }
 
         $timeDifference = time() - $time;
@@ -123,6 +124,7 @@ class security {
      * @param $privateKey
      */
     public static function generateApiKeys(&$publicKey, &$privateKey){
+        /*
         $resource = openssl_pkey_new(["private_key_bits" => 512,"private_key_type" => OPENSSL_KEYTYPE_RSA]);
 
         openssl_pkey_export($resource, $privateKey);
@@ -132,5 +134,13 @@ class security {
 
         $publicKey = md5($publicKey);
         $privateKey = hash('sha256', $privateKey);
+        */
+        try {
+            $publicKey = bin2hex(random_bytes(32));
+            $privateKey = bin2hex(random_bytes(64));
+        } catch (Exception $e){
+            $publicKey = null;
+            $privateKey = null;
+        }
     }
 }
