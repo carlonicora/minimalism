@@ -57,6 +57,9 @@ abstract class configurations{
     /** @var string */
     public $userId;
 
+    /** @var string */
+    public $httpHeaderSignature;
+
     public function __construct($namespace){
         $child = get_called_class();
 
@@ -100,6 +103,9 @@ abstract class configurations{
 
         $this->clientId = getenv('CLIENT_ID');
         $this->clientSecret = getenv('CLIENT_SECRET');
+
+        $this->httpHeaderSignature = getenv('HEADER_SIGNATURE');
+        if (empty($this->httpHeaderSignature)) $this->httpHeaderSignature = 'Minimalism-Signature';
 
 
         if ($databaseNames != false){

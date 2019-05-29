@@ -127,7 +127,7 @@ class controller {
 
     private function validateSignature(){
         $headers = getallheaders();
-        $this->signature = isset($headers["Minimalism-Signature"]) ? $headers["Minimalism-Signature"] : null;
+        $this->signature = isset($headers[$this->configurations->httpHeaderSignature]) ? $headers[$this->configurations->httpHeaderSignature] : null;
 
         $security = new security($this->configurations);
         $url = ($_SERVER['SERVER_PORT'] == '80' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
