@@ -131,6 +131,6 @@ class security {
         $publicKey = $publicKey["key"];
 
         $publicKey = md5($publicKey);
-        $privateKey = md5($privateKey);
+        $privateKey = hash('sha256', $privateKey);
     }
 }
