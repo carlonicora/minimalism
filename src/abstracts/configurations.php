@@ -121,6 +121,9 @@ abstract class configurations{
             }
 
             $databaseFactoryFile = '\\' . $this->namespace . '\\databases\\databaseFactory';
+            if (!class_exists($databaseFactoryFile)) {
+                $databaseFactoryFile = '\\carlonicora\\minimalism\\abstracts\\databaseFactory';
+            }
             $databaseFactoryFile::initialise($this);
         }
     }

@@ -87,6 +87,7 @@ class errorReporter {
             case 413: $text = 'Request Entity Too Large'; break;
             case 414: $text = 'Request-URI Too Large'; break;
             case 415: $text = 'Unsupported Media Type'; break;
+            case 422: $text = 'Unprocessable Entity'; break;
             case 500: $text = 'Internal Server Error'; break;
             case 501: $text = 'Not Implemented'; break;
             case 502: $text = 'Bad Gateway'; break;

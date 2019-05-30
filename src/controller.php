@@ -77,6 +77,7 @@ class controller {
                 break;
             case configurations::MINIMALISM_CLI:
                 $data = $this->model->generateData();
+                exit;
                 break;
         }
 

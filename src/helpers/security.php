@@ -40,6 +40,8 @@ class security {
     }
 
     public function validateSignature($signature, $verb, $uri, $body){
+        if (empty($signature)) return(false);
+
         $this->configurations->clientId = '';
         $this->configurations->publicKey = '';
         $time = null;
@@ -51,6 +53,8 @@ class security {
         } elseif (strlen($signature) == 138){
             $this->configurations->clientId = substr($signature, 0, 64);
             $time = substr($signature, 64, 10);
+        } else {
+            return(false);
         }
 
         $timeDifference = time() - $time;

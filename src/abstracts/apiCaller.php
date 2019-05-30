@@ -49,8 +49,10 @@ abstract class apiCaller {
             case 'DELETE':
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             default:
-                $query = http_build_query($body);
-                if (!empty($query)) $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . $query;
+                if (isset($body)) {
+                    $query = http_build_query($body);
+                    if (!empty($query)) $uri .= ((substr_count($uri, '?') > 0) ? '&' : '?') . $query;
+                }
                 break;
         }
 
