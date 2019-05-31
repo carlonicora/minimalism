@@ -28,9 +28,9 @@ class bootstrapper{
             $this->configurations->loadConfigurations();
         }
     }
-
-    public function loadController(){
-        $controller = new controller($this->configurations);
+    
+    public function loadController($modelName=null, $parameterValueList=null, $parameterValues=null){
+        $controller = new controller($this->configurations, $modelName, $parameterValueList, $parameterValues);
 
         return($controller);
     }

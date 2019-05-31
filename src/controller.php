@@ -76,8 +76,7 @@ class controller {
                 $data = $this->model->{$this->verb}();
                 break;
             case configurations::MINIMALISM_CLI:
-                $data = $this->model->generateData();
-                exit;
+                $returnValue = $this->model->generateData();
                 break;
         }
 
@@ -86,7 +85,6 @@ class controller {
                 $returnValue = json_encode($data);
                 break;
             case configurations::MINIMALISM_APP:
-            default:
                 if (array_key_exists('forceRedirect', $data)){
                     header('Location:' . $data['forceRedirect']);
                     exit;
