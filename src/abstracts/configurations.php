@@ -121,13 +121,7 @@ abstract class configurations{
                 if (!$this->initialiseDatabase($databaseConfiguration)) errorReporter::report($this, 2);
             }
 
-            $databaseFactoryFile = '\\' . $this->namespace . '\\databases\\databaseFactory';
-            if (!class_exists($databaseFactoryFile)) {
-                $databaseFactoryFile = '\\carlonicora\\minimalism\\abstracts\\databaseFactory';
-            }
-
-            /** @var databaseFactory $databaseFactoryFile */
-            $databaseFactoryFile::initialise($this);
+            databaseFactory::initialise($this);
         }
     }
 
