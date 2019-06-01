@@ -23,7 +23,12 @@ class databaseFactory {
         if (class_exists($fullName)){
             $response = new $fullName(self::$configurations);
         } else {
-            $response = new databaseLoader(self::$configurations);
+            $fullName = 'carlonicora\\minimalism\\databases\\' . $loaderName;
+            if (class_exists($fullName)){
+                $response = new $fullName(self::$configurations);
+            } else {
+                $response = new databaseLoader(self::$configurations);
+            }
         }
 
         return($response);
