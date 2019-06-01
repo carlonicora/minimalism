@@ -4,6 +4,7 @@ namespace carlonicora\minimalism\abstracts;
 use carlonicora\cryogen\connectionBuilder;
 use carlonicora\cryogen\cryogen;
 use carlonicora\cryogen\cryogenBuilder;
+use carlonicora\minimalism\helpers\databaseFactory;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
@@ -124,6 +125,8 @@ abstract class configurations{
             if (!class_exists($databaseFactoryFile)) {
                 $databaseFactoryFile = '\\carlonicora\\minimalism\\abstracts\\databaseFactory';
             }
+
+            /** @var databaseFactory $databaseFactoryFile */
             $databaseFactoryFile::initialise($this);
         }
     }

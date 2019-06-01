@@ -7,6 +7,8 @@ use carlonicora\cryogen\metaField;
 use stdClass;
 
 class clients extends entity{
+    const LOADER = 'minimalism\clientsDbLoader';
+
     protected $_initialValues;
 
     public $id;

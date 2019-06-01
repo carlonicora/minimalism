@@ -67,6 +67,8 @@ class controller {
     public function render(){
         $data = array();
 
+        $response = true;
+
         switch ($this->configurations->applicationType){
             case configurations::MINIMALISM_APP:
                 $data['baseUrl'] = $this->configurations->getBaseUrl();
@@ -76,13 +78,13 @@ class controller {
                 $data = $this->model->{$this->verb}();
                 break;
             case configurations::MINIMALISM_CLI:
-                $returnValue = $this->model->generateData();
+                $response = $this->model->generateData();
                 break;
         }
 
         switch ($this->configurations->applicationType){
             case configurations::MINIMALISM_API:
-                $returnValue = json_encode($data);
+                $response = json_encode($data);
                 break;
             case configurations::MINIMALISM_APP:
                 if (array_key_exists('forceRedirect', $data)){
@@ -91,26 +93,18 @@ class controller {
                 }
 
                 if ($this->model->getViewName() != ''){
-                    try {
-                        $returnValue = $this->view->render($data);
-                    } catch (LoaderError $e) {
-                        $returnValue = '';
-                    } catch (RuntimeError $e) {
-                        $returnValue = '';
-                    } catch (SyntaxError $e) {
-                        $returnValue = '';
-                    }
+                    $response = $this->view->render($data);
                 } else {
-                    $returnValue = json_encode($data);
+                    $response = json_encode($data);
                 }
                 break;
         }
 
-        if ($returnValue && $this->configurations->applicationType == configurations::MINIMALISM_APP){
+        if ($response && $this->configurations->applicationType == configurations::MINIMALISM_APP){
             $_SESSION['configurations'] = $this->configurations;
         }
 
-        return($returnValue);
+        return($response);
     }
 
     private function initialiseVerb(){
@@ -201,11 +195,13 @@ class controller {
             $this->initialiseModel();
         }
 
+        /*
         if ($this->configurations->applicationType == configurations::MINIMALISM_API){
             if($this->model->requiresAuth($this->verb)){
                 // TODO
             }
         }
+        */
     }
 
     private function initialiseView(){

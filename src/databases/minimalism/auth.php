@@ -7,6 +7,8 @@ use carlonicora\cryogen\metaField;
 use stdClass;
 
 class auth extends entity{
+    const LOADER = 'minimalism\authDbLoader';
+
     protected $_initialValues;
 
     public $authId;

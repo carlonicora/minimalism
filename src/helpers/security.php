@@ -2,9 +2,10 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\configurations;
-use carlonicora\minimalism\abstracts\databaseFactory;
 use carlonicora\minimalism\databases\minimalism\auth;
+use carlonicora\minimalism\databases\minimalism\authDbLoader;
 use carlonicora\minimalism\databases\minimalism\clients;
+use carlonicora\minimalism\databases\minimalism\clientsDbLoader;
 use Exception;
 
 class security {
@@ -61,8 +62,11 @@ class security {
 
         if ($timeDifference > 100 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
 
+        /** @var clientsDbLoader $clientDbLoader */
+        $clientDbLoader = databaseFactory::getLoader(clients::LOADER);
+
         /** @var clients $client */
-        $client = databaseFactory::getClientsDbLoader()->loadFromClientId($this->configurations->clientId);
+        $client = $clientDbLoader->loadFromClientId($this->configurations->clientId);
 
         if (empty($client)) errorReporter::report($this->configurations, 10, null, 401);
 
@@ -72,8 +76,11 @@ class security {
 
         $auth = null;
         if (!empty($this->configurations->publicKey)){
+            /** @var authDbLoader $authDbLoader */
+            $authDbLoader = databaseFactory::getLoader(auth::LOADER);
+
             /** @var auth $auth */
-            $auth = databaseFactory::getAuthDbLoader()->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client->id);
+            $auth = $authDbLoader->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client->id);
 
             if (empty($auth)) errorReporter::report($this->configurations, 11, null, 401);
             if (time() > strtotime($auth->expirationDate) ) errorReporter::report($this->configurations, 11, 'Expired', 401);

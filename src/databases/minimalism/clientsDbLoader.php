@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\databases\minimalism;
 
-use carlonicora\minimalism\abstracts\databaseLoader;
+use carlonicora\minimalism\helpers\databaseLoader;
 
 class clientsDbLoader extends databaseLoader {
     public function loadFromClientId($clientId){

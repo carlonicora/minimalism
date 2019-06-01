@@ -1,13 +1,14 @@
 <?php
-namespace carlonicora\minimalism\abstracts;
+namespace carlonicora\minimalism\helpers;
 
 use carlonicora\cryogen\cryogen;
 use carlonicora\cryogen\entity;
 use carlonicora\cryogen\entityList;
 use carlonicora\cryogen\metaTable;
 use carlonicora\cryogen\queryEngine;
+use carlonicora\minimalism\abstracts\configurations;
 
-abstract class databaseLoader {
+class databaseLoader {
     /** @var cryogen */
     protected $cryogen;
 
@@ -64,6 +65,8 @@ abstract class databaseLoader {
     protected function getSingle(){
         $response = $this->cryogen->readSingle($this->engine);
 
+        $this->init();
+
         return($response);
     }
 
@@ -74,6 +77,8 @@ abstract class databaseLoader {
      */
     protected function getList(){
         $response = $this->cryogen->read(($this->engine));
+
+        $this->init();
 
         return($response);
     }
@@ -87,6 +92,8 @@ abstract class databaseLoader {
         $response = $this->cryogen->read($this->engine);
 
         if (!isset($response)) $response = new entityList($this->metaTable);
+
+        $this->init();
 
         return($response);
     }
@@ -113,6 +120,8 @@ abstract class databaseLoader {
 
         $response = $this->getListComplete();
 
+        $this->init();
+
         return($response);
     }
 
@@ -128,6 +137,8 @@ abstract class databaseLoader {
         $this->engine->setDiscriminant($this->metaTable->getKeyFields()[0], $id);
 
         $response = $this->getSingle();
+
+        $this->init();
 
         return($response);
     }
@@ -163,6 +174,8 @@ abstract class databaseLoader {
 
         $response = $this->cryogen->update($entity);
 
+        $this->init();
+
         return($response);
     }
 
@@ -175,6 +188,8 @@ abstract class databaseLoader {
         $this->init();
 
         $response = $this->cryogen->truncateTable($this->metaTable);
+
+        $this->init();
 
         return($response);
     }
