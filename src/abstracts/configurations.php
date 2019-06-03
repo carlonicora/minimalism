@@ -129,7 +129,15 @@ abstract class configurations{
      * Initialises the directory structure required by minimalism
      */
     private function initialiseDirectoryStructure(){
+        $backTrace = debug_backtrace();
+        $callerFileName = $backTrace[sizeof($backTrace)-1]['file'];
+        $rootDir = dirname($callerFileName);
+
         $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
+
+        if ($rootDir != $this->rootDirectory){
+            $this->rootDirectory = $rootDir;
+        }
 
         if (empty($this->rootDirectory)) $this->rootDirectory = getenv('PWD');
 
