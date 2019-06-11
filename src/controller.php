@@ -187,7 +187,7 @@ class controller {
         if (!class_exists($modelClass)){
             errorReporter::report($this->configurations, 3, null, 404);
         } else {
-            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList);
+            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file);
         }
 
         if ($this->model->redirect() != false){

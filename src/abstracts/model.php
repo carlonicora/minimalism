@@ -11,6 +11,9 @@ abstract class model {
     /** @var array */
     protected $parameterValueList;
 
+    /** @var array */
+    protected $file;
+
     /** @var string */
     protected $viewName;
 
@@ -35,10 +38,11 @@ abstract class model {
      * @param array $parameterValues
      * @param array $parameterValueList
      */
-    public function __construct($configurations, $parameterValues, $parameterValueList){
+    public function __construct($configurations, $parameterValues, $parameterValueList, $file=null){
         $this->configurations = $configurations;
         $this->parameterValues = $parameterValues;
         $this->parameterValueList = $parameterValueList;
+        $this->file = $file;
 
         $this->redirectPage = null;
     }
