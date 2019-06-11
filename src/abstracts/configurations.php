@@ -20,7 +20,7 @@ abstract class configurations{
     private $namespace;
 
     /** @var string $rootDirectory */
-    private $rootDirectory;
+    protected $rootDirectory;
 
     /** @var string */
     public $appDirectory;
