@@ -37,6 +37,7 @@ abstract class model {
      * @param configurations $configurations
      * @param array $parameterValues
      * @param array $parameterValueList
+     * @param array $file
      */
     public function __construct($configurations, $parameterValues, $parameterValueList, $file=null){
         $this->configurations = $configurations;
