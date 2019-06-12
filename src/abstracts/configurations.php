@@ -10,6 +10,7 @@ use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
+use mysqli;
 
 abstract class configurations{
     const MINIMALISM_APP = 1;
@@ -39,6 +40,12 @@ abstract class configurations{
 
     /** @var array */
     public $cryogenConnections = array();
+
+    /** @var array */
+    private $databases = array();
+
+    /** @var array */
+    private $databaseConnectionStrings = array();
 
     /** @var int */
     public $applicationType;
@@ -108,6 +115,17 @@ abstract class configurations{
         $this->httpHeaderSignature = getenv('HEADER_SIGNATURE');
         if (empty($this->httpHeaderSignature)) $this->httpHeaderSignature = 'Minimalism-Signature';
 
+        $dbNames = explode(',', getenv('DBS'));
+        foreach (isset($dbNames) ? $dbNames : array() as $dbName){
+            $dbName = trim($dbName);
+            if (!array_key_exists($dbName, $this->databaseConnectionStrings)){
+                $dbConnection = getenv($dbName);
+                $dbConf = array();
+                list($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']) = explode(',', $dbConnection);
+
+                $this->databaseConnectionStrings[$dbName] = $dbConf;
+            }
+        }
 
         if ($databaseNames != false){
             $databases = explode(',', $databaseNames);
@@ -202,5 +220,35 @@ abstract class configurations{
 
     protected function refreshSessionConfigurations(){
         $_SESSION['configurations'] = $this;
+    }
+
+    /**
+     * @param string $databaseName
+     * @return mysqli
+     */
+    public function getDatabase($databaseName): mysqli
+    {
+        $response = null;
+
+        if (isset($this->databases) && array_key_exists($databaseName, $this->databases)){
+            $response = $this->databases[$databaseName];
+        }
+
+        return ($response);
+    }
+
+    /**
+     * @param string $databaseName
+     * @return array
+     */
+    public function getDatabaseConnectionString($databaseName): array
+    {
+        $response = null;
+
+        if (isset($this->databaseConnectionStrings) && array_key_exists($databaseName, $this->databaseConnectionStrings)){
+            $response = $this->databaseConnectionStrings[$databaseName];
+        }
+
+        return ($response);
     }
 }
