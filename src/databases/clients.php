@@ -1,9 +1,9 @@
 <?php
 namespace carlonicora\minimalism\databases;
 
-use carlonicora\minimalism\abstracts\databaseManager;
+use carlonicora\minimalism\library\database\AbstractDatabaseManager;
 
-class clients extends databaseManager
+class clients extends AbstractDatabaseManager
 {
     protected $dbToUse = 'minimalism';
     protected $fields = [

@@ -23,6 +23,7 @@
     "ext-mysqli": "*",
     "ext-openssl": "*",
     "vlucas/phpdotenv":"*",
+    "carlonicora/minimalism-library": "*",
     "php": "^7.0",
     "twig/twig":"^2.9"
   }

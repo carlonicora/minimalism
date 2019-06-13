@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\library\interfaces\ConfigurationsInterface;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
@@ -8,7 +9,7 @@ use ReflectionClass;
 use ReflectionException;
 use mysqli;
 
-abstract class configurations{
+abstract class configurations implements ConfigurationsInterface {
     const MINIMALISM_APP = 1;
     const MINIMALISM_API = 2;
     const MINIMALISM_CLI = 3;

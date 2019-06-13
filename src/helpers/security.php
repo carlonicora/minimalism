@@ -4,6 +4,7 @@ namespace carlonicora\minimalism\helpers;
 use carlonicora\minimalism\abstracts\configurations;
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
+use carlonicora\minimalism\library\database\databaseFactory;
 use Exception;
 
 class security {

@@ -1,9 +1,9 @@
 <?php
 namespace carlonicora\minimalism\databases;
 
-use carlonicora\minimalism\abstracts\databaseManager;
+use carlonicora\minimalism\library\database\AbstractDatabaseManager;
 
-class auth extends databaseManager
+class auth extends AbstractDatabaseManager
 {
     protected $dbToUse = 'minimalism';
     protected $fields = [
