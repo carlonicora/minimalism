@@ -14,25 +14,18 @@ class databaseFactory {
     }
 
     /**
-     * @param string $dbReaderName
-     * @param string|null $dbReaderNamespace
+     * @param string $dbReader
      * @return databaseManager
      */
-    public static function create($dbReaderName, $dbReaderNamespace=null){
+    public static function create($dbReader){
         $response = null;
 
-        if (!isset($dbReaderNamespace)){
-            $dbReaderNamespace = self::$configurations->getNamespace() . '\\databases';
-        }
-
-        $dbReaderClass = $dbReaderNamespace . '\\' . $dbReaderName;
-
-        if (!class_exists($dbReaderClass)){
+        if (!class_exists($dbReader)){
             return(null);
         }
 
         /** @var databaseManager $response */
-        $response = new $dbReaderClass();
+        $response = new $dbReader();
 
         $databaseName = $response->getDbToUse();
         $connection = self::$configurations->getDatabase($databaseName);

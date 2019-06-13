@@ -1,10 +1,6 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\cryogen\connectionBuilder;
-use carlonicora\cryogen\cryogen;
-use carlonicora\cryogen\cryogenBuilder;
-use carlonicora\minimalism\helpers\databaseFactory;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
@@ -36,12 +32,6 @@ abstract class configurations{
     protected $debugKey;
 
     /** @var array */
-    public $cryogen = array();
-
-    /** @var array */
-    public $cryogenConnections = array();
-
-    /** @var array */
     private $databases = array();
 
     /** @var array */
@@ -67,6 +57,9 @@ abstract class configurations{
 
     /** @var string */
     public $httpHeaderSignature;
+
+    const DB_AUTH = 'carlonicora\\minimalism\\databases\\auth';
+    const DB_CLIENTS = 'carlonicora\\minimalism\\databases\\clients';
 
     public function __construct($namespace){
         $child = get_called_class();
@@ -106,7 +99,6 @@ abstract class configurations{
                 break;
         }
         if ($this->applicationType != self::MINIMALISM_CLI) $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
-        $databaseNames = getenv('DATABASES');
         $this->debugKey = getenv('DEBUG');
 
         $this->clientId = getenv('CLIENT_ID');
@@ -115,7 +107,7 @@ abstract class configurations{
         $this->httpHeaderSignature = getenv('HEADER_SIGNATURE');
         if (empty($this->httpHeaderSignature)) $this->httpHeaderSignature = 'Minimalism-Signature';
 
-        $dbNames = explode(',', getenv('DBS'));
+        $dbNames = explode(',', getenv('DATABASES'));
         foreach (isset($dbNames) ? $dbNames : array() as $dbName){
             $dbConnection = getenv(trim($dbName));
             $dbConf = array();
@@ -124,21 +116,6 @@ abstract class configurations{
             if (!array_key_exists($dbConf['dbName'], $this->databaseConnectionStrings)){
                 $this->databaseConnectionStrings[$dbConf['dbName']] = $dbConf;
             }
-        }
-
-        if ($databaseNames != false){
-            $databases = explode(',', $databaseNames);
-            foreach ($databases as $databaseName){
-                $databaseConnection = getenv($databaseName);
-
-                $databaseConfiguration = array();
-                $databaseConfiguration['databasename'] = $databaseName;
-                list($databaseConfiguration['type'], $databaseConfiguration['host'], $databaseConfiguration['user'], $databaseConfiguration['password']) = explode(',', $databaseConnection);
-
-                if (!$this->initialiseDatabase($databaseConfiguration)) errorReporter::report($this, 2);
-            }
-
-            databaseFactory::initialise($this);
         }
     }
 
@@ -193,28 +170,6 @@ abstract class configurations{
      */
     public function getBaseUrl(){
         return($this->baseUrl);
-    }
-
-    public function refreshConnections(){
-        if (isset($this->cryogen) && sizeof($this->cryogen) > 0){
-            /** @var cryogen $cryogen */
-            foreach ($this->cryogenConnections as $cryogenConnection){
-                $this->initialiseDatabase($cryogenConnection);
-            }
-        }
-    }
-
-    protected function initialiseDatabase($databaseConfiguration){
-        try {
-            $this->cryogenConnections[$databaseConfiguration['databasename']] = $databaseConfiguration;
-            $connectionBuilder = connectionBuilder::bootstrap($databaseConfiguration);
-            $this->cryogen[$databaseConfiguration['databasename']] = cryogenBuilder::bootstrap($connectionBuilder);
-            
-        } catch (Exception $exception){
-            return (false);
-        }
-
-        return(true);
     }
 
     protected function refreshSessionConfigurations(){

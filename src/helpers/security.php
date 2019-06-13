@@ -2,10 +2,8 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\configurations;
-use carlonicora\minimalism\databases\minimalism\auth;
-use carlonicora\minimalism\databases\minimalism\authDbLoader;
-use carlonicora\minimalism\databases\minimalism\clients;
-use carlonicora\minimalism\databases\minimalism\clientsDbLoader;
+use carlonicora\minimalism\databases\auth;
+use carlonicora\minimalism\databases\clients;
 use Exception;
 
 class security {
@@ -62,30 +60,30 @@ class security {
 
         if ($timeDifference > 100 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
 
-        /** @var clientsDbLoader $clientDbLoader */
-        $clientDbLoader = databaseFactory::getLoader(clients::LOADER);
+        /** @var clients $clientDbLoader */
+        $clientDbLoader = databaseFactory::create(configurations::DB_CLIENTS);
 
-        /** @var clients $client */
+        /** @var array $client */
         $client = $clientDbLoader->loadFromClientId($this->configurations->clientId);
 
         if (empty($client)) errorReporter::report($this->configurations, 10, null, 401);
 
-        $this->configurations->clientSecret = $client->clientSecret;
+        $this->configurations->clientSecret = $client['clientSecret'];
 
         $this->configurations->privateKey=null;
 
         $auth = null;
         if (!empty($this->configurations->publicKey)){
-            /** @var authDbLoader $authDbLoader */
-            $authDbLoader = databaseFactory::getLoader(auth::LOADER);
+            /** @var auth $authDbLoader */
+            $authDbLoader = databaseFactory::create(configurations::DB_AUTH);
 
-            /** @var auth $auth */
-            $auth = $authDbLoader->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client->id);
+            /** @var array $auth */
+            $auth = $authDbLoader->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client['id']);
 
             if (empty($auth)) errorReporter::report($this->configurations, 11, null, 401);
-            if (time() > strtotime($auth->expirationDate) ) errorReporter::report($this->configurations, 11, 'Expired', 401);
+            if (time() > strtotime($auth['expirationDate']) ) errorReporter::report($this->configurations, 11, 'Expired', 401);
 
-            $this->configurations->privateKey = $auth->privateKey;
+            $this->configurations->privateKey = $auth['privateKey'];
         }
 
         $validatedSignature = $this->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey, $time);
@@ -93,7 +91,7 @@ class security {
         $returnValue = $validatedSignature == $signature;
 
         if ($returnValue && !empty($this->configurations->publicKey)){
-            $this->configurations->userId = $auth->userId;
+            $this->configurations->userId = $auth['userId'];
         }
 
         return($returnValue);
@@ -135,17 +133,7 @@ class security {
      * @param $privateKey
      */
     public static function generateApiKeys(&$publicKey, &$privateKey){
-        /*
-        $resource = openssl_pkey_new(["private_key_bits" => 512,"private_key_type" => OPENSSL_KEYTYPE_RSA]);
 
-        openssl_pkey_export($resource, $privateKey);
-
-        $publicKey = openssl_pkey_get_details($resource);
-        $publicKey = $publicKey["key"];
-
-        $publicKey = md5($publicKey);
-        $privateKey = hash('sha256', $privateKey);
-        */
         try {
             $publicKey = bin2hex(random_bytes(32));
             $privateKey = bin2hex(random_bytes(64));

@@ -24,7 +24,6 @@
     "ext-openssl": "*",
     "vlucas/phpdotenv":"*",
     "php": "^7.0",
-    "twig/twig":"^2.9",
-    "carlonicora/mysqlcryogen": ">=3.0.0"
+    "twig/twig":"^2.9"
   }
 }

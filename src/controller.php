@@ -7,9 +7,6 @@ use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
 use Exception;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
 class controller {
@@ -93,7 +90,11 @@ class controller {
                 }
 
                 if ($this->model->getViewName() != ''){
-                    $response = $this->view->render($data);
+                    try {
+                        $response = $this->view->render($this->model->getViewName() . '.twig', $data);
+                    } catch (Exception $e){
+                        $response = '';
+                    }
                 } else {
                     $response = json_encode($data);
                 }
@@ -213,6 +214,7 @@ class controller {
                 errorReporter::report($this->configurations, 4, null, 404);
             }
 
+            /*
             try {
                 $this->view = $this->view->load($this->model->getViewName() . '.twig');
             } catch (LoaderError $e) {
@@ -226,6 +228,7 @@ class controller {
             if (!$this->view) {
                 errorReporter::report($this->configurations, 5, null, 404);
             }
+            */
         }
     }
 }
