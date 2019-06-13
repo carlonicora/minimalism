@@ -479,4 +479,16 @@ abstract class databaseManager
 
         return($response);
     }
+
+    /**
+     * @param $id
+     * @return array|null
+     */
+    public function loadAll(){
+        $sql = 'SELECT * FROM ' . $this->tableName . ';';
+
+        $response = $this->runReadSingle($sql);
+
+        return($response);
+    }
 }
