@@ -2,10 +2,8 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\configurations;
-use carlonicora\minimalism\abstracts\dbReader;
+use carlonicora\minimalism\abstracts\databaseManager;
 use mysqli;
-use ReflectionClass;
-use Exception;
 
 class databaseFactory {
     /** @var configurations */
@@ -18,73 +16,48 @@ class databaseFactory {
     /**
      * @param string $dbReaderName
      * @param string|null $dbReaderNamespace
-     * @return dbReader
+     * @return databaseManager
      */
     public static function create($dbReaderName, $dbReaderNamespace=null){
+        $response = null;
+
         if (!isset($dbReaderNamespace)){
-            $dbReaderNamespace = self::$configurations->getNamespace();
+            $dbReaderNamespace = self::$configurations->getNamespace() . '\\databases';
         }
 
-        $dbReaderClass = $dbReaderNamespace . $dbReaderName;
+        $dbReaderClass = $dbReaderNamespace . '\\' . $dbReaderName;
 
         if (!class_exists($dbReaderClass)){
             return(null);
         }
 
-        /** @var dbReader $response */
-        try {
-            $response = new ReflectionClass($dbReaderClass);
-        } catch (Exception $e){
-            return(null);
-        }
+        /** @var databaseManager $response */
+        $response = new $dbReaderClass();
 
         $databaseName = $response->getDbToUse();
         $connection = self::$configurations->getDatabase($databaseName);
 
-        if (!isset($response)){
-            $dbConf = self::$configurations->getDatabaseConnectionString($databaseName);
+        $saveConnection = !isset($connection);
 
-            if (isset($dbConf)){
-                $connection = new mysqli($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
-            }
+        $dbConf = self::$configurations->getDatabaseConnectionString($databaseName);
+
+        if (!isset($connection) && isset($dbConf)){
+            $connection = new mysqli($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
         }
 
-        if ($connection->connect_errno) return(null);
+        if (isset($connection) && !isset($connection->thread_id)) {
+            $connection->connect($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
+        }
+
+        if (!isset($connection) || $connection->connect_errno) return (null);
+
+        $connection->set_charset("utf8");
 
         $response->setConnection($connection);
 
-        return($response);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * @param string $loaderName
-     * @return databaseLoader
-     */
-    public static function getLoader($loaderName){
-        $response = null;
-
-        $fullName = self::$configurations->getNamespace() . '\\databases\\' . $loaderName;
-
-        if (class_exists($fullName)){
-            $response = new $fullName(self::$configurations);
-        } else {
-            $fullName = 'carlonicora\\minimalism\\databases\\' . $loaderName;
-            if (class_exists($fullName)){
-                $response = new $fullName(self::$configurations);
-            } else {
-                $response = new databaseLoader(self::$configurations);
-            }
+        if ($saveConnection)
+        {
+            self::$configurations->setDatabase($dbConf['dbName'], $connection);
         }
 
         return($response);

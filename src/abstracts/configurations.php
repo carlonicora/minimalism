@@ -117,13 +117,12 @@ abstract class configurations{
 
         $dbNames = explode(',', getenv('DBS'));
         foreach (isset($dbNames) ? $dbNames : array() as $dbName){
-            $dbName = trim($dbName);
-            if (!array_key_exists($dbName, $this->databaseConnectionStrings)){
-                $dbConnection = getenv($dbName);
-                $dbConf = array();
-                list($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']) = explode(',', $dbConnection);
+            $dbConnection = getenv(trim($dbName));
+            $dbConf = array();
+            list($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']) = explode(',', $dbConnection);
 
-                $this->databaseConnectionStrings[$dbName] = $dbConf;
+            if (!array_key_exists($dbConf['dbName'], $this->databaseConnectionStrings)){
+                $this->databaseConnectionStrings[$dbConf['dbName']] = $dbConf;
             }
         }
 
@@ -224,9 +223,9 @@ abstract class configurations{
 
     /**
      * @param string $databaseName
-     * @return mysqli
+     * @return mysqli|null
      */
-    public function getDatabase($databaseName): mysqli
+    public function getDatabase($databaseName)
     {
         $response = null;
 
@@ -250,5 +249,14 @@ abstract class configurations{
         }
 
         return ($response);
+    }
+
+    /**
+     * @param string $databaseName
+     * @param mysqli $database
+     */
+    public function setDatabase($databaseName, $database)
+    {
+        $this->databases[$databaseName] = $database;
     }
 }
