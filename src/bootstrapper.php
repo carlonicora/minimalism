@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\library\database\databaseFactory;
 
 class bootstrapper{
     /** @var abstractConfigurations $configurations */
@@ -26,6 +27,8 @@ class bootstrapper{
         } else {
             $this->configurations->loadConfigurations();
         }
+
+        databaseFactory::initialise($this->configurations);
     }
     
     public function loadController($modelName=null, $parameterValueList=null, $parameterValues=null){

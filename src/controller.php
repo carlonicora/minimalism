@@ -53,7 +53,7 @@ class controller {
 
         if (isset($modelName)) $this->modelName = $modelName;
 
-        if ($this->configurations->applicationType == abstractConfigurations::MINIMALISM_API){
+        if ($this->configurations->applicationType == abstractConfigurations::MINIMALISM_API && $this->modelName != 'index'){
             $this->validateSignature();
         }
 
