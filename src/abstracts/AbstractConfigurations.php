@@ -9,7 +9,7 @@ use ReflectionClass;
 use ReflectionException;
 use mysqli;
 
-abstract class configurations implements ConfigurationsInterface {
+abstract class abstractConfigurations implements ConfigurationsInterface {
     const MINIMALISM_APP = 1;
     const MINIMALISM_API = 2;
     const MINIMALISM_CLI = 3;

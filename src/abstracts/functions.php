@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\abstracts;
 
 abstract class functions {
-    /** @var  configurations */
+    /** @var  abstractConfigurations */
     protected $configurations;
 
     public function __construct($configurations){

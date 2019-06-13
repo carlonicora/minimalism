@@ -1,10 +1,10 @@
 <?php
 namespace carlonicora\minimalism;
 
-use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 
 class bootstrapper{
-    /** @var configurations $configurations */
+    /** @var abstractConfigurations $configurations */
     private $configurations;
 
     /** @var string $namespace */
@@ -23,7 +23,6 @@ class bootstrapper{
 
         if (isset($_SESSION['configurations'])){
             $this->configurations = $_SESSION['configurations'];
-            $this->configurations->refreshConnections();
         } else {
             $this->configurations->loadConfigurations();
         }

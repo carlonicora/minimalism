@@ -1,11 +1,11 @@
 <?php
 namespace carlonicora\minimalism\helpers;
 
-use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 
 class errorReporter {
     /**
-     * @param configurations $configurations
+     * @param abstractConfigurations $configurations
      * @param string $errorCode
      * @param string $errorMessage
      * @param string $httpCode

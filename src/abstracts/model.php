@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\abstracts;
 
 abstract class model {
-    /** @var configurations */
+    /** @var abstractConfigurations */
     protected $configurations;
 
     /** @var array */
@@ -34,7 +34,7 @@ abstract class model {
 
     /**
      * model constructor.
-     * @param configurations $configurations
+     * @param abstractConfigurations $configurations
      * @param array $parameterValues
      * @param array $parameterValueList
      * @param array $file

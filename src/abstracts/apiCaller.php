@@ -6,7 +6,7 @@ use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
 
 abstract class apiCaller {
-    /** @var configurations */
+    /** @var abstractConfigurations */
     protected $configurations;
 
     /** @var int */

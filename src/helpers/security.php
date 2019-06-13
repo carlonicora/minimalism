@@ -1,14 +1,14 @@
 <?php
 namespace carlonicora\minimalism\helpers;
 
-use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
 use carlonicora\minimalism\library\database\databaseFactory;
 use Exception;
 
 class security {
-    /** @var configurations */
+    /** @var abstractConfigurations */
     private $configurations;
 
     public function __construct($configurations) {
@@ -62,7 +62,7 @@ class security {
         if ($timeDifference > 100 || $timeDifference < 0) errorReporter::report($this->configurations, 9, null, 408);
 
         /** @var clients $clientDbLoader */
-        $clientDbLoader = databaseFactory::create(configurations::DB_CLIENTS);
+        $clientDbLoader = databaseFactory::create(abstractConfigurations::DB_CLIENTS);
 
         /** @var array $client */
         $client = $clientDbLoader->loadFromClientId($this->configurations->clientId);
@@ -76,7 +76,7 @@ class security {
         $auth = null;
         if (!empty($this->configurations->publicKey)){
             /** @var auth $authDbLoader */
-            $authDbLoader = databaseFactory::create(configurations::DB_AUTH);
+            $authDbLoader = databaseFactory::create(abstractConfigurations::DB_AUTH);
 
             /** @var array $auth */
             $auth = $authDbLoader->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client['id']);

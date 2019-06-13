@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism;
 
-use carlonicora\minimalism\abstracts\configurations;
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\abstracts\model;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
@@ -13,7 +13,7 @@ class controller {
     /** @var string */
     private $modelName;
 
-    /** @var configurations */
+    /** @var abstractConfigurations */
     private $configurations;
 
     /** @var model */
@@ -40,7 +40,7 @@ class controller {
     public function __construct($configurations, $modelName=null, $parameterValueList=null, $parameterValues=null){
         $this->configurations = $configurations;
 
-        if ($this->configurations->applicationType != configurations::MINIMALISM_CLI) {
+        if ($this->configurations->applicationType != abstractConfigurations::MINIMALISM_CLI) {
             $this->initialiseVerb();
         }
 
@@ -53,7 +53,7 @@ class controller {
 
         if (isset($modelName)) $this->modelName = $modelName;
 
-        if ($this->configurations->applicationType == configurations::MINIMALISM_API){
+        if ($this->configurations->applicationType == abstractConfigurations::MINIMALISM_API){
             $this->validateSignature();
         }
 
@@ -67,23 +67,23 @@ class controller {
         $response = true;
 
         switch ($this->configurations->applicationType){
-            case configurations::MINIMALISM_APP:
+            case abstractConfigurations::MINIMALISM_APP:
                 $data['baseUrl'] = $this->configurations->getBaseUrl();
                 $data['page'] = $this->model->generateData();
                 break;
-            case configurations::MINIMALISM_API:
+            case abstractConfigurations::MINIMALISM_API:
                 $data = $this->model->{$this->verb}();
                 break;
-            case configurations::MINIMALISM_CLI:
+            case abstractConfigurations::MINIMALISM_CLI:
                 $response = $this->model->generateData();
                 break;
         }
 
         switch ($this->configurations->applicationType){
-            case configurations::MINIMALISM_API:
+            case abstractConfigurations::MINIMALISM_API:
                 $response = json_encode($data);
                 break;
-            case configurations::MINIMALISM_APP:
+            case abstractConfigurations::MINIMALISM_APP:
                 if (array_key_exists('forceRedirect', $data)){
                     header('Location:' . $data['forceRedirect']);
                     exit;
@@ -101,7 +101,7 @@ class controller {
                 break;
         }
 
-        if ($response && $this->configurations->applicationType == configurations::MINIMALISM_APP){
+        if ($response && $this->configurations->applicationType == abstractConfigurations::MINIMALISM_APP){
             $_SESSION['configurations'] = $this->configurations;
         }
 
@@ -135,7 +135,7 @@ class controller {
         $this->parameterValues = array();
         $this->parameterValueList = array();
 
-        if ($this->configurations->applicationType == configurations::MINIMALISM_CLI){
+        if ($this->configurations->applicationType == abstractConfigurations::MINIMALISM_CLI){
             if (isset($_SERVER['argv'][1])){
                 $this->parameterValues = json_decode($_SERVER['argv'][1], true);
             }
