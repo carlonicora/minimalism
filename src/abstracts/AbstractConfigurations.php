@@ -108,8 +108,9 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
         $this->httpHeaderSignature = getenv('HEADER_SIGNATURE');
         if (empty($this->httpHeaderSignature)) $this->httpHeaderSignature = 'Minimalism-Signature';
 
-        $dbNames = explode(',', getenv('DATABASES'));
+        $dbNames = getenv('DATABASES');
         if (!empty($dbNames)) {
+            $dbNames = explode(',', $dbNames);
             foreach (isset($dbNames) ? $dbNames : array() as $dbName) {
                 $dbConnection = getenv(trim($dbName));
                 $dbConf = array();
