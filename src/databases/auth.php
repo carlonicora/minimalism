@@ -28,6 +28,15 @@ class auth extends AbstractDatabaseManager
         return($response);
     }
 
+    public function loadFromPublicKey($publicKey){
+        $sql = 'SELECT * FROM auth WHERE publicKey = ?;';
+        $parameters = ['s', $publicKey];
+
+        $response = $this->runReadSingle($sql, $parameters);
+
+        return($response);
+    }
+
     public function deleteOldTokens(){
         $sql = 'DELETE FROM auth WHERE expirationDate < ?;';
         $parameters = ['s', date('Y-m-d H:i:s', time())];
