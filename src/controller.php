@@ -5,6 +5,7 @@ use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\abstracts\model;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
+use carlonicora\minimalism\helpers\sessionManager;
 use Exception;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -102,7 +103,8 @@ class controller {
         }
 
         if ($response && $this->configurations->applicationType == abstractConfigurations::MINIMALISM_APP){
-            $_SESSION['configurations'] = $this->configurations;
+            $sessionManager = new sessionManager();
+            $sessionManager->saveSession($this->configurations);
         }
 
         return($response);
@@ -213,22 +215,6 @@ class controller {
             } catch (Exception $exception) {
                 errorReporter::report($this->configurations, 4, null, 404);
             }
-
-            /*
-            try {
-                $this->view = $this->view->load($this->model->getViewName() . '.twig');
-            } catch (LoaderError $e) {
-                $this->view = null;
-            } catch (RuntimeError $e) {
-                $this->view = null;
-            } catch (SyntaxError $e) {
-                $this->view = null;
-            }
-
-            if (!$this->view) {
-                errorReporter::report($this->configurations, 5, null, 404);
-            }
-            */
         }
     }
 }

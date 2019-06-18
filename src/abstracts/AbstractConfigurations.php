@@ -112,13 +112,12 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
         if (!empty($dbNames)) {
             $dbNames = explode(',', $dbNames);
             foreach (isset($dbNames) ? $dbNames : array() as $dbName) {
-                $dbName = trim($dbName);
-                $dbConnection = getenv($dbName);
+                $dbConnection = getenv(trim($dbName));
                 $dbConf = array();
                 list($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']) = explode(',', $dbConnection);
 
-                if (!array_key_exists($dbName, $this->databaseConnectionStrings)) {
-                    $this->databaseConnectionStrings[$dbName] = $dbConf;
+                if (!array_key_exists($dbConf['dbName'], $this->databaseConnectionStrings)) {
+                    $this->databaseConnectionStrings[$dbConf['dbName']] = $dbConf;
                 }
             }
         }
