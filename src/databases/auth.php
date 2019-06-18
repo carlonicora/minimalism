@@ -36,4 +36,13 @@ class auth extends AbstractDatabaseManager
 
         return($response);
     }
+
+    public function deleteFromPublicKey($publicKey)
+    {
+        $sql = 'DELETE from auth WHERE publicKey = ?;';
+        $parameters = ['s', $publicKey];
+
+        $response = $this->runSql($sql, $parameters);
+        return($response);
+    }
 }
