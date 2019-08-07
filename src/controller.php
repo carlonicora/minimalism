@@ -126,7 +126,8 @@ class controller {
         $this->signature = isset($headers[$this->configurations->httpHeaderSignature]) ? $headers[$this->configurations->httpHeaderSignature] : null;
 
         $security = new security($this->configurations);
-        $url = ($_SERVER['SERVER_PORT'] == '80' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        //$url = ($_SERVER['SERVER_PORT'] == '80' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $url = $_SERVER['REQUEST_URI'];
         if (!$security->validateSignature($this->signature, $this->verb, $url,  $this->parameterValues)){
             errorReporter::report($this->configurations,  11, 'Failure in validating signature', 401);
         }
@@ -138,8 +139,12 @@ class controller {
         $this->parameterValueList = array();
 
         if ($this->configurations->applicationType == abstractConfigurations::MINIMALISM_CLI){
-            if (isset($_SERVER['argv'][1])){
+            if (isset($_SERVER['argv'][1]) && !isset($_SERVER['argv'][2])){
                 $this->parameterValues = json_decode($_SERVER['argv'][1], true);
+            } else if (sizeof($_SERVER['argv']) > 1){
+                for ($argumentCount = 1; $argumentCount < sizeof($_SERVER['argv']); $argumentCount = $argumentCount + 2){
+                    $this->parameterValues[substr($_SERVER['argv'][$argumentCount], 1)] = $_SERVER['argv'][$argumentCount + 1];
+                }
             }
         } else {
             $uri = strtok($_SERVER["REQUEST_URI"], '?');

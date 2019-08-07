@@ -31,7 +31,7 @@ abstract class apiCaller {
         $this->configurations = $configurations;
     }
 
-    protected function callAPI($verb, $uri, $body=null){
+    protected function callAPI($verb, $url, $uri, $body=null){
         $curl = curl_init();
         $httpHeaders = array();
 
@@ -67,7 +67,7 @@ abstract class apiCaller {
 
         $this->verb = $verb;
         $this->body = is_array($body) ? json_encode($body) : '';
-        $this->uri = $uri;
+        $this->uri = $url . $uri;
 
         $security = new security($this->configurations);
         $signature = $security->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey);
@@ -79,7 +79,7 @@ abstract class apiCaller {
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HTTPHEADER => $httpHeaders,
-            CURLOPT_URL => $uri,
+            CURLOPT_URL => $url. $uri,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_VERBOSE => 1,
