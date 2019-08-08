@@ -28,6 +28,13 @@ class bootstrapper{
     }
 
     /**
+     * @return abstractConfigurations
+     */
+    public function getConfigurations(): abstractConfigurations{
+        return $this->configurations;
+    }
+
+    /**
      * Initialises the configurations
      */
     private function initialiseConfigurations(){
