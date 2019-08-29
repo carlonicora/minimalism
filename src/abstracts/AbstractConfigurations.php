@@ -62,6 +62,9 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
     const DB_AUTH = 'carlonicora\\minimalism\\databases\\auth';
     const DB_CLIENTS = 'carlonicora\\minimalism\\databases\\clients';
 
+    abstract function serialiseCookies(): string;
+    abstract function unserialiseCookies(string $cookies): void;
+
     public function __construct($namespace){
         $child = get_called_class();
 

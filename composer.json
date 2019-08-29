@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "authors": [
@@ -23,7 +23,6 @@
     "ext-mysqli": "*",
     "ext-openssl": "*",
     "vlucas/phpdotenv":"*",
-    "php": "^7.0",
     "twig/twig":"^2.9",
     "carlonicora/minimalism-library": ">0.2"
   }
