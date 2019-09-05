@@ -1,21 +1,24 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\databases\auth;
+use carlonicora\minimalism\databases\clients;
 use carlonicora\minimalism\library\interfaces\ConfigurationsInterface;
+use DI\Container;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
 use mysqli;
+use DI\ContainerBuilder;
 
 abstract class AbstractConfigurations implements ConfigurationsInterface {
-    const MINIMALISM_APP = 1;
-    const MINIMALISM_API = 2;
-    const MINIMALISM_CLI = 3;
-
-    /** @var string $namespace */
-    private $namespace;
+    public const MINIMALISM_APP = 1;
+    public const MINIMALISM_API = 2;
+    public const MINIMALISM_CLI = 3;
 
     /** @var string $rootDirectory */
     protected $rootDirectory;
@@ -59,14 +62,20 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
     /** @var string */
     public $httpHeaderSignature;
 
-    const DB_AUTH = 'carlonicora\\minimalism\\databases\\auth';
-    const DB_CLIENTS = 'carlonicora\\minimalism\\databases\\clients';
+    /** @var bool */
+    public $allowUnsafeApiCalls;
+
+    public const DB_AUTH = auth::class;
+    public const DB_CLIENTS = clients::class;
+
+    /** @var Container */
+    private $dependencies;
 
     abstract public function serialiseCookies(): string;
     abstract public function unserialiseCookies(string $cookies): void;
 
-    public function __construct($namespace){
-        $child = get_called_class();
+    public function __construct(){
+        $child = static::class;
 
         $this->initialiseDirectoryStructure();
 
@@ -78,10 +87,14 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
 
         $this->appDirectory = dirname($class_info->getFileName());
 
-        $this->namespace = $namespace;
+        $builder = new ContainerBuilder();
+        try {
+            $this->dependencies = $builder->build();
+        } catch (Exception $e) {}
     }
 
-    public function loadConfigurations(){
+    public function loadConfigurations(): void
+    {
         $this->env = Dotenv::create($this->rootDirectory);
 
         try{
@@ -102,23 +115,29 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
                 $this->applicationType = self::MINIMALISM_APP;
                 break;
         }
-        if ($this->applicationType != self::MINIMALISM_CLI) $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].'/';
+        if ($this->applicationType !== self::MINIMALISM_CLI) {
+            $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
+        }
         $this->debugKey = getenv('DEBUG');
+
+        $this->allowUnsafeApiCalls = getenv('ALLOW_UNSAFE_API_CALLS') ?? false;
 
         $this->clientId = getenv('CLIENT_ID');
         $this->clientSecret = getenv('CLIENT_SECRET');
 
         $this->httpHeaderSignature = getenv('HEADER_SIGNATURE');
-        if (empty($this->httpHeaderSignature)) $this->httpHeaderSignature = 'Minimalism-Signature';
+        if (empty($this->httpHeaderSignature)) {
+            $this->httpHeaderSignature = 'Minimalism-Signature';
+        }
 
         $dbNames = getenv('DATABASES');
         if (!empty($dbNames)) {
             $dbNames = explode(',', $dbNames);
-            foreach (isset($dbNames) ? $dbNames : array() as $dbName) {
+            foreach ($dbNames ?? array() as $dbName) {
                 $dbName = trim($dbName);
                 $dbConnection = getenv(trim($dbName));
                 $dbConf = array();
-                list($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']) = explode(',', $dbConnection);
+                [$dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']] = explode(',', $dbConnection);
 
                 if (!array_key_exists($dbName, $this->databaseConnectionStrings)) {
                     $this->databaseConnectionStrings[$dbName] = $dbConf;
@@ -130,57 +149,73 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
     /**
      * Initialises the directory structure required by minimalism
      */
-    private function initialiseDirectoryStructure(){
+    private function initialiseDirectoryStructure(): void
+    {
         $backTrace = debug_backtrace();
-        $callerFileName = $backTrace[sizeof($backTrace)-1]['file'];
+        $callerFileName = $backTrace[count($backTrace)-1]['file'];
         $rootDir = dirname($callerFileName);
 
-        $this->rootDirectory = $_SERVER["DOCUMENT_ROOT"];
+        $this->rootDirectory = $_SERVER['DOCUMENT_ROOT'];
 
-        if ($rootDir != $this->rootDirectory){
+        if ($rootDir !== $this->rootDirectory){
             $this->rootDirectory = $rootDir;
         }
 
-        if (empty($this->rootDirectory)) $this->rootDirectory = getenv('PWD');
+        if (empty($this->rootDirectory)) {
+            $this->rootDirectory = getenv('PWD');
+        }
 
         $directoryLog = $this->rootDirectory . DIRECTORY_SEPARATOR . 'logs';
 
-        if (!file_exists($directoryLog) && !mkdir($directoryLog)) errorReporter::returnHttpCode('Cannot create log directory');
+        if (!file_exists($directoryLog) && !mkdir($directoryLog) && !is_dir($directoryLog)) {
+            errorReporter::returnHttpCode('Cannot create log directory');
+        }
+    }
+
+    public function build(string $className){
+        $response = null;
+
+        try {
+            $response = $this->dependencies->get($className);
+        } catch (DependencyException $e) {
+        } catch (NotFoundException $e) {
+        }
+
+        return $response;
     }
 
     /**
      * @return string
      */
-    public function getErrorLog(){
-        return($this->rootDirectory . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . date('Ymd', time()) . '.log');
+    public function getErrorLog(): string
+    {
+        return($this->rootDirectory . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . date('Ymd') . '.log');
     }
 
     /**
      * @return string
      */
-    public function getNamespace(){
-        return($this->namespace);
-    }
-
-    /**
-     * @return string
-     */
-    public function getDebugKey(){
+    public function getDebugKey(): string
+    {
         $returnValue = $this->debugKey;
 
-        if (!isset($returnValue) || !$returnValue) $returnValue='';
+        if (!isset($returnValue) || !$returnValue) {
+            $returnValue = '';
+        }
 
-        return($returnValue);
+        return $returnValue;
     }
 
     /**
      * @return string
      */
-    public function getBaseUrl(){
-        return($this->baseUrl);
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
     }
 
-    protected function refreshSessionConfigurations(){
+    protected function refreshSessionConfigurations(): void
+    {
         $_SESSION['configurations'] = $this;
     }
 
@@ -188,7 +223,7 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
      * @param string $databaseName
      * @return mysqli|null
      */
-    public function getDatabase($databaseName)
+    public function getDatabase($databaseName): ?mysqli
     {
         $response = null;
 
@@ -196,7 +231,7 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
             $response = $this->databases[$databaseName];
         }
 
-        return ($response);
+        return $response;
     }
 
     /**
@@ -211,14 +246,14 @@ abstract class AbstractConfigurations implements ConfigurationsInterface {
             $response = $this->databaseConnectionStrings[$databaseName];
         }
 
-        return ($response);
+        return $response;
     }
 
     /**
      * @param string $databaseName
      * @param mysqli $database
      */
-    public function setDatabase($databaseName, $database)
+    public function setDatabase($databaseName, $database): void
     {
         $this->databases[$databaseName] = $database;
     }

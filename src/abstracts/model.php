@@ -51,43 +51,53 @@ abstract class model {
     public function requiresAuth($verb){
         $authName = 'requiresAuth' . $verb;
 
-        return($this->$authName);
+        return $this->$authName;
     }
 
-    public function getViewName(){
+    public function getViewName(): string
+    {
         $returnValue = $this->viewName;
 
-        if (!isset($returnValue)) $returnValue = '';
+        if (!isset($returnValue)) {
+            $returnValue = '';
+        }
 
-        return($returnValue);
+        return $returnValue;
     }
 
-    public function redirect(){
-        if (isset($this->redirectPage)) return($this->redirectPage);
-
-        return(false);
+    /**
+     * @return string
+     */
+    public function redirect(): string
+    {
+        return $this->redirectPage;
     }
 
     /**
      * @return array
      */
-    public function generateData(){
-        return(array());
+    public function generateData(): array
+    {
+        return array();
     }
 
-    public function DELETE(){
-        return(true);
+    public function DELETE(): bool
+    {
+        return true;
     }
 
-    public function GET(){
-        return(true);
+    public function GET(): bool
+    {
+        return true;
     }
 
-    public function POST(){
-        return(true);
+    public function POST(): bool
+    {
+        return true;
     }
 
-    public function PUT(){
-        return(true);
+    public function PUT(): bool
+    {
+        return true;
     }
 }

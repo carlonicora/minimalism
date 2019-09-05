@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\databases;
 
 use carlonicora\minimalism\library\database\AbstractDatabaseManager;
+use carlonicora\minimalism\library\exceptions\dbRecordNotFoundException;
 
 class clients extends AbstractDatabaseManager
 {
@@ -20,12 +21,16 @@ class clients extends AbstractDatabaseManager
 
     protected $autoIncrementField = 'id';
 
-    public function loadFromClientId($clientId){
+    /**
+     * @param $clientId
+     * @return array|null
+     * @throws dbRecordNotFoundException
+     */
+    public function loadFromClientId($clientId): ?array
+    {
         $sql = 'SELECT * FROM clients WHERE clientId = ?;';
         $parameters = ['s', $clientId];
 
-        $response = $this->runReadSingle($sql, $parameters);
-
-        return($response);
+        return $this->runReadSingle($sql, $parameters);
     }
 }

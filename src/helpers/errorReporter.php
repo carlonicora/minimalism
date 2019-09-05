@@ -10,7 +10,8 @@ class errorReporter {
      * @param string $errorMessage
      * @param string $httpCode
      */
-    public static function report($configurations, $errorCode, $errorMessage=null, $httpCode=null){
+    public static function report($configurations, $errorCode, $errorMessage=null, $httpCode=null): void
+    {
         $errorLog = date('d.m.Y H:i:s') . ' | ' . $errorCode . ' | ' . self::returnErrorMessage($errorCode) . PHP_EOL;
         if (!empty($errorMessage)){
             $errorLog .= ' (' . $errorMessage . ')' . PHP_EOL;
@@ -23,10 +24,13 @@ class errorReporter {
 
         error_log($errorLog.PHP_EOL, 3, $configurations->getErrorLog());
 
-        if (isset($httpCode)) self::returnHttpCode($httpCode);
+        if (isset($httpCode)) {
+            self::returnHttpCode($httpCode);
+        }
     }
 
-    private static function returnErrorMessage($errorCode){
+    private static function returnErrorMessage($errorCode): string
+    {
         switch ($errorCode) {
             case 1: $returnValue = 'Cannot load configuration file'; break;
             case 2: $returnValue = 'Cannot load database configurations'; break;
@@ -51,10 +55,11 @@ class errorReporter {
             default: $returnValue = 'Generic Error'; break;
         }
 
-        return($returnValue);
+        return $returnValue;
     }
 
-    public static function returnHttpCode($code){
+    public static function returnHttpCode($code): void
+    {
         switch ($code) {
             case 100: $text = 'Continue'; break;
             case 101: $text = 'Switching Protocols'; break;
@@ -99,13 +104,13 @@ class errorReporter {
                 break;
         }
 
-        $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1');
+        $protocol = ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
 
         header($protocol . ' ' . $code . ' ' . $text);
 
         $GLOBALS['http_response_code'] = $code;
 
-        if ($code != 200){
+        if ($code !== 200){
             exit;
         }
     }

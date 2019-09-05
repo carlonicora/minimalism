@@ -8,23 +8,22 @@ class bootstrapper{
     /** @var abstractConfigurations $configurations */
     private $configurations;
 
-    /** @var string $namespace */
-    private $namespace;
-
     /**
      * bootstrapper constructor.
-     * @param string $namespace
+     * @param string $configurationName
      */
-    public function __construct($namespace){
-        $this->namespace = $namespace;
+    public function __construct($configurationName){
+        $this->configurations = new $configurationName();
 
-        $this->initialiseConfigurations();
+        $sessionManager = new sessionManager();
+        $sessionManager->loadFromSession($this->configurations);
     }
-    
-    public function loadController($modelName=null, $parameterValueList=null, $parameterValues=null){
+
+    public function loadController($modelName=null, $parameterValueList=null, $parameterValues=null): controller
+    {
         $controller = new controller($this->configurations, $modelName, $parameterValueList, $parameterValues);
 
-        return($controller);
+        return $controller;
     }
 
     /**
@@ -32,29 +31,5 @@ class bootstrapper{
      */
     public function getConfigurations(): abstractConfigurations{
         return $this->configurations;
-    }
-
-    /**
-     * Initialises the configurations
-     */
-    private function initialiseConfigurations(){
-        $configurationName = $this->namespace . "\\configurations";
-        $this->configurations = new $configurationName($this->namespace);
-
-        $sessionManager = new sessionManager();
-        $sessionManager->loadFromSession($this->configurations);
-
-        /*
-
-
-        if (isset($_SESSION['configurations'])){
-            $this->configurations = $_SESSION['configurations'];
-        } else {
-            $this->configurations->loadConfigurations();
-            if (isset($_COOKIE['campaign_builder_keys'])){
-                list($this->configurations->publicKey, $this->configurations->privateKey) = explode(';', $_COOKIE['campaign_builder_keys']);
-            }
-        }
-        */
     }
 }

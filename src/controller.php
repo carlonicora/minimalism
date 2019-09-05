@@ -41,7 +41,7 @@ class controller {
     public function __construct($configurations, $modelName=null, $parameterValueList=null, $parameterValues=null){
         $this->configurations = $configurations;
 
-        if ($this->configurations->applicationType != abstractConfigurations::MINIMALISM_CLI) {
+        if ($this->configurations->applicationType !== abstractConfigurations::MINIMALISM_CLI) {
             $this->initialiseVerb();
         }
 
@@ -52,9 +52,11 @@ class controller {
             $this->initialiseParameters();
         }
 
-        if (isset($modelName)) $this->modelName = $modelName;
+        if (isset($modelName)) {
+            $this->modelName = $modelName;
+        }
 
-        if ($this->configurations->applicationType == abstractConfigurations::MINIMALISM_API && $this->modelName != 'index'){
+        if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_API && $this->modelName !== 'index'){
             $this->validateSignature();
         }
 
@@ -90,7 +92,7 @@ class controller {
                     exit;
                 }
 
-                if ($this->model->getViewName() != ''){
+                if ($this->model->getViewName() !== ''){
                     try {
                         $response = $this->view->render($this->model->getViewName() . '.twig', $data);
                     } catch (Exception $e){
@@ -102,28 +104,30 @@ class controller {
                 break;
         }
 
-        if ($response && $this->configurations->applicationType == abstractConfigurations::MINIMALISM_APP){
+        if ($response && $this->configurations->applicationType === abstractConfigurations::MINIMALISM_APP){
             $sessionManager = new sessionManager();
             $sessionManager->saveSession($this->configurations);
         }
 
-        return($response);
+        return $response;
     }
 
-    private function initialiseVerb(){
+    private function initialiseVerb(): void
+    {
         $this->verb = $_SERVER['REQUEST_METHOD'];
-        if ($this->verb == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
-            if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
+        if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+            if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
                 $this->verb = 'DELETE';
-            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
+            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
                 $this->verb = 'PUT';
             }
         }
     }
 
-    private function validateSignature(){
+    private function validateSignature(): void
+    {
         $headers = getallheaders();
-        $this->signature = isset($headers[$this->configurations->httpHeaderSignature]) ? $headers[$this->configurations->httpHeaderSignature] : null;
+        $this->signature = $headers[$this->configurations->httpHeaderSignature] ?? null;
 
         $security = new security($this->configurations);
         //$url = ($_SERVER['SERVER_PORT'] == '80' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -133,28 +137,29 @@ class controller {
         }
     }
 
-    private function initialiseParameters(){
+    private function initialiseParameters(): void
+    {
         $this->modelName = 'index';
         $this->parameterValues = array();
         $this->parameterValueList = array();
 
-        if ($this->configurations->applicationType == abstractConfigurations::MINIMALISM_CLI){
+        if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_CLI){
             if (isset($_SERVER['argv'][1]) && !isset($_SERVER['argv'][2])){
                 $this->parameterValues = json_decode($_SERVER['argv'][1], true);
-            } else if (sizeof($_SERVER['argv']) > 1){
-                for ($argumentCount = 1; $argumentCount < sizeof($_SERVER['argv']); $argumentCount = $argumentCount + 2){
+            } else if (count($_SERVER['argv']) > 1){
+                for ($argumentCount = 1, $argumentCountMax = count($_SERVER['argv']); $argumentCount < $argumentCountMax; $argumentCount += 2){
                     $this->parameterValues[substr($_SERVER['argv'][$argumentCount], 1)] = $_SERVER['argv'][$argumentCount + 1];
                 }
             }
         } else {
-            $uri = strtok($_SERVER["REQUEST_URI"], '?');
+            $uri = strtok($_SERVER['REQUEST_URI'], '?');
 
-            if (!(isset($uri) && strlen($uri) == 1 && $uri == '/')) {
+            if (!(isset($uri) && $uri === '/')) {
                 $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');
 
                 $isModelVariable = true;
                 foreach ($variables as $variable) {
-                    if ($isModelVariable && !(is_numeric($variable))) {
+                    if ($isModelVariable && !is_numeric($variable)) {
                         $this->modelName = $variable;
                     } else {
                         $this->parameterValueList[] = $variable;
@@ -166,9 +171,9 @@ class controller {
             switch ($this->verb) {
                 case 'POST':
                 case 'PUT':
-                    $this->parameterValues = json_decode(file_get_contents("php://input"), true);
+                    $this->parameterValues = json_decode(file_get_contents('php://input'), true);
 
-                    if (isset($_FILES) && sizeof($_FILES) == 1) {
+                    if (isset($_FILES) && count($_FILES) === 1) {
                         $this->file = array_values($_FILES)[0];
                     }
 
@@ -181,24 +186,32 @@ class controller {
                 case 'DELETE':
                 case 'GET':
                     foreach ($_GET as $parameter => $value) {
-                        if ($parameter != 'path' && $parameter != 'XDEBUG_SESSION_START') $this->parameterValues[$parameter] = $value;
+                        if ($parameter !== 'path' && $parameter !== 'XDEBUG_SESSION_START') {
+                            $this->parameterValues[$parameter] = $value;
+                        }
                     }
                     break;
             }
         }
     }
 
-    private function initialiseModel(){
+    private function initialiseModel(): void
+    {
         $this->modelName = str_replace('-', '\\', $this->modelName);
 
-        $modelClass = $this->configurations->getNamespace() . '\\models\\' . $this->modelName;
+        $namespaces = explode('\\', get_class($this->configurations));
+        array_pop($namespaces);
+        $namespaces[] = 'models';
+        $namespaces[] = $this->modelName;
+        $modelClass = implode('\\', $namespaces);
+
         if (!class_exists($modelClass)){
             errorReporter::report($this->configurations, 3, null, 404);
         } else {
             $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file);
         }
 
-        if ($this->model->redirect() != false){
+        if ($this->model->redirect() !== ''){
             $this->modelName = $this->model->redirect();
             $this->initialiseModel();
         }
@@ -212,8 +225,9 @@ class controller {
         */
     }
 
-    private function initialiseView(){
-        if ($this->model->getViewName() != '') {
+    private function initialiseView(): void
+    {
+        if ($this->model->getViewName() !== '') {
             try {
                 $twigLoader = new FilesystemLoader($this->configurations->appDirectory . DIRECTORY_SEPARATOR . 'views');
                 $this->view = new Environment($twigLoader);
@@ -233,7 +247,7 @@ if (!function_exists('getallheaders'))  {
 
         $headers = array();
         foreach ($_SERVER as $name => $value) {
-            if (substr($name, 0, 5) == 'HTTP_') {
+            if (strpos($name, 'HTTP_') === 0) {
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
             }
         }

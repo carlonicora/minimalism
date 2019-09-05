@@ -31,7 +31,8 @@ abstract class apiCaller {
         $this->configurations = $configurations;
     }
 
-    protected function callAPI($verb, $url, $uri, $body=null){
+    protected function callAPI($verb, $url, $uri, $body=null): apiResponse
+    {
         $curl = curl_init();
         $httpHeaders = array();
 
@@ -39,24 +40,32 @@ abstract class apiCaller {
             case 'POST':
                 curl_setopt($curl, CURLOPT_POST, 1);
                 $httpHeaders[] = 'Content-Type:application/json';
-                if (is_array($body)) curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
+                if (is_array($body)) {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
+                }
                 break;
             case 'PUT':
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
                 $httpHeaders[] = 'Content-Type:application/json';
-                if (is_array($body)) curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
+                if (is_array($body)) {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
+                }
                 break;
             case 'DELETE':
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
                 if (isset($body)) {
                     $query = http_build_query($body);
-                    if (!empty($query)) $uri .= ((substr_count($uri, '?') > 0) ? '&' : '?') . $query;
+                    if (!empty($query)) {
+                        $uri .= ((substr_count($uri, '?') > 0) ? '&' : '?') . $query;
+                    }
                 }
                 break;
             default:
                 if (isset($body)) {
                     $query = http_build_query($body);
-                    if (!empty($query)) $uri .= ((substr_count($uri, '?') > 0) ? '&' : '?') . $query;
+                    if (!empty($query)) {
+                        $uri .= ((substr_count($uri, '?') > 0) ? '&' : '?') . $query;
+                    }
                 }
                 break;
         }
@@ -76,15 +85,20 @@ abstract class apiCaller {
         $info = null;
         $httpCode = null;
 
-        curl_setopt_array($curl, array(
+        $options = [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HTTPHEADER => $httpHeaders,
             CURLOPT_URL => $url. $uri,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_VERBOSE => 1,
             CURLOPT_HEADER => 1
-        ));
+        ];
+
+        if ($this->configurations->allowUnsafeApiCalls){
+            $options[CURLOPT_SSL_VERIFYPEER] = false;
+            $options[CURLOPT_SSL_VERIFYHOST] = false;
+        }
+
+        curl_setopt_array($curl, $options);
 
         $response = curl_exec($curl);
 
@@ -95,11 +109,13 @@ abstract class apiCaller {
 
         $info = curl_getinfo($curl);
 
-        if (isset($curl)) curl_close($curl);
+        if (isset($curl)) {
+            curl_close($curl);
+        }
 
         $returnValue->errorId = $info['http_code'];
 
-        if ($returnValue->errorId != 200) {
+        if ($returnValue->errorId !== 200) {
             $returnValue->isSuccess = false;
             $returnValue->returnedValue = null;
             $returnValue->errorMessage = $returnedJson;
@@ -111,6 +127,6 @@ abstract class apiCaller {
             $returnValue->returnedValue = json_decode($returnedJson, true);
         }
 
-        return ($returnValue);
+        return $returnValue;
     }
 }

@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\databases;
 
 use carlonicora\minimalism\library\database\AbstractDatabaseManager;
+use carlonicora\minimalism\library\exceptions\dbRecordNotFoundException;
 
 class auth extends AbstractDatabaseManager
 {
@@ -19,39 +20,53 @@ class auth extends AbstractDatabaseManager
 
     protected $autoIncrementField = 'authId';
 
-    public function loadFromPublicKeyAndClientId($publicKey, $clientId){
+    /**
+     * @param $publicKey
+     * @param $clientId
+     * @return array|null
+     * @throws dbRecordNotFoundException
+     */
+    public function loadFromPublicKeyAndClientId($publicKey, $clientId): ?array
+    {
         $sql = 'SELECT * FROM auth WHERE publicKey = ? AND clientId = ?;';
         $parameters = ['si', $publicKey, $clientId];
 
-        $response = $this->runReadSingle($sql, $parameters);
-
-        return($response);
+        return $this->runReadSingle($sql, $parameters);
     }
 
-    public function loadFromPublicKey($publicKey){
+    /**
+     * @param $publicKey
+     * @return array|null
+     * @throws dbRecordNotFoundException
+     */
+    public function loadFromPublicKey($publicKey): ?array
+    {
         $sql = 'SELECT * FROM auth WHERE publicKey = ?;';
         $parameters = ['s', $publicKey];
 
-        $response = $this->runReadSingle($sql, $parameters);
-
-        return($response);
+        return $this->runReadSingle($sql, $parameters);
     }
 
-    public function deleteOldTokens(){
+    /**
+     * @return bool
+     */
+    public function deleteOldTokens(): bool
+    {
         $sql = 'DELETE FROM auth WHERE expirationDate < ?;';
-        $parameters = ['s', date('Y-m-d H:i:s', time())];
+        $parameters = ['s', date('Y-m-d H:i:s')];
 
-        $response = $this->runSql($sql, $parameters);
-
-        return($response);
+        return $this->runSql($sql, $parameters);
     }
 
-    public function deleteFromPublicKey($publicKey)
+    /**
+     * @param $publicKey
+     * @return bool
+     */
+    public function deleteFromPublicKey($publicKey): bool
     {
         $sql = 'DELETE from auth WHERE publicKey = ?;';
         $parameters = ['s', $publicKey];
 
-        $response = $this->runSql($sql, $parameters);
-        return($response);
+        return $this->runSql($sql, $parameters);
     }
 }
