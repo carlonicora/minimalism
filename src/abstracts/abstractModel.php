@@ -15,9 +15,6 @@ abstract class abstractModel {
     protected $file;
 
     /** @var string */
-    protected $viewName;
-
-    /** @var string */
     public $redirectPage;
 
     /** @var bool */
@@ -48,56 +45,20 @@ abstract class abstractModel {
         $this->redirectPage = null;
     }
 
-    public function requiresAuth($verb){
+    /**
+     * @param $verb
+     * @return mixed
+     */
+    public function requiresAuth($verb): bool {
         $authName = 'requiresAuth' . $verb;
 
         return $this->$authName;
     }
 
-    public function getViewName(): string
-    {
-        $returnValue = $this->viewName;
-
-        if (!isset($returnValue)) {
-            $returnValue = '';
-        }
-
-        return $returnValue;
-    }
-
     /**
      * @return string
      */
-    public function redirect(): string
-    {
-        return $this->redirectPage;
-    }
-
-    /**
-     * @return array
-     */
-    public function generateData(): array
-    {
-        return array();
-    }
-
-    public function DELETE(): bool
-    {
-        return true;
-    }
-
-    public function GET(): bool
-    {
-        return true;
-    }
-
-    public function POST(): bool
-    {
-        return true;
-    }
-
-    public function PUT(): bool
-    {
-        return true;
+    public function redirect(): string {
+        return $this->redirectPage ?? '';
     }
 }

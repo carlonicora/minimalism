@@ -3,7 +3,7 @@ namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
-use carlonicora\minimalism\library\interfaces\ConfigurationsInterface;
+use carlonicora\minimalism\library\interfaces\configurationsInterface;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
@@ -15,7 +15,7 @@ use ReflectionException;
 use mysqli;
 use DI\ContainerBuilder;
 
-abstract class abstractConfigurations implements ConfigurationsInterface {
+abstract class abstractConfigurations implements configurationsInterface {
     public const MINIMALISM_APP = 1;
     public const MINIMALISM_API = 2;
     public const MINIMALISM_CLI = 3;

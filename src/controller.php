@@ -1,8 +1,11 @@
 <?php
 namespace carlonicora\minimalism;
 
+use carlonicora\minimalism\abstracts\abstractApiModel;
+use carlonicora\minimalism\abstracts\abstractCliModel;
 use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\abstracts\abstractModel;
+use carlonicora\minimalism\abstracts\abstractWebModel;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
 use carlonicora\minimalism\helpers\sessionManager;
@@ -65,55 +68,60 @@ class controller {
     }
 
     public function render(){
-        $data = array();
+        $data = [];
 
         $response = true;
 
         switch ($this->configurations->applicationType){
             case abstractConfigurations::MINIMALISM_APP:
-                $data['baseUrl'] = $this->configurations->getBaseUrl();
-                $data['page'] = $this->model->generateData();
-                break;
-            case abstractConfigurations::MINIMALISM_API:
-                $data = $this->model->{$this->verb}();
-                break;
-            case abstractConfigurations::MINIMALISM_CLI:
-                $response = $this->model->generateData();
-                break;
-        }
+                /** @var abstractWebModel $model */
+                $model = $this->model;
 
-        switch ($this->configurations->applicationType){
-            case abstractConfigurations::MINIMALISM_API:
-                $response = json_encode($data);
-                break;
-            case abstractConfigurations::MINIMALISM_APP:
+                $data['baseUrl'] = $this->configurations->getBaseUrl();
+                $data['page'] = $model->generateData();
+
                 if (array_key_exists('forceRedirect', $data)){
                     header('Location:' . $data['forceRedirect']);
                     exit;
                 }
 
-                if ($this->model->getViewName() !== ''){
+                if ($model->getViewName() !== ''){
                     try {
-                        $response = $this->view->render($this->model->getViewName() . '.twig', $data);
+                        $response = $this->view->render($model->getViewName() . '.twig', $data);
                     } catch (Exception $e){
                         $response = '';
                     }
                 } else {
                     $response = json_encode($data);
                 }
-                break;
-        }
 
-        if ($response && $this->configurations->applicationType === abstractConfigurations::MINIMALISM_APP){
-            $sessionManager = new sessionManager();
-            $sessionManager->saveSession($this->configurations);
+                if ($response){
+                    $sessionManager = new sessionManager();
+                    $sessionManager->saveSession($this->configurations);
+                }
+
+                break;
+            case abstractConfigurations::MINIMALISM_API:
+                /** @var abstractApiModel $model */
+                $model = $this->model;
+
+                $data = $model->{$this->verb}();
+
+                $response = json_encode($data);
+
+                break;
+            case abstractConfigurations::MINIMALISM_CLI:
+                /** @var abstractCliModel $model */
+                $model = $this->model;
+
+                $response = $model->run();
+                break;
         }
 
         return $response;
     }
 
-    private function initialiseVerb(): void
-    {
+    private function initialiseVerb(): void {
         $this->verb = $_SERVER['REQUEST_METHOD'];
         if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
             if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
@@ -124,8 +132,7 @@ class controller {
         }
     }
 
-    private function validateSignature(): void
-    {
+    private function validateSignature(): void {
         $headers = getallheaders();
         $this->signature = $headers[$this->configurations->httpHeaderSignature] ?? null;
 
@@ -137,8 +144,7 @@ class controller {
         }
     }
 
-    private function initialiseParameters(): void
-    {
+    private function initialiseParameters(): void {
         $this->modelName = 'index';
         $this->parameterValues = array();
         $this->parameterValueList = array();
@@ -195,8 +201,7 @@ class controller {
         }
     }
 
-    private function initialiseModel(): void
-    {
+    private function initialiseModel(): void {
         $this->modelName = str_replace('-', '\\', $this->modelName);
 
         $namespaces = explode('\\', get_class($this->configurations));
@@ -215,19 +220,12 @@ class controller {
             $this->modelName = $this->model->redirect();
             $this->initialiseModel();
         }
-
-        /*
-        if ($this->configurations->applicationType == configurations::MINIMALISM_API){
-            if($this->model->requiresAuth($this->verb)){
-                // TODO
-            }
-        }
-        */
     }
 
-    private function initialiseView(): void
-    {
-        if ($this->model->getViewName() !== '') {
+    private function initialiseView(): void {
+        /** @var abstractWebModel $model */
+        $model = $this->model;
+        if ($model->getViewName() !== '') {
             try {
                 $twigLoader = new FilesystemLoader($this->configurations->appDirectory . DIRECTORY_SEPARATOR . 'views');
                 $this->view = new Environment($twigLoader);
