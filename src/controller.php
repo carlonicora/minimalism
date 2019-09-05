@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
-use carlonicora\minimalism\abstracts\model;
+use carlonicora\minimalism\abstracts\abstractModel;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
 use carlonicora\minimalism\helpers\sessionManager;
@@ -17,7 +17,7 @@ class controller {
     /** @var abstractConfigurations */
     private $configurations;
 
-    /** @var model */
+    /** @var abstractModel */
     private $model;
 
     /** @var Environment */

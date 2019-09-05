@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-abstract class model {
+abstract class abstractModel {
     /** @var abstractConfigurations */
     protected $configurations;
 

@@ -2,7 +2,7 @@
 
 namespace carlonicora\minimalism\helpers;
 
-use carlonicora\minimalism\abstracts\AbstractConfigurations;
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\library\database\databaseFactory;
 
 class sessionManager {
@@ -13,7 +13,7 @@ class sessionManager {
     }
 
     /**
-     * @param AbstractConfigurations $configurations
+     * @param abstractConfigurations $configurations
      */
     public function loadFromSession(&$configurations): void
     {
@@ -30,7 +30,7 @@ class sessionManager {
     }
 
     /**
-     * @param AbstractConfigurations $configurations
+     * @param abstractConfigurations $configurations
      */
     public function saveSession($configurations): void
     {

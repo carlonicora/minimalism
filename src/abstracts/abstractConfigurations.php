@@ -15,7 +15,7 @@ use ReflectionException;
 use mysqli;
 use DI\ContainerBuilder;
 
-abstract class AbstractConfigurations implements ConfigurationsInterface {
+abstract class abstractConfigurations implements ConfigurationsInterface {
     public const MINIMALISM_APP = 1;
     public const MINIMALISM_API = 2;
     public const MINIMALISM_CLI = 3;
