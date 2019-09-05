@@ -64,7 +64,10 @@ class controller {
         }
 
         $this->initialiseModel();
-        $this->initialiseView();
+
+        if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_APP) {
+            $this->initialiseView();
+        }
     }
 
     public function render(){
@@ -216,7 +219,7 @@ class controller {
             $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file);
         }
 
-        if ($this->model->redirect() !== ''){
+        if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_APP && $this->model->redirect() !== ''){
             $this->modelName = $this->model->redirect();
             $this->initialiseModel();
         }

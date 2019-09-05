@@ -36,10 +36,10 @@ abstract class abstractConfigurations implements configurationsInterface {
     protected $debugKey;
 
     /** @var array */
-    private $databases = array();
+    private $databases = [];
 
     /** @var array */
-    private $databaseConnectionStrings = array();
+    private $databaseConnectionStrings = [];
 
     /** @var int */
     public $applicationType;
@@ -90,6 +90,8 @@ abstract class abstractConfigurations implements configurationsInterface {
         $builder = new ContainerBuilder();
         try {
             $this->dependencies = $builder->build();
+            
+            $this->dependencies->set($child, $this);
         } catch (Exception $e) {}
     }
 
@@ -133,10 +135,10 @@ abstract class abstractConfigurations implements configurationsInterface {
         $dbNames = getenv('DATABASES');
         if (!empty($dbNames)) {
             $dbNames = explode(',', $dbNames);
-            foreach ($dbNames ?? array() as $dbName) {
+            foreach ($dbNames ?? [] as $dbName) {
                 $dbName = trim($dbName);
                 $dbConnection = getenv(trim($dbName));
-                $dbConf = array();
+                $dbConf = [];
                 [$dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']] = explode(',', $dbConnection);
 
                 if (!array_key_exists($dbName, $this->databaseConnectionStrings)) {
