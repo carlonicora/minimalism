@@ -1,10 +1,10 @@
 <?php
 namespace carlonicora\minimalism\databases;
 
-use carlonicora\minimalism\library\database\AbstractDatabaseManager;
+use carlonicora\minimalism\library\database\abstractDatabaseManager;
 use carlonicora\minimalism\library\exceptions\dbRecordNotFoundException;
 
-class auth extends AbstractDatabaseManager
+class auth extends abstractDatabaseManager
 {
     protected $dbToUse = 'minimalism';
     protected $fields = [
