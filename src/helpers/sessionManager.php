@@ -6,6 +6,9 @@ use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\library\database\databaseFactory;
 
 class sessionManager {
+    /**
+     * sessionManager constructor.
+     */
     public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -15,8 +18,7 @@ class sessionManager {
     /**
      * @param abstractConfigurations $configurations
      */
-    public function loadFromSession(&$configurations): void
-    {
+    public function loadFromSession(&$configurations): void {
         if (isset($_SESSION['configurations'])){
             $configurations = $_SESSION['configurations'];
         } else {
@@ -32,14 +34,15 @@ class sessionManager {
     /**
      * @param abstractConfigurations $configurations
      */
-    public function saveSession($configurations): void
-    {
+    public function saveSession($configurations): void {
         $_SESSION['configurations'] = $configurations;
         setcookie('minimalismConfigurations', $configurations->serialiseCookies(), time() + (30 * 24 * 60 * 60));
     }
 
-    public function destroySession(): void
-    {
+    /**
+     *
+     */
+    public function destroySession(): void {
         unset($_SESSION['configurations']);
         setcookie('minimalismConfigurations', '', time() - 24 * 60 * 60);
     }

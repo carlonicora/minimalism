@@ -27,12 +27,22 @@ abstract class abstractApiCaller {
     /** @var array */
     protected $body;
 
+    /**
+     * abstractApiCaller constructor.
+     * @param $configurations
+     */
     public function __construct($configurations) {
         $this->configurations = $configurations;
     }
 
-    protected function callAPI($verb, $url, $uri, $body=null): apiResponse
-    {
+    /**
+     * @param $verb
+     * @param $url
+     * @param $uri
+     * @param null $body
+     * @return apiResponse
+     */
+    protected function callAPI($verb, $url, $uri, $body=null): apiResponse {
         $curl = curl_init();
         $httpHeaders = array();
 

@@ -19,8 +19,13 @@ class bootstrapper{
         $sessionManager->loadFromSession($this->configurations);
     }
 
-    public function loadController($modelName=null, $parameterValueList=null, $parameterValues=null): controller
-    {
+    /**
+     * @param null $modelName
+     * @param null $parameterValueList
+     * @param null $parameterValues
+     * @return controller
+     */
+    public function loadController($modelName=null, $parameterValueList=null, $parameterValues=null): controller {
         $controller = new controller($this->configurations, $modelName, $parameterValueList, $parameterValues);
 
         return $controller;

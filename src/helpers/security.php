@@ -12,12 +12,26 @@ class security {
     /** @var abstractConfigurations */
     private $configurations;
 
+    /**
+     * security constructor.
+     * @param $configurations
+     */
     public function __construct($configurations) {
         $this->configurations = $configurations;
     }
 
-    public function generateSignature($verb, $uri, $body, $clientId, $clientSecret, $publicKey, $privateKey, $time=null): ?string
-    {
+    /**
+     * @param $verb
+     * @param $uri
+     * @param $body
+     * @param $clientId
+     * @param $clientSecret
+     * @param $publicKey
+     * @param $privateKey
+     * @param null $time
+     * @return string|null
+     */
+    public function generateSignature($verb, $uri, $body, $clientId, $clientSecret, $publicKey, $privateKey, $time=null): ?string {
         $returnValue = null;
 
         if (empty($time)) {
@@ -41,8 +55,14 @@ class security {
         return $returnValue;
     }
 
-    public function validateSignature($signature, $verb, $uri, $body): bool
-    {
+    /**
+     * @param $signature
+     * @param $verb
+     * @param $uri
+     * @param $body
+     * @return bool
+     */
+    public function validateSignature($signature, $verb, $uri, $body): bool {
         if (empty($signature)) {
             return false;
         }
@@ -113,8 +133,7 @@ class security {
      * @param string $password
      * @return string
      */
-    public static function encryptPassword($password): string
-    {
+    public static function encryptPassword($password): string {
         return password_hash($password, PASSWORD_BCRYPT);
     }
 
@@ -125,8 +144,7 @@ class security {
      * @param string $hash
      * @return bool
      */
-    public static function decryptPassword($password, $hash): bool
-    {
+    public static function decryptPassword($password, $hash): bool {
         $returnValue = false;
 
         if (password_verify($password, $hash)){
@@ -142,9 +160,7 @@ class security {
      * @param $publicKey
      * @param $privateKey
      */
-    public static function generateApiKeys(&$publicKey, &$privateKey): void
-    {
-
+    public static function generateApiKeys(&$publicKey, &$privateKey): void {
         try {
             $publicKey = bin2hex(random_bytes(32));
             $privateKey = bin2hex(random_bytes(64));

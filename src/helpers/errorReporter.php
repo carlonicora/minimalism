@@ -10,8 +10,7 @@ class errorReporter {
      * @param string $errorMessage
      * @param string $httpCode
      */
-    public static function report($configurations, $errorCode, $errorMessage=null, $httpCode=null): void
-    {
+    public static function report($configurations, $errorCode, $errorMessage=null, $httpCode=null): void {
         $errorLog = date('d.m.Y H:i:s') . ' | ' . $errorCode . ' | ' . self::returnErrorMessage($errorCode) . PHP_EOL;
         if (!empty($errorMessage)){
             $errorLog .= ' (' . $errorMessage . ')' . PHP_EOL;
@@ -29,8 +28,7 @@ class errorReporter {
         }
     }
 
-    private static function returnErrorMessage($errorCode): string
-    {
+    private static function returnErrorMessage($errorCode): string {
         switch ($errorCode) {
             case 1: $returnValue = 'Cannot load configuration file'; break;
             case 2: $returnValue = 'Cannot load database configurations'; break;
@@ -58,8 +56,7 @@ class errorReporter {
         return $returnValue;
     }
 
-    public static function returnHttpCode($code): void
-    {
+    public static function returnHttpCode($code): void {
         switch ($code) {
             case 100: $text = 'Continue'; break;
             case 101: $text = 'Switching Protocols'; break;

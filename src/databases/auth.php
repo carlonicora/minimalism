@@ -26,8 +26,7 @@ class auth extends abstractDatabaseManager
      * @return array|null
      * @throws dbRecordNotFoundException
      */
-    public function loadFromPublicKeyAndClientId($publicKey, $clientId): ?array
-    {
+    public function loadFromPublicKeyAndClientId($publicKey, $clientId): ?array {
         $sql = 'SELECT * FROM auth WHERE publicKey = ? AND clientId = ?;';
         $parameters = ['si', $publicKey, $clientId];
 
@@ -39,8 +38,7 @@ class auth extends abstractDatabaseManager
      * @return array|null
      * @throws dbRecordNotFoundException
      */
-    public function loadFromPublicKey($publicKey): ?array
-    {
+    public function loadFromPublicKey($publicKey): ?array {
         $sql = 'SELECT * FROM auth WHERE publicKey = ?;';
         $parameters = ['s', $publicKey];
 
@@ -50,8 +48,7 @@ class auth extends abstractDatabaseManager
     /**
      * @return bool
      */
-    public function deleteOldTokens(): bool
-    {
+    public function deleteOldTokens(): bool {
         $sql = 'DELETE FROM auth WHERE expirationDate < ?;';
         $parameters = ['s', date('Y-m-d H:i:s')];
 
@@ -62,8 +59,7 @@ class auth extends abstractDatabaseManager
      * @param $publicKey
      * @return bool
      */
-    public function deleteFromPublicKey($publicKey): bool
-    {
+    public function deleteFromPublicKey($publicKey): bool {
         $sql = 'DELETE from auth WHERE publicKey = ?;';
         $parameters = ['s', $publicKey];
 

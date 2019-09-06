@@ -74,6 +74,9 @@ abstract class abstractConfigurations implements configurationsInterface {
     abstract public function serialiseCookies(): string;
     abstract public function unserialiseCookies(string $cookies): void;
 
+    /**
+     * abstractConfigurations constructor.
+     */
     public function __construct(){
         $child = static::class;
 
@@ -95,8 +98,10 @@ abstract class abstractConfigurations implements configurationsInterface {
         } catch (Exception $e) {}
     }
 
-    public function loadConfigurations(): void
-    {
+    /**
+     *
+     */
+    public function loadConfigurations(): void {
         $this->env = Dotenv::create($this->rootDirectory);
 
         try{
@@ -151,8 +156,7 @@ abstract class abstractConfigurations implements configurationsInterface {
     /**
      * Initialises the directory structure required by minimalism
      */
-    private function initialiseDirectoryStructure(): void
-    {
+    private function initialiseDirectoryStructure(): void {
         $backTrace = debug_backtrace();
         $callerFileName = $backTrace[count($backTrace)-1]['file'];
         $rootDir = dirname($callerFileName);
@@ -174,6 +178,10 @@ abstract class abstractConfigurations implements configurationsInterface {
         }
     }
 
+    /**
+     * @param string $className
+     * @return mixed|null
+     */
     public function build(string $className){
         $response = null;
 
@@ -189,16 +197,14 @@ abstract class abstractConfigurations implements configurationsInterface {
     /**
      * @return string
      */
-    public function getErrorLog(): string
-    {
+    public function getErrorLog(): string {
         return($this->rootDirectory . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . date('Ymd') . '.log');
     }
 
     /**
      * @return string
      */
-    public function getDebugKey(): string
-    {
+    public function getDebugKey(): string {
         $returnValue = $this->debugKey;
 
         if (!isset($returnValue) || !$returnValue) {
@@ -211,13 +217,14 @@ abstract class abstractConfigurations implements configurationsInterface {
     /**
      * @return string
      */
-    public function getBaseUrl(): string
-    {
+    public function getBaseUrl(): string {
         return $this->baseUrl;
     }
 
-    protected function refreshSessionConfigurations(): void
-    {
+    /**
+     *
+     */
+    protected function refreshSessionConfigurations(): void {
         $_SESSION['configurations'] = $this;
     }
 
@@ -225,8 +232,7 @@ abstract class abstractConfigurations implements configurationsInterface {
      * @param string $databaseName
      * @return mysqli|null
      */
-    public function getDatabase($databaseName): ?mysqli
-    {
+    public function getDatabase($databaseName): ?mysqli {
         $response = null;
 
         if (isset($this->databases) && array_key_exists($databaseName, $this->databases)){
@@ -240,8 +246,7 @@ abstract class abstractConfigurations implements configurationsInterface {
      * @param string $databaseName
      * @return array
      */
-    public function getDatabaseConnectionString($databaseName): array
-    {
+    public function getDatabaseConnectionString($databaseName): array {
         $response = null;
 
         if (isset($this->databaseConnectionStrings) && array_key_exists($databaseName, $this->databaseConnectionStrings)){
@@ -255,8 +260,7 @@ abstract class abstractConfigurations implements configurationsInterface {
      * @param string $databaseName
      * @param mysqli $database
      */
-    public function setDatabase($databaseName, $database): void
-    {
+    public function setDatabase($databaseName, $database): void {
         $this->databases[$databaseName] = $database;
     }
 }

@@ -41,6 +41,13 @@ class controller {
     /** @var string */
     private $signature;
 
+    /**
+     * controller constructor.
+     * @param $configurations
+     * @param null $modelName
+     * @param null $parameterValueList
+     * @param null $parameterValues
+     */
     public function __construct($configurations, $modelName=null, $parameterValueList=null, $parameterValues=null){
         $this->configurations = $configurations;
 
@@ -70,6 +77,9 @@ class controller {
         }
     }
 
+    /**
+     * @return array|bool|false|string
+     */
     public function render(){
         $data = [];
 
@@ -130,6 +140,9 @@ class controller {
         return $response;
     }
 
+    /**
+     *
+     */
     private function initialiseVerb(): void {
         $this->verb = $_SERVER['REQUEST_METHOD'];
         if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
@@ -141,6 +154,9 @@ class controller {
         }
     }
 
+    /**
+     *
+     */
     private function validateSignature(): void {
         $headers = getallheaders();
         $this->signature = $headers[$this->configurations->httpHeaderSignature] ?? null;
@@ -153,6 +169,9 @@ class controller {
         }
     }
 
+    /**
+     *
+     */
     private function initialiseParameters(): void {
         $this->modelName = 'index';
         $this->parameterValues = array();
@@ -210,6 +229,9 @@ class controller {
         }
     }
 
+    /**
+     *
+     */
     private function initialiseModel(): void {
         $this->modelName = str_replace('-', '\\', $this->modelName);
 
@@ -231,6 +253,9 @@ class controller {
         }
     }
 
+    /**
+     *
+     */
     private function initialiseView(): void {
         /** @var abstractWebModel $model */
         $model = $this->model;
@@ -245,6 +270,9 @@ class controller {
     }
 }
 
+/**
+ *
+ */
 if (!function_exists('getallheaders'))  {
     function getallheaders()
     {

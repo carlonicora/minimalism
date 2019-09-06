@@ -26,8 +26,7 @@ class clients extends abstractDatabaseManager
      * @return array|null
      * @throws dbRecordNotFoundException
      */
-    public function loadFromClientId($clientId): ?array
-    {
+    public function loadFromClientId($clientId): ?array {
         $sql = 'SELECT * FROM clients WHERE clientId = ?;';
         $parameters = ['s', $clientId];
 
