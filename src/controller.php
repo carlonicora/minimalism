@@ -81,21 +81,23 @@ class controller {
                 $model = $this->model;
 
                 $data['baseUrl'] = $this->configurations->getBaseUrl();
-                $data['page'] = $model->generateData();
+                if ($model->generateData()) {
+                    $data['page'] = $model->getResponse();
 
-                if (array_key_exists('forceRedirect', $data)){
-                    header('Location:' . $data['forceRedirect']);
-                    exit;
-                }
-
-                if ($model->getViewName() !== ''){
-                    try {
-                        $response = $this->view->render($model->getViewName() . '.twig', $data);
-                    } catch (Exception $e){
-                        $response = '';
+                    if (array_key_exists('forceRedirect', $data)) {
+                        header('Location:' . $data['forceRedirect']);
+                        exit;
                     }
-                } else {
-                    $response = json_encode($data);
+
+                    if ($model->getViewName() !== '') {
+                        try {
+                            $response = $this->view->render($model->getViewName() . '.twig', $data);
+                        } catch (Exception $e) {
+                            $response = '';
+                        }
+                    } else {
+                        $response = json_encode($data);
+                    }
                 }
 
                 if ($response){
@@ -108,16 +110,20 @@ class controller {
                 /** @var abstractApiModel $model */
                 $model = $this->model;
 
-                $data = $model->{$this->verb}();
+                if ($model->{$this->verb}()){
+                    $data = $model->getResponse();
 
-                $response = json_encode($data);
+                    $response = json_encode($data);
+                }
 
                 break;
             case abstractConfigurations::MINIMALISM_CLI:
                 /** @var abstractCliModel $model */
                 $model = $this->model;
 
-                $response = $model->run();
+                if ($model->run()){
+                    $response = $model->getResponse();
+                }
                 break;
         }
 

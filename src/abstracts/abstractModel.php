@@ -29,6 +29,9 @@ abstract class abstractModel {
     /** @var bool */
     protected $requiresAuthPUT=false;
 
+    /** @var array */
+    protected $response;
+
     /**
      * model constructor.
      * @param abstractConfigurations $configurations
@@ -43,6 +46,8 @@ abstract class abstractModel {
         $this->file = $file;
 
         $this->redirectPage = null;
+
+        $this->response = [];
     }
 
     /**
@@ -60,5 +65,12 @@ abstract class abstractModel {
      */
     public function redirect(): string {
         return $this->redirectPage ?? '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getResponse(): array {
+        return $this->response;
     }
 }

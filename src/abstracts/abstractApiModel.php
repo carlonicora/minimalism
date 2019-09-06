@@ -2,7 +2,7 @@
 
 namespace carlonicora\minimalism\abstracts;
 
-abstract class abstractApiModel {
+abstract class abstractApiModel extends abstractModel {
     /**
      * @return bool
      */

@@ -8,10 +8,13 @@ abstract class abstractWebModel extends abstractModel {
     protected $viewName;
     
     /**
-     * @return array
+     * @return bool
      */
-    abstract public function generateData(): array;
+    abstract public function generateData(): bool;
 
+    /**
+     * @return string
+     */
     public function getViewName(): string {
         $returnValue = $this->viewName;
 
