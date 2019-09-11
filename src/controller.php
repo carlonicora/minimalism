@@ -131,9 +131,7 @@ class controller {
                 /** @var abstractCliModel $model */
                 $model = $this->model;
 
-                if ($model->run()){
-                    $response = $model->getResponse();
-                }
+                $response = $model->run();
                 break;
         }
 
