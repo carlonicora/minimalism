@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism;
 
-use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\helpers\sessionManager;
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 
 class bootstrapper{
     /** @var abstractConfigurations $configurations */

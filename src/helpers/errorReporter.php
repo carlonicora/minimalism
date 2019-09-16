@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ForgottenDebugOutputInspection */
+
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
@@ -34,7 +35,6 @@ class errorReporter {
             case 2: $returnValue = 'Cannot load database configurations'; break;
             case 3: $returnValue = 'Endpoint not found'; break;
             case 4: $returnValue = 'Views not found'; break;
-            case 5: $returnValue = 'Views not found'; break;
             case 6: $returnValue = 'Cannot load functions'; break;
             case 7: $returnValue = 'Error loading the database files'; break;
             case 8: $returnValue = 'Invalid Token'; break;

@@ -4,8 +4,8 @@ namespace carlonicora\minimalism\helpers;
 use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
-use carlonicora\minimalism\library\database\databaseFactory;
-use carlonicora\minimalism\library\exceptions\dbRecordNotFoundException;
+use carlonicora\minimalism\database\databaseFactory;
+use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
 use Exception;
 
 class security {

@@ -1,0 +1,19 @@
+version: '3.5'
+
+services:
+  minimalism:
+    container_name: minimalism
+    working_dir: /app
+    build:
+      context: .
+      dockerfile: config/php/Dockerfile
+      args:
+        - BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT}
+    volumes:
+      - ../:/app
+      - ../:/opt/project
+      - ./config/php/custom.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
+      - ./config/php/xdebug.ini:/usr/local/etc/php/conf.d/zz-xdebug.ini
+      - ./config/php/MySQLi.ini:/usr/local/etc/php/conf.d/zz-mysqli.ini
+    tty: true
+    stdin_open: true

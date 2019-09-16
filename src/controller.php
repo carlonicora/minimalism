@@ -3,9 +3,9 @@ namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\abstracts\abstractApiModel;
 use carlonicora\minimalism\abstracts\abstractCliModel;
-use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\abstracts\abstractModel;
 use carlonicora\minimalism\abstracts\abstractWebModel;
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
 use carlonicora\minimalism\helpers\sessionManager;

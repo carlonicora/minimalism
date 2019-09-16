@@ -3,7 +3,7 @@ namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
-use carlonicora\minimalism\library\interfaces\configurationsInterface;
+use carlonicora\minimalism\interfaces\configurationsInterface;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;

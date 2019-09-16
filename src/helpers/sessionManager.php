@@ -3,7 +3,7 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
-use carlonicora\minimalism\library\database\databaseFactory;
+use carlonicora\minimalism\database\databaseFactory;
 
 class sessionManager {
     /**
@@ -18,7 +18,7 @@ class sessionManager {
     /**
      * @param abstractConfigurations $configurations
      */
-    public function loadFromSession(&$configurations): void {
+    public function loadFromSession(abstractConfigurations &$configurations): void {
         if (isset($_SESSION['configurations'])){
             $configurations = $_SESSION['configurations'];
         } else {

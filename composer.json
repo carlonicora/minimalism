@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "4.1.2",
+  "version": "6.0.0",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "authors": [
@@ -18,14 +18,14 @@
     }
   },
   "require": {
+    "php": "^7.3",
     "ext-curl": "*",
     "ext-json": "*",
     "ext-mysqli": "*",
     "ext-openssl": "*",
-    "vlucas/phpdotenv":"*",
     "twig/twig":"^2.9",
-    "carlonicora/minimalism-library": "*",
-    "php-di/php-di": "^6.0"
+    "php-di/php-di": "^6.0",
+    "vlucas/phpdotenv":"*"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master"
