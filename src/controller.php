@@ -106,7 +106,7 @@ class controller {
                             $response = '';
                         }
                     } else {
-                        $response = json_encode($data);
+                        $response = json_encode($data, JSON_THROW_ON_ERROR);
                     }
                 }
 
@@ -123,7 +123,7 @@ class controller {
                 if ($model->{$this->verb}()){
                     $data = $model->getResponse();
 
-                    $response = json_encode($data);
+                    $response = json_encode($data, JSON_THROW_ON_ERROR);
                 }
 
                 break;
@@ -177,7 +177,7 @@ class controller {
 
         if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_CLI){
             if (isset($_SERVER['argv'][1]) && !isset($_SERVER['argv'][2])){
-                $this->parameterValues = json_decode($_SERVER['argv'][1], true);
+                $this->parameterValues = json_decode($_SERVER['argv'][1], true, 512, JSON_THROW_ON_ERROR);
             } else if (count($_SERVER['argv']) > 1){
                 for ($argumentCount = 1, $argumentCountMax = count($_SERVER['argv']); $argumentCount < $argumentCountMax; $argumentCount += 2){
                     $this->parameterValues[substr($_SERVER['argv'][$argumentCount], 1)] = $_SERVER['argv'][$argumentCount + 1];
@@ -203,7 +203,7 @@ class controller {
             switch ($this->verb) {
                 case 'POST':
                 case 'PUT':
-                    $this->parameterValues = json_decode(file_get_contents('php://input'), true);
+                    $this->parameterValues = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
 
                     if (isset($_FILES) && count($_FILES) === 1) {
                         $this->file = array_values($_FILES)[0];

@@ -65,6 +65,9 @@ abstract class abstractConfigurations implements configurationsInterface {
     /** @var bool */
     public $allowUnsafeApiCalls;
 
+    /** @var string */
+    private $logDirectory;
+
     public const DB_AUTH = auth::class;
     public const DB_CLIENTS = clients::class;
 
@@ -93,7 +96,7 @@ abstract class abstractConfigurations implements configurationsInterface {
         $builder = new ContainerBuilder();
         try {
             $this->dependencies = $builder->build();
-            
+
             $this->dependencies->set($child, $this);
         } catch (Exception $e) {}
     }
@@ -171,9 +174,15 @@ abstract class abstractConfigurations implements configurationsInterface {
             $this->rootDirectory = getenv('PWD');
         }
 
-        $directoryLog = $this->rootDirectory . DIRECTORY_SEPARATOR . 'logs';
+        $this->logDirectory = $this->rootDirectory . DIRECTORY_SEPARATOR . 'logs';
 
-        if (!file_exists($directoryLog) && !mkdir($directoryLog) && !is_dir($directoryLog)) {
+        if (!file_exists($this->logDirectory) && !mkdir($this->logDirectory) && !is_dir($this->logDirectory)) {
+            errorReporter::returnHttpCode('Cannot create log directory');
+        }
+
+        $this->logDirectory .= DIRECTORY_SEPARATOR . 'minimalism';
+
+        if (!file_exists($this->logDirectory) && !mkdir($this->logDirectory) && !is_dir($this->logDirectory)) {
             errorReporter::returnHttpCode('Cannot create log directory');
         }
     }
@@ -198,7 +207,7 @@ abstract class abstractConfigurations implements configurationsInterface {
      * @return string
      */
     public function getErrorLog(): string {
-        return($this->rootDirectory . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . date('Ymd') . '.log');
+        return($this->logDirectory . DIRECTORY_SEPARATOR . date('Ymd') . '.log');
     }
 
     /**

@@ -225,7 +225,7 @@ abstract class abstractDatabaseManager {
                         $this->connection->rollback();
                         throw new dbUpdateException('Statement Execution failed: ' .
                             $object['sql']['statement'] .
-                            ' with parameters ' . json_encode($object['sql']['parameters']));
+                            ' with parameters ' . json_encode($object['sql']['parameters'], JSON_THROW_ON_ERROR));
                     }
                 } else {
                     $this->connection->rollback();
