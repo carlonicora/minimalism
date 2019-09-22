@@ -52,14 +52,14 @@ abstract class abstractApiCaller {
                 curl_setopt($curl, CURLOPT_POST, 1);
                 $httpHeaders[] = 'Content-Type:application/json';
                 if (is_array($body)) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body, JSON_THROW_ON_ERROR));
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
                 }
                 break;
             case 'PUT':
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
                 $httpHeaders[] = 'Content-Type:application/json';
                 if (is_array($body)) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body, JSON_THROW_ON_ERROR));
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
                 }
                 break;
             case 'DELETE':
@@ -86,7 +86,7 @@ abstract class abstractApiCaller {
         }
 
         $this->verb = $verb;
-        $this->body = is_array($body) ? json_encode($body, JSON_THROW_ON_ERROR) : '';
+        $this->body = is_array($body) ? json_encode($body) : '';
         $this->uri = $url . $uri;
 
         $security = new security($this->configurations);
@@ -131,11 +131,11 @@ abstract class abstractApiCaller {
             $returnValue->returnedValue = null;
             $returnValue->errorMessage = $returnedJson;
 
-            $errorDescription = 'API call ' . $this->verb . ' ' . $this->uri . ' with parameters ' . json_encode($this->body, JSON_THROW_ON_ERROR) . ' returned error ' . $returnValue->errorId . ' ' . $returnValue->errorMessage;
+            $errorDescription = 'API call ' . $this->verb . ' ' . $this->uri . ' with parameters ' . json_encode($this->body) . ' returned error ' . $returnValue->errorId . ' ' . $returnValue->errorMessage;
             errorReporter::report($this->configurations, 20, $errorDescription);
         } else {
             $returnValue->isSuccess = true;
-            $returnValue->returnedValue = json_decode($returnedJson, true, 512, JSON_THROW_ON_ERROR);
+            $returnValue->returnedValue = json_decode($returnedJson, true);
         }
 
         return $returnValue;
