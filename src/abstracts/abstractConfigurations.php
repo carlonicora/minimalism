@@ -4,16 +4,12 @@ namespace carlonicora\minimalism\abstracts;
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
 use carlonicora\minimalism\interfaces\configurationsInterface;
-use DI\Container;
-use DI\DependencyException;
-use DI\NotFoundException;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
 use mysqli;
-use DI\ContainerBuilder;
 
 abstract class abstractConfigurations implements configurationsInterface {
     public const MINIMALISM_APP = 1;
@@ -71,9 +67,6 @@ abstract class abstractConfigurations implements configurationsInterface {
     public const DB_AUTH = auth::class;
     public const DB_CLIENTS = clients::class;
 
-    /** @var Container */
-    private $dependencies;
-
     abstract public function serialiseCookies(): string;
     abstract public function unserialiseCookies(string $cookies): void;
 
@@ -92,13 +85,6 @@ abstract class abstractConfigurations implements configurationsInterface {
         }
 
         $this->appDirectory = dirname($class_info->getFileName());
-
-        $builder = new ContainerBuilder();
-        try {
-            $this->dependencies = $builder->build();
-
-            $this->dependencies->set($child, $this);
-        } catch (Exception $e) {}
     }
 
     /**
@@ -185,22 +171,6 @@ abstract class abstractConfigurations implements configurationsInterface {
         if (!file_exists($this->logDirectory) && !mkdir($this->logDirectory) && !is_dir($this->logDirectory)) {
             errorReporter::returnHttpCode('Cannot create log directory');
         }
-    }
-
-    /**
-     * @param string $className
-     * @return mixed|null
-     */
-    public function build(string $className){
-        $response = null;
-
-        try {
-            $response = $this->dependencies->get($className);
-        } catch (DependencyException $e) {
-        } catch (NotFoundException $e) {
-        }
-
-        return $response;
     }
 
     /**
