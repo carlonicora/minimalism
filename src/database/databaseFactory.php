@@ -46,7 +46,7 @@ class databaseFactory {
             return null;
         }
 
-        $connection->set_charset('utf8');
+        $connection->set_charset('utf8mb4');
 
         $response->setConnection($connection);
 
