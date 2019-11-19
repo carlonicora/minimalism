@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
+use carlonicora\minimalism\helpers\logger;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
@@ -63,6 +64,9 @@ abstract class abstractConfigurations implements configurationsInterface {
 
     /** @var string */
     private $logDirectory;
+
+    /** @var logger */
+    public $logger;
 
     public const DB_AUTH = auth::class;
     public const DB_CLIENTS = clients::class;
@@ -171,6 +175,8 @@ abstract class abstractConfigurations implements configurationsInterface {
         if (!file_exists($this->logDirectory) && !mkdir($this->logDirectory) && !is_dir($this->logDirectory)) {
             errorReporter::returnHttpCode('Cannot create log directory');
         }
+
+        $this->logger = new logger($this->logDirectory . DIRECTORY_SEPARATOR . date('Ymd').'.log');
     }
 
     /**
