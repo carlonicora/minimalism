@@ -48,6 +48,8 @@ class databaseFactory {
 
         $connection->set_charset('utf8mb4');
 
+        self::$configurations->setDatabase($databaseName, $connection);
+
         $response->setConnection($connection);
 
         return $response;
