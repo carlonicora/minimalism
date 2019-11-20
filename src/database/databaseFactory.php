@@ -35,15 +35,15 @@ class databaseFactory {
         if (!isset($connection)){
             $dbConf = self::$configurations->getDatabaseConnectionString($databaseName);
 
-            if (!empty($dbConf)){
-                $connection = new mysqli($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
+            if (empty($dbConf)){
+                return null;
             }
 
-            if (isset($connection) && !isset($connection->thread_id)) {
-                $connection->connect($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
-            }
+            $connection = new mysqli($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
 
-            if (!isset($connection) || $connection->connect_errno) {
+            $connection->connect($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
+
+            if ($connection->connect_errno) {
                 return null;
             }
 
