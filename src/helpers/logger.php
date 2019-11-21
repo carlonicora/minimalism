@@ -8,14 +8,28 @@ class logger {
     /** @var string */
     private $logFile;
 
+    /** @var string */
+    private $errorFile;
+
     /**
      * logger constructor.
-     * @param string $logFile
+     * @param string $logDirectory
      */
-    public function __construct(string $logFile) {
+    public function __construct(string $logDirectory) {
         $this->reset();
 
-        $this->logFile = $logFile;
+        $this->logFile = $logDirectory . date('Ymd').'.log';
+        $this->errorFile = $logDirectory . 'errors.log';
+    }
+
+    /**
+     * @param string $errorMessage
+     */
+    public function addError(string $errorMessage): void{
+        $errorLog = date('Y-m-d H:i:s') . ' - ' . $errorMessage . PHP_EOL;
+        $errorLog .= json_encode(debug_backtrace());
+
+        error_log($errorLog, 3, $this->errorFile);
     }
 
     /**

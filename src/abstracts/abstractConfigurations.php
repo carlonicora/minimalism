@@ -176,7 +176,7 @@ abstract class abstractConfigurations implements configurationsInterface {
             errorReporter::returnHttpCode('Cannot create log directory');
         }
 
-        $this->logger = new logger($this->logDirectory . DIRECTORY_SEPARATOR . date('Ymd').'.log');
+        $this->logger = new logger($this->logDirectory . DIRECTORY_SEPARATOR);
     }
 
     /**
