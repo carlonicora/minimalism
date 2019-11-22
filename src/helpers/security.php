@@ -82,10 +82,11 @@ class security {
             return false;
         }
 
-        $timeDifference = time() - $time;
+        $timeNow = time();
+        $timeDifference = $timeNow - $time;
 
-        if ($timeDifference > 100 || $timeDifference < 0) {
-            errorReporter::report($this->configurations, 9, null, 408);
+        if ($timeDifference > 10 || $timeDifference < -10) {
+            errorReporter::report($this->configurations, 9, 'Request time: ' . $time . ' - Time now: ' . $timeNow . ' - Time difference: ' . $timeDifference, 408);
         }
 
         /** @var clients $clientDbLoader */
