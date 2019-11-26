@@ -11,6 +11,9 @@ class logger {
     /** @var string */
     private $errorFile;
 
+    /** @var string */
+    private $queryFile;
+
     /**
      * logger constructor.
      * @param string $logDirectory
@@ -20,6 +23,7 @@ class logger {
 
         $this->logFile = $logDirectory . date('Ymd').'.log';
         $this->errorFile = $logDirectory . 'errors.log';
+        $this->queryFile = $logDirectory . 'queries.log';
     }
 
     /**
@@ -30,6 +34,14 @@ class logger {
         $errorLog .= json_encode(debug_backtrace());
 
         error_log($errorLog, 3, $this->errorFile);
+    }
+
+    /**
+     * @param string $sql
+     */
+    public function addQuery(string $sql): void{
+        $errorLog = date('Y-m-d H:i:s') . ',' . $sql . PHP_EOL;
+        error_log($errorLog, 3, $this->queryFile);
     }
 
     /**
