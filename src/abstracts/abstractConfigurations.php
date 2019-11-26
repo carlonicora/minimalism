@@ -133,6 +133,7 @@ abstract class abstractConfigurations implements configurationsInterface {
 
         if (!empty($doLog) && $doLog){
             $this->doLog = true;
+            $this->logger->setDoLog($this->doLog);
         }
 
         $this->httpHeaderSignature = getenv('HEADER_SIGNATURE');
