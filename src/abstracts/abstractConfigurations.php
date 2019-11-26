@@ -180,6 +180,13 @@ abstract class abstractConfigurations implements configurationsInterface {
     }
 
     /**
+     * @return logger
+     */
+    public function getLogger(): logger {
+        return $this->logger;
+    }
+
+    /**
      * @return string
      */
     public function getErrorLog(): string {

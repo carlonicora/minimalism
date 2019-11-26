@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\database;
 
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
 use carlonicora\minimalism\exceptions\dbUpdateException;
+use carlonicora\minimalism\helpers\logger;
 use mysqli;
 use Exception;
 
@@ -35,6 +36,9 @@ abstract class abstractDatabaseManager {
     /** @var string */
     protected $tableName;
 
+    /** @var logger */
+    private $logger;
+
     /**
      * abstractDatabaseManager constructor.
      */
@@ -44,6 +48,13 @@ abstract class abstractDatabaseManager {
             $fullNameParts = explode('\\', $fullName);
             $this->tableName = end($fullNameParts);
         }
+    }
+
+    /**
+     * @param logger $logger
+     */
+    public function setLogger(logger $logger): void {
+        $this->logger = $logger;
     }
 
     /**
@@ -79,6 +90,8 @@ abstract class abstractDatabaseManager {
 
         try{
             $this->connection->autocommit(false);
+
+            $this->logger->addQuery($sql, $parameters);
 
             $statement = $this->connection->prepare($sql);
 
@@ -178,6 +191,8 @@ abstract class abstractDatabaseManager {
     protected function runRead($sql, $parameters=null): array {
         $response = null;
 
+        $this->logger->addQuery($sql, $parameters);
+
         $statement = $this->connection->prepare($sql);
         if (isset($parameters)) {
             call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
@@ -219,6 +234,9 @@ abstract class abstractDatabaseManager {
                 $statement = $this->connection->prepare($object['sql']['statement']);
 
                 if ($statement) {
+
+                    $this->logger->addQuery($object['sql']['statement'], $object['sql']['parameters']);
+
                     $parameters = $object['sql']['parameters'];
                     call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
                     if (!$statement->execute()) {

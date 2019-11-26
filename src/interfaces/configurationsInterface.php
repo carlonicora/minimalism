@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\interfaces;
 
+use carlonicora\minimalism\helpers\logger;
 use mysqli;
 
 interface configurationsInterface{
@@ -21,4 +22,9 @@ interface configurationsInterface{
      * @param mysqli $database
      */
     public function setDatabase($databaseName, $database);
+
+    /**
+     * @return logger
+     */
+    public function getLogger();
 }

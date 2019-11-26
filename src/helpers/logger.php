@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ForgottenDebugOutputInspection */
+
 namespace carlonicora\minimalism\helpers;
 
 class logger {
@@ -14,12 +15,17 @@ class logger {
     /** @var string */
     private $queryFile;
 
+    /** @var bool */
+    private $doLog;
+
     /**
      * logger constructor.
      * @param string $logDirectory
      */
-    public function __construct(string $logDirectory) {
+    public function __construct(string $logDirectory, bool $doLog = false) {
         $this->reset();
+
+        $this->doLog = $doLog;
 
         $this->logFile = $logDirectory . date('Ymd').'.log';
         $this->errorFile = $logDirectory . 'errors.log';
@@ -30,6 +36,10 @@ class logger {
      * @param string $errorMessage
      */
     public function addError(string $errorMessage): void{
+        if (!$this->doLog) {
+            return;
+        }
+
         $errorLog = date('Y-m-d H:i:s') . ' - ' . $errorMessage . PHP_EOL;
         $errorLog .= json_encode(debug_backtrace());
 
@@ -38,9 +48,18 @@ class logger {
 
     /**
      * @param string $sql
+     * @param array $parameters
      */
-    public function addQuery(string $sql): void{
-        $errorLog = date('Y-m-d H:i:s') . ',' . $sql . PHP_EOL;
+    public function addQuery(string $sql, array $parameters = null): void{
+        if (!$this->doLog) {
+            return;
+        }
+
+        $errorLog = date('Y-m-d H:i:s') . ',' . $sql . ',';
+        if (!empty($parameters)){
+            $errorLog .= json_encode($parameters);
+        }
+        $errorLog .= PHP_EOL;
         error_log($errorLog, 3, $this->queryFile);
     }
 
@@ -48,6 +67,10 @@ class logger {
      *
      */
     public function reset(): void {
+        if (!$this->doLog) {
+            return;
+        }
+
         $this->events = [];
     }
 
@@ -55,10 +78,18 @@ class logger {
      * @param string $event
      */
     public function addEvent(string $event): void {
+        if (!$this->doLog) {
+            return;
+        }
+
         $this->events[$event] = microtime(true);
     }
 
     public function flush(string $event = null): void {
+        if (!$this->doLog) {
+            return;
+        }
+
         if (!empty($event)){
             $this->addEvent($event);
         }
@@ -67,6 +98,10 @@ class logger {
     }
 
     public function write(): void {
+        if (!$this->doLog) {
+            return;
+        }
+
         $log = '';
 
         $start = 0;

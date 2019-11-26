@@ -29,6 +29,8 @@ class databaseFactory {
         /** @var abstractDatabaseManager $response */
         $response = new $dbReader();
 
+        $response->setLogger(self::$configurations->getLogger());
+
         $databaseName = $response->getDbToUse();
         $connection = self::$configurations->getDatabase($databaseName);
 
