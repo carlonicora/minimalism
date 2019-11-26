@@ -33,6 +33,13 @@ class logger {
     }
 
     /**
+     * @param bool $doLog
+     */
+    public function setDoLog(bool $doLog): void {
+        $this->doLog = $doLog;
+    }
+
+    /**
      * @param string $errorMessage
      */
     public function addError(string $errorMessage): void{
