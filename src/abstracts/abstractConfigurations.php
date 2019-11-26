@@ -68,9 +68,6 @@ abstract class abstractConfigurations implements configurationsInterface {
     /** @var logger */
     public $logger;
 
-    /** @var bool */
-    private $doLog;
-
     public const DB_AUTH = auth::class;
     public const DB_CLIENTS = clients::class;
 
@@ -128,12 +125,13 @@ abstract class abstractConfigurations implements configurationsInterface {
         $this->clientId = getenv('CLIENT_ID');
         $this->clientSecret = getenv('CLIENT_SECRET');
 
-        $doLog = getenv('LOG_EVENTS');
-        $this->doLog = false;
-
-        if (!empty($doLog) && $doLog){
-            $this->doLog = true;
-            $this->logger->setDoLog($this->doLog);
+        $logEvents = getenv('MINIMALISM_LOG_EVENTS');
+        if (!empty($logEvents) && $logEvents){
+            $this->logger->setLogEvents(true);
+        }
+        $logQueries = getenv('MINIMALISM_LOG_QUERIES');
+        if (!empty($logQueries) && $logQueries){
+            $this->logger->setLogQueries(true);
         }
 
         $this->httpHeaderSignature = getenv('HEADER_SIGNATURE');

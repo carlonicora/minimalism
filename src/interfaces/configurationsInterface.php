@@ -26,5 +26,5 @@ interface configurationsInterface{
     /**
      * @return logger
      */
-    public function getLogger();
+    public function getLogger(): logger;
 }

@@ -10,43 +10,54 @@ class logger {
     private $logFile;
 
     /** @var string */
+    private $logFileCondensed;
+
+    /** @var string */
     private $errorFile;
 
     /** @var string */
     private $queryFile;
 
     /** @var bool */
-    private $doLog;
+    private $logEvents;
+
+    /** @var bool */
+    private $logQueries;
 
     /**
      * logger constructor.
      * @param string $logDirectory
      */
-    public function __construct(string $logDirectory, bool $doLog = false) {
+    public function __construct(string $logDirectory) {
         $this->reset();
 
-        $this->doLog = $doLog;
-
         $this->logFile = $logDirectory . date('Ymd').'.log';
+        $this->logFileCondensed = $logDirectory . date('Ymd').'.condensed.log';
         $this->errorFile = $logDirectory . 'errors.log';
         $this->queryFile = $logDirectory . 'queries.log';
+
+        $this->logEvents = false;
+        $this->logQueries = false;
     }
 
     /**
-     * @param bool $doLog
+     * @param bool $logEvents
      */
-    public function setDoLog(bool $doLog): void {
-        $this->doLog = $doLog;
+    public function setLogEvents(bool $logEvents): void {
+        $this->logEvents = $logEvents;
+    }
+
+    /**
+     * @param bool $logQueries
+     */
+    public function setLogQueries(bool $logQueries): void {
+        $this->logQueries = $logQueries;
     }
 
     /**
      * @param string $errorMessage
      */
     public function addError(string $errorMessage): void{
-        if (!$this->doLog) {
-            return;
-        }
-
         $errorLog = date('Y-m-d H:i:s') . ' - ' . $errorMessage . PHP_EOL;
         $errorLog .= json_encode(debug_backtrace());
 
@@ -58,7 +69,7 @@ class logger {
      * @param array $parameters
      */
     public function addQuery(string $sql, array $parameters = null): void{
-        if (!$this->doLog) {
+        if (!$this->logQueries) {
             return;
         }
 
@@ -74,10 +85,6 @@ class logger {
      *
      */
     public function reset(): void {
-        if (!$this->doLog) {
-            return;
-        }
-
         $this->events = [];
     }
 
@@ -85,30 +92,30 @@ class logger {
      * @param string $event
      */
     public function addEvent(string $event): void {
-        if (!$this->doLog) {
-            return;
-        }
-
         $this->events[$event] = microtime(true);
     }
 
     public function flush(string $event = null): void {
-        if (!$this->doLog) {
-            return;
-        }
-
         if (!empty($event)){
             $this->addEvent($event);
         }
-        $this->write();
+        if ($this->logEvents) {
+            $this->write();
+            $this->writeCondensed();
+        }
         $this->reset();
     }
 
-    public function write(): void {
-        if (!$this->doLog) {
-            return;
-        }
+    public function writeCondensed(): void {
+        $event = array_key_first($this->events);
+        $end = array_key_last($this->events);
 
+        $log = $event . ' - ' . $this->getDifference($this->events[$end], $this->events[$event]) . PHP_EOL;
+
+        error_log($log, 3, $this->logFileCondensed);
+    }
+
+    public function write(): void {
         $log = '';
 
         $start = 0;
