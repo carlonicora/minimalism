@@ -18,6 +18,8 @@ abstract class abstractDatabaseManager {
     public const RECORD_STATUS_UPDATED = 3;
     public const RECORD_STATUS_DELETED = 4;
 
+    public const INSERT_IGNORE = ' IGNORE';
+
     /** @var mysqli */
     private $connection;
 
@@ -38,6 +40,9 @@ abstract class abstractDatabaseManager {
 
     /** @var logger */
     private $logger;
+
+    /** @var string */
+    protected $insertIgnore = '';
 
     /**
      * abstractDatabaseManager constructor.
@@ -375,7 +380,7 @@ abstract class abstractDatabaseManager {
      * @return string
      */
     private function generateInsertStatement(): string {
-        $response = 'INSERT INTO ' . $this->tableName . ' (';
+        $response = 'INSERT' . $this->insertIgnore . ' INTO ' . $this->tableName . ' (';
 
         $parameterList = '';
         foreach ($this->fields as $fieldName=>$fieldType){

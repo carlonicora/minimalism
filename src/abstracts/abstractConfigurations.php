@@ -126,11 +126,11 @@ abstract class abstractConfigurations implements configurationsInterface {
         $this->clientSecret = getenv('CLIENT_SECRET');
 
         $logEvents = getenv('MINIMALISM_LOG_EVENTS');
-        if (!empty($logEvents) && $logEvents){
+        if (!empty($logEvents) && $logEvents === 'true'){
             $this->logger->setLogEvents(true);
         }
         $logQueries = getenv('MINIMALISM_LOG_QUERIES');
-        if (!empty($logQueries) && $logQueries){
+        if (!empty($logQueries) && $logQueries === 'true'){
             $this->logger->setLogQueries(true);
         }
 

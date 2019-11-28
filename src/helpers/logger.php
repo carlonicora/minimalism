@@ -59,7 +59,6 @@ class logger {
      */
     public function addError(string $errorMessage): void{
         $errorLog = date('Y-m-d H:i:s') . ' - ' . $errorMessage . PHP_EOL;
-        $errorLog .= json_encode(debug_backtrace());
 
         error_log($errorLog, 3, $this->errorFile);
     }
