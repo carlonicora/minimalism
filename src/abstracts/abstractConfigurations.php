@@ -95,7 +95,7 @@ abstract class abstractConfigurations implements configurationsInterface {
      *
      */
     public function loadConfigurations(): void {
-        $this->env = Dotenv::create($this->rootDirectory);
+        $this->env = Dotenv::createImmutable($this->rootDirectory);
 
         try{
             $this->env->load();
