@@ -37,15 +37,20 @@ abstract class abstractApiCaller {
     }
 
     /**
-     * @param $verb
-     * @param $url
-     * @param $uri
-     * @param null $body
+     * @param string $verb
+     * @param string $url
+     * @param string $endpoint
+     * @param array|null $body
+     * @param string $hostname
      * @return apiResponse
      */
-    protected function callAPI($verb, $url, $uri, $body=null): apiResponse {
+    protected function callAPI(string $verb,string  $url, string $endpoint, array $body=null, string $hostname=null): apiResponse {
         $curl = curl_init();
         $httpHeaders = array();
+
+        if (!empty($hostname)){
+            $httpHeaders[] = 'Host: ' . $hostname;
+        }
 
         switch ($verb){
             case 'POST':
@@ -67,7 +72,7 @@ abstract class abstractApiCaller {
                 if (isset($body)) {
                     $query = http_build_query($body);
                     if (!empty($query)) {
-                        $uri .= ((substr_count($uri, '?') > 0) ? '&' : '?') . $query;
+                        $endpoint .= ((substr_count($endpoint, '?') > 0) ? '&' : '?') . $query;
                     }
                 }
                 break;
@@ -75,22 +80,22 @@ abstract class abstractApiCaller {
                 if (isset($body)) {
                     $query = http_build_query($body);
                     if (!empty($query)) {
-                        $uri .= ((substr_count($uri, '?') > 0) ? '&' : '?') . $query;
+                        $endpoint .= ((substr_count($endpoint, '?') > 0) ? '&' : '?') . $query;
                     }
                 }
                 break;
         }
 
         if (!empty($this->configurations->getDebugKey())){
-            $uri .= ((substr_count ( $uri, '?') > 0 ) ? '&' : '?') . 'XDEBUG_SESSION_START='.$this->configurations->getDebugKey();
+            $endpoint .= ((substr_count ( $endpoint, '?') > 0 ) ? '&' : '?') . 'XDEBUG_SESSION_START='.$this->configurations->getDebugKey();
         }
 
         $this->verb = $verb;
         $this->body = is_array($body) ? json_encode($body) : '';
-        $this->uri = $url . $uri;
+        $this->uri = $url . $endpoint;
 
         $security = new security($this->configurations);
-        $signature = $security->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey);
+        $signature = $security->generateSignature($verb, $endpoint, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey);
         $httpHeaders[] = $this->configurations->httpHeaderSignature . ':' . $signature;
 
         $info = null;
@@ -99,7 +104,7 @@ abstract class abstractApiCaller {
         $options = [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HTTPHEADER => $httpHeaders,
-            CURLOPT_URL => $url. $uri,
+            CURLOPT_URL => $url. $endpoint,
             CURLOPT_VERBOSE => 1,
             CURLOPT_HEADER => 1
         ];
