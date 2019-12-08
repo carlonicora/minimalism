@@ -194,7 +194,7 @@ abstract class abstractDatabaseManager {
             $oneSql = substr($oneSql, 0, -1);
             $oneSql .= $this->generateInsertOnDuplicateUpdateEnd();
 
-            if ($onlyInsertOrUpdate && !$onlyOneInsert){
+            if ($onlyInsertOrUpdate && !$onlyOneInsert && $this->canUseInsertOnDuplicate()){
                 $response = $this->runSql($oneSql);
             } else {
                 $response = $this->runUpdate($records);
@@ -395,6 +395,18 @@ abstract class abstractDatabaseManager {
         }
 
         return $response;
+    }
+
+    /**
+     * @return bool
+     */
+    private function canUseInsertOnDuplicate(): bool {
+        foreach ($this->fields as $fieldName=>$fieldType){
+            if (!array_key_exists($fieldName, $this->primaryKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
