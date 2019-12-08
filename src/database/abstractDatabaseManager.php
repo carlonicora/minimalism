@@ -90,7 +90,7 @@ abstract class abstractDatabaseManager {
      * @param array $parameters
      * @return bool
      */
-    public function runSql($sql, $parameters): bool {
+    public function runSql($sql, $parameters=null): bool {
         $response = true;
 
         try{
@@ -101,11 +101,16 @@ abstract class abstractDatabaseManager {
             $statement = $this->connection->prepare($sql);
 
             if ($statement) {
-                call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
+                if (!empty($parameters)) {
+                    call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
+                }
                 if (!$statement->execute()) {
+                    $this->logger->addError('MySQL error on execute:' . PHP_EOL . $sql . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                     $this->connection->rollback();
                     $response = false;
                 }
+            } else {
+                $this->logger->addError('MySQL error on prepare:' . PHP_EOL . $sql . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
             }
 
             $this->connection->autocommit(true);
@@ -129,11 +134,15 @@ abstract class abstractDatabaseManager {
         $isSingle = false;
 
         if (isset($records) && count($records) > 0){
+            $onlyOneInsert = false;
             if (!array_key_exists(0, $records)){
                 $isSingle = true;
-                $records= [$records];
+                $records = [$records];
+                $onlyOneInsert = true;
             }
 
+            $onlyInsertOrUpdate = true;
+            $oneSql = $this->generateInsertOnDuplicateUpdateStart();
             foreach ($records as $recordKey=>$record) {
                 if ($delete){
                     $status = self::RECORD_STATUS_DELETED;
@@ -142,6 +151,8 @@ abstract class abstractDatabaseManager {
                 }
 
                 if ($status !== self::RECORD_STATUS_UNCHANGED) {
+                    $oneSql .= $this->generateInsertOnDuplicateUpdateRecord($record);
+
                     $records[$recordKey]['sql'] = array();
                     $records[$recordKey]['sql']['status'] = $status;
 
@@ -156,10 +167,13 @@ abstract class abstractDatabaseManager {
                         case self::RECORD_STATUS_UPDATED:
                             $records[$recordKey]['sql']['statement'] = $this->generateUpdateStatement();
                             $parametersToUse = $this->generateUpdateParameters();
+                            $onlyOneInsert = false;
                             break;
                         case self::RECORD_STATUS_DELETED:
+                            $onlyInsertOrUpdate = false;
                             $records[$recordKey]['sql']['statement'] = $this->generateDeleteStatement();
                             $parametersToUse = $this->generateDeleteParameters();
+                            $onlyOneInsert = false;
                             break;
 
                     }
@@ -177,7 +191,14 @@ abstract class abstractDatabaseManager {
                 }
             }
 
-            $response = $this->runUpdate($records);
+            $oneSql = substr($oneSql, 0, -1);
+            $oneSql .= $this->generateInsertOnDuplicateUpdateEnd();
+
+            if ($onlyInsertOrUpdate && !$onlyOneInsert){
+                $response = $this->runSql($oneSql);
+            } else {
+                $response = $this->runUpdate($records);
+            }
         }
 
         if ($isSingle){
@@ -375,6 +396,66 @@ abstract class abstractDatabaseManager {
 
         return $response;
     }
+
+    /**
+     * @return string
+     */
+    private function generateInsertOnDuplicateUpdateStart(): string {
+        $response = 'INSERT INTO ' . $this->tableName . ' (';
+
+        foreach ($this->fields as $fieldName=>$fieldType){
+            $response .= $fieldName . ',';
+        }
+
+        $response = substr($response, 0, -1);
+
+        $response .= ') VALUES ';
+
+        return $response;
+    }
+
+    /**
+     * @param array $record
+     * @return string
+     */
+    private function generateInsertOnDuplicateUpdateRecord(array $record): string {
+        $response = '(';
+
+        foreach ($this->fields as $fieldName=>$fieldType){
+            $fieldValue = $record[$fieldName];
+            if (empty($fieldValue)){
+                $fieldValue = 'NULL';
+            }
+            if ($fieldValue !== 'NULL' && ($fieldType === self::PARAM_TYPE_STRING || $fieldType === self::PARAM_TYPE_BLOB)){
+                $response .= '\'' . $fieldValue . '\',';
+            } else {
+                $response .= $fieldValue . ',';
+            }
+        }
+        $response = substr($response, 0, -1);
+        $response .= '),';
+
+        return $response;
+    }
+
+    /**
+     * @return string
+     */
+    private function generateInsertOnDuplicateUpdateEnd(): string {
+        $response = ' ON DUPLICATE KEY UPDATE ';
+
+        foreach ($this->fields as $fieldName=>$fieldType){
+            if (!array_key_exists($fieldName, $this->primaryKey)) {
+                $response .= $fieldName . '=VALUES(' . $fieldName . '),';
+            }
+        }
+        $response = substr($response, 0, -1);
+
+        $response .= ';';
+
+        return ($response);
+    }
+
 
     /**
      * @return string
