@@ -115,6 +115,7 @@ abstract class abstractDatabaseManager {
 
             $this->connection->autocommit(true);
         } catch (Exception $e){
+            $this->logger->addError('MySQL generic error:' . PHP_EOL . $sql . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
             $this->connection->rollback();
             $response = false;
         }
@@ -266,12 +267,14 @@ abstract class abstractDatabaseManager {
                     $parameters = $object['sql']['parameters'];
                     call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
                     if (!$statement->execute()) {
+                        $this->logger->addError('MySQL error on execute:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                         $this->connection->rollback();
                         throw new dbUpdateException('Statement Execution failed: ' .
                             $object['sql']['statement'] .
                             ' with parameters ' . json_encode($object['sql']['parameters']));
                     }
                 } else {
+                    $this->logger->addError('MySQL error on prepare:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                     $this->connection->rollback();
                     throw new dbUpdateException('Statement creation failed: ' .
                         $objects[$objectKey]['sql']['statement']);
