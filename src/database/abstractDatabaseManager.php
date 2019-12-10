@@ -135,11 +135,9 @@ abstract class abstractDatabaseManager {
         $isSingle = false;
 
         if (isset($records) && count($records) > 0){
-            $onlyOneInsert = false;
             if (!array_key_exists(0, $records)){
                 $isSingle = true;
                 $records = [$records];
-                $onlyOneInsert = true;
             }
 
             $onlyInsertOrUpdate = true;
@@ -168,13 +166,11 @@ abstract class abstractDatabaseManager {
                         case self::RECORD_STATUS_UPDATED:
                             $records[$recordKey]['sql']['statement'] = $this->generateUpdateStatement();
                             $parametersToUse = $this->generateUpdateParameters();
-                            $onlyOneInsert = false;
                             break;
                         case self::RECORD_STATUS_DELETED:
                             $onlyInsertOrUpdate = false;
                             $records[$recordKey]['sql']['statement'] = $this->generateDeleteStatement();
                             $parametersToUse = $this->generateDeleteParameters();
-                            $onlyOneInsert = false;
                             break;
 
                     }
@@ -195,7 +191,7 @@ abstract class abstractDatabaseManager {
             $oneSql = substr($oneSql, 0, -1);
             $oneSql .= $this->generateInsertOnDuplicateUpdateEnd();
 
-            if ($onlyInsertOrUpdate && !$onlyOneInsert && $this->canUseInsertOnDuplicate()){
+            if ($onlyInsertOrUpdate && !$isSingle && $this->canUseInsertOnDuplicate()){
                 $response = $this->runSql($oneSql);
             } else {
                 $response = $this->runUpdate($records);
@@ -437,9 +433,8 @@ abstract class abstractDatabaseManager {
         $response = '(';
 
         foreach ($this->fields as $fieldName=>$fieldType){
-            if (array_key_exists($fieldName, $record) && $record[$fieldName] !== NULL) {
-                $fieldValue = $record[$fieldName];
-            } else {
+            $fieldValue = $record[$fieldName];
+            if ($fieldValue === NULL){
                 $fieldValue = 'NULL';
             }
             if ($fieldValue !== 'NULL' && ($fieldType === self::PARAM_TYPE_STRING || $fieldType === self::PARAM_TYPE_BLOB)){
