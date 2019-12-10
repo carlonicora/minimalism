@@ -437,8 +437,9 @@ abstract class abstractDatabaseManager {
         $response = '(';
 
         foreach ($this->fields as $fieldName=>$fieldType){
-            $fieldValue = $record[$fieldName];
-            if ($fieldValue === NULL){
+            if (array_key_exists($fieldName, $record) && $record[$fieldName] !== NULL) {
+                $fieldValue = $record[$fieldName];
+            } else {
                 $fieldValue = 'NULL';
             }
             if ($fieldValue !== 'NULL' && ($fieldType === self::PARAM_TYPE_STRING || $fieldType === self::PARAM_TYPE_BLOB)){
