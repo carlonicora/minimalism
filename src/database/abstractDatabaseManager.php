@@ -437,6 +437,11 @@ abstract class abstractDatabaseManager {
             if (array_key_exists($fieldName, $record) && $record[$fieldName] !== NULL) {
                 $fieldValue = $record[$fieldName];
             }
+
+            if ($fieldType === 'i' && (is_bool($fieldValue))){
+                $fieldValue = $fieldValue ? 1 : 0;
+            }
+
             if ($fieldValue !== 'NULL' && ($fieldType === self::PARAM_TYPE_STRING || $fieldType === self::PARAM_TYPE_BLOB)){
                 $response .= '\'' . $fieldValue . '\',';
             } else {
