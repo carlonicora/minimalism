@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\database;
 
+use carlonicora\minimalism\exceptions\dbConnectionException;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use mysqli;
 
@@ -18,6 +19,7 @@ class databaseFactory {
     /**
      * @param string $dbReader
      * @return abstractDatabaseManager
+     * @throws dbConnectionException
      */
     public static function create($dbReader): abstractDatabaseManager {
         $response = null;
@@ -38,7 +40,7 @@ class databaseFactory {
             $dbConf = self::$configurations->getDatabaseConnectionString($databaseName);
 
             if (empty($dbConf)){
-                return null;
+                throw new dbConnectionException('Missing connection details');
             }
 
             $connection = new mysqli($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
@@ -46,7 +48,7 @@ class databaseFactory {
             $connection->connect($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
 
             if ($connection->connect_errno) {
-                return null;
+                throw new dbConnectionException($connection->connect_error);
             }
 
             $connection->set_charset('utf8mb4');
