@@ -18,6 +18,16 @@ abstract class abstractDatabaseManager {
     public const RECORD_STATUS_UPDATED = 3;
     public const RECORD_STATUS_DELETED = 4;
 
+    /**
+     * New
+     */
+    public const INTEGER=0b1;
+    public const DOUBLE=0b10;
+    public const STRING=0b100;
+    public const BLOB=0b1000;
+    public const PRIMARY_KEY=0b10000;
+    public const AUTO_INCREMENT=0b100000;
+
     public const INSERT_IGNORE = ' IGNORE';
 
     /** @var mysqli */
@@ -48,10 +58,38 @@ abstract class abstractDatabaseManager {
      * abstractDatabaseManager constructor.
      */
     public function __construct() {
+        $fullName = get_class($this);
+        $fullNameParts = explode('\\', $fullName);
+
         if (!isset($this->tableName)){
-            $fullName = get_class($this);
-            $fullNameParts = explode('\\', $fullName);
             $this->tableName = end($fullNameParts);
+        }
+
+        if (!isset($this->dbToUse) && isset($fullNameParts[count($fullNameParts)-1]) && $fullNameParts[count($fullNameParts)-2] === 'tables'){
+            $this->dbToUse = $fullNameParts[count($fullNameParts)-3];
+        }
+
+        if (!isset($this->primaryKey)){
+            foreach ($this->fields as $fieldName=>$fieldFlags){
+                if (($fieldFlags & self::PRIMARY_KEY) > 0){
+                    /** @noinspection NotOptimalIfConditionsInspection */
+                    if (!isset($this->primaryKey)){
+                        $this->primaryKey = [];
+                    }
+                    $this->primaryKey[] = [
+                        $fieldName=>$fieldFlags
+                    ];
+                }
+            }
+        }
+
+        if (!isset($this->autoIncrementField)){
+            foreach ($this->fields as $fieldName=>$fieldFlags){
+                if (($fieldFlags & self::AUTO_INCREMENT) > 0){
+                    $this->autoIncrementField = $fieldName;
+                    break;
+                }
+            }
         }
     }
 
@@ -381,6 +419,26 @@ abstract class abstractDatabaseManager {
     }
 
     /**
+     * @param int|string $fieldType
+     * @return string
+     */
+    private function convertFieldType($fieldType): string {
+        if (is_int($fieldType)){
+            if (($fieldType & self::INTEGER) > 0){
+                $fieldType = 'i';
+            } else if (($fieldType & self::DOUBLE) > 0){
+                $fieldType = 'd';
+            } else if (($fieldType & self::STRING) > 0){
+                $fieldType = 's';
+            } else {
+                $fieldType = 'b';
+            }
+        }
+
+        return ($fieldType);
+    }
+
+    /**
      * @return array
      */
     private function generateSelectParameters(): array {
@@ -389,6 +447,7 @@ abstract class abstractDatabaseManager {
         $response[] = '';
 
         foreach ($this->primaryKey as $fieldName=>$fieldType){
+            $fieldType = $this->convertFieldType($fieldType);
             $response[0] .= $fieldType;
             $response[] = $fieldName;
         }
@@ -400,9 +459,11 @@ abstract class abstractDatabaseManager {
      * @return bool
      */
     private function canUseInsertOnDuplicate(): bool {
-        foreach ($this->fields as $fieldName=>$fieldType){
-            if (!array_key_exists($fieldName, $this->primaryKey)) {
-                return true;
+        if (isset($this->primaryKey)) {
+            foreach ($this->fields as $fieldName => $fieldType) {
+                if (!array_key_exists($fieldName, $this->primaryKey)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -433,6 +494,7 @@ abstract class abstractDatabaseManager {
         $response = '(';
 
         foreach ($this->fields as $fieldName=>$fieldType){
+            $fieldType = $this->convertFieldType($fieldType);
             $fieldValue = 'NULL';
             if (array_key_exists($fieldName, $record) && $record[$fieldName] !== NULL) {
                 $fieldValue = $record[$fieldName];
@@ -502,6 +564,7 @@ abstract class abstractDatabaseManager {
         $response[] = '';
 
         foreach ($this->fields as $fieldName=>$fieldType){
+            $fieldType = $this->convertFieldType($fieldType);
             $response[0] .= $fieldType;
             $response[] = $fieldName;
         }
@@ -535,6 +598,7 @@ abstract class abstractDatabaseManager {
         $response[] = '';
 
         foreach ($this->primaryKey as $fieldName=>$fieldType){
+            $fieldType = $this->convertFieldType($fieldType);
             $response[0] .= $fieldType;
             $response[] = $fieldName;
         }
@@ -579,12 +643,14 @@ abstract class abstractDatabaseManager {
 
         foreach ($this->fields as $fieldName=>$fieldType){
             if (!array_key_exists($fieldName, $this->primaryKey)) {
+                $fieldType = $this->convertFieldType($fieldType);
                 $response[0] .= $fieldType;
                 $response[] = $fieldName;
             }
         }
 
         foreach ($this->primaryKey as $fieldName=>$fieldType){
+            $fieldType = $this->convertFieldType($fieldType);
             $response[0] .= $fieldType;
             $response[] = $fieldName;
         }
