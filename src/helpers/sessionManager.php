@@ -21,6 +21,7 @@ class sessionManager {
         if (isset($_SESSION['configurations'])){
             /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $configurations = $_SESSION['configurations'];
+            $configurations->cleanNonPersistentVariables();
         } else {
             $configurations->loadConfigurations();
             if (isset($_COOKIE['minimalismConfigurations'])){
