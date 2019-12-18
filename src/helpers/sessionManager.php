@@ -1,5 +1,4 @@
-<?php /** @noinspection ALL */
-
+<?php
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
@@ -20,6 +19,7 @@ class sessionManager {
      */
     public function loadFromSession(abstractConfigurations &$configurations): void {
         if (isset($_SESSION['configurations'])){
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $configurations = $_SESSION['configurations'];
         } else {
             $configurations->loadConfigurations();
@@ -35,6 +35,7 @@ class sessionManager {
      * @param abstractConfigurations $configurations
      */
     public function saveSession($configurations): void {
+        $configurations->cleanNonPersistentVariables();
         $_SESSION['configurations'] = $configurations;
         setcookie('minimalismConfigurations', $configurations->serialiseCookies(), time() + (30 * 24 * 60 * 60));
     }

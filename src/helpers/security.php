@@ -5,6 +5,7 @@ use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
 use carlonicora\minimalism\database\databaseFactory;
+use carlonicora\minimalism\exceptions\dbConnectionException;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
 use Exception;
 
@@ -90,7 +91,11 @@ class security {
         }
 
         /** @var clients $clientDbLoader */
-        $clientDbLoader = databaseFactory::create(abstractConfigurations::DB_CLIENTS);
+        try {
+            $clientDbLoader = databaseFactory::create(abstractConfigurations::DB_CLIENTS);
+        } catch (dbConnectionException $e) {
+            $clientDbLoader = null;
+        }
 
         /** @var array $client */
         try {
@@ -106,7 +111,11 @@ class security {
         $auth = null;
         if (!empty($this->configurations->publicKey)){
             /** @var auth $authDbLoader */
-            $authDbLoader = databaseFactory::create(abstractConfigurations::DB_AUTH);
+            try {
+                $authDbLoader = databaseFactory::create(abstractConfigurations::DB_AUTH);
+            } catch (dbConnectionException $e) {
+                $authDbLoader = null;
+            }
 
             /** @var array $auth */
             try {

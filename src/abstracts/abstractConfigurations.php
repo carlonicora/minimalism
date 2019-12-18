@@ -264,4 +264,11 @@ abstract class abstractConfigurations implements configurationsInterface {
     public function setDatabase($databaseName, $database): void {
         $this->databases[$databaseName] = $database;
     }
+
+    /**
+     *
+     */
+    public function cleanNonPersistentVariables(): void{
+        $this->databases = [];
+    }
 }

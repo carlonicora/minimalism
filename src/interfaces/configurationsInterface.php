@@ -12,6 +12,11 @@ interface configurationsInterface{
     public function getDatabase($databaseName): ?mysqli;
 
     /**
+     *
+     */
+    public function cleanNonPersistentVariables(): void;
+
+    /**
      * @param string $databaseName
      * @return array
      */
