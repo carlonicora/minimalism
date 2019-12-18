@@ -76,9 +76,7 @@ abstract class abstractDatabaseManager {
                     if (!isset($this->primaryKey)){
                         $this->primaryKey = [];
                     }
-                    $this->primaryKey[] = [
-                        $fieldName=>$fieldFlags
-                    ];
+                    $this->primaryKey[$fieldName]=$fieldFlags;
                 }
             }
         }
