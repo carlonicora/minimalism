@@ -51,8 +51,8 @@ class auth extends abstractDatabaseManager implements securitySessionInterface {
      * @throws dbRecordNotFoundException
      */
     public function loadFromPublicKeyAndClientId($publicKey, $clientId): ?array {
-        $sql = 'SELECT * FROM auth WHERE publicKey = ? AND clientId = ?;';
-        $parameters = ['si', $publicKey, $clientId];
+        $sql = 'SELECT auth.* FROM auth JOIN clients ON auth.clientId=clients.id WHERE auth.publicKey=? AND clients.clientId=?;';
+        $parameters = ['ss', $publicKey, $clientId];
 
         return $this->runReadSingle($sql, $parameters);
     }
