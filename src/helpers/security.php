@@ -2,11 +2,8 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
-use carlonicora\minimalism\databases\auth;
-use carlonicora\minimalism\databases\clients;
-use carlonicora\minimalism\database\databaseFactory;
-use carlonicora\minimalism\exceptions\dbConnectionException;
-use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
+use carlonicora\minimalism\interfaces\securityClientInterface;
+use carlonicora\minimalism\interfaces\securitySessionInterface;
 use Exception;
 
 class security {
@@ -61,9 +58,11 @@ class security {
      * @param $verb
      * @param $uri
      * @param $body
+     * @param securityClientInterface $client
+     * @param securitySessionInterface $session
      * @return bool
      */
-    public function validateSignature($signature, $verb, $uri, $body): bool {
+    public function validateSignature($signature, $verb, $uri, $body, securityClientInterface $client, securitySessionInterface $session): bool {
         if (empty($signature)) {
             return false;
         }
@@ -90,46 +89,25 @@ class security {
             errorReporter::report($this->configurations, 9, 'Request time: ' . $time . ' - Time now: ' . $timeNow . ' - Time difference: ' . $timeDifference, 408);
         }
 
-        /** @var clients $clientDbLoader */
         try {
-            $clientDbLoader = databaseFactory::create(abstractConfigurations::DB_CLIENTS);
-        } catch (dbConnectionException $e) {
-            $clientDbLoader = null;
-        }
-
-        /** @var array $client */
-        try {
-            $client = $clientDbLoader->loadFromClientId($this->configurations->clientId);
-        } catch (dbRecordNotFoundException $e) {
+            $this->configurations->clientSecret = $client->getSecret($this->configurations->clientId);
+        } catch (Exception $e) {
             errorReporter::report($this->configurations, 10, null, 401);
         }
-
-        $this->configurations->clientSecret = $client['clientSecret'];
 
         $this->configurations->privateKey=null;
 
         $auth = null;
         if (!empty($this->configurations->publicKey)){
-            /** @var auth $authDbLoader */
             try {
-                $authDbLoader = databaseFactory::create(abstractConfigurations::DB_AUTH);
-            } catch (dbConnectionException $e) {
-                $authDbLoader = null;
+                $this->configurations->privateKey = $session->getPrivateKey($this->configurations->publicKey, $this->configurations->clientId);
+            } catch (Exception $e) {
+                if ($e->getCode() === 2){
+                    errorReporter::report($this->configurations, 11, 'Expired', 401);
+                } else {
+                    errorReporter::report($this->configurations, 11, null, 401);
+                }
             }
-
-            /** @var array $auth */
-            try {
-                $auth = $authDbLoader->loadFromPublicKeyAndClientId($this->configurations->publicKey, $client['id']);
-            } catch (dbRecordNotFoundException $e) {
-                errorReporter::report($this->configurations, 11, null, 401);
-            }
-
-
-            if (time() > strtotime($auth['expirationDate']) ) {
-                errorReporter::report($this->configurations, 11, 'Expired', 401);
-            }
-
-            $this->configurations->privateKey = $auth['privateKey'];
         }
 
         $validatedSignature = $this->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey, $time);
