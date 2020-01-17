@@ -3,9 +3,11 @@ namespace carlonicora\minimalism\databases;
 
 use carlonicora\minimalism\database\abstractDatabaseManager;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
+use carlonicora\minimalism\interfaces\securityClientInterface;
+use Exception;
+use RuntimeException;
 
-class clients extends abstractDatabaseManager
-{
+class clients extends abstractDatabaseManager implements securityClientInterface{
     protected $dbToUse = 'minimalism';
     protected $fields = [
         'id'=>self::PARAM_TYPE_INTEGER,
@@ -20,6 +22,22 @@ class clients extends abstractDatabaseManager
         'id'=>self::PARAM_TYPE_INTEGER];
 
     protected $autoIncrementField = 'id';
+
+    /**
+     * @param string $clientId
+     * @return string
+     * @throws Exception
+     */
+    public function getSecret(string $clientId): string {
+        try {
+            $client = $this->loadFromClientId($clientId);
+        } catch (dbRecordNotFoundException $e) {
+            throw new RuntimeException('Record not found', 1);
+        }
+
+        return $client['clientSecret'];
+    }
+
 
     /**
      * @param $clientId

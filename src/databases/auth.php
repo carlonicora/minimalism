@@ -3,10 +3,13 @@ namespace carlonicora\minimalism\databases;
 
 use carlonicora\minimalism\database\abstractDatabaseManager;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
+use carlonicora\minimalism\interfaces\securitySessionInterface;
+use RuntimeException;
+use Exception;
 
-class auth extends abstractDatabaseManager
-{
+class auth extends abstractDatabaseManager implements securitySessionInterface {
     protected $dbToUse = 'minimalism';
+
     protected $fields = [
         'authId'=>self::PARAM_TYPE_INTEGER,
         'userId'=>self::PARAM_TYPE_INTEGER,
@@ -19,6 +22,27 @@ class auth extends abstractDatabaseManager
         'authId'=>self::PARAM_TYPE_INTEGER];
 
     protected $autoIncrementField = 'authId';
+
+    /**
+     * @param string $publicKey
+     * @param string $clientId
+     * @return string
+     * @throws Exception
+     */
+    public function getPrivateKey(string $publicKey, string $clientId): string {
+        try {
+            $auth = $this->loadFromPublicKeyAndClientId($publicKey, $clientId);
+        } catch (dbRecordNotFoundException $e) {
+            throw new RuntimeException('Record not found', 1);
+        }
+
+        if (time() > strtotime($auth['expirationDate']) ) {
+            throw new RuntimeException('Session expired', 2);
+
+        }
+
+        return $auth['privateKey'];
+    }
 
     /**
      * @param $publicKey
