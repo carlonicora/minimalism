@@ -1,10 +1,14 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\database\databaseFactory;
 use carlonicora\minimalism\databases\auth;
 use carlonicora\minimalism\databases\clients;
+use carlonicora\minimalism\exceptions\dbConnectionException;
 use carlonicora\minimalism\helpers\logger;
 use carlonicora\minimalism\interfaces\configurationsInterface;
+use carlonicora\minimalism\interfaces\securityClientInterface;
+use carlonicora\minimalism\interfaces\securitySessionInterface;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
@@ -68,8 +72,11 @@ abstract class abstractConfigurations implements configurationsInterface {
     /** @var logger */
     public $logger;
 
-    public const DB_AUTH = auth::class;
-    public const DB_CLIENTS = clients::class;
+    /** @var securityClientInterface */
+    protected $securityClient;
+
+    /** @var securitySessionInterface */
+    protected $securitySession;
 
     abstract public function serialiseCookies(): string;
     abstract public function unserialiseCookies(string $cookies): void;
@@ -153,6 +160,11 @@ abstract class abstractConfigurations implements configurationsInterface {
                 }
             }
         }
+
+        try {
+            $this->securityClient = databaseFactory::create(clients::class);
+            $this->securitySession = databaseFactory::create(auth::class);
+        } catch (dbConnectionException $e) {}
     }
 
     /**
