@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\databases;
+namespace carlonicora\minimalism\databases\security\tables;
 
 use carlonicora\minimalism\database\abstractDatabaseManager;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
@@ -8,20 +8,14 @@ use Exception;
 use RuntimeException;
 
 class clients extends abstractDatabaseManager implements securityClientInterface{
-    protected $dbToUse = 'minimalism';
     protected $fields = [
-        'id'=>self::PARAM_TYPE_INTEGER,
-        'name'=>self::PARAM_TYPE_STRING,
-        'description'=>self::PARAM_TYPE_STRING,
-        'url'=>self::PARAM_TYPE_STRING,
-        'callbackURL'=>self::PARAM_TYPE_STRING,
-        'clientId'=>self::PARAM_TYPE_STRING,
-        'clientSecret'=>self::PARAM_TYPE_STRING];
-
-    protected $primaryKey = [
-        'id'=>self::PARAM_TYPE_INTEGER];
-
-    protected $autoIncrementField = 'id';
+        'id'=>self::INTEGER+self::PRIMARY_KEY+self::AUTO_INCREMENT,
+        'name'=>self::STRING,
+        'description'=>self::STRING,
+        'url'=>self::STRING,
+        'callbackURL'=>self::STRING,
+        'clientId'=>self::STRING,
+        'clientSecret'=>self::STRING];
 
     /**
      * @param string $clientId

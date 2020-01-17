@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\databases;
+namespace carlonicora\minimalism\databases\security\tables;
 
 use carlonicora\minimalism\database\abstractDatabaseManager;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
@@ -8,20 +8,13 @@ use RuntimeException;
 use Exception;
 
 class auth extends abstractDatabaseManager implements securitySessionInterface {
-    protected $dbToUse = 'minimalism';
-
     protected $fields = [
-        'authId'=>self::PARAM_TYPE_INTEGER,
-        'userId'=>self::PARAM_TYPE_INTEGER,
-        'clientId'=>self::PARAM_TYPE_INTEGER,
-        'expirationDate'=>self::PARAM_TYPE_STRING,
-        'publicKey'=>self::PARAM_TYPE_STRING,
-        'privateKey'=>self::PARAM_TYPE_STRING];
-
-    protected $primaryKey = [
-        'authId'=>self::PARAM_TYPE_INTEGER];
-
-    protected $autoIncrementField = 'authId';
+        'authId'=>self::INTEGER+self::PRIMARY_KEY+self::AUTO_INCREMENT,
+        'userId'=>self::INTEGER,
+        'clientId'=>self::INTEGER,
+        'expirationDate'=>self::STRING,
+        'publicKey'=>self::STRING,
+        'privateKey'=>self::STRING];
 
     /**
      * @param string $publicKey
