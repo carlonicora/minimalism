@@ -162,7 +162,7 @@ class controller {
         $security = new security($this->configurations);
         //$url = ($_SERVER['SERVER_PORT'] == '80' ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $url = $_SERVER['REQUEST_URI'];
-        if (!$security->validateSignature($this->signature, $this->verb, $url,  $this->parameterValues)){
+        if (!$security->validateSignature($this->signature, $this->verb, $url,  $this->parameterValues, $this->configurations->getSecurityClient(), $this->configurations->getSecuritySession())){
             errorReporter::report($this->configurations,  11, 'Failure in validating signature', 401);
         }
     }
