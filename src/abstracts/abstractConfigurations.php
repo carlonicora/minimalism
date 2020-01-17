@@ -252,9 +252,9 @@ abstract class abstractConfigurations implements configurationsInterface {
 
     /**
      * @param string $databaseName
-     * @return array
+     * @return null|array
      */
-    public function getDatabaseConnectionString($databaseName): array {
+    public function getDatabaseConnectionString($databaseName): ?array {
         $response = null;
 
         if (isset($this->databaseConnectionStrings) && array_key_exists($databaseName, $this->databaseConnectionStrings)){

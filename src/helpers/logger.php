@@ -74,7 +74,7 @@ class logger {
 
         $errorLog = date('Y-m-d H:i:s') . ',' . $sql . ',';
         if (!empty($parameters)){
-            $errorLog .= json_encode($parameters);
+            $errorLog .= json_encode($parameters, JSON_THROW_ON_ERROR, 512);
         }
         $errorLog .= PHP_EOL;
         error_log($errorLog, 3, $this->queryFile);

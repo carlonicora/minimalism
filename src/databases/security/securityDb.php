@@ -14,9 +14,9 @@ class securityDb {
     private static $clients;
 
     /**
-     * @return auth
+     * @return null|auth
      */
-    public static function auth(): auth {
+    public static function auth(): ?auth {
         if (!isset(self::$auth)){
             try {
                 self::$auth = databaseFactory::create(auth::class);
@@ -28,9 +28,9 @@ class securityDb {
     }
 
     /**
-     * @return clients
+     * @return null|clients
      */
-    public static function clients(): clients {
+    public static function clients(): ?clients {
         if (!isset(self::$clients)){
             try {
                 self::$clients = databaseFactory::create(clients::class);

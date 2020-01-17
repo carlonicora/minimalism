@@ -18,9 +18,9 @@ interface configurationsInterface{
 
     /**
      * @param string $databaseName
-     * @return array
+     * @return null|array
      */
-    public function getDatabaseConnectionString($databaseName): array;
+    public function getDatabaseConnectionString($databaseName): ?array;
 
     /**
      * @param string $databaseName
