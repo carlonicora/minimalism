@@ -2,9 +2,7 @@
 namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\database\databaseFactory;
-use carlonicora\minimalism\databases\auth;
-use carlonicora\minimalism\databases\clients;
-use carlonicora\minimalism\exceptions\dbConnectionException;
+use carlonicora\minimalism\databases\security\securityDb;
 use carlonicora\minimalism\helpers\logger;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use carlonicora\minimalism\interfaces\securityClientInterface;
@@ -56,9 +54,6 @@ abstract class abstractConfigurations implements configurationsInterface {
 
     /** @var string */
     public $clientSecret;
-
-    /** @var string */
-    public $userId;
 
     /** @var string */
     public $httpHeaderSignature;
@@ -163,10 +158,8 @@ abstract class abstractConfigurations implements configurationsInterface {
 
         databaseFactory::initialise($this);
 
-        try {
-            $this->securityClient = databaseFactory::create(clients::class);
-            $this->securitySession = databaseFactory::create(auth::class);
-        } catch (dbConnectionException $e) {}
+        $this->securityClient = securityDb::clients();
+        $this->securitySession = securityDb::auth();
     }
 
     /**
