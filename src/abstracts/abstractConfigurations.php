@@ -161,6 +161,8 @@ abstract class abstractConfigurations implements configurationsInterface {
             }
         }
 
+        databaseFactory::initialise($this);
+
         try {
             $this->securityClient = databaseFactory::create(clients::class);
             $this->securitySession = databaseFactory::create(auth::class);
@@ -282,5 +284,19 @@ abstract class abstractConfigurations implements configurationsInterface {
      */
     public function cleanNonPersistentVariables(): void{
         $this->databases = [];
+    }
+
+    /**
+     * @return securityClientInterface
+     */
+    public function getSecurityClient(): securityClientInterface {
+        return $this->securityClient;
+    }
+
+    /**
+     * @return securitySessionInterface
+     */
+    public function getSecuritySession(): securitySessionInterface {
+        return $this->securitySession;
     }
 }
