@@ -41,7 +41,7 @@ class security {
             $body_json = json_encode($body, JSON_THROW_ON_ERROR, 512);
             $strings[] = md5($body_json);
         }
-        if (isset($privateKey)) {
+        if (!empty($privateKey)) {
             $strings[] = $privateKey;
         }
 
