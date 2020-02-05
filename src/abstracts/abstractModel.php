@@ -1,6 +1,9 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\dataObjects\parameter;
+use carlonicora\minimalism\exceptions\requiredParameterException;
+
 abstract class abstractModel {
     /** @var abstractConfigurations */
     protected $configurations;
@@ -32,12 +35,16 @@ abstract class abstractModel {
     /** @var array */
     protected $response;
 
+    /** @var array */
+    protected $parameters = [];
+
     /**
      * model constructor.
      * @param abstractConfigurations $configurations
      * @param array $parameterValues
      * @param array $parameterValueList
      * @param array $file
+     * @throws requiredParameterException
      */
     public function __construct($configurations, $parameterValues, $parameterValueList, $file=null){
         $this->configurations = $configurations;
@@ -45,9 +52,27 @@ abstract class abstractModel {
         $this->parameterValueList = $parameterValueList;
         $this->file = $file;
 
+        $this->buildParameters();
+
         $this->redirectPage = null;
 
         $this->response = [];
+    }
+
+    /**
+     * @throws requiredParameterException
+     */
+    private function buildParameters(): void{
+        /** @var parameter $parameter */
+        foreach ($this->parameters as $parameter) {
+            if (array_key_exists($parameter->name, $this->parameterValues)) {
+                $this->{$parameter->name} = $this->parameterValues[$parameter->name];
+            } else if (array_key_exists($parameter->order, $this->parameterValueList)){
+                $this->{$parameter->name} = $this->parameterValueList[$parameter->order];
+            } else if ($parameter->isRequired) {
+                throw new requiredParameterException('Required parameter' . $parameter->name . ' missing.');
+            }
+        }
     }
 
     /**
