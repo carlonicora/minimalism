@@ -90,24 +90,22 @@ class controller {
                 /** @var abstractWebModel $model */
                 $model = $this->model;
 
+                if (array_key_exists('forceRedirect', $data)) {
+                    header('Location:' . $data['forceRedirect']);
+                    exit;
+                }
+
                 $data['baseUrl'] = $this->configurations->getBaseUrl();
-                if ($model->generateData()) {
-                    $data['page'] = $model->getResponse();
+                $data['page'] = $model->generateData();
 
-                    if (array_key_exists('forceRedirect', $data)) {
-                        header('Location:' . $data['forceRedirect']);
-                        exit;
+                if ($model->getViewName() !== '') {
+                    try {
+                        $response = $this->view->render($model->getViewName() . '.twig', $data);
+                    } catch (Exception $e) {
+                        $response = '';
                     }
-
-                    if ($model->getViewName() !== '') {
-                        try {
-                            $response = $this->view->render($model->getViewName() . '.twig', $data);
-                        } catch (Exception $e) {
-                            $response = '';
-                        }
-                    } else {
-                        $response = json_encode($data, JSON_THROW_ON_ERROR, 512);
-                    }
+                } else {
+                    $response = json_encode($data, JSON_THROW_ON_ERROR, 512);
                 }
 
                 if ($response){
@@ -120,11 +118,9 @@ class controller {
                 /** @var abstractApiModel $model */
                 $model = $this->model;
 
-                if ($model->{$this->verb}()){
-                    $data = $model->getResponse();
+                $data = $model->{$this->verb}();
 
-                    $response = json_encode($data, JSON_THROW_ON_ERROR, 512);
-                }
+                $response = json_encode($data, JSON_THROW_ON_ERROR, 512);
 
                 break;
             case abstractConfigurations::MINIMALISM_CLI:
