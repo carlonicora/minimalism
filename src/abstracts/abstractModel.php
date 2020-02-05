@@ -1,7 +1,6 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\dataObjects\parameter;
 use carlonicora\minimalism\exceptions\requiredParameterException;
 
 abstract class abstractModel {
@@ -63,14 +62,13 @@ abstract class abstractModel {
      * @throws requiredParameterException
      */
     private function buildParameters(): void{
-        /** @var parameter $parameter */
         foreach ($this->parameters as $parameter) {
-            if (array_key_exists($parameter->name, $this->parameterValues)) {
-                $this->{$parameter->name} = $this->parameterValues[$parameter->name];
-            } else if (array_key_exists($parameter->order, $this->parameterValueList)){
-                $this->{$parameter->name} = $this->parameterValueList[$parameter->order];
-            } else if ($parameter->isRequired) {
-                throw new requiredParameterException('Required parameter' . $parameter->name . ' missing.');
+            if (array_key_exists($parameter['name'], $this->parameterValues)) {
+                $this->{$parameter['name']} = $this->parameterValues[$parameter['name']];
+            } else if (array_key_exists('order', $parameter) && array_key_exists($parameter['order'], $this->parameterValueList)){
+                $this->{$parameter['name']} = $this->parameterValueList[$parameter['order']];
+            } else if (array_key_exists('isRequired', $parameter) && $parameter['isRequired']) {
+                throw new requiredParameterException('Required parameter' . $parameter['name'] . ' missing.');
             }
         }
     }
