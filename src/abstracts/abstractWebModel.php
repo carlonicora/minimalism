@@ -10,7 +10,9 @@ abstract class abstractWebModel extends abstractModel {
     /**
      * @return array
      */
-    abstract public function generateData(): array;
+    public function generateData(): array{
+        return [];
+    }
 
     /**
      * @return string

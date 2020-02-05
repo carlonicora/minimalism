@@ -32,9 +32,6 @@ abstract class abstractModel {
     protected $requiresAuthPUT=false;
 
     /** @var array */
-    protected $response;
-
-    /** @var array */
     protected $parameters = [];
 
     /**
@@ -54,8 +51,6 @@ abstract class abstractModel {
         $this->buildParameters();
 
         $this->redirectPage = null;
-
-        $this->response = [];
     }
 
     /**
