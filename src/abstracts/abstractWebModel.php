@@ -8,9 +8,9 @@ abstract class abstractWebModel extends abstractModel {
     protected $viewName;
     
     /**
-     * @return bool
+     * @return array
      */
-    abstract public function generateData(): bool;
+    abstract public function generateData(): array;
 
     /**
      * @return string

@@ -4,22 +4,22 @@ namespace carlonicora\minimalism\abstracts;
 
 abstract class abstractApiModel extends abstractModel {
     /**
-     * @return bool
+     * @return array
      */
-    abstract public function DELETE(): bool;
+    abstract public function DELETE(): array;
 
     /**
-     * @return bool
+     * @return array
      */
-    abstract public function GET(): bool;
+    abstract public function GET(): array;
 
     /**
-     * @return bool
+     * @return array
      */
-    abstract public function POST(): bool;
+    abstract public function POST(): array;
 
     /**
-     * @return bool
+     * @return array
      */
-    abstract public function PUT(): bool;
+    abstract public function PUT(): array;
 }

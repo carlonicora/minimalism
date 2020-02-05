@@ -4,7 +4,7 @@ namespace carlonicora\minimalism\abstracts;
 
 abstract class abstractCliModel extends abstractModel {
     /**
-     * @return bool
+     * @return array
      */
-    abstract public function run(): bool;
+    abstract public function run(): array;
 }
