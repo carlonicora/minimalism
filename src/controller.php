@@ -203,7 +203,11 @@ class controller {
             switch ($this->verb) {
                 case 'POST':
                 case 'PUT':
-                    $this->parameterValues = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
+                    $input = file_get_contents('php://input');
+
+                    if (!empty($input)) {
+                        $this->parameterValues = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+                    }
 
                     if (isset($_FILES) && count($_FILES) === 1) {
                         $this->file = array_values($_FILES)[0];
