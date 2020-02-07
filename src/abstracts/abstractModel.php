@@ -32,7 +32,10 @@ abstract class abstractModel {
     protected $requiresAuthPUT=false;
 
     /** @var array */
-    protected $parameters = [];
+    //protected $parameters = [];
+
+    /** @var string */
+    protected $definition;
 
     /**
      * model constructor.
@@ -57,6 +60,25 @@ abstract class abstractModel {
      * @throws requiredParameterException
      */
     private function buildParameters(): void{
+        if ($this->definition !== null) {
+            $definitions = explode('/', $this->definition);
+            foreach ($definitions as $definitionKey=>$definitionValue){
+                if (($definitionKey > 1) && strpos($definitionValue, '{') === 0) {
+                    preg_match('#{$(.*?)}#', $definitionValue, $variableNames);
+                    $variableName = $variableNames[1];
+
+                    if (array_key_exists($variableName, $this->parameterValues)) {
+                        $this->$variableName = $this->parameterValues[$variableName];
+                    } else if (array_key_exists(($definitionKey-2), $this->parameterValueList)){
+                        $this->$variableName = $this->parameterValueList[($definitionKey-2)];
+                    } else if (substr($definitionValue, strlen($definitionValue) - 1) === '*'){
+                        throw new requiredParameterException('Required parameter' . $variableName . ' missing.');
+                    }
+                }
+            }
+        }
+
+        /*
         foreach ($this->parameters as $parameter) {
             if (array_key_exists($parameter['name'], $this->parameterValues)) {
                 $this->{$parameter['name']} = $this->parameterValues[$parameter['name']];
@@ -66,6 +88,7 @@ abstract class abstractModel {
                 throw new requiredParameterException('Required parameter' . $parameter['name'] . ' missing.');
             }
         }
+        */
     }
 
     /**
