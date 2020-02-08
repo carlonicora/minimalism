@@ -199,10 +199,15 @@ class controller {
             switch ($this->verb) {
                 case 'POST':
                 case 'PUT':
+                case 'DELETE':
                     $input = file_get_contents('php://input');
 
                     if (!empty($input)) {
-                        $this->parameterValues = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+                        try {
+                            $this->parameterValues = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+                        } catch (Exception $e) {
+                            $this->parameterValues = null;
+                        }
                     }
 
                     if (isset($_FILES) && count($_FILES) === 1) {
@@ -215,7 +220,6 @@ class controller {
                         }
                     }
                     break;
-                case 'DELETE':
                 case 'GET':
                     foreach ($_GET as $parameter => $value) {
                         if ($parameter !== 'path' && $parameter !== 'XDEBUG_SESSION_START') {
