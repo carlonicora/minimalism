@@ -69,11 +69,9 @@ abstract class abstractApiCaller {
                 break;
             case 'DELETE':
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-                if (isset($body)) {
-                    $query = http_build_query($body);
-                    if (!empty($query)) {
-                        $endpoint .= ((substr_count($endpoint, '?') > 0) ? '&' : '?') . $query;
-                    }
+                $httpHeaders[] = 'Content-Type:application/json';
+                if (is_array($body)) {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body, JSON_THROW_ON_ERROR, 512));
                 }
                 break;
             default:

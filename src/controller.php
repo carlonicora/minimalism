@@ -203,6 +203,7 @@ class controller {
             switch ($this->verb) {
                 case 'POST':
                 case 'PUT':
+                case 'DELETE':
                     $input = file_get_contents('php://input');
 
                     if (!empty($input)) {
@@ -219,7 +220,6 @@ class controller {
                         }
                     }
                     break;
-                case 'DELETE':
                 case 'GET':
                     foreach ($_GET as $parameter => $value) {
                         if ($parameter !== 'path' && $parameter !== 'XDEBUG_SESSION_START') {
