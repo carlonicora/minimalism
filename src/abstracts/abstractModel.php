@@ -31,9 +31,6 @@ abstract class abstractModel {
     /** @var bool */
     protected $requiresAuthPUT=false;
 
-    /** @var array */
-    //protected $parameters = [];
-
     /** @var string */
     protected $definition;
 
@@ -77,18 +74,6 @@ abstract class abstractModel {
                 }
             }
         }
-
-        /*
-        foreach ($this->parameters as $parameter) {
-            if (array_key_exists($parameter['name'], $this->parameterValues)) {
-                $this->{$parameter['name']} = $this->parameterValues[$parameter['name']];
-            } else if (array_key_exists('order', $parameter) && array_key_exists($parameter['order'], $this->parameterValueList)){
-                $this->{$parameter['name']} = $this->parameterValueList[$parameter['order']];
-            } else if (array_key_exists('isRequired', $parameter) && $parameter['isRequired']) {
-                throw new requiredParameterException('Required parameter' . $parameter['name'] . ' missing.');
-            }
-        }
-        */
     }
 
     /**
