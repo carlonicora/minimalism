@@ -8,11 +8,6 @@ use mysqli;
 use Exception;
 
 abstract class abstractDatabaseManager {
-    public const PARAM_TYPE_INTEGER = 'i';
-    public const PARAM_TYPE_DOUBLE = 'd';
-    public const PARAM_TYPE_STRING = 's';
-    public const PARAM_TYPE_BLOB = 'b';
-
     public const RECORD_STATUS_NEW = 1;
     public const RECORD_STATUS_UNCHANGED = 2;
     public const RECORD_STATUS_UPDATED = 3;
@@ -245,7 +240,6 @@ abstract class abstractDatabaseManager {
      * @param string $sql
      * @param array $parameters
      * @return array
-     * @throws dbRecordNotFoundException
      */
     protected function runRead($sql, $parameters=null): array {
         $response = null;
@@ -261,16 +255,14 @@ abstract class abstractDatabaseManager {
 
         $results = $statement->get_result();
 
-        if (!empty($results) && $results->num_rows > 0){
-            $response = array();
+        $response = [];
 
+        if (!empty($results) && $results->num_rows > 0){
             while ($record = $results->fetch_assoc()){
                 $this->addOriginalValues($record);
 
                 $response[] = $record;
             }
-        } else {
-            throw new dbRecordNotFoundException('No records found');
         }
 
         $statement->close();
@@ -502,7 +494,7 @@ abstract class abstractDatabaseManager {
                 $fieldValue = $fieldValue ? 1 : 0;
             }
 
-            if ($fieldValue !== 'NULL' && ($fieldType === self::PARAM_TYPE_STRING || $fieldType === self::PARAM_TYPE_BLOB)){
+            if ($fieldValue !== 'NULL' && ($fieldType === self::STRING || $fieldType === self::BLOB)){
                 $response .= '\'' . $fieldValue . '\',';
             } else {
                 $response .= $fieldValue . ',';
@@ -672,7 +664,6 @@ abstract class abstractDatabaseManager {
 
     /**
      * @return array|null
-     * @throws dbRecordNotFoundException
      */
     public function loadAll(): ?array {
         $sql = 'SELECT * FROM ' . $this->tableName . ';';
