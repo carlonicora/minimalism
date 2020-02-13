@@ -1,7 +1,8 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\exceptions\requiredParameterException;
+use carlonicora\minimalism\helpers\errorReporter;
+use carlonicora\minimalism\helpers\idEncrypter;
 
 abstract class abstractModel {
     /** @var abstractConfigurations */
@@ -32,7 +33,13 @@ abstract class abstractModel {
     protected $requiresAuthPUT=false;
 
     /** @var string */
-    protected $definition;
+    public $verb;
+
+    /** @var array */
+    protected $parameters;
+
+    /** @var array */
+    protected $encryptedParameters;
 
     /**
      * model constructor.
@@ -40,7 +47,6 @@ abstract class abstractModel {
      * @param array $parameterValues
      * @param array $parameterValueList
      * @param array $file
-     * @throws requiredParameterException
      */
     public function __construct($configurations, $parameterValues, $parameterValueList, $file=null){
         $this->configurations = $configurations;
@@ -54,23 +60,30 @@ abstract class abstractModel {
     }
 
     /**
-     * @throws requiredParameterException
+     *
      */
     private function buildParameters(): void{
-        if ($this->definition !== null) {
-            $definitions = explode('/', $this->definition);
-            foreach ($definitions as $definitionKey=>$definitionValue){
-                if (($definitionKey > 1) && strpos($definitionValue, '{') === 0) {
-                    preg_match('#{$(.*?)}#', $definitionValue, $variableNames);
-                    $variableName = $variableNames[1];
+        $idEncrypter = new idEncrypter($this->configurations);
 
-                    if (array_key_exists($variableName, $this->parameterValues)) {
-                        $this->$variableName = $this->parameterValues[$variableName];
-                    } else if (array_key_exists(($definitionKey-2), $this->parameterValueList)){
-                        $this->$variableName = $this->parameterValueList[($definitionKey-2)];
-                    } else if (substr($definitionValue, strlen($definitionValue) - 1) === '*'){
-                        throw new requiredParameterException('Required parameter' . $variableName . ' missing.');
-                    }
+        if ($this->parameters !== null) {
+            if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_API) {
+                $parameters = $this->parameters[$this->verb];
+            } else  {
+                $parameters = $this->parameters;
+            }
+
+            foreach ($parameters ?? [] as $parameterName=>$isParameterRequired){
+                if (array_key_exists($parameterName, $this->parameterValues)) {
+                    $this->$parameterName = $this->parameterValues[$parameterName];
+                } else if (array_key_exists(($parameterName), $this->parameterValueList)){
+                    $this->$parameterName = $this->parameterValueList[($parameterName)];
+                } else if ($isParameterRequired){
+                    errorReporter::returnHttpCode(412,'Required parameter' . $parameterName . ' missing.');
+                    exit;
+                }
+
+                if (!empty($this->$parameterName) && array_key_exists($parameterName, $this->encryptedParameters)){
+                    $this->$parameterName = $idEncrypter->decryptId($this->$parameterName);
                 }
             }
         }
