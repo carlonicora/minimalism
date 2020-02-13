@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\businessObjects\abstracts;
 
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
-use Hashids\Hashids;
+use carlonicora\minimalism\helpers\idEncrypter;
 
 abstract class abstractBusinessObject implements businessObjectsInterface {
 
@@ -18,11 +18,11 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     /** @var array */
     protected $oneToOneRelationFields = [];
 
-    /** @var Hashids */
-    protected $hashIds;
+    /** @var idEncrypter */
+    protected $encrypter;
 
-    public function __construct(Hashids $hashIds) {
-        $this->hashIds = $hashIds;
+    public function __construct(idEncrypter $encrypter) {
+        $this->encrypter = $encrypter;
     }
 
     /**
@@ -32,7 +32,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         $result = [];
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
-            $result[$hashEncodedField] = $this->hashIds->encodeHex($data[$hashEncodedField]);
+            $result[$hashEncodedField] = $this->encrypter->encryptId($data[$hashEncodedField]);
         }
 
         foreach ($this->simpleFields as $simpleField) {
@@ -41,7 +41,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
         foreach ($this->oneToOneRelationFields as $relationFieldName => $relatedBobjClass) {
             /** @var businessObjectsInterface $relatedBusinessObject */
-            $relatedBusinessObject = new $relatedBobjClass($this->hashIds);
+            $relatedBusinessObject = new $relatedBobjClass($this->encrypter);
 
             // TODO separate related object data to $data[$relationFieldName]
             $result[$relationFieldName] = $relatedBusinessObject->fromDbModel($data);
@@ -57,7 +57,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         $result = [];
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
-            $result[$hashEncodedField] = $this->hashIds->decodeHex($data[$hashEncodedField]);
+            $result[$hashEncodedField] = $this->encrypter->decryptId($data[$hashEncodedField]);
         }
 
         foreach ($this->simpleFields as $simpleField) {

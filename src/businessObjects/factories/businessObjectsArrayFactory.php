@@ -14,8 +14,7 @@ class businessObjectsArrayFactory {
      * businessObjectsArrayFactory constructor.
      * @param abstractConfigurations $configurations
      */
-    public function __construct(abstractConfigurations $configurations)
-    {
+    public function __construct(abstractConfigurations $configurations) {
         $this->configurations = $configurations;
     }
 

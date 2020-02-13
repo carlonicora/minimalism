@@ -4,14 +4,15 @@ namespace carlonicora\minimalism\businessObjects\factories;
 use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
 use carlonicora\minimalism\exceptions\configurationException;
-use Hashids\Hashids;
+use carlonicora\minimalism\helpers\idEncrypter;
 
 class businessObjectsFactory {
 
     /** @var abstractConfigurations  */
     protected $configurations;
-    /** @var Hashids  */
-    protected $hashIds;
+
+    /** @var idEncrypter  */
+    protected $encrypter;
 
     /**
      * businessObjectsFactory constructor.
@@ -22,11 +23,11 @@ class businessObjectsFactory {
     {
         $this->configurations = $configurations;
 
-        if (empty($this->configurations->apiKey) || empty($this->configurations->minHashLength)) {
-            throw new configurationException('apiKey and minHashLength settings required in configuration');
+        if (empty($this->configurations->encrypterKey) || empty($this->configurations->encrypterLength)) {
+            throw new configurationException('Encrypter requires a Key and a Length in configuration');
         }
 
-        $this->hashIds = new Hashids($this->configurations->apiKey, $this->configurations->minHashLength);
+        $this->encrypter = new idEncrypter($this->configurations);
     }
 
     /**
@@ -34,7 +35,7 @@ class businessObjectsFactory {
      * @return businessObjectsInterface
      */
     public function create(string $businessObjectClassName): businessObjectsInterface {
-        return new $businessObjectClassName($this->hashIds);
+        return new $businessObjectClassName($this->encrypter);
     }
 
 }
