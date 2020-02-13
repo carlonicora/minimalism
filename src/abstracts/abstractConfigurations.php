@@ -73,6 +73,12 @@ abstract class abstractConfigurations implements configurationsInterface {
     /** @var securitySessionInterface */
     protected $securitySession;
 
+    /** @var string */
+    public $encrypterKey;
+
+    /** @var int */
+    public $encrypterLength;
+
     abstract public function serialiseCookies(): string;
     abstract public function unserialiseCookies(string $cookies): void;
 
@@ -126,6 +132,10 @@ abstract class abstractConfigurations implements configurationsInterface {
 
         $this->clientId = getenv('CLIENT_ID');
         $this->clientSecret = getenv('CLIENT_SECRET');
+
+        $this->encrypterKey = getenv('MINIMALISM_ENCRYPTER_KEY');
+        $this->encrypterLength = getenv('MINIMALISM_ENCRYPTER_LENGTH');
+
 
         $logEvents = getenv('MINIMALISM_LOG_EVENTS');
         if (!empty($logEvents) && $logEvents === 'true'){
