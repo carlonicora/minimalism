@@ -56,7 +56,11 @@ class errorReporter {
         return $returnValue;
     }
 
-    public static function returnHttpCode($code): void {
+    /**
+     * @param $code
+     * @param string|null $errorMessage
+     */
+    public static function returnHttpCode($code, string $errorMessage=null): void {
         switch ($code) {
             case 100: $text = 'Continue'; break;
             case 101: $text = 'Switching Protocols'; break;
@@ -106,6 +110,10 @@ class errorReporter {
         header($protocol . ' ' . $code . ' ' . $text);
 
         $GLOBALS['http_response_code'] = $code;
+
+        if ($errorMessage !== null){
+            echo $errorMessage;
+        }
 
         if ($code !== 200){
             exit;
