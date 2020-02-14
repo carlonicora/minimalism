@@ -32,7 +32,9 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         $result = [];
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
-            $result[$hashEncodedField] = $this->encrypter->encryptId($data[$hashEncodedField]);
+            if (false === empty($data[$hashEncodedField])) {
+                $result[$hashEncodedField] = $this->encrypter->encryptId((int)$data[$hashEncodedField]);
+            }
         }
 
         foreach ($this->simpleFields as $simpleField) {
@@ -57,7 +59,9 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         $result = [];
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
-            $result[$hashEncodedField] = $this->encrypter->decryptId($data[$hashEncodedField]);
+            if (false === empty($data[$hashEncodedField])) {
+                $result[$hashEncodedField] = $this->encrypter->decryptId($data[$hashEncodedField]);
+            }
         }
 
         foreach ($this->simpleFields as $simpleField) {

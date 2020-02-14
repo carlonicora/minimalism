@@ -29,6 +29,6 @@ class idEncrypter {
      * @return int
      */
     public function decryptId(string $encryptedId): int {
-        return $this->hashids->decodeHex($encryptedId);
+        return (int)$this->hashids->decodeHex($encryptedId);
     }
 }
