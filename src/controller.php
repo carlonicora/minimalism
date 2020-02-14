@@ -246,8 +246,7 @@ class controller {
         if (!class_exists($modelClass)){
             errorReporter::report($this->configurations, 3, null, 404);
         } else {
-            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file);
-            $this->model->verb = $this->verb;
+            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file, $this->verb);
         }
 
         if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_APP && $this->model->redirect() !== ''){
