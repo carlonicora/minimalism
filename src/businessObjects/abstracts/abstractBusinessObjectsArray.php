@@ -61,7 +61,7 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
      * @param string $parentId
      * @return array
      */
-    protected function buildTree(array &$elements, string $parentId = ''): array {
+    protected function buildTree(array &$elements, string $parentId = null): array {
         $branch = [];
 
         foreach ($elements as $id => $element) {
