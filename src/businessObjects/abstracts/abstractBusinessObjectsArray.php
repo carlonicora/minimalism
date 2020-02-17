@@ -65,7 +65,7 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
         $branch = [];
 
         foreach ($elements as $id => $element) {
-            if ($element[$this->businessObject->parentId] === $parentId) {
+            if (isset($element[$this->businessObject->parentId]) && $element[$this->businessObject->parentId] === $parentId) {
                 $children = $this->buildTree($elements, $id);
 
                 if ($children) {
