@@ -48,22 +48,29 @@ abstract class abstractModel {
      *
      */
     private function buildParameters(): void{
-        $idEncrypter = new idEncrypter($this->configurations);
-
         if ($this->parameters !== null) {
             $parameters = $this->getParameters();
 
-            foreach ($parameters ?? [] as $parameterName=>$isParameterRequired){
-                if (array_key_exists($parameterName, $this->parameterValues)) {
-                    $this->$parameterName = $this->parameterValues[$parameterName];
-                } else if (array_key_exists(($parameterName), $this->parameterValueList)){
-                    $this->$parameterName = $this->parameterValueList[($parameterName)];
+            $idEncrypter = new idEncrypter($this->configurations);
+
+            foreach ($parameters ?? [] as $parameterKey=>$value) {
+                $parameterName = $value;
+                $isParameterRequired = false;
+                if (is_array($value)) {
+                    $parameterName = $value['name'];
+                    $isParameterRequired = $value['required'] ?? false;
+                }
+
+                if (array_key_exists($parameterKey, $this->parameterValues)) {
+                    $this->$parameterName = $this->parameterValues[$parameterKey];
+                } else if (array_key_exists($parameterKey, $this->parameterValueList)){
+                    $this->$parameterName = $this->parameterValueList[$parameterKey];
                 } else if ($isParameterRequired){
                     errorReporter::returnHttpCode(412,'Required parameter' . $parameterName . ' missing.');
                     exit;
                 }
 
-                if (!empty($this->$parameterName) && array_key_exists($parameterName, $this->encryptedParameters)){
+                if (!empty($this->$parameterName) && in_array($parameterName, $this->encryptedParameters, true)){
                     $this->$parameterName = $idEncrypter->decryptId($this->$parameterName);
                 }
             }
