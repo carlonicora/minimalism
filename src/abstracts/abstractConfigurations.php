@@ -124,7 +124,7 @@ abstract class abstractConfigurations implements configurationsInterface {
                 break;
         }
         if ($this->applicationType !== self::MINIMALISM_CLI) {
-            $this->baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
+            $this->baseUrl = (isset($_SERVER['HTTPS']) || $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
         }
         $this->debugKey = getenv('DEBUG');
 
