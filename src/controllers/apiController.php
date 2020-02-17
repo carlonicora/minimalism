@@ -4,7 +4,6 @@ namespace carlonicora\minimalism\controllers;
 use carlonicora\minimalism\abstracts\abstractController;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\security;
-use function carlonicora\minimalism\abstracts\getallheaders;
 
 class apiController extends abstractController {
     /** @var string */
@@ -87,5 +86,22 @@ class apiController extends abstractController {
         $data = $this->model->{$this->verb}();
 
         return json_encode($data, JSON_THROW_ON_ERROR, 512);
+    }
+}
+
+if (!function_exists('getallheaders'))  {
+    function getallheaders()
+    {
+        if (!is_array($_SERVER)) {
+            return array();
+        }
+
+        $headers = array();
+        foreach ($_SERVER as $name => $value) {
+            if (strpos($name, 'HTTP_') === 0) {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
     }
 }
