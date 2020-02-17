@@ -20,21 +20,6 @@ abstract class abstractModel {
     /** @var string */
     public $redirectPage;
 
-    /** @var bool */
-    protected $requiresAuthDELETE=false;
-
-    /** @var bool */
-    protected $requiresAuthGET=false;
-
-    /** @var bool */
-    protected $requiresAuthPOST=false;
-
-    /** @var bool */
-    protected $requiresAuthPUT=false;
-
-    /** @var string */
-    public $verb;
-
     /** @var array */
     protected $parameters;
 
@@ -66,11 +51,7 @@ abstract class abstractModel {
      */
     private function buildParameters(): void{
         if ($this->parameters !== null) {
-            if ($this->configurations->applicationType === abstractConfigurations::MINIMALISM_API) {
-                $parameters = $this->parameters[$this->verb];
-            } else  {
-                $parameters = $this->parameters;
-            }
+            $parameters = $this->getParameters();
 
             $idEncrypter = new idEncrypter($this->configurations);
 
@@ -99,13 +80,10 @@ abstract class abstractModel {
     }
 
     /**
-     * @param $verb
-     * @return mixed
+     * @return array
      */
-    public function requiresAuth($verb): bool {
-        $authName = 'requiresAuth' . $verb;
-
-        return $this->$authName;
+    protected function getParameters(): array {
+        return $this->parameters;
     }
 
     /**
