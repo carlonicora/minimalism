@@ -10,6 +10,9 @@ class apiController extends abstractController {
     /** @var string */
     private $signature;
 
+    /** @var string */
+    public $verb;
+
     /**
      * apiController constructor.
      * @param $configurations
@@ -20,9 +23,23 @@ class apiController extends abstractController {
     public function __construct($configurations, $modelName = null, $parameterValueList = null, $parameterValues = null) {
         $this->initialiseVerb();
 
-        $this->validateSignature();
-
         parent::__construct($configurations, $modelName, $parameterValueList, $parameterValues);
+
+        $this->validateSignature();
+    }
+
+    /**
+     *
+     */
+    protected function initialiseVerb(): void {
+        $this->verb = $_SERVER['REQUEST_METHOD'];
+        if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+            if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
+                $this->verb = 'DELETE';
+            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
+                $this->verb = 'PUT';
+            }
+        }
     }
 
     /**

@@ -23,9 +23,6 @@ abstract class abstractController {
     /** @var  */
     protected $file;
 
-    /** @var string */
-    public $verb;
-
     /**
      * abstractController constructor.
      * @param $configurations
@@ -51,20 +48,6 @@ abstract class abstractController {
     }
 
     abstract public function render(): string;
-
-    /**
-     *
-     */
-    protected function initialiseVerb(): void {
-        $this->verb = $_SERVER['REQUEST_METHOD'];
-        if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
-            if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
-                $this->verb = 'DELETE';
-            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
-                $this->verb = 'PUT';
-            }
-        }
-    }
 
     /**
      *
@@ -134,8 +117,7 @@ abstract class abstractController {
         if (!class_exists($modelClass)){
             errorReporter::report($this->configurations, 3, null, 404);
         } else {
-            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file);
-            $this->model->verb = $this->verb;
+            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file, $this->verb);
         }
 
         if ($this->model->redirect() !== ''){

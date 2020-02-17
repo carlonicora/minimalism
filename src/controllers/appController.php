@@ -21,8 +21,6 @@ class appController extends abstractController {
      * @param null $parameterValues
      */
     public function __construct($configurations, $modelName = null, $parameterValueList = null, $parameterValues = null) {
-        $this->initialiseVerb();
-
         parent::__construct($configurations, $modelName, $parameterValueList, $parameterValues);
 
         $this->initialiseView();
