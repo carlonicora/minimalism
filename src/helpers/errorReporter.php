@@ -25,7 +25,7 @@ class errorReporter {
         error_log($errorLog.PHP_EOL, 3, $configurations->getErrorLog());
 
         if (isset($httpCode)) {
-            self::returnHttpCode($httpCode);
+            self::returnHttpCode($httpCode, $errorMessage);
         }
     }
 
