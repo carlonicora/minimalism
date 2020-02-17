@@ -43,6 +43,29 @@ class apiController extends abstractController {
     }
 
     /**
+     * @inheritDoc
+     */
+    protected function initialiseModel(string $modelName = null): void {
+        if (isset($modelName)) {
+            $this->modelName = str_replace('-', '\\', $modelName);
+        }
+
+        $configurationClassName = get_class($this->configurations);
+        $lastDashPosition = strrpos($configurationClassName, '\\');
+        $modelClass = substr_replace($configurationClassName, '\\models\\' . $this->modelName, $lastDashPosition);
+
+        if (!class_exists($modelClass)){
+            errorReporter::report($this->configurations, 3, null, 404);
+        }
+
+        $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file, $this->verb);
+
+        if ($this->model->redirect() !== ''){
+            $this->initialiseModel($this->model->redirect());
+        }
+    }
+
+    /**
      *
      */
     protected function validateSignature(): void {

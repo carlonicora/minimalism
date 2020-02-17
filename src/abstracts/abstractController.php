@@ -6,7 +6,7 @@ use Exception;
 
 abstract class abstractController {
     /** @var string */
-    protected $modelName;
+    protected $modelName = 'index';
 
     /** @var abstractConfigurations */
     protected $configurations;
@@ -15,10 +15,10 @@ abstract class abstractController {
     protected $model;
 
     /** @var array */
-    protected $parameterValues;
+    protected $parameterValues = [];
 
     /** @var array */
-    protected $parameterValueList;
+    protected $parameterValueList = [];
 
     /** @var  */
     protected $file;
@@ -40,23 +40,49 @@ abstract class abstractController {
             $this->initialiseParameters();
         }
 
-        if (isset($modelName)) {
-            $this->modelName = $modelName;
-        }
-
-        $this->initialiseModel();
+        $this->initialiseModel($modelName);
     }
 
     abstract public function render(): string;
 
-    /**
-     *
-     */
     protected function initialiseParameters(): void {
-        $this->modelName = 'index';
-        $this->parameterValues = array();
-        $this->parameterValueList = array();
+        $this->parseUriParameters();
 
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'GET':
+                foreach ($_GET as $parameter => $value) {
+                    if ($parameter !== 'path' && $parameter !== 'XDEBUG_SESSION_START') {
+                        $this->parameterValues[$parameter] = $value;
+                    }
+                }
+
+                break;
+            case 'POST':
+                $input = file_get_contents('php://input');
+
+                if (!empty($input)) {
+                    try {
+                        $this->parameterValues = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+                    } catch (Exception $e) {
+                        $this->parameterValues = null;
+                    }
+                }
+
+                if (isset($_FILES) && count($_FILES) === 1) {
+                    $this->file = array_values($_FILES)[0];
+                }
+
+                foreach ($_POST as $parameter => $value) {
+                    $this->parameterValues[$parameter] = $value;
+                }
+
+            break;
+        }
+
+    }
+
+    protected function parseUriParameters(): void {
+        // TODO overwrite this method in apiController to handle versions, for example /v1/discussion
         $uri = strtok($_SERVER['REQUEST_URI'], '?');
 
         if (!(isset($uri) && $uri === '/')) {
@@ -72,57 +98,28 @@ abstract class abstractController {
                 $isModelVariable = false;
             }
         }
-
-        if ($this->verb === 'GET') {
-            foreach ($_GET as $parameter => $value) {
-                if ($parameter !== 'path' && $parameter !== 'XDEBUG_SESSION_START') {
-                    $this->parameterValues[$parameter] = $value;
-                }
-            }
-        } else {
-            $input = file_get_contents('php://input');
-
-            if (!empty($input)) {
-                try {
-                    $this->parameterValues = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
-                } catch (Exception $e) {
-                    $this->parameterValues = null;
-                }
-            }
-
-            if (isset($_FILES) && count($_FILES) === 1) {
-                $this->file = array_values($_FILES)[0];
-            }
-
-            if (!isset($this->parameterValues)) {
-                foreach ($_POST as $parameter => $value) {
-                    $this->parameterValues[$parameter] = $value;
-                }
-            }
-        }
     }
 
     /**
-     *
+     * @param string|null $modelName
      */
-    private function initialiseModel(): void {
-        $this->modelName = str_replace('-', '\\', $this->modelName);
+    protected function initialiseModel(string $modelName = null): void {
+        if (isset($modelName)) {
+            $this->modelName = str_replace('-', '\\', $modelName);
+        }
 
-        $namespaces = explode('\\', get_class($this->configurations));
-        array_pop($namespaces);
-        $namespaces[] = 'models';
-        $namespaces[] = $this->modelName;
-        $modelClass = implode('\\', $namespaces);
+        $configurationClassName = get_class($this->configurations);
+        $lastDashPosition = strrpos($configurationClassName, '\\');
+        $modelClass = substr_replace($configurationClassName, '\\models\\' . $this->modelName, $lastDashPosition);
 
         if (!class_exists($modelClass)){
             errorReporter::report($this->configurations, 3, null, 404);
-        } else {
-            $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file, $this->verb);
         }
 
+        $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file);
+
         if ($this->model->redirect() !== ''){
-            $this->modelName = $this->model->redirect();
-            $this->initialiseModel();
+            $this->initialiseModel($this->model->redirect());
         }
     }
 }

@@ -32,14 +32,12 @@ abstract class abstractModel {
      * @param array $parameterValues
      * @param array $parameterValueList
      * @param array $file
-     * @param string $verb
      */
-    public function __construct($configurations, $parameterValues, $parameterValueList, $file=null, $verb=null){
+    public function __construct($configurations, $parameterValues, $parameterValueList, $file=null){
         $this->configurations = $configurations;
         $this->parameterValues = $parameterValues;
         $this->parameterValueList = $parameterValueList;
         $this->file = $file;
-        $this->verb = $verb;
 
         $this->buildParameters();
 

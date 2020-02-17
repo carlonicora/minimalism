@@ -21,10 +21,12 @@ abstract class abstractApiModel extends abstractModel {
     /** @var string */
     public $verb;
 
-
-    public function __construct($configurations, $parameterValues, $parameterValueList, $file=null, $verb=null) {
-        parent::__construct($configurations, $parameterValues, $parameterValueList, $file);
+    /**
+     * @inheritDoc
+     */
+    public function __construct($configurations, $parameterValues, $parameterValueList, $file=null, $verb) {
         $this->verb = $verb;
+        parent::__construct($configurations, $parameterValues, $parameterValueList, $file);
     }
     /**
      * @return array
