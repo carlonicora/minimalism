@@ -100,7 +100,7 @@ abstract class abstractController {
             $isModelVariable = true;
             foreach ($variables as $variable) {
                 if ($isModelVariable && !is_numeric($variable)) {
-                    $this->modelName = str_replace('-', '\\', $variable);;
+                    $this->modelName = str_replace('-', '\\', $variable);
                 } else {
                     $this->parameterValueList[] = $variable;
                 }
