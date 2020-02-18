@@ -28,6 +28,13 @@ class apiController extends abstractController {
     }
 
     /**
+     * @inheritDoc
+     */
+    protected function getHttpType(): string {
+        return $this->verb;
+    }
+
+    /**
      *
      */
     protected function initialiseVerb(): void {

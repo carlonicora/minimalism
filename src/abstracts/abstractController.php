@@ -48,7 +48,7 @@ abstract class abstractController {
     protected function initialiseParameters(): void {
         $this->parseUriParameters();
 
-        switch ($_SERVER['REQUEST_METHOD']) {
+        switch ($this->getHttpType()) {
             case 'GET':
                 foreach ($_GET as $parameter => $value) {
                     if ($parameter !== 'path' && $parameter !== 'XDEBUG_SESSION_START') {
@@ -58,6 +58,8 @@ abstract class abstractController {
 
                 break;
             case 'POST':
+            case 'PUT':
+            case 'DELETE':
                 $input = file_get_contents('php://input');
 
                 if (!empty($input)) {
@@ -79,6 +81,13 @@ abstract class abstractController {
             break;
         }
 
+    }
+
+    /**
+     * @return string
+     */
+    protected function getHttpType(): string {
+        return $_SERVER['REQUEST_METHOD'];
     }
 
     protected function parseUriParameters(): void {
