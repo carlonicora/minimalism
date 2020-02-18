@@ -111,8 +111,9 @@ abstract class abstractController {
 
     /**
      * @param string|null $modelName
+     * @param string|null $verb
      */
-    protected function initialiseModel(string $modelName = null): void {
+    protected function initialiseModel(string $modelName = null, string $verb=null): void {
         if (isset($modelName)) {
             $this->modelName = str_replace('-', '\\', $modelName);
         }
@@ -125,7 +126,7 @@ abstract class abstractController {
             errorReporter::report($this->configurations, 3, null, 404);
         }
 
-        $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file);
+        $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $verb, $this->file);
 
         if ($this->model->redirect() !== ''){
             $this->initialiseModel($this->model->redirect());
@@ -133,22 +134,3 @@ abstract class abstractController {
     }
 }
 
-/**
- *
- */
-if (!function_exists('getallheaders'))  {
-    function getallheaders()
-    {
-        if (!is_array($_SERVER)) {
-            return array();
-        }
-
-        $headers = array();
-        foreach ($_SERVER as $name => $value) {
-            if (strpos($name, 'HTTP_') === 0) {
-                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-            }
-        }
-        return $headers;
-    }
-}
