@@ -57,7 +57,7 @@ class apiController extends abstractController {
             errorReporter::report($this->configurations, 3, null, 404);
         }
 
-        $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->file, $this->verb);
+        $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $this->verb, $this->file);
 
         if ($this->model->redirect() !== ''){
             $this->initialiseModel($this->model->redirect());
