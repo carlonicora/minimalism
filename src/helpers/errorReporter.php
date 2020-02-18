@@ -50,6 +50,7 @@ class errorReporter {
             case 18: $returnValue = 'Security Code expired'; break;
             case 19: $returnValue = 'Security Code and User mismatch'; break;
             case 20: $returnValue = 'Error returned from API call'; break;
+            case 21: $returnValue = 'Error connecting to the database'; break;
             default: $returnValue = 'Generic Error'; break;
         }
 

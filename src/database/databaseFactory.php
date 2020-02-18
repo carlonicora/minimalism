@@ -1,12 +1,13 @@
 <?php
 namespace carlonicora\minimalism\database;
 
+use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\exceptions\dbConnectionException;
-use carlonicora\minimalism\interfaces\configurationsInterface;
+use carlonicora\minimalism\helpers\errorReporter;
 use mysqli;
 
 class databaseFactory {
-    /** @var configurationsInterface */
+    /** @var abstractConfigurations */
     protected static $configurations;
 
     /**
@@ -48,6 +49,7 @@ class databaseFactory {
             $connection->connect($dbConf['host'], $dbConf['username'], $dbConf['password'], $dbConf['dbName'], $dbConf['port']);
 
             if ($connection->connect_errno) {
+                errorReporter::report(self::$configurations, 21, $connection->connect_error);
                 throw new dbConnectionException($connection->connect_error);
             }
 
