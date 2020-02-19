@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\database\databaseFactory;
 use carlonicora\minimalism\databases\security\securityDb;
+use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\logger;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use carlonicora\minimalism\interfaces\securityClientInterface;
@@ -168,6 +169,7 @@ abstract class abstractConfigurations implements configurationsInterface {
         }
 
         databaseFactory::initialise($this);
+        encrypterFactory::initialise($this);
 
         $this->securityClient = securityDb::clients();
         $this->securitySession = securityDb::auth();

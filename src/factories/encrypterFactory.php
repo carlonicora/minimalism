@@ -14,14 +14,14 @@ class encrypterFactory {
     /**
      * @param abstractConfigurations $configurations
      */
-    public function initialise(abstractConfigurations $configurations): void {
+    public static function initialise(abstractConfigurations $configurations): void {
         self::$configurations = $configurations;
     }
 
     /**
      * @return idEncrypter
      */
-    public function encrypter(): idEncrypter {
+    public static function encrypter(): idEncrypter {
         if (self::$idEncrypter === null){
             self::$idEncrypter = new idEncrypter(self::$configurations);
         }
