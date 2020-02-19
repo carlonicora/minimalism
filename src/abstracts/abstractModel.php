@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\errorReporter;
-use carlonicora\minimalism\helpers\idEncrypter;
 
 abstract class abstractModel {
     /** @var abstractConfigurations */
@@ -51,8 +51,6 @@ abstract class abstractModel {
         if ($this->parameters !== null) {
             $parameters = $this->getParameters();
 
-            $idEncrypter = new idEncrypter($this->configurations);
-
             foreach ($parameters ?? [] as $parameterKey=>$value) {
                 $parameterName = $value;
                 $isParameterRequired = false;
@@ -71,7 +69,7 @@ abstract class abstractModel {
                 }
 
                 if (!empty($this->$parameterName) && in_array($parameterName, $this->encryptedParameters, true)){
-                    $this->$parameterName = $idEncrypter->decryptId($this->$parameterName);
+                    $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->$parameterName);
                 }
             }
         }
