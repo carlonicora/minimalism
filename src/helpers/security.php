@@ -110,6 +110,10 @@ class security {
             }
         }
 
+        if ($verb === 'GET'){
+            $body = null;
+        }
+
         $validatedSignature = $this->generateSignature($verb, $uri, $body, $this->configurations->clientId, $this->configurations->clientSecret, $this->configurations->publicKey, $this->configurations->privateKey, $time);
 
         return $validatedSignature === $signature;
