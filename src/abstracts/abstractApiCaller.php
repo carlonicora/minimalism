@@ -80,6 +80,9 @@ abstract class abstractApiCaller {
                     if (!empty($query)) {
                         $endpoint .= ((substr_count($endpoint, '?') > 0) ? '&' : '?') . $query;
                     }
+                } else if (substr_count($endpoint, '?') > 0) {
+                    $body = [];
+                    parse_str(substr(strstr($endpoint, '?'), 1), $body);
                 }
                 break;
         }
