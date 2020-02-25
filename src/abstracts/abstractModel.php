@@ -68,7 +68,7 @@ abstract class abstractModel {
                     exit;
                 }
 
-                if (!empty($this->$parameterName) && in_array($parameterName, $this->encryptedParameters, true)){
+                if (!empty($this->$parameterName) && !empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
                     $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->$parameterName);
                 }
             }
