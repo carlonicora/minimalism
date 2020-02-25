@@ -5,7 +5,11 @@ class headers {
     /** @var array */
     private static $headers;
 
-    public static function getHeader(string $headerName): string {
+    /**
+     * @param string $headerName
+     * @return string|null
+     */
+    public static function getHeader(string $headerName): ?string {
         if (self::$headers === null){
             self::$headers = getallheaders();
         }
