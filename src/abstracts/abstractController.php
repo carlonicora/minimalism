@@ -23,6 +23,9 @@ abstract class abstractController {
     /** @var  */
     protected $file;
 
+    /** @var string */
+    public $version;
+
     /**
      * abstractController constructor.
      * @param $configurations
@@ -90,8 +93,10 @@ abstract class abstractController {
         return $_SERVER['REQUEST_METHOD'];
     }
 
+    /**
+     *
+     */
     protected function parseUriParameters(): void {
-        // TODO overwrite this method in apiController to handle versions, for example /v1/discussion
         $uri = strtok($_SERVER['REQUEST_URI'], '?');
 
         if (!(isset($uri) && $uri === '/')) {
