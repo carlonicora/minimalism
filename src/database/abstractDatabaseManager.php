@@ -494,7 +494,7 @@ abstract class abstractDatabaseManager {
                 $fieldValue = $fieldValue ? 1 : 0;
             }
 
-            if ($fieldValue !== 'NULL' && ($fieldType === self::STRING || $fieldType === self::BLOB)){
+            if ($fieldValue !== 'NULL' && ($fieldType === 's' || $fieldType === 'b')){
                 $response .= '\'' . $fieldValue . '\',';
             } else {
                 $response .= $fieldValue . ',';
