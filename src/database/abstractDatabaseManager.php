@@ -670,4 +670,20 @@ abstract class abstractDatabaseManager {
 
         return $this->runRead($sql);
     }
+
+    /**
+     * @return int
+     */
+    public function count(): int {
+        $sql = 'SELECT count(*) as counter FROM ' . $this->tableName . ';';
+
+        try {
+            $responseArray = $this->runReadSingle($sql);
+            $response = $responseArray['counter'];
+        } catch (dbRecordNotFoundException $e) {
+            $response = 0;
+        }
+
+        return $response;
+    }
 }
