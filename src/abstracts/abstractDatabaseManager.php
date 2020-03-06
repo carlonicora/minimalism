@@ -262,7 +262,7 @@ abstract class abstractDatabaseManager {
                 $dataObjectRecord->addValues($record);
                 $dataObjectRecord->addOriginalValues();
 
-                $response[] = $record;
+                $response[] = $dataObjectRecord;
             }
         }
 
