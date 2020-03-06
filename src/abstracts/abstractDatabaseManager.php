@@ -620,10 +620,10 @@ abstract class abstractDatabaseManager {
 
     /**
      * @param $id
-     * @return dataObject|null
+     * @return dataObject
      * @throws dbRecordNotFoundException
      */
-    public function loadFromId($id): ?dataObject {
+    public function loadFromId($id): dataObject {
         $sql = $this->generateSelectStatement();
         $parameters = $this->generateSelectParameters();
 
