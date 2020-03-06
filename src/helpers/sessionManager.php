@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
-use carlonicora\minimalism\database\databaseFactory;
+use carlonicora\minimalism\factories\databaseFactory;
 
 class sessionManager {
     /**

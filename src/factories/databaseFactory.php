@@ -1,7 +1,8 @@
 <?php
-namespace carlonicora\minimalism\database;
+namespace carlonicora\minimalism\factories;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\abstracts\abstractDatabaseManager;
 use carlonicora\minimalism\exceptions\dbConnectionException;
 use carlonicora\minimalism\helpers\errorReporter;
 use mysqli;

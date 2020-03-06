@@ -1,6 +1,7 @@
 <?php
-namespace carlonicora\minimalism\database;
+namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\databases\dataObject;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
 use carlonicora\minimalism\exceptions\dbUpdateException;
 use carlonicora\minimalism\helpers\logger;
@@ -109,11 +110,10 @@ abstract class abstractDatabaseManager {
 
     /**
      * @param array $records
-     * @return bool
      * @throws dbUpdateException
      */
-    public function delete($records): bool {
-        return $this->update($records, true);
+    public function delete($records): void {
+        $this->update($records, true);
     }
 
     /**
@@ -157,12 +157,9 @@ abstract class abstractDatabaseManager {
     /**
      * @param array $records
      * @param bool $delete
-     * @return bool
      * @throws dbUpdateException
      */
-    public function update(&$records, $delete=false): bool {
-        $response = array();
-
+    public function update(&$records, $delete=false): void {
         $isSingle = false;
 
         if (isset($records) && count($records) > 0){
@@ -173,11 +170,15 @@ abstract class abstractDatabaseManager {
 
             $onlyInsertOrUpdate = true;
             $oneSql = $this->generateInsertOnDuplicateUpdateStart();
+            /**
+             * @var $recordKey
+             * @var dataObject $record
+             */
             foreach ($records as $recordKey=>$record) {
                 if ($delete){
                     $status = self::RECORD_STATUS_DELETED;
                 } else {
-                    $status = $this->status($record);
+                    $status = $record->status();
                 }
 
                 if ($status !== self::RECORD_STATUS_UNCHANGED) {
@@ -191,16 +192,16 @@ abstract class abstractDatabaseManager {
 
                     switch ($status) {
                         case self::RECORD_STATUS_NEW:
-                            $records[$recordKey]['sql']['statement'] = $this->generateInsertStatement();
+                            $records[$recordKey]->sql = $this->generateInsertStatement();
                             $parametersToUse = $this->generateInsertParameters();
                             break;
                         case self::RECORD_STATUS_UPDATED:
-                            $records[$recordKey]['sql']['statement'] = $this->generateUpdateStatement();
+                            $records[$recordKey]->sql = $this->generateUpdateStatement();
                             $parametersToUse = $this->generateUpdateParameters();
                             break;
                         case self::RECORD_STATUS_DELETED:
                             $onlyInsertOrUpdate = false;
-                            $records[$recordKey]['sql']['statement'] = $this->generateDeleteStatement();
+                            $records[$recordKey]->sql = $this->generateDeleteStatement();
                             $parametersToUse = $this->generateDeleteParameters();
                             break;
 
@@ -215,7 +216,7 @@ abstract class abstractDatabaseManager {
                             $parameters[] = null;
                         }
                     }
-                    $records[$recordKey]['sql']['parameters'] = $parameters;
+                    $records[$recordKey]->parameters = $parameters;
                 }
             }
 
@@ -223,27 +224,25 @@ abstract class abstractDatabaseManager {
             $oneSql .= $this->generateInsertOnDuplicateUpdateEnd();
 
             if ($onlyInsertOrUpdate && !$isSingle && $this->canUseInsertOnDuplicate()){
-                $response = $this->runSql($oneSql);
-            } else {
-                $response = $this->runUpdate($records);
+                if (!$this->runSql($oneSql)){
+                    throw new dbUpdateException('Update failed');
+                }
+            } else if (!$this->runUpdate($records)){
+                throw new dbUpdateException('Update failed');
             }
         }
 
         if ($isSingle){
             $records = $records[0];
         }
-
-        return $response;
     }
 
     /**
      * @param string $sql
      * @param array $parameters
-     * @return array
+     * @return dataObject
      */
-    protected function runRead($sql, $parameters=null): array {
-        $response = null;
-
+    protected function runRead($sql, $parameters=null): dataObject {
         $this->logger->addQuery($sql, $parameters);
 
         $statement = $this->connection->prepare($sql);
@@ -255,11 +254,13 @@ abstract class abstractDatabaseManager {
 
         $results = $statement->get_result();
 
-        $response = [];
+        $response = new dataObject();
 
         if (!empty($results) && $results->num_rows > 0){
             while ($record = $results->fetch_assoc()){
-                $this->addOriginalValues($record);
+                $dataObjectRecord = new dataObject();
+                $dataObjectRecord->addValues($record);
+                $dataObjectRecord->addOriginalValues();
 
                 $response[] = $record;
             }
@@ -310,7 +311,7 @@ abstract class abstractDatabaseManager {
 
                 unset($objects[$objectKey]['sql']);
 
-                $this->addOriginalValues($objects[$objectKey]);
+                $objects[$objectKey]->addOriginalValues();
             }
         }
 
@@ -322,10 +323,10 @@ abstract class abstractDatabaseManager {
     /**
      * @param string $sql
      * @param string $parameters
-     * @return array|null
+     * @return dataObject
      * @throws dbRecordNotFoundException
      */
-    protected function runReadSingle($sql, $parameters=null): ?array {
+    protected function runReadSingle($sql, $parameters=null): dataObject {
         $response = $this->runRead($sql, $parameters);
 
         if (isset($response)) {
@@ -344,37 +345,6 @@ abstract class abstractDatabaseManager {
 
 
         return $response;
-    }
-
-    /**
-     * @param $record
-     * @return int
-     */
-    protected function status($record): int {
-        if (array_key_exists('originalValues', $record)){
-            $response = self::RECORD_STATUS_UNCHANGED;
-            foreach ($record['originalValues'] as $fieldName=>$originalValue){
-                if ($originalValue !== $record[$fieldName]){
-                    $response = self::RECORD_STATUS_UPDATED;
-                    break;
-                }
-            }
-        } else {
-            $response = self::RECORD_STATUS_NEW;
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param array $record
-     */
-    private function addOriginalValues(&$record): void {
-        $originalValues = array();
-        foreach($record as $fieldName=>$fieldValue){
-            $originalValues[$fieldName] = $fieldValue;
-        }
-        $record['originalValues'] = $originalValues;
     }
 
     /**
@@ -650,10 +620,10 @@ abstract class abstractDatabaseManager {
 
     /**
      * @param $id
-     * @return array|null
+     * @return dataObject|null
      * @throws dbRecordNotFoundException
      */
-    public function loadFromId($id): ?array {
+    public function loadFromId($id): ?dataObject {
         $sql = $this->generateSelectStatement();
         $parameters = $this->generateSelectParameters();
 
@@ -663,9 +633,9 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @return array|null
+     * @return dataObject|null
      */
-    public function loadAll(): ?array {
+    public function loadAll(): ?dataObject {
         $sql = 'SELECT * FROM ' . $this->tableName . ';';
 
         return $this->runRead($sql);

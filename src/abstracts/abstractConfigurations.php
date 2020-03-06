@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\database\databaseFactory;
 use carlonicora\minimalism\databases\security\securityDb;
+use carlonicora\minimalism\factories\databaseFactory;
 use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\logger;
 use carlonicora\minimalism\interfaces\configurationsInterface;

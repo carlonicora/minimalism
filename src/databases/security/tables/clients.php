@@ -1,7 +1,8 @@
 <?php
 namespace carlonicora\minimalism\databases\security\tables;
 
-use carlonicora\minimalism\database\abstractDatabaseManager;
+use carlonicora\minimalism\abstracts\abstractDatabaseManager;
+use carlonicora\minimalism\databases\dataObject;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
 use carlonicora\minimalism\interfaces\securityClientInterface;
 use Exception;
@@ -35,10 +36,10 @@ class clients extends abstractDatabaseManager implements securityClientInterface
 
     /**
      * @param $clientId
-     * @return array|null
+     * @return dataObject
      * @throws dbRecordNotFoundException
      */
-    public function loadFromClientId($clientId): ?array {
+    public function loadFromClientId($clientId): dataObject {
         $sql = 'SELECT * FROM clients WHERE clientId = ?;';
         $parameters = ['s', $clientId];
 

@@ -1,10 +1,10 @@
 <?php
 namespace carlonicora\minimalism\databases\security;
 
-use carlonicora\minimalism\database\databaseFactory;
 use carlonicora\minimalism\databases\security\tables\auth;
 use carlonicora\minimalism\databases\security\tables\clients;
 use carlonicora\minimalism\exceptions\dbConnectionException;
+use carlonicora\minimalism\factories\databaseFactory;
 
 class securityDb {
     /** @var auth */
