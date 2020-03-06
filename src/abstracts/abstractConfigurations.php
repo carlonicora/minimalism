@@ -305,4 +305,11 @@ abstract class abstractConfigurations implements configurationsInterface {
     public function getSecuritySession(): securitySessionInterface {
         return $this->securitySession;
     }
+
+    /**
+     *
+     */
+    public function resume(): void {
+        databaseFactory::initialise($this);
+    }
 }

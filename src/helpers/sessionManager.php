@@ -2,7 +2,6 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
-use carlonicora\minimalism\factories\databaseFactory;
 
 class sessionManager {
     /**
@@ -29,7 +28,7 @@ class sessionManager {
             }
         }
 
-        databaseFactory::initialise($configurations);
+        $configurations->resume();
     }
 
     /**
