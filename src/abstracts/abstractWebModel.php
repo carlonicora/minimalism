@@ -3,9 +3,8 @@
 namespace carlonicora\minimalism\abstracts;
 
 abstract class abstractWebModel extends abstractModel {
-
     /** @var string */
-    protected $viewName;
+    protected string $viewName;
     
     /**
      * @return array

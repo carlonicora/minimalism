@@ -6,34 +6,34 @@ use Exception;
 
 abstract class abstractController {
     /** @var string */
-    protected $modelName = 'index';
+    protected string $modelName = 'index';
 
     /** @var abstractConfigurations */
-    protected $configurations;
+    protected abstractConfigurations $configurations;
 
     /** @var abstractModel */
-    protected $model;
+    protected abstractModel $model;
 
     /** @var array */
-    protected $parameterValues = [];
+    protected ?array $parameterValues = [];
 
     /** @var array */
-    protected $parameterValueList = [];
+    protected ?array $parameterValueList = [];
 
-    /** @var  */
-    protected $file;
+    /** @var array */
+    protected array $file;
 
     /** @var string */
-    public $version;
+    public string $version;
 
     /**
      * abstractController constructor.
-     * @param $configurations
-     * @param null $modelName
-     * @param null $parameterValueList
-     * @param null $parameterValues
+     * @param abstractConfigurations $configurations
+     * @param string $modelName
+     * @param array $parameterValueList
+     * @param array $parameterValues
      */
-    public function __construct($configurations, $modelName=null, $parameterValueList=null, $parameterValues=null){
+    public function __construct(abstractConfigurations $configurations, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
         $this->configurations = $configurations;
 
         if (!empty($parameterValueList) || !empty($parameterValues)) {
@@ -46,8 +46,14 @@ abstract class abstractController {
         $this->initialiseModel($modelName);
     }
 
+    /**
+     * @return string
+     */
     abstract public function render(): string;
 
+    /**
+     *
+     */
     protected function initialiseParameters(): void {
         $this->parseUriParameters();
 

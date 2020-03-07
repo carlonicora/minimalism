@@ -6,25 +6,25 @@ use carlonicora\minimalism\helpers\errorReporter;
 
 abstract class abstractModel {
     /** @var abstractConfigurations */
-    protected $configurations;
+    protected abstractConfigurations $configurations;
 
     /** @var array */
-    protected $parameterValues;
+    protected array $parameterValues;
 
     /** @var array */
-    protected $parameterValueList;
+    protected array $parameterValueList;
 
     /** @var array */
-    protected $file;
+    protected ?array $file;
 
     /** @var string */
-    public $redirectPage;
+    public ?string $redirectPage;
 
     /** @var array */
-    protected $parameters;
+    protected array $parameters;
 
     /** @var array */
-    protected $encryptedParameters;
+    protected array $encryptedParameters;
 
     /**
      * model constructor.

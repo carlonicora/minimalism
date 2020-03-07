@@ -8,7 +8,7 @@ use Exception;
 
 class security {
     /** @var abstractConfigurations */
-    private $configurations;
+    private abstractConfigurations $configurations;
 
     /**
      * security constructor.

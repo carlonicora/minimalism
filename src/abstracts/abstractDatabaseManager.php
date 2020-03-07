@@ -27,28 +27,28 @@ abstract class abstractDatabaseManager {
     public const INSERT_IGNORE = ' IGNORE';
 
     /** @var mysqli */
-    private $connection;
+    private mysqli $connection;
 
     /** @var string */
-    protected $dbToUse;
+    protected string $dbToUse;
 
     /** @var string */
-    protected $autoIncrementField;
+    protected string $autoIncrementField;
 
     /** @var array */
-    protected $fields;
+    protected array $fields;
 
     /** @var array */
-    protected $primaryKey;
+    protected ?array $primaryKey;
 
     /** @var string */
-    protected $tableName;
+    protected string $tableName;
 
     /** @var logger */
-    private $logger;
+    private logger $logger;
 
     /** @var string */
-    protected $insertIgnore = '';
+    protected string $insertIgnore = '';
 
     /**
      * abstractDatabaseManager constructor.

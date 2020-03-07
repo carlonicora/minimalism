@@ -4,14 +4,14 @@ namespace carlonicora\minimalism\helpers;
 
 class apiResponse {
     /** @var bool */
-    public $isSuccess;
+    public bool $isSuccess;
 
-    /** @var array */
-    public $returnedValue;
+    /** @var array|null */
+    public ?array $returnedValue;
 
     /** @var int */
-    public $errorId;
+    public int $errorId;
 
     /** @var string */
-    public $errorMessage;
+    public string $errorMessage;
 }

@@ -3,7 +3,7 @@ namespace carlonicora\minimalism\helpers;
 
 class headers {
     /** @var array */
-    private static $headers;
+    private static array $headers;
 
     /**
      * @param string $headerName

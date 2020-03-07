@@ -1,19 +1,15 @@
-version: '3.5'
+version: '3.7'
 
 services:
   minimalism:
-    container_name: minimalism
+    container_name: minimalism_9
+    image: carlonicora/minimalism:9.0.0
     working_dir: /app
     build:
       context: .
-      dockerfile: config/php/Dockerfile
-      args:
-        - BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT}
+      dockerfile: php/Dockerfile
     volumes:
       - ../:/app
       - ../:/opt/project
-      - ./config/php/custom.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
-      - ./config/php/xdebug.ini:/usr/local/etc/php/conf.d/zz-xdebug.ini
-      - ./config/php/MySQLi.ini:/usr/local/etc/php/conf.d/zz-mysqli.ini
     tty: true
     stdin_open: true

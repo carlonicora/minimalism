@@ -9,10 +9,10 @@ use carlonicora\minimalism\helpers\idEncrypter;
 class businessObjectsFactory {
 
     /** @var abstractConfigurations  */
-    protected $configurations;
+    protected abstractConfigurations $configurations;
 
     /** @var idEncrypter  */
-    protected $encrypter;
+    protected idEncrypter $encrypter;
 
     /**
      * businessObjectsFactory constructor.

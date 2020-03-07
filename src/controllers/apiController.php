@@ -8,10 +8,10 @@ use carlonicora\minimalism\helpers\security;
 
 class apiController extends abstractController {
     /** @var string */
-    private $signature;
+    private string $signature;
 
     /** @var string */
-    public $verb;
+    public string $verb;
 
     /**
      * apiController constructor.

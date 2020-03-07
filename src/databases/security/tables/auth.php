@@ -9,13 +9,15 @@ use RuntimeException;
 use Exception;
 
 class auth extends abstractDatabaseManager implements securitySessionInterface {
-    protected $fields = [
-        'authId'=>self::INTEGER+self::PRIMARY_KEY+self::AUTO_INCREMENT,
-        'userId'=>self::INTEGER,
-        'clientId'=>self::INTEGER,
-        'expirationDate'=>self::STRING,
-        'publicKey'=>self::STRING,
-        'privateKey'=>self::STRING];
+    /** @var array */
+    protected array $fields = [
+        'authId' => self::INTEGER + self::PRIMARY_KEY + self::AUTO_INCREMENT,
+        'userId' => self::INTEGER,
+        'clientId' => self::INTEGER,
+        'expirationDate' => self::STRING,
+        'publicKey' => self::STRING,
+        'privateKey' => self::STRING
+    ];
 
     /**
      * @param string $publicKey

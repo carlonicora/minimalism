@@ -4,25 +4,25 @@ namespace carlonicora\minimalism\helpers;
 
 class logger {
     /** @var array */
-    private $events;
+    private array $events;
 
     /** @var string */
-    private $logFile;
+    private string $logFile;
 
     /** @var string */
-    private $logFileCondensed;
+    private string $logFileCondensed;
 
     /** @var string */
-    private $errorFile;
+    private string $errorFile;
 
     /** @var string */
-    private $queryFile;
+    private string $queryFile;
 
     /** @var bool */
-    private $logEvents;
+    private bool $logEvents;
 
     /** @var bool */
-    private $logQueries;
+    private bool $logQueries;
 
     /**
      * logger constructor.

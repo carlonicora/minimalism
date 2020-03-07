@@ -8,25 +8,25 @@ use carlonicora\minimalism\helpers\security;
 
 abstract class abstractApiCaller {
     /** @var abstractConfigurations */
-    protected $configurations;
+    protected abstractConfigurations $configurations;
 
     /** @var int */
-    public $httpCode;
+    public int $httpCode;
 
     /** @var string */
-    public $errorMessage;
+    public string $errorMessage;
 
     /** @var array */
-    public $returnedValue;
+    public ?array $returnedValue;
 
     /** @var string */
-    protected $verb;
+    protected string $verb;
 
     /** @var string */
-    protected $uri;
+    protected string $uri;
 
     /** @var array */
-    protected $body;
+    protected array $body;
 
     /**
      * abstractApiCaller constructor.

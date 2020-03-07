@@ -8,7 +8,7 @@ use carlonicora\minimalism\exceptions\configurationException;
 class businessObjectsArrayFactory {
 
     /** @var abstractConfigurations  */
-    protected $configurations;
+    protected abstractConfigurations $configurations;
 
     /**
      * businessObjectsArrayFactory constructor.

@@ -6,10 +6,10 @@ use carlonicora\minimalism\helpers\idEncrypter;
 
 class encrypterFactory {
     /** @var abstractConfigurations */
-    private static $configurations;
+    private static abstractConfigurations $configurations;
 
     /** @var idEncrypter */
-    private static $idEncrypter;
+    private static idEncrypter $idEncrypter;
 
     /**
      * @param abstractConfigurations $configurations

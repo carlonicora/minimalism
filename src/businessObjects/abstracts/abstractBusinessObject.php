@@ -7,19 +7,19 @@ use carlonicora\minimalism\helpers\idEncrypter;
 abstract class abstractBusinessObject implements businessObjectsInterface {
 
     /** @var string */
-    public $idField;
+    public string $idField;
     /** @var string */
-    public $parentId;
+    public string $parentId;
 
     /** @var array */
-    protected $hashEncodedFields = [];
+    protected array $hashEncodedFields = [];
     /** @var array */
-    protected $simpleFields = [];
+    protected array $simpleFields = [];
     /** @var array */
-    protected $oneToOneRelationFields = [];
+    protected array $oneToOneRelationFields = [];
 
     /** @var idEncrypter */
-    protected $encrypter;
+    protected idEncrypter $encrypter;
 
     public function __construct(idEncrypter $encrypter) {
         $this->encrypter = $encrypter;

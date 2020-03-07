@@ -7,24 +7,24 @@ use carlonicora\minimalism\helpers\errorReporter;
 abstract class abstractApiModel extends abstractModel {
 
     /** @var bool */
-    protected $requiresAuthDELETE=false;
+    protected bool $requiresAuthDELETE=false;
 
     /** @var bool */
-    protected $requiresAuthGET=false;
+    protected bool $requiresAuthGET=false;
 
     /** @var bool */
-    protected $requiresAuthPOST=false;
+    protected bool $requiresAuthPOST=false;
 
     /** @var bool */
-    protected $requiresAuthPUT=false;
+    protected bool $requiresAuthPUT=false;
 
     /** @var string */
-    public $verb;
+    public string $verb;
 
     /**
      * @inheritDoc
      */
-    public function __construct($configurations, $parameterValues, $parameterValueList, $verb, $file=null) {
+    public function __construct(abstractConfigurations $configurations, array $parameterValues, array $parameterValueList, string $verb, array $file=null) {
         $this->verb = $verb;
         parent::__construct($configurations, $parameterValues, $parameterValueList, $file);
     }

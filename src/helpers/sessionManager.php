@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\exceptions\dbConnectionException;
 
 class sessionManager {
     /**
@@ -15,6 +16,7 @@ class sessionManager {
 
     /**
      * @param abstractConfigurations $configurations
+     * @throws dbConnectionException
      */
     public function loadFromSession(abstractConfigurations &$configurations): void {
         if (isset($_SESSION['configurations'])){

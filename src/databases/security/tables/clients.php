@@ -9,14 +9,15 @@ use Exception;
 use RuntimeException;
 
 class clients extends abstractDatabaseManager implements securityClientInterface{
-    protected $fields = [
-        'id'=>self::INTEGER+self::PRIMARY_KEY+self::AUTO_INCREMENT,
-        'name'=>self::STRING,
-        'description'=>self::STRING,
-        'url'=>self::STRING,
-        'callbackURL'=>self::STRING,
-        'clientId'=>self::STRING,
-        'clientSecret'=>self::STRING];
+    /** @var array  */
+    protected array $fields = [
+        'id' => self::INTEGER + self::PRIMARY_KEY + self::AUTO_INCREMENT,
+        'name' => self::STRING,
+        'description' => self::STRING,
+        'url' => self::STRING,
+        'callbackURL' => self::STRING,
+        'clientId' => self::STRING,
+        'clientSecret' => self::STRING];
 
     /**
      * @param string $clientId

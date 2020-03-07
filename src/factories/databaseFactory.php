@@ -9,7 +9,10 @@ use mysqli;
 
 class databaseFactory {
     /** @var abstractConfigurations */
-    protected static $configurations;
+    protected static abstractConfigurations $configurations;
+
+    /** @var array */
+    protected static array $tableManagers = [];
 
     /**
      * @param $configurations
@@ -23,10 +26,12 @@ class databaseFactory {
      * @return abstractDatabaseManager
      * @throws dbConnectionException
      */
-    public static function create($dbReader): abstractDatabaseManager {
-        $response = null;
+    public static function create(string $dbReader): abstractDatabaseManager {
+        if (array_key_exists($dbReader, self::$tableManagers)) {
+            return self::$tableManagers[$dbReader];
+        }
 
-        if (!class_exists($dbReader)){
+        if (!class_exists($dbReader)) {
             return null;
         }
 
@@ -38,10 +43,10 @@ class databaseFactory {
         $databaseName = $response->getDbToUse();
         $connection = self::$configurations->getDatabase($databaseName);
 
-        if (!isset($connection)){
+        if (!isset($connection)) {
             $dbConf = self::$configurations->getDatabaseConnectionString($databaseName);
 
-            if (empty($dbConf)){
+            if (empty($dbConf)) {
                 throw new dbConnectionException('Missing connection details');
             }
 
@@ -60,6 +65,8 @@ class databaseFactory {
         }
 
         $response->setConnection($connection);
+
+        self::$tableManagers[$dbReader] = $response;
 
         return $response;
     }

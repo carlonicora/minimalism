@@ -6,7 +6,7 @@ use Hashids\Hashids;
 
 class idEncrypter {
     /** @var Hashids */
-    private $hashids;
+    private Hashids $hashids;
 
     /**
      * idEncrypter constructor.

@@ -1,7 +1,9 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\databases\security\securityDb;
+use carlonicora\minimalism\databases\security\tables\auth;
+use carlonicora\minimalism\databases\security\tables\clients;
+use carlonicora\minimalism\exceptions\dbConnectionException;
 use carlonicora\minimalism\factories\databaseFactory;
 use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\logger;
@@ -21,64 +23,64 @@ abstract class abstractConfigurations implements configurationsInterface {
     public const MINIMALISM_CLI = 3;
 
     /** @var string $rootDirectory */
-    protected $rootDirectory;
+    protected string $rootDirectory;
 
     /** @var string */
-    public $appDirectory;
+    public string $appDirectory;
 
     /** @var Dotenv $env */
-    protected $env;
+    protected Dotenv $env;
 
     /** @var string $baseUrl */
-    private $baseUrl;
+    private string $baseUrl;
 
     /** @var string */
-    protected $debugKey;
+    protected string $debugKey;
 
     /** @var array */
-    private $databases = [];
+    private array $databases = [];
 
     /** @var array */
-    private $databaseConnectionStrings = [];
+    private array $databaseConnectionStrings = [];
 
     /** @var int */
-    public $applicationType;
+    public int $applicationType;
 
     /** @var string */
-    public $privateKey;
+    public string $privateKey;
 
     /** @var string */
-    public $publicKey;
+    public string $publicKey;
 
     /** @var string */
-    public $clientId;
+    public string $clientId;
 
     /** @var string */
-    public $clientSecret;
+    public string $clientSecret;
 
     /** @var string */
-    public $httpHeaderSignature;
+    public string $httpHeaderSignature;
 
     /** @var bool */
-    public $allowUnsafeApiCalls;
+    public bool $allowUnsafeApiCalls;
 
     /** @var string */
-    private $logDirectory;
+    private string $logDirectory;
 
     /** @var logger */
-    public $logger;
+    public logger $logger;
 
     /** @var securityClientInterface */
-    protected $securityClient;
+    protected securityClientInterface $securityClient;
 
     /** @var securitySessionInterface */
-    protected $securitySession;
+    protected securitySessionInterface $securitySession;
 
     /** @var string */
-    public $encrypterKey;
+    public string $encrypterKey;
 
     /** @var int */
-    public $encrypterLength;
+    public int $encrypterLength;
 
     abstract public function serialiseCookies(): string;
     abstract public function unserialiseCookies(string $cookies): void;
@@ -102,6 +104,7 @@ abstract class abstractConfigurations implements configurationsInterface {
 
     /**
      *
+     * @throws dbConnectionException
      */
     public function loadConfigurations(): void {
         $this->env = Dotenv::createImmutable($this->rootDirectory);
@@ -171,8 +174,13 @@ abstract class abstractConfigurations implements configurationsInterface {
         databaseFactory::initialise($this);
         encrypterFactory::initialise($this);
 
-        $this->securityClient = securityDb::clients();
-        $this->securitySession = securityDb::auth();
+        /** @var securityClientInterface $securityClient */
+        $securityClient = databaseFactory::create(clients::class);
+        $this->securityClient = $securityClient;
+
+        /** @var securitySessionInterface $securitySession */
+        $securitySession = databaseFactory::create(auth::class);
+        $this->securitySession = $securitySession;
     }
 
     /**

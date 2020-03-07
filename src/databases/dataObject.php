@@ -6,13 +6,13 @@ use carlonicora\minimalism\abstracts\abstractDatabaseManager;
 
 class dataObject extends ArrayObject {
     /** @var array */
-    public $originalValues;
+    public array $originalValues;
 
     /** @var string */
-    public $sql;
+    public string $sql;
 
     /** @var array */
-    public $parameters;
+    public array $parameters;
 
     /**
      * @return int

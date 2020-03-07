@@ -8,9 +8,9 @@ use carlonicora\minimalism\businessObjects\interfaces\businessObjectsArrayInterf
 abstract class abstractBusinessObjectsArray implements businessObjectsArrayInterface {
 
     /** @var abstractConfigurations */
-    protected $configurations;
+    protected abstractConfigurations $configurations;
     /** @var string */
-    protected $buinessObjectClass;
+    protected string $buinessObjectClass;
     /** @var abstractBusinessObject */
     protected $businessObject;
 

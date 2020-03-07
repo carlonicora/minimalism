@@ -11,7 +11,7 @@ use Exception;
 
 class appController extends abstractController {
     /** @var Environment */
-    private $view;
+    private Environment $view;
 
     /**
      * apiController constructor.

@@ -16,7 +16,7 @@ use RuntimeException;
  */
 class bootstrapper{
     /** @var abstractConfigurations $configurations */
-    private $configurations;
+    private abstractConfigurations $configurations;
 
     /** @var int */
     public const API_CONTROLLER=1;
@@ -30,6 +30,7 @@ class bootstrapper{
     /**
      * bootstrapper constructor.
      * @param string $configurationName
+     * @throws exceptions\dbConnectionException
      */
     public function __construct(string $configurationName){
         $this->configurations = new $configurationName();
