@@ -14,6 +14,9 @@ class dataObject extends ArrayObject {
     /** @var array */
     public array $parameters;
 
+    /** @var int  */
+    public int $status;
+
     /**
      * @return int
      */

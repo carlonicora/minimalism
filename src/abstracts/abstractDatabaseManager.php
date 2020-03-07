@@ -109,10 +109,10 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @param array $records
+     * @param dataObject $records
      * @throws dbUpdateException
      */
-    public function delete($records): void {
+    public function delete(dataObject $records): void {
         $this->update($records, true);
     }
 
@@ -155,17 +155,19 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @param array $records
+     * @param dataObject $records
      * @param bool $delete
      * @throws dbUpdateException
      */
-    public function update(&$records, $delete=false): void {
+    public function update(dataObject &$records, bool $delete=false): void {
         $isSingle = false;
 
         if (isset($records) && count($records) > 0){
             if (!array_key_exists(0, $records)){
                 $isSingle = true;
-                $records = [$records];
+                $record = $records;
+                $records = new dataObject();
+                $records[] = $record;
             }
 
             $onlyInsertOrUpdate = true;
@@ -184,8 +186,8 @@ abstract class abstractDatabaseManager {
                 if ($status !== self::RECORD_STATUS_UNCHANGED) {
                     $oneSql .= $this->generateInsertOnDuplicateUpdateRecord($record);
 
-                    $records[$recordKey]['sql'] = array();
-                    $records[$recordKey]['sql']['status'] = $status;
+                    $records[$recordKey]->sql = array();
+                    $records[$recordKey]->status = $status;
 
                     $parameters = [];
                     $parametersToUse = null;
@@ -272,7 +274,7 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @param array $objects
+     * @param $objects
      * @return bool
      * @throws dbUpdateException
      */
@@ -281,35 +283,39 @@ abstract class abstractDatabaseManager {
 
         $this->connection->autocommit(false);
 
+        /**
+         * @var  $objectKey
+         * @var dataObject $object
+         */
         foreach ($objects as $objectKey=>$object){
             if (array_key_exists('sql', $object)) {
-                $statement = $this->connection->prepare($object['sql']['statement']);
+                $statement = $this->connection->prepare($object->sql);
 
                 if ($statement) {
 
-                    $this->logger->addQuery($object['sql']['statement'], $object['sql']['parameters']);
+                    $this->logger->addQuery($object->sql, $object->parameters);
 
-                    $parameters = $object['sql']['parameters'];
+                    $parameters = $object->parameters;
                     call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
                     if (!$statement->execute()) {
                         $this->logger->addError('MySQL error on execute:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                         $this->connection->rollback();
                         throw new dbUpdateException('Statement Execution failed: ' .
-                            $object['sql']['statement'] .
-                            ' with parameters ' . json_encode($object['sql']['parameters'], JSON_THROW_ON_ERROR, 512));
+                            $object->sql .
+                            ' with parameters ' . json_encode($object->parameters, JSON_THROW_ON_ERROR, 512));
                     }
                 } else {
                     $this->logger->addError('MySQL error on prepare:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                     $this->connection->rollback();
                     throw new dbUpdateException('Statement creation failed: ' .
-                        $objects[$objectKey]['sql']['statement']);
+                        $objects[$objectKey]->sql);
                 }
 
-                if (isset($this->autoIncrementField) && $object['sql']['status'] === self::RECORD_STATUS_NEW) {
+                if (isset($this->autoIncrementField) && $object->status === self::RECORD_STATUS_NEW) {
                     $objects[$objectKey][$this->autoIncrementField] = $this->connection->insert_id;
                 }
 
-                unset($objects[$objectKey]['sql']);
+                unset($objects[$objectKey]->sql);
 
                 $objects[$objectKey]->addOriginalValues();
             }
