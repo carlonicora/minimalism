@@ -2,12 +2,9 @@ version: '3.7'
 
 services:
   minimalism:
-    container_name: minimalism_9
-    image: carlonicora/minimalism:9.0.0
+    container_name: minimalism
+    image: carlonicora/php-cli-base:7.4.3.1
     working_dir: /app
-    build:
-      context: .
-      dockerfile: php/Dockerfile
     volumes:
       - ../:/app
       - ../:/opt/project
