@@ -2,7 +2,6 @@
 namespace carlonicora\minimalism\databases\security\tables;
 
 use carlonicora\minimalism\abstracts\abstractDatabaseManager;
-use carlonicora\minimalism\databases\dataObject;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
 use carlonicora\minimalism\interfaces\securitySessionInterface;
 use RuntimeException;
@@ -43,10 +42,10 @@ class auth extends abstractDatabaseManager implements securitySessionInterface {
     /**
      * @param $publicKey
      * @param $clientId
-     * @return dataObject
+     * @return array
      * @throws dbRecordNotFoundException
      */
-    public function loadFromPublicKeyAndClientId($publicKey, $clientId): dataObject {
+    public function loadFromPublicKeyAndClientId($publicKey, $clientId): array {
         $sql = 'SELECT auth.* FROM auth JOIN clients ON auth.clientId=clients.id WHERE auth.publicKey=? AND clients.clientId=?;';
         $parameters = ['ss', $publicKey, $clientId];
 
@@ -55,10 +54,10 @@ class auth extends abstractDatabaseManager implements securitySessionInterface {
 
     /**
      * @param $publicKey
-     * @return dataObject
+     * @return array
      * @throws dbRecordNotFoundException
      */
-    public function loadFromPublicKey($publicKey): dataObject {
+    public function loadFromPublicKey($publicKey): array {
         $sql = 'SELECT * FROM auth WHERE publicKey = ?;';
         $parameters = ['s', $publicKey];
 

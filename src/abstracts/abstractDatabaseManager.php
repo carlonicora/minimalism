@@ -1,7 +1,6 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\databases\dataObject;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
 use carlonicora\minimalism\exceptions\dbUpdateException;
 use carlonicora\minimalism\helpers\logger;
@@ -109,10 +108,10 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @param dataObject $records
+     * @param array $records
      * @throws dbUpdateException
      */
-    public function delete(dataObject $records): void {
+    public function delete(array $records): void {
         $this->update($records, true);
     }
 
@@ -155,55 +154,49 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @param dataObject $records
+     * @param array $records
      * @param bool $delete
      * @throws dbUpdateException
      */
-    public function update(dataObject &$records, bool $delete=false): void {
+    public function update(array &$records, bool $delete=false): void {
         $isSingle = false;
 
         if (isset($records) && count($records) > 0){
             if (!array_key_exists(0, $records)){
                 $isSingle = true;
-                $record = $records;
-                $records = new dataObject();
-                $records[] = $record;
+                $records = [$records];
             }
 
             $onlyInsertOrUpdate = true;
             $oneSql = $this->generateInsertOnDuplicateUpdateStart();
-            /**
-             * @var $recordKey
-             * @var dataObject $record
-             */
             foreach ($records as $recordKey=>$record) {
                 if ($delete){
                     $status = self::RECORD_STATUS_DELETED;
                 } else {
-                    $status = $record->status();
+                    $status = $this->status($record);
                 }
 
                 if ($status !== self::RECORD_STATUS_UNCHANGED) {
                     $oneSql .= $this->generateInsertOnDuplicateUpdateRecord($record);
 
-                    $records[$recordKey]->sql = array();
-                    $records[$recordKey]->status = $status;
+                    $records[$recordKey]['_sql'] = array();
+                    $records[$recordKey]['_sql']['status'] = $status;
 
                     $parameters = [];
                     $parametersToUse = null;
 
                     switch ($status) {
                         case self::RECORD_STATUS_NEW:
-                            $records[$recordKey]->sql = $this->generateInsertStatement();
+                            $records[$recordKey]['_sql']['statement'] = $this->generateInsertStatement();
                             $parametersToUse = $this->generateInsertParameters();
                             break;
                         case self::RECORD_STATUS_UPDATED:
-                            $records[$recordKey]->sql = $this->generateUpdateStatement();
+                            $records[$recordKey]['_sql']['statement'] = $this->generateUpdateStatement();
                             $parametersToUse = $this->generateUpdateParameters();
                             break;
                         case self::RECORD_STATUS_DELETED:
                             $onlyInsertOrUpdate = false;
-                            $records[$recordKey]->sql = $this->generateDeleteStatement();
+                            $records[$recordKey]['_sql']['statement'] = $this->generateDeleteStatement();
                             $parametersToUse = $this->generateDeleteParameters();
                             break;
 
@@ -218,7 +211,7 @@ abstract class abstractDatabaseManager {
                             $parameters[] = null;
                         }
                     }
-                    $records[$recordKey]->parameters = $parameters;
+                    $records[$recordKey]['_sql']['parameters'] = $parameters;
                 }
             }
 
@@ -242,9 +235,11 @@ abstract class abstractDatabaseManager {
     /**
      * @param string $sql
      * @param array $parameters
-     * @return dataObject
+     * @return array
      */
-    protected function runRead($sql, $parameters=null): dataObject {
+    protected function runRead($sql, $parameters=null): array {
+        $response = null;
+
         $this->logger->addQuery($sql, $parameters);
 
         $statement = $this->connection->prepare($sql);
@@ -256,15 +251,13 @@ abstract class abstractDatabaseManager {
 
         $results = $statement->get_result();
 
-        $response = new dataObject();
+        $response = [];
 
         if (!empty($results) && $results->num_rows > 0){
             while ($record = $results->fetch_assoc()){
-                $dataObjectRecord = new dataObject();
-                $dataObjectRecord->addValues($record);
-                $dataObjectRecord->addOriginalValues();
+                $this->addOriginalValues($record);
 
-                $response[] = $dataObjectRecord;
+                $response[] = $record;
             }
         }
 
@@ -274,50 +267,46 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @param $objects
+     * @param array $objects
      * @return bool
      * @throws dbUpdateException
      */
-    protected function runUpdate(&$objects): bool {
+    protected function runUpdate(array &$objects): bool {
         $response = true;
 
         $this->connection->autocommit(false);
 
-        /**
-         * @var  $objectKey
-         * @var dataObject $object
-         */
         foreach ($objects as $objectKey=>$object){
             if (array_key_exists('sql', $object)) {
-                $statement = $this->connection->prepare($object->sql);
+                $statement = $this->connection->prepare($object['_sql']['statement']);
 
                 if ($statement) {
 
-                    $this->logger->addQuery($object->sql, $object->parameters);
+                    $this->logger->addQuery($object['_sql']['statement'], $object['_sql']['parameters']);
 
-                    $parameters = $object->parameters;
+                    $parameters = $object['_sql']['parameters'];
                     call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
                     if (!$statement->execute()) {
                         $this->logger->addError('MySQL error on execute:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                         $this->connection->rollback();
                         throw new dbUpdateException('Statement Execution failed: ' .
-                            $object->sql .
-                            ' with parameters ' . json_encode($object->parameters, JSON_THROW_ON_ERROR, 512));
+                            $object['_sql']['statement'] .
+                            ' with parameters ' . json_encode($object['_sql']['parameters'], JSON_THROW_ON_ERROR, 512));
                     }
                 } else {
                     $this->logger->addError('MySQL error on prepare:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                     $this->connection->rollback();
                     throw new dbUpdateException('Statement creation failed: ' .
-                        $objects[$objectKey]->sql);
+                        $objects[$objectKey]['_sql']['statement']);
                 }
 
-                if (isset($this->autoIncrementField) && $object->status === self::RECORD_STATUS_NEW) {
+                if (isset($this->autoIncrementField) && $object['_sql']['status'] === self::RECORD_STATUS_NEW) {
                     $objects[$objectKey][$this->autoIncrementField] = $this->connection->insert_id;
                 }
 
-                unset($objects[$objectKey]->sql);
+                unset($objects[$objectKey]['_sql']);
 
-                $objects[$objectKey]->addOriginalValues();
+                $this->addOriginalValues($objects[$objectKey]);
             }
         }
 
@@ -329,10 +318,10 @@ abstract class abstractDatabaseManager {
     /**
      * @param string $sql
      * @param string $parameters
-     * @return dataObject
+     * @return array
      * @throws dbRecordNotFoundException
      */
-    protected function runReadSingle($sql, $parameters=null): dataObject {
+    protected function runReadSingle($sql, $parameters=null): array {
         $response = $this->runRead($sql, $parameters);
 
         if (isset($response)) {
@@ -351,6 +340,37 @@ abstract class abstractDatabaseManager {
 
 
         return $response;
+    }
+
+    /**
+     * @param $record
+     * @return int
+     */
+    protected function status($record): int {
+        if (array_key_exists('originalValues', $record)){
+            $response = self::RECORD_STATUS_UNCHANGED;
+            foreach ($record['originalValues'] as $fieldName=>$originalValue){
+                if ($originalValue !== $record[$fieldName]){
+                    $response = self::RECORD_STATUS_UPDATED;
+                    break;
+                }
+            }
+        } else {
+            $response = self::RECORD_STATUS_NEW;
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param array $record
+     */
+    private function addOriginalValues(&$record): void {
+        $originalValues = array();
+        foreach($record as $fieldName=>$fieldValue){
+            $originalValues[$fieldName] = $fieldValue;
+        }
+        $record['originalValues'] = $originalValues;
     }
 
     /**
@@ -626,10 +646,10 @@ abstract class abstractDatabaseManager {
 
     /**
      * @param $id
-     * @return dataObject
+     * @return array
      * @throws dbRecordNotFoundException
      */
-    public function loadFromId($id): dataObject {
+    public function loadFromId($id): array {
         $sql = $this->generateSelectStatement();
         $parameters = $this->generateSelectParameters();
 
@@ -639,9 +659,9 @@ abstract class abstractDatabaseManager {
     }
 
     /**
-     * @return dataObject|null
+     * @return array|null
      */
-    public function loadAll(): ?dataObject {
+    public function loadAll(): array {
         $sql = 'SELECT * FROM ' . $this->tableName . ';';
 
         return $this->runRead($sql);
