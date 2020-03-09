@@ -20,13 +20,13 @@ abstract class abstractApiCaller {
     public ?array $returnedValue;
 
     /** @var string */
-    protected string $verb;
+    protected string $verb='GET';
 
     /** @var string */
-    protected string $uri;
+    protected string $uri='';
 
-    /** @var array */
-    protected array $body;
+    /** @var string */
+    protected string $body='';
 
     /**
      * abstractApiCaller constructor.
@@ -91,7 +91,9 @@ abstract class abstractApiCaller {
         }
 
         $this->verb = $verb;
-        $this->body = is_array($body) ? json_encode($body, JSON_THROW_ON_ERROR, 512) : '';
+        if (is_array($body)){
+            $this->body = json_encode($body, JSON_THROW_ON_ERROR, 512);
+        }
         $this->uri = $url . $endpoint;
 
         $security = new security($this->configurations);

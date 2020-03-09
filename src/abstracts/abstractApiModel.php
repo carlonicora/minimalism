@@ -19,7 +19,7 @@ abstract class abstractApiModel extends abstractModel {
     protected bool $requiresAuthPUT=false;
 
     /** @var string */
-    public string $verb;
+    public string $verb='GET';
 
     /**
      * @inheritDoc

@@ -4,8 +4,8 @@ namespace carlonicora\minimalism\abstracts;
 
 abstract class abstractWebModel extends abstractModel {
     /** @var string */
-    protected string $viewName;
-    
+    protected string $viewName='';
+
     /**
      * @return array
      */
@@ -17,12 +17,6 @@ abstract class abstractWebModel extends abstractModel {
      * @return string
      */
     public function getViewName(): string {
-        $returnValue = $this->viewName;
-
-        if (!isset($returnValue)) {
-            $returnValue = '';
-        }
-
-        return $returnValue;
+        return $this->viewName;
     }
 }
