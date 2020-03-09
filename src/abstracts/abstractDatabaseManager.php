@@ -277,7 +277,7 @@ abstract class abstractDatabaseManager {
         $this->connection->autocommit(false);
 
         foreach ($objects as $objectKey=>$object){
-            if (array_key_exists('sql', $object)) {
+            if (array_key_exists('_sql', $object)) {
                 $statement = $this->connection->prepare($object['_sql']['statement']);
 
                 if ($statement) {
@@ -287,14 +287,14 @@ abstract class abstractDatabaseManager {
                     $parameters = $object['_sql']['parameters'];
                     call_user_func_array(array($statement, 'bind_param'), $this->refValues($parameters));
                     if (!$statement->execute()) {
-                        $this->logger->addError('MySQL error on execute:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
+                        $this->logger->addError('MySQL error on execute:' . PHP_EOL . $object['_sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                         $this->connection->rollback();
                         throw new dbUpdateException('Statement Execution failed: ' .
                             $object['_sql']['statement'] .
                             ' with parameters ' . json_encode($object['_sql']['parameters'], JSON_THROW_ON_ERROR, 512));
                     }
                 } else {
-                    $this->logger->addError('MySQL error on prepare:' . PHP_EOL . $object['sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
+                    $this->logger->addError('MySQL error on prepare:' . PHP_EOL . $object['_sql']['statement'] . PHP_EOL . $this->connection->error . PHP_EOL . PHP_EOL);
                     $this->connection->rollback();
                     throw new dbUpdateException('Statement creation failed: ' .
                         $objects[$objectKey]['_sql']['statement']);
