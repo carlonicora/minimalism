@@ -8,8 +8,8 @@ class encrypterFactory {
     /** @var abstractConfigurations */
     private static abstractConfigurations $configurations;
 
-    /** @var idEncrypter */
-    private static idEncrypter $idEncrypter;
+    /** @var idEncrypter|null */
+    private static ?idEncrypter $idEncrypter=null;
 
     /**
      * @param abstractConfigurations $configurations

@@ -30,25 +30,24 @@ class bootstrapper{
     /**
      * bootstrapper constructor.
      * @param string $configurationName
-     * @throws exceptions\dbConnectionException
+     * @param int $applicationType
      */
-    public function __construct(string $configurationName){
-        $this->configurations = new $configurationName();
+    public function __construct(string $configurationName, int $applicationType=self::API_CONTROLLER){
+        $this->configurations = new $configurationName($applicationType);
 
         $sessionManager = new sessionManager();
         $sessionManager->loadFromSession($this->configurations);
     }
 
     /**
-     * @param int $controllerType
      * @param null|string $modelName
      * @param null|array $parameterValueList
      * @param null|array $parameterValues
      * @return abstractController
      * @throws Exception
      */
-    public function loadController(int $controllerType=self::API_CONTROLLER, string $modelName=null, array $parameterValueList=null, array $parameterValues=null): abstractController {
-        switch ($controllerType) {
+    public function loadController(string $modelName=null, array $parameterValueList=null, array $parameterValues=null): abstractController {
+        switch ($this->configurations->applicationType) {
             case self::API_CONTROLLER:
                 $response = new apiController($this->configurations, $modelName, $parameterValueList, $parameterValues);
                 break;

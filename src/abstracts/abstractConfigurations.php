@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\bootstrapper;
 use carlonicora\minimalism\databases\security\tables\auth;
 use carlonicora\minimalism\databases\security\tables\clients;
 use carlonicora\minimalism\exceptions\dbConnectionException;
@@ -18,10 +19,6 @@ use ReflectionException;
 use mysqli;
 
 abstract class abstractConfigurations implements configurationsInterface {
-    public const MINIMALISM_APP = 1;
-    public const MINIMALISM_API = 2;
-    public const MINIMALISM_CLI = 3;
-
     /** @var string $rootDirectory */
     protected string $rootDirectory;
 
@@ -44,7 +41,7 @@ abstract class abstractConfigurations implements configurationsInterface {
     private array $databaseConnectionStrings = [];
 
     /** @var int */
-    public int $applicationType=self::MINIMALISM_API;
+    public int $applicationType;
 
     /** @var string */
     public ?string $privateKey=null;
@@ -87,9 +84,12 @@ abstract class abstractConfigurations implements configurationsInterface {
 
     /**
      * abstractConfigurations constructor.
+     * @param int $applicationType
      */
-    public function __construct(){
+    public function __construct(int $applicationType){
         $child = static::class;
+
+        $this->applicationType = $applicationType;
 
         $this->initialiseDirectoryStructure();
 
@@ -104,7 +104,6 @@ abstract class abstractConfigurations implements configurationsInterface {
 
     /**
      *
-     * @throws dbConnectionException
      */
     public function loadConfigurations(): void {
         $this->env = Dotenv::createImmutable($this->rootDirectory);
@@ -115,19 +114,7 @@ abstract class abstractConfigurations implements configurationsInterface {
             errorReporter::report($this, 1, $exception->getMessage());
         }
 
-        switch (getenv('APPLICATION_TYPE')){
-            case 'API':
-                $this->applicationType = self::MINIMALISM_API;
-                break;
-            case 'CLI':
-                $this->applicationType = self::MINIMALISM_CLI;
-                break;
-            case 'APP':
-            default:
-                $this->applicationType = self::MINIMALISM_APP;
-                break;
-        }
-        if ($this->applicationType !== self::MINIMALISM_CLI) {
+        if ($this->applicationType !== bootstrapper::CLI_CONTROLLER) {
             $protocol = ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http';
             $this->baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'] . '/';
         }
