@@ -3,7 +3,7 @@ version: '3.7'
 services:
   minimalism:
     container_name: minimalism
-    image: carlonicora/php-cli-base:7.4.3.1
+    image: carlonicora/php-cli-base:7.4.3.2
     working_dir: /app
     volumes:
       - ../:/app

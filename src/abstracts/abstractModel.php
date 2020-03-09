@@ -21,10 +21,10 @@ abstract class abstractModel {
     public ?string $redirectPage;
 
     /** @var array */
-    protected array $parameters;
+    protected array $parameters=[];
 
     /** @var array */
-    protected array $encryptedParameters;
+    protected array $encryptedParameters=[];
 
     /**
      * model constructor.

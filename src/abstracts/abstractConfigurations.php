@@ -174,13 +174,15 @@ abstract class abstractConfigurations implements configurationsInterface {
         databaseFactory::initialise($this);
         encrypterFactory::initialise($this);
 
-        /** @var securityClientInterface $securityClient */
-        $securityClient = databaseFactory::create(clients::class);
-        $this->securityClient = $securityClient;
+        try {
+            /** @var securityClientInterface $securityClient */
+            $securityClient = databaseFactory::create(clients::class);
+            $this->securityClient = $securityClient;
 
-        /** @var securitySessionInterface $securitySession */
-        $securitySession = databaseFactory::create(auth::class);
-        $this->securitySession = $securitySession;
+            /** @var securitySessionInterface $securitySession */
+            $securitySession = databaseFactory::create(auth::class);
+            $this->securitySession = $securitySession;
+        } catch (dbConnectionException $e) {}
     }
 
     /**

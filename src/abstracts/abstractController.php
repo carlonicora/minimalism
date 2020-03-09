@@ -21,7 +21,7 @@ abstract class abstractController {
     protected ?array $parameterValueList = [];
 
     /** @var array */
-    protected array $file;
+    protected ?array $file=null;
 
     /** @var string */
     public string $version;
@@ -87,7 +87,7 @@ abstract class abstractController {
                     $this->parameterValues[$parameter] = $value;
                 }
 
-            break;
+                break;
         }
 
     }
@@ -144,4 +144,3 @@ abstract class abstractController {
         }
     }
 }
-
