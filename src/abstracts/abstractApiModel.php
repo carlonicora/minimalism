@@ -32,7 +32,11 @@ abstract class abstractApiModel extends abstractModel {
      * @return array
      */
     protected function getParameters(): array {
-        return $this->parameters[$this->verb];
+        if (array_key_exists($this->verb, $this->parameters)){
+            return $this->parameters[$this->verb];
+        }
+
+        return [];
     }
 
     /**

@@ -35,7 +35,7 @@ abstract class abstractConfigurations implements configurationsInterface {
     private string $baseUrl;
 
     /** @var string */
-    protected string $debugKey;
+    protected ?string $debugKey=null;
 
     /** @var array */
     private array $databases = [];
@@ -44,28 +44,28 @@ abstract class abstractConfigurations implements configurationsInterface {
     private array $databaseConnectionStrings = [];
 
     /** @var int */
-    public int $applicationType;
+    public int $applicationType=self::MINIMALISM_API;
 
     /** @var string */
-    public string $privateKey;
+    public ?string $privateKey=null;
 
     /** @var string */
-    public string $publicKey;
+    public ?string $publicKey=null;
 
     /** @var string */
-    public string $clientId;
+    public ?string $clientId=null;
 
     /** @var string */
-    public string $clientSecret;
+    public ?string $clientSecret=null;
 
     /** @var string */
-    public string $httpHeaderSignature;
+    public ?string $httpHeaderSignature=null;
 
     /** @var bool */
-    public bool $allowUnsafeApiCalls;
+    public bool $allowUnsafeApiCalls=false;
 
     /** @var string */
-    private string $logDirectory;
+    private ?string $logDirectory=null;
 
     /** @var logger */
     public logger $logger;

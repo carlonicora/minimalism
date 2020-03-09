@@ -2,8 +2,8 @@
 namespace carlonicora\minimalism\helpers;
 
 class headers {
-    /** @var array */
-    private static array $headers;
+    /** @var array|null */
+    private static ?array $headers=null;
 
     /**
      * @param string $headerName
