@@ -60,16 +60,20 @@ abstract class abstractModel {
                 }
 
                 if (array_key_exists($parameterKey, $this->parameterValues)) {
-                    $this->$parameterName = $this->parameterValues[$parameterKey];
+                    if (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
+                        $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValues[$parameterKey]);
+                    } else {
+                        $this->$parameterName = $this->parameterValues[$parameterKey];
+                    }
                 } else if (array_key_exists($parameterKey, $this->parameterValueList)){
-                    $this->$parameterName = $this->parameterValueList[$parameterKey];
+                    if (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
+                        $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValueList[$parameterKey]);
+                    } else {
+                        $this->$parameterName = $this->parameterValueList[$parameterKey];
+                    }
                 } else if ($isParameterRequired){
                     errorReporter::returnHttpCode(412,'Required parameter' . $parameterName . ' missing.');
                     exit;
-                }
-
-                if (!empty($this->$parameterName) && !empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
-                    $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->$parameterName);
                 }
             }
         }
