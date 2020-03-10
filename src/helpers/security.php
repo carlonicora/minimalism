@@ -38,7 +38,7 @@ class security {
 
         $strings = array($verb, $uri, $time);
         if (isset($body) && count($body)) {
-            $body_json = json_encode($body, JSON_THROW_ON_ERROR, 512);
+            $body_json = json_encode($body, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES, 512);
             $strings[] = md5($body_json);
         }
         if (!empty($privateKey)) {
