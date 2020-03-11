@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\controllers;
 
 use carlonicora\minimalism\abstracts\abstractController;
+use carlonicora\minimalism\dataObjects\apiResponse;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\headers;
 use carlonicora\minimalism\helpers\security;
@@ -97,8 +98,14 @@ class apiController extends abstractController {
      * @return string
      */
     public function render(): string{
-        $data = $this->model->{$this->verb}();
+        /** @var apiResponse $apiResponse */
+        $apiResponse = $this->model->{$this->verb}();
 
-        return json_encode($data, JSON_THROW_ON_ERROR, 512);
+        $code = $apiResponse->generateHttpCode();
+        $GLOBALS['http_response_code'] = $code;
+
+        header(apiResponse::generateProtocol() . ' ' . $code . ' ' . apiResponse::generateText($code));
+
+        return $apiResponse->toJson();
     }
 }

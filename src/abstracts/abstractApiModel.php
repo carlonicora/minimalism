@@ -2,7 +2,8 @@
 
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\helpers\errorReporter;
+use carlonicora\minimalism\dataObjects\apiResponse;
+use carlonicora\minimalism\dataObjects\errorObject;
 
 abstract class abstractApiModel extends abstractModel {
 
@@ -50,34 +51,42 @@ abstract class abstractApiModel extends abstractModel {
     }
 
     /**
-     * @return array
+     * @return apiResponse
      */
-    public function DELETE(): array {
-        errorReporter::returnHttpCode(405, 'DELETE method not allowed');
-        exit;
+    private function methodNotAllowed() : apiResponse {
+        $response = new apiResponse();
+        $error = new errorObject(apiResponse::HTTP_STATUS_405);
+
+        $response->addError($error);
+
+        return $response;
     }
 
     /**
-     * @return array
+     * @return apiResponse
      */
-    public function GET(): array {
-        errorReporter::returnHttpCode(405, 'GET method not allowed');
-        exit;
+    public function DELETE(): apiResponse {
+        return $this->methodNotAllowed();
     }
 
     /**
-     * @return array
+     * @return apiResponse
      */
-    public function POST(): array {
-        errorReporter::returnHttpCode(405, 'POST method not allowed');
-        exit;
+    public function GET(): apiResponse {
+        return $this->methodNotAllowed();
     }
 
     /**
-     * @return array
+     * @return apiResponse
      */
-    public function PUT(): array {
-        errorReporter::returnHttpCode(405, 'PUT method not allowed');
-        exit;
+    public function POST(): apiResponse {
+        return $this->methodNotAllowed();
+    }
+
+    /**
+     * @return apiResponse
+     */
+    public function PUT(): apiResponse {
+        return $this->methodNotAllowed();
     }
 }
