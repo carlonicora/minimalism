@@ -2,7 +2,6 @@
 namespace carlonicora\minimalism\businessObjects\abstracts;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
-use carlonicora\minimalism\businessObjects\factories\businessObjectsFactory;
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsArrayInterface;
 
 abstract class abstractBusinessObjectsArray implements businessObjectsArrayInterface {
@@ -12,17 +11,17 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
     /** @var string */
     protected string $buinessObjectClass;
     /** @var abstractBusinessObject */
-    protected $businessObject;
+    protected abstractBusinessObject $businessObject;
 
     /** @var string  */
     public const CHILDREN_WRAPPER = 'children';
 
     /**
      * abstractBusinessObjectsArray constructor.
-     * @param businessObjectsFactory $businessObjectsFactory
+     * @param abstractBusinessObject $businessObject
      */
-    public function __construct(businessObjectsFactory $businessObjectsFactory) {
-        $this->businessObject = $businessObjectsFactory->create($this->buinessObjectClass);
+    public function __construct(abstractBusinessObject $businessObject) {
+        $this->businessObject = $businessObject;
     }
 
     /**
@@ -66,7 +65,7 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
 
         foreach ($elements as $id => $element) {
             $currentParentId = $element[$this->businessObject->parentId] ?? null;
-            if ($currentParentId === $parentId) {
+            if ($parentId === null || $currentParentId === $parentId) {
                 $children = $this->buildTree($elements, $id);
 
                 if ($children) {
@@ -78,7 +77,7 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
             }
         }
 
-        return $branch;
+        return array_values($branch);
     }
 
 }

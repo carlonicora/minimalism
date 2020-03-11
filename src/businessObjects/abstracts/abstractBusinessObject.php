@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\businessObjects\abstracts;
 
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
+use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\idEncrypter;
 
 abstract class abstractBusinessObject implements businessObjectsInterface {
@@ -21,8 +22,8 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     /** @var idEncrypter */
     protected idEncrypter $encrypter;
 
-    public function __construct(idEncrypter $encrypter) {
-        $this->encrypter = $encrypter;
+    public function __construct() {
+        $this->encrypter = encrypterFactory::encrypter();
     }
 
     /**
@@ -38,15 +39,17 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            $result[$simpleField] = $data[$simpleField];
+            if (isset($data[$simpleField]) && $data[$simpleField] !== null) {
+                $result[$simpleField] = $data[$simpleField];
+            }
         }
 
         foreach ($this->oneToOneRelationFields as $relationFieldName => $relatedBobjClass) {
-            /** @var businessObjectsInterface $relatedBusinessObject */
-            $relatedBusinessObject = new $relatedBobjClass($this->encrypter);
-
-            // TODO separate related object data to $data[$relationFieldName]
-            $result[$relationFieldName] = $relatedBusinessObject->fromDbModel($data);
+            if (false === empty($data[$relationFieldName])) {
+                /** @var abstractBusinessObject $relatedBusinessObject */
+                $relatedBusinessObject = new $relatedBobjClass();
+                $result[$relationFieldName] = $relatedBusinessObject->fromDbModel($data[$relationFieldName]);
+            }
         }
 
         return $result;
@@ -65,13 +68,15 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            $result[$simpleField] = $data[$simpleField];
+            $result[$simpleField] = $data[$simpleField] ?? null;
         }
 
         foreach ($this->oneToOneRelationFields as $relationFieldName => $relatedBobjClass) {
-            /** @var self $relatedBusinessObject */
-            $relatedBusinessObject = $data[$relationFieldName];
-            $result[$relationFieldName . 'Id'] = $relatedBusinessObject[$relatedBusinessObject->idField];
+            if (false === empty($data[$relationFieldName])) {
+                /** @var self $relatedBusinessObject */
+                $relatedBusinessObject = $data[$relationFieldName];
+                $result[$relationFieldName . 'Id'] = $relatedBusinessObject[$relatedBusinessObject->idField];
+            }
         }
 
         return $result;
