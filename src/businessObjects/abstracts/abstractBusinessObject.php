@@ -60,10 +60,8 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         }
 
         foreach ($this->customFields as $customField) {
-            if (false === empty($data[$customField])) {
-                $method = $customField . 'FromDb';
-                $result[$customField] = $this->$method($data[$customField]);
-            }
+            $method = $customField . 'FromDb';
+            $result[$customField] = $this->$method($data[$customField] ?? null);
         }
 
         return $result;
@@ -94,10 +92,8 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         }
 
         foreach ($this->customFields as $customField) {
-            if (false === empty($data[$customField])) {
-                $method = $customField . 'ToDb';
-                $result[$customField] = $this->$method($data[$customField]);
-            }
+            $method = $customField . 'ToDb';
+            $result[$customField] = $this->$method($data[$customField] ?? null);
         }
 
         return $result;
