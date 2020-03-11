@@ -2,7 +2,7 @@
 
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\dataObjects\apiResponse;
+use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\dataObjects\errorObject;
 
 abstract class abstractApiModel extends abstractModel {
@@ -51,11 +51,11 @@ abstract class abstractApiModel extends abstractModel {
     }
 
     /**
-     * @return apiResponse
+     * @return responseObject
      */
-    private function methodNotAllowed() : apiResponse {
-        $response = new apiResponse();
-        $error = new errorObject(apiResponse::HTTP_STATUS_405);
+    private function methodNotAllowed() : responseObject {
+        $response = new responseObject();
+        $error = new errorObject(responseObject::HTTP_STATUS_405);
 
         $response->addError($error);
 
@@ -63,30 +63,30 @@ abstract class abstractApiModel extends abstractModel {
     }
 
     /**
-     * @return apiResponse
+     * @return responseObject
      */
-    public function DELETE(): apiResponse {
+    public function DELETE(): responseObject {
         return $this->methodNotAllowed();
     }
 
     /**
-     * @return apiResponse
+     * @return responseObject
      */
-    public function GET(): apiResponse {
+    public function GET(): responseObject {
         return $this->methodNotAllowed();
     }
 
     /**
-     * @return apiResponse
+     * @return responseObject
      */
-    public function POST(): apiResponse {
+    public function POST(): responseObject {
         return $this->methodNotAllowed();
     }
 
     /**
-     * @return apiResponse
+     * @return responseObject
      */
-    public function PUT(): apiResponse {
+    public function PUT(): responseObject {
         return $this->methodNotAllowed();
     }
 }

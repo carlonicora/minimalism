@@ -28,7 +28,7 @@ class errorObject {
     public function __construct(string $code, string $detail=null) {
         $this->code = $code;
 
-        $this->title = apiResponse::generateText($code);
+        $this->title = responseObject::generateText($code);
 
         if ($detail !== null){
             $this->detail = $detail;

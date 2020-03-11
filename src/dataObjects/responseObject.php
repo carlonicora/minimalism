@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\dataObjects;
 
-class apiResponse {
+class responseObject {
     /** @var string  */
     public const HTTP_STATUS_200='200';
 
