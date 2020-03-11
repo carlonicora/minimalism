@@ -24,6 +24,11 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
     public function __construct() {
         $this->encrypter = encrypterFactory::encrypter();
+        foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
+            if (false === is_array($relatedBobjClass)) {
+                $relatedBobjClass = ['id' => $relatedBobjClass . 'Id', 'class' => $relatedBobjClass];
+            }
+        }
     }
 
     /**
@@ -44,10 +49,10 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
             }
         }
 
-        foreach ($this->oneToOneRelationFields as $relationFieldName => $relatedBobjClass) {
+        foreach ($this->oneToOneRelationFields as $relationFieldName => $config) {
             if (false === empty($data[$relationFieldName])) {
                 /** @var abstractBusinessObject $relatedBusinessObject */
-                $relatedBusinessObject = new $relatedBobjClass();
+                $relatedBusinessObject = new $config['class']();
                 $result[$relationFieldName] = $relatedBusinessObject->fromDbModel($data[$relationFieldName]);
             }
         }
@@ -71,11 +76,11 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
             $result[$simpleField] = $data[$simpleField] ?? null;
         }
 
-        foreach ($this->oneToOneRelationFields as $relationFieldName => $relatedBobjClass) {
+        foreach ($this->oneToOneRelationFields as $relationFieldName => $config) {
             if (false === empty($data[$relationFieldName])) {
                 /** @var self $relatedBusinessObject */
                 $relatedBusinessObject = $data[$relationFieldName];
-                $result[$relationFieldName . 'Id'] = $relatedBusinessObject[$relatedBusinessObject->idField];
+                $result[$config['id']] = $relatedBusinessObject[$relatedBusinessObject->idField];
             }
         }
 
