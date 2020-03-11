@@ -18,6 +18,8 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     protected array $simpleFields = [];
     /** @var array */
     protected array $oneToOneRelationFields = [];
+    /** @var array */
+    protected array $customFields = [];
 
     /** @var idEncrypter */
     protected idEncrypter $encrypter;
@@ -57,6 +59,13 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
             }
         }
 
+        foreach ($this->customFields as $customField) {
+            if (false === empty($data[$customField])) {
+                $method = $customField . 'FromDb';
+                $result[$customField] = $this->$method($data[$customField]);
+            }
+        }
+
         return $result;
     }
 
@@ -81,6 +90,13 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
                 /** @var self $relatedBusinessObject */
                 $relatedBusinessObject = $data[$relationFieldName];
                 $result[$config['id']] = $relatedBusinessObject[$relatedBusinessObject->idField];
+            }
+        }
+
+        foreach ($this->customFields as $customField) {
+            if (false === empty($data[$customField])) {
+                $method = $customField . 'ToDb';
+                $result[$customField] = $this->$method($data[$customField]);
             }
         }
 
