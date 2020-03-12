@@ -86,7 +86,7 @@ class responseObject {
      * @param errorObject|null $error
      * @param array|null $meta
      */
-    public function __construct(array $data = null, errorObject $error = null, array $meta = null)
+    public function __construct(array $data = [], errorObject $error = null, array $meta = null)
     {
         $this->data = $data;
         $this->error = $error;
