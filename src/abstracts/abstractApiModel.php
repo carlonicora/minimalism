@@ -8,7 +8,7 @@ use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\dataObjects\errorObject;
 use carlonicora\minimalism\interfaces\responseInterface;
 
-abstract class abstractApiModel extends abstractModel implements responseInterface{
+abstract class abstractApiModel extends abstractModel{
 
     /** @var bool */
     protected bool $requiresAuthDELETE=false;

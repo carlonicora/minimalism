@@ -2,8 +2,9 @@
 namespace carlonicora\minimalism\dataObjects;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
+use carlonicora\minimalism\interfaces\responseInterface;
 
-class responseObject extends abstractResponseObject {
+class responseObject extends abstractResponseObject implements responseInterface {
     /** @var array  */
     public array $data=[];
 
