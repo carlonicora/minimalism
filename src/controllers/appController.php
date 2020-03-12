@@ -5,6 +5,7 @@ use carlonicora\minimalism\abstracts\abstractController;
 use carlonicora\minimalism\abstracts\abstractWebModel;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\sessionManager;
+use carlonicora\minimalism\interfaces\responseInterface;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Exception;
@@ -53,12 +54,12 @@ class appController extends abstractController {
             exit;
         }
 
-        $data['baseUrl'] = $this->configurations->getBaseUrl();
-        $data['page'] = $this->model->generateData();
+        /** @var responseInterface $response */
+        $response = $this->model->generateData();
 
         if ($this->model->getViewName() !== '') {
             try {
-                $response = $this->view->render($this->model->getViewName() . '.twig', $data);
+                $response = $this->view->render($this->model->getViewName() . '.twig', $response->toArray());
             } catch (Exception $e) {
                 errorReporter::report($this->configurations, '', 'Failed to render the view', 500);
                 exit;

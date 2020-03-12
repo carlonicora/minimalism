@@ -170,4 +170,9 @@ abstract class abstractResponseObject {
      * @return string
      */
     abstract public function toJson() : string;
+
+    /**
+     * @return array
+     */
+    abstract public function toArray(): array;
 }

@@ -31,9 +31,9 @@ class responseObject extends abstractResponseObject implements responseInterface
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function toJson() : string {
+    public function toArray(): array {
         $response = [
             'data' => $this->data
         ];
@@ -41,6 +41,15 @@ class responseObject extends abstractResponseObject implements responseInterface
         if ($this->meta !== null){
             $response['meta'] = $this->meta;
         }
+
+        return $response;
+    }
+
+    /**
+     * @return string
+     */
+    public function toJson() : string {
+        $response = $this->toArray();
 
         return json_encode($response, JSON_THROW_ON_ERROR, 512);
     }

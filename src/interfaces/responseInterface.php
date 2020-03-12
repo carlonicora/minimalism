@@ -21,4 +21,9 @@ interface responseInterface {
      * @return string
      */
     public function toJson() : string;
+
+    /**
+     * @return array
+     */
+    public function toArray() : array;
 }

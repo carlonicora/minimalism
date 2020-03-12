@@ -2,15 +2,34 @@
 
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\interfaces\responseInterface;
+
 abstract class abstractWebModel extends abstractModel {
     /** @var string */
     protected string $viewName='';
 
     /**
-     * @return array
+     * abstractWebModel constructor.
+     * @param $configurations
+     * @param $parameterValues
+     * @param $parameterValueList
+     * @param null $file
      */
-    public function generateData(): array{
-        return [];
+    public function __construct($configurations, $parameterValues, $parameterValueList, $file = null){
+        parent::__construct($configurations, $parameterValues, $parameterValueList, $file);
+
+        $meta = [
+            'url' => $this->configurations->getBaseUrl()
+        ];
+
+        $this->response->setMeta($meta);
+    }
+
+    /**
+     * @return responseInterface
+     */
+    public function generateData(): responseInterface{
+        return $this->response;
     }
 
     /**
