@@ -101,10 +101,10 @@ class apiController extends abstractController {
         /** @var responseObject $apiResponse */
         $apiResponse = $this->model->{$this->verb}();
 
-        $code = $apiResponse->generateHttpCode();
+        $code = $apiResponse->getStatus();
         $GLOBALS['http_response_code'] = $code;
 
-        header(responseObject::generateProtocol() . ' ' . $code . ' ' . responseObject::generateText($code));
+        header(responseObject::generateProtocol() . ' ' . $code . ' ' . $apiResponse->generateText());
 
         return $apiResponse->toJson();
     }

@@ -53,40 +53,35 @@ abstract class abstractApiModel extends abstractModel {
     /**
      * @return responseObject
      */
-    private function methodNotAllowed() : responseObject {
-        $response = new responseObject();
-        $error = new errorObject(responseObject::HTTP_STATUS_405);
-
-        $response->addError($error);
-
-        return $response;
+    private function methodNotAllowed() : errorObject {
+        return new errorObject(responseObject::HTTP_STATUS_405);
     }
 
     /**
      * @return responseObject
      */
-    public function DELETE(): responseObject {
+    public function DELETE(): abstractResponseObject {
         return $this->methodNotAllowed();
     }
 
     /**
      * @return responseObject
      */
-    public function GET(): responseObject {
+    public function GET(): abstractResponseObject {
         return $this->methodNotAllowed();
     }
 
     /**
      * @return responseObject
      */
-    public function POST(): responseObject {
+    public function POST(): abstractResponseObject {
         return $this->methodNotAllowed();
     }
 
     /**
      * @return responseObject
      */
-    public function PUT(): responseObject {
+    public function PUT(): abstractResponseObject {
         return $this->methodNotAllowed();
     }
 }

@@ -1,15 +1,15 @@
 <?php
 namespace carlonicora\minimalism\dataObjects;
 
-class errorObject {
+use carlonicora\minimalism\abstracts\abstractResponseObject;
+
+class errorObject extends abstractResponseObject {
+
     /** @var int|null  */
     public ?int $id=null;
 
-    /** @var string|null  */
-    public ?string $status=null;
-
     /** @var string  */
-    public string $code;
+    public ?string $code=null;
 
     /** @var string  */
     public string $title;
@@ -22,33 +22,35 @@ class errorObject {
 
     /**
      * errorObject constructor.
-     * @param string $code
+     * @param string $httpStatusCode
      * @param string|null $detail
+     * @param string|null $code
+     * @param int|null $id
+     * @param array|null $meta
      */
-    public function __construct(string $code, string $detail=null) {
+    public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null, array $meta=null) {
+        $this->status = $httpStatusCode;
+        $this->title = $this->generateText();
+        $this->detail = $detail;
         $this->code = $code;
-
-        $this->title = responseObject::generateText($code);
-
-        if ($detail !== null){
-            $this->detail = $detail;
-        }
+        $this->id = $id;
+        $this->meta = $meta;
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function generatePublicArray(): array {
+    public function toJson(): string {
         $response = [
-            'code' => $this->code
+            'status' => $this->status
         ];
 
         if ($this->id !== null){
             $response['id'] = $this->id;
         }
 
-        if ($this->status !== null){
-            $response['status'] = $this->status;
+        if ($this->code !== null){
+            $response['code'] = $this->code;
         }
 
         if ($this->title !== null){
@@ -63,6 +65,6 @@ class errorObject {
             $response['meta'] = $this->meta;
         }
 
-        return $response;
+        return json_encode($response, JSON_THROW_ON_ERROR, 512);
     }
 }
