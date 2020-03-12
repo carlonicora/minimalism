@@ -2,8 +2,9 @@
 namespace carlonicora\minimalism\dataObjects;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
+use carlonicora\minimalism\interfaces\responseInterface;
 
-class errorObject extends abstractResponseObject {
+class errorObject extends abstractResponseObject implements responseInterface {
 
     /** @var int|null  */
     public ?int $id=null;

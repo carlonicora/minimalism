@@ -6,8 +6,9 @@ use carlonicora\minimalism\businessObjects\abstracts\abstractBusinessObject;
 use carlonicora\minimalism\businessObjects\abstracts\abstractBusinessObjectsArray;
 use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\dataObjects\errorObject;
+use carlonicora\minimalism\interfaces\responseInterface;
 
-abstract class abstractApiModel extends abstractModel {
+abstract class abstractApiModel extends abstractModel implements responseInterface{
 
     /** @var bool */
     protected bool $requiresAuthDELETE=false;
@@ -71,30 +72,30 @@ abstract class abstractApiModel extends abstractModel {
     }
 
     /**
-     * @return responseObject
+     * @return responseInterface
      */
-    public function DELETE(): abstractResponseObject {
+    public function DELETE(): responseInterface {
         return new errorObject(responseObject::HTTP_STATUS_405);
     }
 
     /**
-     * @return responseObject
+     * @return responseInterface
      */
-    public function GET(): abstractResponseObject {
+    public function GET(): responseInterface {
         return new errorObject(responseObject::HTTP_STATUS_405);
     }
 
     /**
-     * @return responseObject
+     * @return responseInterface
      */
-    public function POST(): abstractResponseObject {
+    public function POST(): responseInterface {
         return new errorObject(responseObject::HTTP_STATUS_405);
     }
 
     /**
-     * @return responseObject
+     * @return responseInterface
      */
-    public function PUT(): abstractResponseObject {
+    public function PUT(): responseInterface {
         return new errorObject(responseObject::HTTP_STATUS_405);
     }
 }
