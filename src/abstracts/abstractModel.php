@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\errorReporter;
 
@@ -26,6 +27,9 @@ abstract class abstractModel {
     /** @var array */
     protected array $encryptedParameters=[];
 
+    /** @var responseObject  */
+    protected responseObject $response;
+
     /**
      * model constructor.
      * @param abstractConfigurations $configurations
@@ -42,6 +46,8 @@ abstract class abstractModel {
         $this->buildParameters();
 
         $this->redirectPage = null;
+
+        $this->response = new responseObject();
     }
 
     /**

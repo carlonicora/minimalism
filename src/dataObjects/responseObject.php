@@ -16,8 +16,7 @@ class responseObject extends abstractResponseObject {
      * @param array|null $meta
      * @param string $httpStatusCode
      */
-    public function __construct(array $data = [], array $meta = null, string $httpStatusCode = self::HTTP_STATUS_200)
-    {
+    public function __construct(array $data = [], array $meta = null, string $httpStatusCode = self::HTTP_STATUS_200) {
         $this->data = $data;
         $this->meta = $meta;
         $this->status = $httpStatusCode;
