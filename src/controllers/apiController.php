@@ -6,6 +6,7 @@ use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\headers;
 use carlonicora\minimalism\helpers\security;
+use carlonicora\minimalism\interfaces\responseInterface;
 
 class apiController extends abstractController {
     /** @var string */
@@ -98,7 +99,7 @@ class apiController extends abstractController {
      * @return string
      */
     public function render(): string{
-        /** @var responseObject $apiResponse */
+        /** @var responseInterface $apiResponse */
         $apiResponse = $this->model->{$this->verb}();
 
         $code = $apiResponse->getStatus();

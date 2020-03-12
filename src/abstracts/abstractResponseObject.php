@@ -1,7 +1,9 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-abstract class abstractResponseObject {
+use carlonicora\minimalism\interfaces\responseInterface;
+
+abstract class abstractResponseObject implements responseInterface {
     /** @var string  */
     protected string $status = self::HTTP_STATUS_200;
 
