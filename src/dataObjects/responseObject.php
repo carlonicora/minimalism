@@ -31,6 +31,18 @@ class responseObject extends abstractResponseObject implements responseInterface
     }
 
     /**
+     * @param string $name
+     * @param string $value
+     */
+    public function addMetaString(string $name, string $value): void {
+        if ($this->meta === null){
+            $this->meta = [];
+        }
+
+        $this->meta[$name] = $value;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array {
