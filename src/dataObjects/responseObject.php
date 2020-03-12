@@ -81,6 +81,19 @@ class responseObject {
     private ?errorObject $error=null;
 
     /**
+     * responseObject constructor.
+     * @param array|null $data
+     * @param errorObject|null $error
+     * @param array|null $meta
+     */
+    public function __construct(array $data = null, errorObject $error = null, array $meta = null)
+    {
+        $this->data = $data;
+        $this->error = $error;
+        $this->meta = $meta;
+    }
+
+    /**
      * @param errorObject $error
      */
     public function addError(errorObject $error) : void {
