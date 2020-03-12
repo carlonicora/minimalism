@@ -3,6 +3,8 @@ namespace carlonicora\minimalism\controllers;
 
 use carlonicora\minimalism\abstracts\abstractController;
 use carlonicora\minimalism\abstracts\abstractWebModel;
+use carlonicora\minimalism\dataObjects\errorObject;
+use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\sessionManager;
 use carlonicora\minimalism\interfaces\responseInterface;
@@ -47,26 +49,33 @@ class appController extends abstractController {
      * @return string
      */
     public function render(): string{
-        $data = [];
+        $response = null;
 
+        /** @var responseInterface $data */
+        $data = $this->model->generateData();
+
+        /**
         if (array_key_exists('forceRedirect', $data)) {
             header('Location:' . $data['forceRedirect']);
             exit;
         }
-
-        /** @var responseInterface $response */
-        $response = $this->model->generateData();
+         */
 
         if ($this->model->getViewName() !== '') {
             try {
-                $response = $this->view->render($this->model->getViewName() . '.twig', $response->toArray());
+                $response = $this->view->render($this->model->getViewName() . '.twig', $data->toArray());
             } catch (Exception $e) {
-                errorReporter::report($this->configurations, '', 'Failed to render the view', 500);
-                exit;
+                $data = new errorObject(errorObject::HTTP_STATUS_500, 'Failed to render the view');
             }
-        } else {
-            $response = json_encode($data, JSON_THROW_ON_ERROR, 512);
         }
+
+        if ($response === null) {
+            $response = $data->toJson();
+        }
+
+        $code = $data->getStatus();
+        $GLOBALS['http_response_code'] = $code;
+        header(responseObject::generateProtocol() . ' ' . $code . ' ' . $data->generateText());
 
         $sessionManager = new sessionManager();
         $sessionManager->saveSession($this->configurations);
