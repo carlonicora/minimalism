@@ -2,6 +2,8 @@
 
 namespace carlonicora\minimalism\abstracts;
 
+use carlonicora\minimalism\businessObjects\abstracts\abstractBusinessObject;
+use carlonicora\minimalism\businessObjects\abstracts\abstractBusinessObjectsArray;
 use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\dataObjects\errorObject;
 
@@ -22,12 +24,21 @@ abstract class abstractApiModel extends abstractModel {
     /** @var string */
     public string $verb='GET';
 
+
+    /** @var abstractBusinessObject */
+    protected abstractBusinessObject $businessObject;
+
+    /** @var abstractBusinessObjectsArray */
+    protected abstractBusinessObjectsArray $arrayBusinessObject;
+
     /**
      * @inheritDoc
      */
     public function __construct(abstractConfigurations $configurations, array $parameterValues, array $parameterValueList, string $verb, array $file=null) {
         $this->verb = $verb;
         parent::__construct($configurations, $parameterValues, $parameterValueList, $file);
+        // TODO implment trully dependency injection and catch configuration execption in the factory
+        $this->initialiseBusinessObjects();
     }
     /**
      * @return array
@@ -38,6 +49,16 @@ abstract class abstractApiModel extends abstractModel {
         }
 
         return [];
+    }
+
+    protected function initialiseBusinessObjects(): void
+    {
+        $position = strpos(static::class, 'models');
+        $businessObjectClass = substr_replace(static::class, 'businessObjects', $position, strlen('models'));
+        $arrayBusinessObject = $businessObjectClass . 'Array';
+
+        $this->businessObject = new $businessObjectClass;
+        $this->arrayBusinessObject = new $arrayBusinessObject($this->businessObject);
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\businessObjects\abstracts;
 
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
+use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\idEncrypter;
 
 abstract class abstractBusinessObject implements businessObjectsInterface {
@@ -17,12 +18,19 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     protected array $simpleFields = [];
     /** @var array */
     protected array $oneToOneRelationFields = [];
+    /** @var array */
+    protected array $customFields = [];
 
     /** @var idEncrypter */
     protected idEncrypter $encrypter;
 
-    public function __construct(idEncrypter $encrypter) {
-        $this->encrypter = $encrypter;
+    public function __construct() {
+        $this->encrypter = encrypterFactory::encrypter();
+        foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
+            if (false === is_array($relatedBobjClass)) {
+                $relatedBobjClass = ['id' => $relatedBobjClass . 'Id', 'class' => $relatedBobjClass];
+            }
+        }
     }
 
     /**
@@ -38,15 +46,22 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            $result[$simpleField] = $data[$simpleField];
+            if (isset($data[$simpleField]) && $data[$simpleField] !== null) {
+                $result[$simpleField] = $data[$simpleField];
+            }
         }
 
-        foreach ($this->oneToOneRelationFields as $relationFieldName => $relatedBobjClass) {
-            /** @var businessObjectsInterface $relatedBusinessObject */
-            $relatedBusinessObject = new $relatedBobjClass($this->encrypter);
+        foreach ($this->oneToOneRelationFields as $relationFieldName => $config) {
+            if (false === empty($data[$relationFieldName])) {
+                /** @var abstractBusinessObject $relatedBusinessObject */
+                $relatedBusinessObject = new $config['class']();
+                $result[$relationFieldName] = $relatedBusinessObject->fromDbModel($data[$relationFieldName]);
+            }
+        }
 
-            // TODO separate related object data to $data[$relationFieldName]
-            $result[$relationFieldName] = $relatedBusinessObject->fromDbModel($data);
+        foreach ($this->customFields as $customField) {
+            $method = $customField . 'FromDb';
+            $result[$customField] = $this->$method($data[$customField] ?? null);
         }
 
         return $result;
@@ -65,13 +80,20 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            $result[$simpleField] = $data[$simpleField];
+            $result[$simpleField] = $data[$simpleField] ?? null;
         }
 
-        foreach ($this->oneToOneRelationFields as $relationFieldName => $relatedBobjClass) {
-            /** @var self $relatedBusinessObject */
-            $relatedBusinessObject = $data[$relationFieldName];
-            $result[$relationFieldName . 'Id'] = $relatedBusinessObject[$relatedBusinessObject->idField];
+        foreach ($this->oneToOneRelationFields as $relationFieldName => $config) {
+            if (false === empty($data[$relationFieldName])) {
+                /** @var self $relatedBusinessObject */
+                $relatedBusinessObject = $data[$relationFieldName];
+                $result[$config['id']] = $relatedBusinessObject[$relatedBusinessObject->idField];
+            }
+        }
+
+        foreach ($this->customFields as $customField) {
+            $method = $customField . 'ToDb';
+            $result[$customField] = $this->$method($data[$customField] ?? null);
         }
 
         return $result;
