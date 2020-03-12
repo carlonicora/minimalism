@@ -24,7 +24,6 @@ abstract class abstractApiModel extends abstractModel {
     /** @var string */
     public string $verb='GET';
 
-
     /** @var abstractBusinessObject */
     protected abstractBusinessObject $businessObject;
 
@@ -74,35 +73,28 @@ abstract class abstractApiModel extends abstractModel {
     /**
      * @return responseObject
      */
-    private function methodNotAllowed() : errorObject {
+    public function DELETE(): abstractResponseObject {
         return new errorObject(responseObject::HTTP_STATUS_405);
     }
 
     /**
      * @return responseObject
      */
-    public function DELETE(): abstractResponseObject {
-        return $this->methodNotAllowed();
-    }
-
-    /**
-     * @return responseObject
-     */
     public function GET(): abstractResponseObject {
-        return $this->methodNotAllowed();
+        return new errorObject(responseObject::HTTP_STATUS_405);
     }
 
     /**
      * @return responseObject
      */
     public function POST(): abstractResponseObject {
-        return $this->methodNotAllowed();
+        return new errorObject(responseObject::HTTP_STATUS_405);
     }
 
     /**
      * @return responseObject
      */
     public function PUT(): abstractResponseObject {
-        return $this->methodNotAllowed();
+        return new errorObject(responseObject::HTTP_STATUS_405);
     }
 }
