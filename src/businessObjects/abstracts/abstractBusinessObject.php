@@ -3,7 +3,9 @@ namespace carlonicora\minimalism\businessObjects\abstracts;
 
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
 use carlonicora\minimalism\businessObjects\minimalismBo;
+use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\factories\encrypterFactory;
+use carlonicora\minimalism\interfaces\responseInterface;
 
 abstract class abstractBusinessObject implements businessObjectsInterface {
 
@@ -30,9 +32,22 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     }
 
     /**
+     * @param array $data
+     * @return responseInterface
+     */
+    public function toDbModel(array $data) : responseInterface {
+        return new responseObject();
+    }
+
+    public function fromDbModel(array $data): responseInterface {
+        return new responseObject($this->fromDbModelToData($data));
+    }
+
+
+    /**
      * @inheritDoc
      */
-    public function fromDbModel(array $data): array {
+    protected function fromDbModelToData(array $data): array {
         $result = [
             'type' => substr(strrchr(static::class, '\\'), 1),
             'attributes' => []
@@ -77,7 +92,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     /**
      * @inheritDoc
      */
-    public function toDbModel(array $data): array {
+    protected function toDbModelArray(array $data): array {
         $result = [];
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {

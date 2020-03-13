@@ -18,11 +18,7 @@ abstract class abstractWebModel extends abstractModel {
     public function __construct($configurations, $parameterValues, $parameterValueList, $file = null){
         parent::__construct($configurations, $parameterValues, $parameterValueList, $file);
 
-        $meta = [
-            'url' => $this->configurations->getBaseUrl()
-        ];
-
-        $this->response->setMeta($meta);
+        $this->response->addMeta('url', $this->configurations->getBaseUrl());
     }
 
     /**

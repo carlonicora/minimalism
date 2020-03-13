@@ -5,57 +5,21 @@ use carlonicora\minimalism\abstracts\abstractResponseObject;
 use carlonicora\minimalism\interfaces\responseInterface;
 
 class responseObject extends abstractResponseObject implements responseInterface {
-    /** @var array  */
-    public array $data=[];
+    use resourceMeta;
+    use resourceLinks;
 
-    /** @var array  */
-    private array $meta=[];
-
-    /** @var array  */
-    private array $links=[];
+    /** @var resourceObject|null */
+    public ?resourceObject $data=null;
 
     /**
      * responseObject constructor.
      * @param array $data
-     * @param array|null $meta
-     * @param string $httpStatusCode
      */
-    public function __construct(array $data = [], array $meta=[], string $httpStatusCode = self::HTTP_STATUS_200) {
-        $this->data = $data;
-        $this->meta = $meta;
-        $this->status = $httpStatusCode;
-        $this->links = [];
-    }
-
-    /**
-     * @param array $meta
-     */
-    public function setMeta(array $meta): void {
-        $this->meta = $meta;
-    }
-
-    /**
-     * @param string $name
-     * @param string $value
-     */
-    public function addMetaString(string $name, string $value): void {
-        $this->meta[$name] = $value;
-    }
-
-    /**
-     * @param string $name
-     * @param string $url
-     * @param array|null $meta
-     */
-    public function addLink(string $name, string $url, array $meta=null): void {
-        if ($meta === null){
-            $this->links[$name] = $url;
-        } else {
-            $this->links[$name] = [
-                'href' => $url,
-                'meta' => $meta
-            ];
+    public function __construct(array $data=null) {
+        if (isset($data)){
+            $this->data = new resourceObject($data);
         }
+        $this->status = self::HTTP_STATUS_200;
     }
 
     /**
@@ -63,11 +27,11 @@ class responseObject extends abstractResponseObject implements responseInterface
      */
     public function toArray(): array {
         $response = [
-            'data' => $this->data
+            'data' => $this->data->toArray()
         ];
 
         if (!empty($this->links)){
-            $response['links'] = $this->links;
+            $response['links'] = $this->linksToArray();
         }
 
         if (!empty($this->meta)){
