@@ -3,11 +3,11 @@ namespace carlonicora\minimalism\controllers;
 
 use carlonicora\minimalism\abstracts\abstractController;
 use carlonicora\minimalism\abstracts\abstractWebModel;
-use carlonicora\minimalism\dataObjects\errorObject;
-use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\sessionManager;
 use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\responses\dataResponse;
+use carlonicora\minimalism\jsonapi\responses\errorResponse;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Exception;
@@ -65,7 +65,7 @@ class appController extends abstractController {
             try {
                 $response = $this->view->render($this->model->getViewName() . '.twig', $data->toArray());
             } catch (Exception $e) {
-                $data = new errorObject(errorObject::HTTP_STATUS_500, 'Failed to render the view');
+                $data = new errorResponse(errorResponse::HTTP_STATUS_500, 'Failed to render the view');
             }
         }
 
@@ -75,7 +75,7 @@ class appController extends abstractController {
 
         $code = $data->getStatus();
         $GLOBALS['http_response_code'] = $code;
-        header(responseObject::generateProtocol() . ' ' . $code . ' ' . $data->generateText());
+        header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $data->generateText());
 
         $sessionManager = new sessionManager();
         $sessionManager->saveSession($this->configurations);

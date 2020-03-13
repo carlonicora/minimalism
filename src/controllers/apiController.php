@@ -2,11 +2,11 @@
 namespace carlonicora\minimalism\controllers;
 
 use carlonicora\minimalism\abstracts\abstractController;
-use carlonicora\minimalism\dataObjects\responseObject;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\helpers\headers;
 use carlonicora\minimalism\helpers\security;
 use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\responses\dataResponse;
 
 class apiController extends abstractController {
     /** @var string */
@@ -105,7 +105,7 @@ class apiController extends abstractController {
         $code = $apiResponse->getStatus();
         $GLOBALS['http_response_code'] = $code;
 
-        header(responseObject::generateProtocol() . ' ' . $code . ' ' . $apiResponse->generateText());
+        header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $apiResponse->generateText());
 
         return $apiResponse->toJson();
     }

@@ -1,10 +1,13 @@
 <?php
-namespace carlonicora\minimalism\dataObjects;
+namespace carlonicora\minimalism\jsonapi\responses;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
 use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\resources\resourceLinks;
+use carlonicora\minimalism\jsonapi\resources\resourceMeta;
+use carlonicora\minimalism\jsonapi\resources\resourceObject;
 
-class responseObject extends abstractResponseObject implements responseInterface {
+class dataResponse extends abstractResponseObject implements responseInterface {
     use resourceMeta;
     use resourceLinks;
 

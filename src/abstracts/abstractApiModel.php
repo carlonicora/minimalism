@@ -2,9 +2,8 @@
 
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\dataObjects\responseObject;
-use carlonicora\minimalism\dataObjects\errorObject;
 use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\responses\errorResponse;
 
 abstract class abstractApiModel extends abstractModel{
 
@@ -53,27 +52,27 @@ abstract class abstractApiModel extends abstractModel{
      * @return responseInterface
      */
     public function DELETE(): responseInterface {
-        return new errorObject(responseObject::HTTP_STATUS_405);
+        return new errorResponse(errorResponse::HTTP_STATUS_405);
     }
 
     /**
      * @return responseInterface
      */
     public function GET(): responseInterface {
-        return new errorObject(responseObject::HTTP_STATUS_405);
+        return new errorResponse(errorResponse::HTTP_STATUS_405);
     }
 
     /**
      * @return responseInterface
      */
     public function POST(): responseInterface {
-        return new errorObject(responseObject::HTTP_STATUS_405);
+        return new errorResponse(errorResponse::HTTP_STATUS_405);
     }
 
     /**
      * @return responseInterface
      */
     public function PUT(): responseInterface {
-        return new errorObject(responseObject::HTTP_STATUS_405);
+        return new errorResponse(errorResponse::HTTP_STATUS_405);
     }
 }

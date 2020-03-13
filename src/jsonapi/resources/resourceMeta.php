@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\dataObjects;
+namespace carlonicora\minimalism\jsonapi\resources;
 
 trait resourceMeta{
     /** @var array|null */

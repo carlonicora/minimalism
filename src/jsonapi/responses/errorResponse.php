@@ -1,10 +1,12 @@
 <?php
-namespace carlonicora\minimalism\dataObjects;
+namespace carlonicora\minimalism\jsonapi\responses;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
 use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\resources\resourceMeta;
 
-class errorObject extends abstractResponseObject implements responseInterface {
+class errorResponse extends abstractResponseObject implements responseInterface {
+    use resourceMeta;
 
     /** @var int|null  */
     public ?int $id=null;
@@ -18,24 +20,19 @@ class errorObject extends abstractResponseObject implements responseInterface {
     /** @var string|null  */
     public ?string $detail=null;
 
-    /** @var array|null  */
-    public ?array $meta=null;
-
     /**
      * errorObject constructor.
      * @param string $httpStatusCode
      * @param string|null $detail
      * @param string|null $code
      * @param int|null $id
-     * @param array|null $meta
      */
-    public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null, array $meta=null) {
+    public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null) {
         $this->status = $httpStatusCode;
         $this->title = $this->generateText();
         $this->detail = $detail;
         $this->code = $code;
         $this->id = $id;
-        $this->meta = $meta;
     }
 
     /**
@@ -62,7 +59,7 @@ class errorObject extends abstractResponseObject implements responseInterface {
             $response['detail'] = $this->detail;
         }
 
-        if ($this->meta !== null){
+        if (!empty($this->meta)){
             $response['meta'] = $this->meta;
         }
 
