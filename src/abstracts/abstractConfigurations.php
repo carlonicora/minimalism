@@ -158,8 +158,7 @@ abstract class abstractConfigurations implements configurationsInterface {
             }
         }
 
-        databaseFactory::initialise($this);
-        encrypterFactory::initialise($this);
+        $this->resume();
 
         try {
             /** @var securityClientInterface $securityClient */
@@ -308,5 +307,6 @@ abstract class abstractConfigurations implements configurationsInterface {
      */
     public function resume(): void {
         databaseFactory::initialise($this);
+        encrypterFactory::initialise($this);
     }
 }
