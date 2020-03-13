@@ -32,8 +32,7 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
 
         foreach ($data as $row) {
             $formattedEntity = $this->businessObject->fromDbModel($row);
-            $id = $formattedEntity[$this->businessObject->idField];
-            $result[$id] = $formattedEntity;
+            $result[$formattedEntity['id']] = $formattedEntity;
         }
 
         if (empty($this->businessObject->parentId)) {
