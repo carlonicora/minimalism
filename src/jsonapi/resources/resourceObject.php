@@ -21,18 +21,48 @@ class resourceObject extends resourceIdentifierObject {
             $this->attributes = $data['attributes'];
         }
     }
+
     /**
+     * @param resourceRelationship $relationship
+     */
+    public function addRelationship(resourceRelationship $relationship) : void{
+        if ($this->relationships === null){
+            $this->relationships = [];
+        }
+
+        if (!array_key_exists($relationship->data->type, $this->relationships)){
+            $this->relationships[$relationship->data->type] = [];
+        }
+
+        $this->relationships[$relationship->data->type][] = $relationship;
+    }
+
+    /**
+     * @param bool $includesAttributes
      * @return array
      */
-    public function toArray() : array {
+    public function toArray(bool $includesAttributes=true) : array {
         $response = parent::toArray();
 
-        if ($this->attributes !== null){
+        if ($includesAttributes && $this->attributes !== null) {
             $response['attributes'] = $this->attributes;
         }
 
         if ($this->hasLinks()){
             $response['links'] = $this->linksToArray();
+        }
+
+        if ($this->relationships !== null){
+            $response['relationships'] = [];
+
+            foreach ($this->relationships as $type => $relationships){
+                $response['relationships'][$type] = [];
+
+                /** @var resourceRelationship $relationship */
+                foreach ($relationships ?? [] as $relationship){
+                    $response['relationships'][$type][] = $relationship->toArray(false);
+                }
+            }
         }
 
         return $response;

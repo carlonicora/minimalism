@@ -6,6 +6,7 @@ use carlonicora\minimalism\interfaces\responseInterface;
 use carlonicora\minimalism\jsonapi\resources\resourceLinks;
 use carlonicora\minimalism\jsonapi\resources\resourceMeta;
 use carlonicora\minimalism\jsonapi\resources\resourceObject;
+use carlonicora\minimalism\jsonapi\resources\resourceRelationship;
 
 class dataResponse extends abstractResponseObject implements responseInterface {
     use resourceMeta;
@@ -17,6 +18,9 @@ class dataResponse extends abstractResponseObject implements responseInterface {
     /** @var array|null */
     public ?array $dataList=null;
 
+    /** @var array|null  */
+    public ?array $included=null;
+
     /**
      * responseObject constructor.
      * @param array $data
@@ -26,6 +30,17 @@ class dataResponse extends abstractResponseObject implements responseInterface {
             $this->data = new resourceObject($data);
         }
         $this->status = self::HTTP_STATUS_200;
+    }
+
+    /**
+     * @param resourceRelationship $relationship
+     */
+    public function addIncluded(resourceRelationship $relationship) : void{
+        if ($this->included === null){
+            $this->included = [];
+        }
+
+        $this->included[] = $relationship;
     }
 
     /**
@@ -52,6 +67,15 @@ class dataResponse extends abstractResponseObject implements responseInterface {
 
         if (!empty($this->meta)){
             $response['meta'] = $this->meta;
+        }
+
+        if ($this->included !== null){
+            $response['included'] = [];
+
+            /** @var resourceRelationship $resource */
+            foreach ($this->included as $resource){
+                $response['included'][] = $resource->toArray();
+            }
         }
 
         return $response;
