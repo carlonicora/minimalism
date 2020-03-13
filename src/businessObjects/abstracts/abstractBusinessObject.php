@@ -68,7 +68,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            if (isset($data[$simpleField]) && $data[$simpleField] !== null) {
+            if (isset($data[$simpleField]) && $data[$simpleField] !== null && !array_key_exists($simpleField, $result['attributes'])) {
                 $result['attributes'][$simpleField] = $data[$simpleField];
             }
         }

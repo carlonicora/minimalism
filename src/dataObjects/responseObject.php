@@ -11,6 +11,9 @@ class responseObject extends abstractResponseObject implements responseInterface
     /** @var resourceObject|null */
     public ?resourceObject $data=null;
 
+    /** @var array|null */
+    public ?array $dataList=null;
+
     /**
      * responseObject constructor.
      * @param array $data
@@ -26,9 +29,19 @@ class responseObject extends abstractResponseObject implements responseInterface
      * @return array
      */
     public function toArray(): array {
-        $response = [
-            'data' => $this->data->toArray()
-        ];
+        $response = [];
+
+        if ($this->data !== null) {
+            $response['data'] = $this->data->toArray();
+        } else {
+            $response['data'] = [];
+
+            /** @var resourceObject $data */
+            foreach ($this->dataList ?? [] as $data){
+                $dataObject = $data->toArray();
+                $response['data'][] = $dataObject['data'];
+            }
+        }
 
         if (!empty($this->links)){
             $response['links'] = $this->linksToArray();
