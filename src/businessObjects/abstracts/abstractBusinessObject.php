@@ -4,8 +4,7 @@ namespace carlonicora\minimalism\businessObjects\abstracts;
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
 use carlonicora\minimalism\businessObjects\minimalismBo;
 use carlonicora\minimalism\factories\encrypterFactory;
-use carlonicora\minimalism\interfaces\responseInterface;
-use carlonicora\minimalism\jsonapi\responses\dataResponse;
+use carlonicora\minimalism\jsonapi\resources\resourceObject;
 
 abstract class abstractBusinessObject implements businessObjectsInterface {
 
@@ -33,14 +32,18 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
     /**
      * @param array $data
-     * @return responseInterface
+     * @return array
      */
-    public function toDbModel(array $data) : responseInterface {
-        return new dataResponse();
+    public function toDbModel(array $data) : array {
+        return [];
     }
 
-    public function fromDbModel(array $data): responseInterface {
-        return new dataResponse($this->fromDbModelToData($data));
+    /**
+     * @param array $data
+     * @return resourceObject
+     */
+    public function fromDbModel(array $data): resourceObject {
+        return new resourceObject($this->fromDbModelToData($data));
     }
 
 
