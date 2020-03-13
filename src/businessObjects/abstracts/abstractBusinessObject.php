@@ -61,7 +61,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
         foreach ($this->oneToOneRelationFields as $relationFieldName => $config) {
             if (false === empty($data[$relationFieldName])) {
                 /** @var abstractBusinessObject $relatedBusinessObject */
-                $relatedBusinessObject = new $config['class']();
+                $relatedBusinessObject = minimalismBo::businessObject($config['class']);
                 $result['attributes'][$relationFieldName] = $relatedBusinessObject->fromDbModel($data[$relationFieldName]);
             }
         }
