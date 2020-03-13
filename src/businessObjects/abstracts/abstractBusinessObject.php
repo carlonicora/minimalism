@@ -37,7 +37,9 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
      * @inheritDoc
      */
     public function fromDbModel(array $data): array {
-        $result = [];
+        $result = [
+            'type' => substr(strrchr(static::class, '\\'), 1)
+        ];
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
             if (false === empty($data[$hashEncodedField])) {
