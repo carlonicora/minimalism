@@ -41,6 +41,14 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
             'type' => substr(strrchr(static::class, '\\'), 1)
         ];
 
+        if (false === empty($data[$this->idField])) {
+            if (array_key_exists($this->idField, $this->hashEncodedFields)){
+                $result['id'] = $this->encrypter->encryptId((int)$data[$this->idField]);
+            } else {
+                $result['id'] = (int)$data[$this->idField];
+            }
+        }
+
         foreach ($this->hashEncodedFields as $hashEncodedField) {
             if (false === empty($data[$hashEncodedField])) {
                 $result[$hashEncodedField] = $this->encrypter->encryptId((int)$data[$hashEncodedField]);
