@@ -133,7 +133,7 @@ abstract class abstractApiCaller {
 
         $returnValue->errorId = $info['http_code'];
 
-        if ($returnValue->errorId !== 200) {
+        if (false === in_array($returnValue->errorId, [200, 201, 204], true)) {
             $returnValue->isSuccess = false;
             $returnValue->returnedValue = null;
             $returnValue->errorMessage = $returnedJson;
