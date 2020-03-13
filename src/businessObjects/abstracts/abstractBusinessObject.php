@@ -2,8 +2,8 @@
 namespace carlonicora\minimalism\businessObjects\abstracts;
 
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
+use carlonicora\minimalism\businessObjects\minimalismBo;
 use carlonicora\minimalism\factories\encrypterFactory;
-use carlonicora\minimalism\helpers\idEncrypter;
 
 abstract class abstractBusinessObject implements businessObjectsInterface {
 
@@ -21,11 +21,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     /** @var array */
     protected array $customFields = [];
 
-    /** @var idEncrypter */
-    protected idEncrypter $encrypter;
-
     public function __construct() {
-        $this->encrypter = encrypterFactory::encrypter();
         foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
             if (false === is_array($relatedBobjClass)) {
                 $relatedBobjClass = ['id' => $relatedBobjClass . 'Id', 'class' => $relatedBobjClass];
@@ -44,7 +40,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
         if (false === empty($data[$this->idField])) {
             if (array_key_exists($this->idField, $this->hashEncodedFields)){
-                $result['id'] = $this->encrypter->encryptId((int)$data[$this->idField]);
+                $result['id'] = encrypterFactory::encrypter()->encryptId((int)$data[$this->idField]);
             } else {
                 $result['id'] = (int)$data[$this->idField];
             }
@@ -52,7 +48,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
             if (false === empty($data[$hashEncodedField])) {
-                $result['attributes'][$hashEncodedField] = $this->encrypter->encryptId((int)$data[$hashEncodedField]);
+                $result['attributes'][$hashEncodedField] = encrypterFactory::encrypter()->encryptId((int)$data[$hashEncodedField]);
             }
         }
 
@@ -86,7 +82,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
             if (false === empty($data[$hashEncodedField])) {
-                $result[$hashEncodedField] = $this->encrypter->decryptId($data[$hashEncodedField]);
+                $result[$hashEncodedField] = encrypterFactory::encrypter()->decryptId($data[$hashEncodedField]);
             }
         }
 
