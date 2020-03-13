@@ -56,8 +56,7 @@ class dataResponse extends abstractResponseObject implements responseInterface {
 
             /** @var resourceObject $data */
             foreach ($this->dataList ?? [] as $data){
-                $dataObject = $data->toArray();
-                $response['data'][] = $dataObject['data'];
+                $response['data'][] = $data->toArray();
             }
         }
 

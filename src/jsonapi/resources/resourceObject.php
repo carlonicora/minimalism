@@ -56,11 +56,11 @@ class resourceObject extends resourceIdentifierObject {
             $response['relationships'] = [];
 
             foreach ($this->relationships as $type => $relationships){
-                $response['relationships'][$type] = [];
+                $response['relationships'][$type]['data'] = [];
 
                 /** @var resourceRelationship $relationship */
                 foreach ($relationships ?? [] as $relationship){
-                    $response['relationships'][$type][] = $relationship->toArray(false);
+                    $response['relationships'][$type]['data'][] = $relationship->data->toArray(false);
                 }
             }
         }

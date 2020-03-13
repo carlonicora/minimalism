@@ -13,7 +13,7 @@ class resourceRelationship {
      * @param array $data
      */
     public function __construct(array $data) {
-        $this->data = new resourceObject($$data);
+        $this->data = new resourceObject($data);
     }
 
     /**

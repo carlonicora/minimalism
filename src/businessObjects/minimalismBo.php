@@ -25,7 +25,7 @@ class minimalismBo {
      */
     public static function businessObject(string $objectName) : businessObjectsInterface {
         if (!array_key_exists($objectName,  self::$businessObjects)) {
-            self::$businessObjects[$objectName] = new $objectName();
+            self::$businessObjects[$objectName] = new $objectName(self::$configurations);
         }
 
         return self::$businessObjects[$objectName];
