@@ -38,7 +38,8 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
      */
     public function fromDbModel(array $data): array {
         $result = [
-            'type' => substr(strrchr(static::class, '\\'), 1)
+            'type' => substr(strrchr(static::class, '\\'), 1),
+            'attributes' => []
         ];
 
         if (false === empty($data[$this->idField])) {
@@ -51,13 +52,13 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
         foreach ($this->hashEncodedFields as $hashEncodedField) {
             if (false === empty($data[$hashEncodedField])) {
-                $result[$hashEncodedField] = $this->encrypter->encryptId((int)$data[$hashEncodedField]);
+                $result['attributes'][$hashEncodedField] = $this->encrypter->encryptId((int)$data[$hashEncodedField]);
             }
         }
 
         foreach ($this->simpleFields as $simpleField) {
             if (isset($data[$simpleField]) && $data[$simpleField] !== null) {
-                $result[$simpleField] = $data[$simpleField];
+                $result['attributes'][$simpleField] = $data[$simpleField];
             }
         }
 
@@ -65,13 +66,13 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
             if (false === empty($data[$relationFieldName])) {
                 /** @var abstractBusinessObject $relatedBusinessObject */
                 $relatedBusinessObject = new $config['class']();
-                $result[$relationFieldName] = $relatedBusinessObject->fromDbModel($data[$relationFieldName]);
+                $result['attributes'][$relationFieldName] = $relatedBusinessObject->fromDbModel($data[$relationFieldName]);
             }
         }
 
         foreach ($this->customFields as $customField) {
             $method = $customField . 'FromDb';
-            $result[$customField] = $this->$method($data[$customField] ?? null);
+            $result['attributes'][$customField] = $this->$method($data[$customField] ?? null);
         }
 
         return $result;
