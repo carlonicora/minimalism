@@ -4,9 +4,12 @@ namespace carlonicora\minimalism\businessObjects\abstracts;
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
 use carlonicora\minimalism\businessObjects\minimalismBo;
 use carlonicora\minimalism\factories\encrypterFactory;
+use carlonicora\minimalism\interfaces\configurationsInterface;
 use carlonicora\minimalism\jsonapi\resources\resourceObject;
 
 abstract class abstractBusinessObject implements businessObjectsInterface {
+    /** @var configurationsInterface  */
+    protected configurationsInterface $configurations;
 
     /** @var string */
     public string $idField;
@@ -22,7 +25,13 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
     /** @var array */
     protected array $customFields = [];
 
-    public function __construct() {
+    /**
+     * abstractBusinessObject constructor.
+     * @param configurationsInterface $configurations
+     */
+    public function __construct(configurationsInterface $configurations) {
+        $this->configurations = $configurations;
+
         foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
             if (false === is_array($relatedBobjClass)) {
                 $relatedBobjClass = ['id' => $relatedBobjClass . 'Id', 'class' => $relatedBobjClass];
@@ -86,7 +95,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
         foreach ($this->customFields as $customField) {
             $method = $customField . 'FromDb';
-            $result['attributes'][$customField] = $this->$method($data[$customField] ?? null);
+            $result['attributes'][$customField] = $this->$method($data[$customField] ?? null, $data);
         }
 
         return $result;
@@ -118,10 +127,9 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
 
         foreach ($this->customFields as $customField) {
             $method = $customField . 'ToDb';
-            $result[$customField] = $this->$method($data[$customField] ?? null);
+            $result[$customField] = $this->$method($data[$customField] ?? null, $data);
         }
 
         return $result;
     }
-
 }

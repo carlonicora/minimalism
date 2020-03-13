@@ -3,10 +3,21 @@ namespace carlonicora\minimalism\businessObjects;
 
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsArrayInterface;
 use carlonicora\minimalism\businessObjects\interfaces\businessObjectsInterface;
+use carlonicora\minimalism\interfaces\configurationsInterface;
 
 class minimalismBo {
     /** @var array */
     private static array $businessObjects=[];
+
+    /** @var configurationsInterface|null  */
+    private static ?configurationsInterface $configurations=null;
+
+    /**
+     * @param configurationsInterface $configurations
+     */
+    public static function initialise(configurationsInterface $configurations) : void {
+        self::$configurations = $configurations;
+    }
 
     /**
      * @param string $objectName

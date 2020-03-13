@@ -6,6 +6,11 @@ use mysqli;
 
 interface configurationsInterface{
     /**
+     *
+     */
+    public function loadConfigurations(): void;
+
+    /**
      * @param string $databaseName
      * @return mysqli|null
      */

@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\bootstrapper;
+use carlonicora\minimalism\businessObjects\minimalismBo;
 use carlonicora\minimalism\databases\security\tables\auth;
 use carlonicora\minimalism\databases\security\tables\clients;
 use carlonicora\minimalism\exceptions\dbConnectionException;
@@ -307,6 +308,7 @@ abstract class abstractConfigurations implements configurationsInterface {
      */
     public function resume(): void {
         databaseFactory::initialise($this);
+        minimalismBo::initialise($this);
         encrypterFactory::initialise($this);
     }
 }
