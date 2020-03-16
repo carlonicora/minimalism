@@ -78,11 +78,15 @@ class dataResponse extends abstractResponseObject implements responseInterface {
     private function buildIncluded(resourceObject $data): void {
         if ($data->relationships !== null){
             foreach ($data->relationships as $relationshipType=>$relationships){
+                /** @var resourceRelationship $relationship */
                 foreach ($relationships as $relationship){
                     if ($this->included === null){
                         $this->included = [];
                     }
-                    $this->included[] = $relationship;
+
+                    if (!in_array($relationship->data->id, array_column($this->included, 'id'), true)){
+                        $this->included[] = $relationship;
+                    }
                 }
             }
         }
