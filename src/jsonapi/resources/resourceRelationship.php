@@ -1,9 +1,12 @@
 <?php
 namespace carlonicora\minimalism\jsonapi\resources;
 
+use carlonicora\minimalism\jsonapi\traits\linksTrait;
+use carlonicora\minimalism\jsonapi\traits\metaTrait;
+
 class resourceRelationship {
-    use hasLinks;
-    use hasMeta;
+    use linksTrait;
+    use metaTrait;
 
     /** @var resourceObject  */
     public resourceObject $data;

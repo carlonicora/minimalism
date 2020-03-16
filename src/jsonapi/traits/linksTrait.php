@@ -1,7 +1,7 @@
 <?php
-namespace carlonicora\minimalism\jsonapi\resources;
+namespace carlonicora\minimalism\jsonapi\traits;
 
-trait hasLinks {
+trait linksTrait {
     /** @var array|null  */
     protected ?array $links=null;
 

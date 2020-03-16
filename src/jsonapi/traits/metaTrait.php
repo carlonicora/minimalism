@@ -1,7 +1,7 @@
 <?php
-namespace carlonicora\minimalism\jsonapi\resources;
+namespace carlonicora\minimalism\jsonapi\traits;
 
-trait hasMeta{
+trait metaTrait {
     /** @var array|null */
     public ?array $meta=null;
 

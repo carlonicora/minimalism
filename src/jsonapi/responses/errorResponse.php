@@ -3,10 +3,10 @@ namespace carlonicora\minimalism\jsonapi\responses;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
 use carlonicora\minimalism\interfaces\responseInterface;
-use carlonicora\minimalism\jsonapi\resources\hasMeta;
+use carlonicora\minimalism\jsonapi\traits\metaTrait;
 
 class errorResponse extends abstractResponseObject implements responseInterface {
-    use hasMeta;
+    use metaTrait;
 
     /** @var int|null  */
     public ?int $id=null;

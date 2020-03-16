@@ -1,8 +1,10 @@
 <?php
 namespace carlonicora\minimalism\jsonapi\resources;
 
+use carlonicora\minimalism\jsonapi\traits\metaTrait;
+
 class resourceIdentifierObject {
-    use hasMeta;
+    use metaTrait;
 
     /** @var string  */
     public string $type;
