@@ -32,7 +32,7 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
 
         foreach ($data as $row) {
             $formattedEntity = $this->businessObject->fromDbModel($row);
-            $result[$formattedEntity['id']] = $formattedEntity;
+            $result[$formattedEntity->id] = $formattedEntity;
         }
 
         if (empty($this->businessObject->parentId)) {
@@ -63,12 +63,13 @@ abstract class abstractBusinessObjectsArray implements businessObjectsArrayInter
         $branch = [];
 
         foreach ($elements as $id => $element) {
-            $currentParentId = $element[$this->businessObject->parentId] ?? null;
+            $parentIdField = $this->businessObject->parentId;
+            $currentParentId = $element->attributes[$parentIdField] ?? null;
             if ($parentId === null || $currentParentId === $parentId) {
                 $children = $this->buildTree($elements, $id);
 
                 if ($children) {
-                    $element[self::CHILDREN_WRAPPER] = $children;
+                    $element->attributes[self::CHILDREN_WRAPPER] = $children;
                 }
 
                 $branch[$id] = $element;
