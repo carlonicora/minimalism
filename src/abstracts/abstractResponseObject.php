@@ -3,7 +3,7 @@ namespace carlonicora\minimalism\abstracts;
 
 abstract class abstractResponseObject {
     /** @var string  */
-    protected string $status = self::HTTP_STATUS_200;
+    public string $status = self::HTTP_STATUS_200;
 
     /** @var string  */
     public const HTTP_STATUS_200='200';
