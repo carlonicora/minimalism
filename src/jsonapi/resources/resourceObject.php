@@ -40,6 +40,16 @@ class resourceObject extends resourceIdentifierObject {
     }
 
     /**
+     * @param array $relationships
+     */
+    public function addRelationshipList(array $relationships): void {
+        /** @var resourceRelationship $relationship */
+        foreach ($relationships ?? [] as $relationship) {
+            $this->addRelationship($relationship);
+        }
+    }
+
+    /**
      * @param bool $includesAttributes
      * @return array
      */
