@@ -44,7 +44,7 @@ abstract class abstractBusinessObject implements businessObjectsInterface {
      * @return array
      */
     public function toDbModel(array $data) : array {
-        return [];
+        return $this->toDbModelArray($data);
     }
 
     /**
