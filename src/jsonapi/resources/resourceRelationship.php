@@ -2,8 +2,8 @@
 namespace carlonicora\minimalism\jsonapi\resources;
 
 class resourceRelationship {
-    use resourceLinks;
-    use resourceMeta;
+    use hasLinks;
+    use hasMeta;
 
     /** @var resourceObject  */
     public resourceObject $data;
@@ -26,7 +26,7 @@ class resourceRelationship {
         ];
 
         if ($this->links !== null){
-            $response['links'] = $this->linksToArray();
+            $response['links'] = $this->links;
         }
 
         if ($this->meta) {

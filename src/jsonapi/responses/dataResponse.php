@@ -3,14 +3,14 @@ namespace carlonicora\minimalism\jsonapi\responses;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
 use carlonicora\minimalism\interfaces\responseInterface;
-use carlonicora\minimalism\jsonapi\resources\resourceLinks;
-use carlonicora\minimalism\jsonapi\resources\resourceMeta;
+use carlonicora\minimalism\jsonapi\resources\hasLinks;
+use carlonicora\minimalism\jsonapi\resources\hasMeta;
 use carlonicora\minimalism\jsonapi\resources\resourceObject;
 use carlonicora\minimalism\jsonapi\resources\resourceRelationship;
 
 class dataResponse extends abstractResponseObject implements responseInterface {
-    use resourceMeta;
-    use resourceLinks;
+    use hasMeta;
+    use hasLinks;
 
     /** @var resourceObject|null */
     public ?resourceObject $data=null;
@@ -61,7 +61,7 @@ class dataResponse extends abstractResponseObject implements responseInterface {
         }
 
         if (!empty($this->links)){
-            $response['links'] = $this->linksToArray();
+            $response['links'] = $this->links;
         }
 
         if (!empty($this->meta)){

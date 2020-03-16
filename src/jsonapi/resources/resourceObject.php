@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\jsonapi\resources;
 
 class resourceObject extends resourceIdentifierObject {
-    use resourceLinks;
+    use hasLinks;
 
     /** @var array|null */
     public ?array $attributes=null;
@@ -49,7 +49,7 @@ class resourceObject extends resourceIdentifierObject {
         }
 
         if ($this->hasLinks()){
-            $response['links'] = $this->linksToArray();
+            $response['links'] = $this->links;
         }
 
         if ($this->relationships !== null){

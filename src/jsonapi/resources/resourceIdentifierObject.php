@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\jsonapi\resources;
 
 class resourceIdentifierObject {
-    use resourceMeta;
+    use hasMeta;
 
     /** @var string  */
     public string $type;
