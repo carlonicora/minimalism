@@ -65,10 +65,9 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     abstract protected function getSelfLink(array $data): ?string;
 
     /**
-     * @param array $data
      * @return resourceObject
      */
-    public function buildResource(array $data): resourceObject {
+    public function buildResource(): resourceObject {
         $links = $this->getLinks();
         if (false === empty($links)) {
             $this->resource->addLinks($links);
@@ -79,7 +78,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
             $this->resource->addMetas($meta);
         }
 
-        $relationships = $this->getRelationships($data);
+        $relationships = $this->getRelationships($this->data);
         if (false === empty($relationships)) {
             $this->resource->addRelationshipList($relationships);
         }
