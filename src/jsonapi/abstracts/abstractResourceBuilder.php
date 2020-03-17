@@ -110,13 +110,13 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     protected function getAttributes(): ?array {
         $attributes = [];
         foreach ($this->hashEncodedFields as $hashEncodedField) {
-            if (false === empty($data[$hashEncodedField]) && $this->idField !== $hashEncodedField) {
-                $attributes[$hashEncodedField] = encrypterFactory::encrypter()->encryptId((int)$data[$hashEncodedField]);
+            if (false === empty($this->data[$hashEncodedField]) && $this->idField !== $hashEncodedField) {
+                $attributes[$hashEncodedField] = encrypterFactory::encrypter()->encryptId((int)$this->data[$hashEncodedField]);
             }
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            if (isset($data[$simpleField]) && $this->data[$simpleField] !== null && !array_key_exists($simpleField, $attributes)) {
+            if (isset($this->data[$simpleField]) && $this->data[$simpleField] !== null && !array_key_exists($simpleField, $attributes)) {
                 $attributes[$simpleField] = $this->data[$simpleField];
             }
         }
