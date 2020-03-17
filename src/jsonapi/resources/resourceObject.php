@@ -50,29 +50,31 @@ class resourceObject extends resourceIdentifierObject {
     }
 
     /**
-     * @param bool $includesAttributes
+     * @param bool $limitToIdentifierObject
      * @return array
      */
-    public function toArray(bool $includesAttributes=true) : array {
+    public function toArray(bool $limitToIdentifierObject=false) : array {
         $response = parent::toArray();
 
-        if ($includesAttributes && $this->attributes !== null) {
-            $response['attributes'] = $this->attributes;
-        }
+        if (!$limitToIdentifierObject) {
+            if ($this->attributes !== null) {
+                $response['attributes'] = $this->attributes;
+            }
 
-        if ($this->hasLinks()){
-            $response['links'] = $this->links;
-        }
+            if ($this->hasLinks()) {
+                $response['links'] = $this->links;
+            }
 
-        if ($this->relationships !== null){
-            $response['relationships'] = [];
+            if ($this->relationships !== null) {
+                $response['relationships'] = [];
 
-            foreach ($this->relationships as $type => $relationships){
-                $response['relationships'][$type]['data'] = [];
+                foreach ($this->relationships as $type => $relationships) {
+                    $response['relationships'][$type]['data'] = [];
 
-                /** @var resourceRelationship $relationship */
-                foreach ($relationships ?? [] as $relationship){
-                    $response['relationships'][$type]['data'][] = $relationship->data->toArray(false);
+                    /** @var resourceRelationship $relationship */
+                    foreach ($relationships ?? [] as $relationship) {
+                        $response['relationships'][$type]['data'][] = $relationship->data->toArray(true);
+                    }
                 }
             }
         }

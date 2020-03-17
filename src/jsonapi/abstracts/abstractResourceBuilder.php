@@ -116,6 +116,8 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
+            $attributes[$simpleField] = null;
+
             if (isset($this->data[$simpleField]) && $this->data[$simpleField] !== null && !array_key_exists($simpleField, $attributes)) {
                 $attributes[$simpleField] = $this->data[$simpleField];
             }
@@ -138,6 +140,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     /**
      * @param string $relationFieldName
      * @return array|null
+     * @noinspection PhpUnusedParameterInspection
      */
     protected function getRelationshipLinks(string $relationFieldName): ?array {
         return null;
@@ -184,6 +187,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     /**
      * @param string $relationFieldName
      * @return array|null
+     * @noinspection PhpUnusedParameterInspection
      */
     protected function getRelationshipMeta(string $relationFieldName): ?array {
         return null;

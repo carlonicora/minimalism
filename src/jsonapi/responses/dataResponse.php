@@ -48,6 +48,7 @@ class dataResponse extends abstractResponseObject implements responseInterface {
             /** @var resourceObject $data */
             foreach ($this->dataList ?? [] as $data){
                 $response['data'][] = $data->toArray();
+                $this->buildIncluded($data);
             }
         }
 
