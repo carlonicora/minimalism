@@ -16,4 +16,15 @@ trait metaTrait {
 
         $this->meta[$name] = $value;
     }
+
+    /**
+     * @param array $metas
+     */
+    public function addMetas(array $metas): void {
+        if ($this->meta === null){
+            $this->meta = [];
+        }
+
+        $this->meta = array_merge($this->meta, $metas);
+    }
 }

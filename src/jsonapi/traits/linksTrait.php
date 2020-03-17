@@ -31,4 +31,15 @@ trait linksTrait {
             ];
         }
     }
+
+    /**
+     * @param array $links
+     */
+    public function addLinks(array $links): void {
+        if ($this->links === null){
+            $this->links = [];
+        }
+
+        $this->links = array_merge($this->links, $links);
+    }
 }
