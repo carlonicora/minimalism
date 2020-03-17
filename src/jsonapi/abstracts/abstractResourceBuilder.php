@@ -51,8 +51,8 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         ];
         $this->resource = new resourceObject($resourceArray);
 
-        $this->resource->addMetas($this->buildMeta());
-        $this->resource->addLinks($this->buildLinks());
+        $this->resource->addMetas($this->buildMeta($data));
+        $this->resource->addLinks($this->buildLinks($data));
 
         foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
             if (false === is_array($relatedBobjClass)) {
@@ -62,16 +62,20 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     }
 
     /**
-     *
+     * @param array $data
+     * @return array
+     * @noinspection PhpUnusedParameterInspection
      */
-    protected function buildLinks() : array {
+    protected function buildLinks(array $data) : array {
         return [];
     }
 
     /**
-     *
+     * @param array $data
+     * @return array
+     * @noinspection PhpUnusedParameterInspection
      */
-    protected function buildMeta() : array {
+    protected function buildMeta(array $data) : array {
         return [];
     }
 
