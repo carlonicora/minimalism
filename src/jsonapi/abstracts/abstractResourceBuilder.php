@@ -126,10 +126,10 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            $attributes[$simpleField] = null;
-
             if (isset($this->data[$simpleField]) && $this->data[$simpleField] !== null && !array_key_exists($simpleField, $attributes)) {
                 $attributes[$simpleField] = $this->data[$simpleField];
+            } else {
+                $attributes[$simpleField] = null;
             }
         }
 

@@ -9,7 +9,7 @@ trait linksTrait {
      * @return bool
      */
     protected function hasLinks() : bool {
-        return $this->links !== null;
+        return !empty($this->links);
     }
 
     /**

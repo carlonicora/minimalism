@@ -31,7 +31,7 @@ class resourceIdentifierObject {
             'id' => $this->id
         ];
 
-        if ($this->meta !== null){
+        if (!empty($this->meta)){
             $response['meta'] = $this->meta;
         }
 

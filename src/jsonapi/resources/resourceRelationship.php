@@ -20,19 +20,19 @@ class resourceRelationship {
     }
 
     /**
-     * @param bool $includesAttributes
+     * @param bool $limitToIdentifierObject
      * @return array
      */
-    public function toArray(bool $includesAttributes=true) : array {
+    public function toArray(bool $limitToIdentifierObject=false) : array {
         $response = [
-            'data' => $this->data->toArray($includesAttributes)
+            'data' => $this->data->toArray($limitToIdentifierObject)
         ];
 
-        if ($this->links !== null){
+        if (!empty($this->links)){
             $response['links'] = $this->links;
         }
 
-        if ($this->meta) {
+        if (!empty($this->meta)) {
             $response['meta'] = $this->meta;
         }
 
