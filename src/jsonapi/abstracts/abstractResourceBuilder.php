@@ -1,7 +1,6 @@
 <?php
 namespace carlonicora\minimalism\jsonapi\abstracts;
 
-use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use carlonicora\minimalism\jsonapi\factories\resourceBuilderFactory;
@@ -10,7 +9,7 @@ use carlonicora\minimalism\jsonapi\resources\resourceObject;
 use carlonicora\minimalism\jsonapi\resources\resourceRelationship;
 
 abstract class abstractResourceBuilder implements resourceBuilderInterface {
-    /** @var abstractConfigurations  */
+    /** @var configurationsInterface  */
     protected configurationsInterface $configurations;
 
     /** @var string */
@@ -29,12 +28,28 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     /** @var array */
     protected array $customFields = [];
 
+    /** @var resourceObject */
+    public resourceObject $resource;
+
+    /** @var array  */
+    private array $data;
+
     /**
      * abstractBusinessObject constructor.
      * @param configurationsInterface $configurations
+     * @param array $data
      */
-    public function __construct(configurationsInterface $configurations) {
+    public function __construct(configurationsInterface $configurations, array $data) {
         $this->configurations = $configurations;
+
+        $this->data = $data;
+
+        $resourceArray = [
+            'id' => $this->getId(),
+            'type' => $this->getType(),
+            'attributes' => $this->getAttributes(),
+        ];
+        $this->resource = new resourceObject($resourceArray);
 
         foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
             if (false === is_array($relatedBobjClass)) {
@@ -49,60 +64,51 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
      */
     abstract protected function getSelfLink(array $data): ?string;
 
+    /**
+     * @param array $data
+     * @return resourceObject
+     */
     public function buildResource(array $data): resourceObject {
-        // TODO resourceObject should get id, type, attributes paramters in constructor
-        $dontUseArray = [
-            'id' => $this->getId($data),
-            'type' => $this->getType(),
-            'attributes' => $this->getAttributes($data),
-        ];
-        $resource = new resourceObject($dontUseArray);
-
-        $links = $this->getLinks($data);
+        $links = $this->getLinks();
         if (false === empty($links)) {
-            $resource->addLinks($links);
+            $this->resource->addLinks($links);
         }
 
-        $meta = $this->getMeta($data);
+        $meta = $this->getMeta();
         if (false === empty($meta)) {
-            $resource->addMetas($meta);
+            $this->resource->addMetas($meta);
         }
 
         $relationships = $this->getRelationships($data);
         if (false === empty($relationships)) {
-            $resource->addRelationshipList($relationships);
+            $this->resource->addRelationshipList($relationships);
         }
 
-        return $resource;
+        return $this->resource;
     }
 
     /**
-     * @param array $data
      * @return string
      */
-    protected function getId(array $data): string
-    {
+    protected function getId(): string {
         if (in_array($this->idField, $this->hashEncodedFields, true)) {
-            return encrypterFactory::encrypter()->encryptId((int)$data[$this->idField]);
+            return encrypterFactory::encrypter()->encryptId((int)$this->data[$this->idField]);
         }
 
-        return $data[$this->idField];
+        return $this->data[$this->idField];
     }
 
     /**
      * @return string
      */
-    protected function getType(): string
-    {
-        return substr(strrchr(static::class, '\\'), 1);
+    protected function getType(): string {
+        return substr(strrchr(static::class, '\\'), 1, -2);
     }
 
     /**
-     * @param array $data
      * @return array
      */
-    protected function getAttributes(array $data): ?array
-    {
+    protected function getAttributes(): ?array {
         $attributes = [];
         foreach ($this->hashEncodedFields as $hashEncodedField) {
             if (false === empty($data[$hashEncodedField]) && $this->idField !== $hashEncodedField) {
@@ -111,32 +117,30 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         }
 
         foreach ($this->simpleFields as $simpleField) {
-            if (isset($data[$simpleField]) && $data[$simpleField] !== null && !array_key_exists($simpleField, $attributes)) {
-                $attributes[$simpleField] = $data[$simpleField];
+            if (isset($data[$simpleField]) && $this->data[$simpleField] !== null && !array_key_exists($simpleField, $attributes)) {
+                $attributes[$simpleField] = $this->data[$simpleField];
             }
         }
 
         foreach ($this->customFields as $customField) {
-            $result[$customField] = $this->$customField($data);
+            $attributes[$customField] = $this->$customField($this->data);
         }
 
         return $attributes ?? null;
     }
 
     /**
-     * @param array $data
      * @return array|null
      */
-    protected function getLinks(array $data): ?array {
-        return [['self' => $this->getSelfLink($data)]];
+    protected function getLinks(): ?array {
+        return [['self' => $this->getSelfLink($this->data)]];
     }
 
     /**
      * @param string $relationFieldName
-     * @param array $data
      * @return array|null
      */
-    protected function getRelationshipLinks(string $relationFieldName, array $data): ?array {
+    protected function getRelationshipLinks(string $relationFieldName): ?array {
         return null;
     }
 
@@ -149,20 +153,17 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         $relationships = [];
         foreach ($this->oneToOneRelationFields as $relationFieldName => $config) {
             if (false === empty($data[$relationFieldName])) {
-                /** @var resourceBuilderInterface $relatedResourceBuilder */
-                $relatedResourceBuilder = resourceBuilderFactory::resourceBuilder($config['class']);
-                // TODO resourceObject should get id, type, attributes paramters in constructor
-                $dontUseArray = [
-                    'id' => $relatedResourceBuilder->getId($data[$relationFieldName]),
-                    'type' => $relatedResourceBuilder->getType(),
-                ];
-                $relationship = new resourceRelationship($dontUseArray);
-                $relationshipMeta = $this->getRelationshipMeta($relationFieldName, $data);
+                /** @var abstractResourceBuilder $relatedResourceBuilder */
+                $relatedResourceBuilder = resourceBuilderFactory::resourceBuilder($config['class'], $data);
+
+                $relationship = new resourceRelationship($relatedResourceBuilder->resource);
+
+                $relationshipMeta = $this->getRelationshipMeta($relationFieldName);
                 if (false === empty($relationshipMeta)) {
                     $relationship->addMetas($relationshipMeta);
                 }
 
-                $relationshipLinks = $this->getRelationshipLinks($relationFieldName, $data);
+                $relationshipLinks = $this->getRelationshipLinks($relationFieldName);
                 if (false === empty($relationshipLinks)) {
                     $relationship->addLinks($relationshipLinks);
                 }
@@ -175,20 +176,17 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     }
 
     /**
-     * @param array $data
      * @return array|null
      */
-    protected function getMeta(array $data): ?array {
+    protected function getMeta(): ?array {
         return null;
     }
 
     /**
      * @param string $relationFieldName
-     * @param array $data
      * @return array|null
      */
-    protected function getRelationshipMeta(string $relationFieldName, array $data): ?array {
+    protected function getRelationshipMeta(string $relationFieldName): ?array {
         return null;
     }
-
 }

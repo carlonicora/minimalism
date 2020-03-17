@@ -20,11 +20,12 @@ class resourceBuilderFactory {
 
     /**
      * @param string $objectName
+     * @param array $data
      * @return resourceBuilderInterface
      */
-    public static function resourceBuilder(string $objectName) : resourceBuilderInterface {
+    public static function resourceBuilder(string $objectName, array $data) : resourceBuilderInterface {
         if (!array_key_exists($objectName,  self::$resourceBuilders)) {
-            self::$resourceBuilders[$objectName] = new $objectName(self::$configurations);
+            self::$resourceBuilders[$objectName] = new $objectName(self::$configurations, $data);
         }
 
         return self::$resourceBuilders[$objectName];

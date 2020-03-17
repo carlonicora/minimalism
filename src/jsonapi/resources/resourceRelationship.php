@@ -13,10 +13,10 @@ class resourceRelationship {
 
     /**
      * resourceRelationship constructor.
-     * @param array $data
+     * @param resourceObject $resource
      */
-    public function __construct(array $data) {
-        $this->data = new resourceObject($data);
+    public function __construct(resourceObject $resource) {
+        $this->data = $resource;
     }
 
     /**
