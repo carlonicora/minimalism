@@ -51,11 +51,26 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         ];
         $this->resource = new resourceObject($resourceArray);
 
+        $this->buildMeta();
+        $this->buildLinks();
+
         foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
             if (false === is_array($relatedBobjClass)) {
                 $relatedBobjClass = ['id' => $relatedBobjClass . 'Id', 'class' => $relatedBobjClass];
             }
         }
+    }
+
+    /**
+     *
+     */
+    protected function buildLinks() : void {
+    }
+
+    /**
+     *
+     */
+    protected function buildMeta() : void {
     }
 
     /**
