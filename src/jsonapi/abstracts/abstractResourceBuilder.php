@@ -59,20 +59,9 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     }
 
     /**
-     * @param array $data
-     * @return string|null
-     */
-    abstract protected function getSelfLink(array $data): ?string;
-
-    /**
      * @return resourceObject
      */
     public function buildResource(): resourceObject {
-        $links = $this->getLinks();
-        if (false === empty($links)) {
-            $this->resource->addLinks($links);
-        }
-
         $meta = $this->getMeta();
         if (false === empty($meta)) {
             $this->resource->addMetas($meta);
@@ -131,22 +120,6 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     }
 
     /**
-     * @return array|null
-     */
-    protected function getLinks(): ?array {
-        return [['self' => $this->getSelfLink($this->data)]];
-    }
-
-    /**
-     * @param string $relationFieldName
-     * @return array|null
-     * @noinspection PhpUnusedParameterInspection
-     */
-    protected function getRelationshipLinks(string $relationFieldName): ?array {
-        return null;
-    }
-
-    /**
      * @param array $data
      * @return array
      */
@@ -163,11 +136,6 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
                 $relationshipMeta = $this->getRelationshipMeta($relationFieldName);
                 if (false === empty($relationshipMeta)) {
                     $relationship->addMetas($relationshipMeta);
-                }
-
-                $relationshipLinks = $this->getRelationshipLinks($relationFieldName);
-                if (false === empty($relationshipLinks)) {
-                    $relationship->addLinks($relationshipLinks);
                 }
 
                 $relationships []= $relationship;
