@@ -84,9 +84,7 @@ class dataResponse extends abstractResponseObject implements responseInterface {
                         $this->included = [];
                     }
 
-                    if (!in_array($relationship->data->id, array_column($this->included, 'id'), true)){
-                        $this->included[] = $relationship;
-                    }
+                    $this->included[$relationship->data->type . $relationship->data->id] = $relationship;
                 }
             }
         }
