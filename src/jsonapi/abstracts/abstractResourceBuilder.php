@@ -24,7 +24,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     /** @var array */
     protected array $oneToOneRelationFields = [];
     /** @var array */
-    protected array $oneToManyRelationFields = [];
+    protected array $toManyRelationFields = [];
     /** @var array */
     protected array $customFields = [];
 
@@ -57,6 +57,12 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         foreach ($this->oneToOneRelationFields as &$toOneResourceBuilderClass) {
             if (false === is_array($toOneResourceBuilderClass)) {
                 $toOneResourceBuilderClass = ['id' => $toOneResourceBuilderClass . 'Id', 'class' => $toOneResourceBuilderClass];
+            }
+        }
+
+        foreach ($this->toManyRelationFields as &$toManyResourceBuilderClass) {
+            if (false === is_array($toManyResourceBuilderClass)) {
+                $toManyResourceBuilderClass = ['id' => $toManyResourceBuilderClass . 'Id', 'class' => $toManyResourceBuilderClass];
             }
         }
     }
@@ -155,6 +161,24 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
                 }
 
                 $relationships[$relationFieldName] []= $relationship;
+            }
+        }
+
+        foreach ($this->toManyRelationFields as $relationFieldName => $config) {
+            if (false === empty($this->data[$relationFieldName])) {
+                /** @var abstractResourceBuilder $relatedResourceBuilder */
+                foreach ($this->data[$relationFieldName] as $relatedData) {
+                    $relatedResourceBuilder = resourceBuilderFactory::resourceBuilder($config['class'], $relatedData);
+
+                    $relationship = new resourceRelationship($relatedResourceBuilder->resource);
+
+                    $relationshipMeta = $this->getRelationshipMeta($relationFieldName);
+                    if (false === empty($relationshipMeta)) {
+                        $relationship->addMetas($relationshipMeta);
+                    }
+
+                    $relationships[$relationFieldName] []= $relationship;
+                }
             }
         }
 
