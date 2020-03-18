@@ -26,17 +26,18 @@ class resourceObject extends resourceIdentifierObject {
 
     /**
      * @param resourceRelationship $relationship
+     * @param string|null $relationshipName
      */
-    public function addRelationship(resourceRelationship $relationship) : void{
+    public function addRelationship(resourceRelationship $relationship, string $relationshipName = null) : void{
         if ($this->relationships === null){
             $this->relationships = [];
         }
 
-        if (!array_key_exists($relationship->data->type, $this->relationships)){
-            $this->relationships[$relationship->data->type] = [];
+        if (null === $relationshipName) {
+            $relationshipName = $relationship->data->type;
         }
 
-        $this->relationships[$relationship->data->type][] = $relationship;
+        $this->relationships[$relationshipName][] = $relationship;
     }
 
     /**
@@ -44,8 +45,10 @@ class resourceObject extends resourceIdentifierObject {
      */
     public function addRelationshipList(array $relationships): void {
         /** @var resourceRelationship $relationship */
-        foreach ($relationships ?? [] as $relationship) {
-            $this->addRelationship($relationship);
+        foreach ($relationships ?? [] as $relationshipName => $relationshipList) {
+            foreach ($relationshipList as $relationship) {
+                $this->addRelationship($relationship, $relationshipName);
+            }
         }
     }
 

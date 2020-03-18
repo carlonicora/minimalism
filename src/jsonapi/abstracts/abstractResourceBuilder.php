@@ -32,7 +32,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     public resourceObject $resource;
 
     /** @var array  */
-    private array $data;
+    protected array $data;
 
     /**
      * abstractBusinessObject constructor.
@@ -51,31 +51,27 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         ];
         $this->resource = new resourceObject($resourceArray);
 
-        $this->resource->addMetas($this->buildMeta($data));
-        $this->resource->addLinks($this->buildLinks($data));
+        $this->resource->addMetas($this->buildMeta());
+        $this->resource->addLinks($this->buildLinks());
 
-        foreach ($this->oneToOneRelationFields as &$relatedBobjClass) {
-            if (false === is_array($relatedBobjClass)) {
-                $relatedBobjClass = ['id' => $relatedBobjClass . 'Id', 'class' => $relatedBobjClass];
+        foreach ($this->oneToOneRelationFields as &$toOneResourceBuilderClass) {
+            if (false === is_array($toOneResourceBuilderClass)) {
+                $toOneResourceBuilderClass = ['id' => $toOneResourceBuilderClass . 'Id', 'class' => $toOneResourceBuilderClass];
             }
         }
     }
 
     /**
-     * @param array $data
      * @return array
-     * @noinspection PhpUnusedParameterInspection
      */
-    protected function buildLinks(array $data) : array {
+    protected function buildLinks() : array {
         return [];
     }
 
     /**
-     * @param array $data
      * @return array
-     * @noinspection PhpUnusedParameterInspection
      */
-    protected function buildMeta(array $data) : array {
+    protected function buildMeta() : array {
         return [];
     }
 
@@ -88,7 +84,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
             $this->resource->addMetas($meta);
         }
 
-        $relationships = $this->getRelationships($this->data);
+        $relationships = $this->getRelationships();
         if (false === empty($relationships)) {
             $this->resource->addRelationshipList($relationships);
         }
@@ -141,16 +137,15 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
     }
 
     /**
-     * @param array $data
      * @return array
      */
-    protected function getRelationships(array $data): ?array
+    protected function getRelationships(): ?array
     {
         $relationships = [];
         foreach ($this->oneToOneRelationFields as $relationFieldName => $config) {
-            if (false === empty($data[$relationFieldName])) {
+            if (false === empty($this->data[$relationFieldName])) {
                 /** @var abstractResourceBuilder $relatedResourceBuilder */
-                $relatedResourceBuilder = resourceBuilderFactory::resourceBuilder($config['class'], $data);
+                $relatedResourceBuilder = resourceBuilderFactory::resourceBuilder($config['class'], $this->data[$relationFieldName]);
 
                 $relationship = new resourceRelationship($relatedResourceBuilder->resource);
 
@@ -159,7 +154,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
                     $relationship->addMetas($relationshipMeta);
                 }
 
-                $relationships []= $relationship;
+                $relationships[$relationFieldName] []= $relationship;
             }
         }
 
