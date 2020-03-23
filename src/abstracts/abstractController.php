@@ -105,19 +105,44 @@ abstract class abstractController {
     protected function parseUriParameters(): void {
         $uri = strtok($_SERVER['REQUEST_URI'], '?');
 
-        if (!(isset($uri) && $uri === '/')) {
+        if ($uri !== '/') {
             $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');
 
-            $isModelVariable = true;
-            foreach ($variables as $variable) {
-                if ($isModelVariable && !is_numeric($variable)) {
-                    $this->modelName = str_replace('-', '\\', $variable);
-                } else {
-                    $this->parameterValueList[] = $variable;
-                }
-                $isModelVariable = false;
-            }
+            $this->parameterValueList = $this->parseModelNameFromUri($variables);
         }
+    }
+
+    /**
+     * @param array $uriVariables
+     * @return array
+     */
+    protected function parseModelNameFromUri(array $uriVariables): array {
+        $firstArgument = current($uriVariables);
+        if (false === $firstArgument || is_numeric($firstArgument)) {
+            return $uriVariables;
+        }
+
+        $configurationClassName = get_class($this->configurations);
+        $lastDashPosition = strrpos($configurationClassName, '\\');
+        $basePath = substr($configurationClassName, 0, $lastDashPosition) . '\\models\\';
+
+        $this->modelName = array_shift($uriVariables);
+        $nextUriParam = current($uriVariables);
+        while (
+            $nextUriParam !== false &&
+            (is_dir($this->configurations->appDirectory . '\\models\\' . $this->modelName . '\\' . $nextUriParam)
+                || class_exists($basePath . $this->modelName . '\\' . $nextUriParam))
+        ) {
+            $this->modelName .= '\\' . $nextUriParam;
+            array_shift($uriVariables);
+            $nextUriParam = current($uriVariables);
+        }
+
+        if (!class_exists($basePath . $this->modelName)) {
+            errorReporter::report($this->configurations, 3, null, 404);
+        }
+
+        return $uriVariables;
     }
 
     /**
@@ -139,8 +164,8 @@ abstract class abstractController {
 
         $this->model = new $modelClass($this->configurations, $this->parameterValues, $this->parameterValueList, $verb, $this->file);
 
-        if ($this->model->redirect() !== ''){
-            $this->initialiseModel($this->model->redirect());
+        if (false === empty($this->model->redirectPage)){
+            $this->initialiseModel($this->model->redirectPage);
         }
     }
 }

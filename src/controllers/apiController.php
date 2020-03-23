@@ -78,20 +78,16 @@ class apiController extends abstractController {
     protected function parseUriParameters(): void {
         $uri = strtok($_SERVER['REQUEST_URI'], '?');
 
-        if (!(isset($uri) && $uri === '/')) {
+        if ($uri !== '/') {
             $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');
 
-            $isModelVariable = true;
-            foreach ($variables as $variable) {
-                if ($isModelVariable && stripos($variable, 'v') === 0 && is_numeric(substr($variable, 1, 1)) && strpos($variable, '.') !== 0){
-                    $this->version = $variable;
-                } else if ($isModelVariable && !is_numeric($variable)) {
-                    $this->modelName = str_replace('-', '\\', $variable);
-                    $isModelVariable = false;
-                } else {
-                    $this->parameterValueList[] = $variable;
-                }
+            $firstVariable = current($variables);
+            if (stripos($firstVariable, 'v') === 0 && is_numeric(substr($firstVariable, 1, 1)) && strpos($firstVariable, '.') !== 0 ) {
+                $this->version = $firstVariable;
+                array_shift($variables);
             }
+
+            $this->parameterValueList = $this->parseModelNameFromUri($variables);
         }
     }
 

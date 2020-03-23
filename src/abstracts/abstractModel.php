@@ -5,7 +5,7 @@ use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\jsonapi\responses\dataResponse;
 
-abstract class abstractModel {
+class abstractModel {
     /** @var abstractConfigurations */
     protected abstractConfigurations $configurations;
 
@@ -90,12 +90,5 @@ abstract class abstractModel {
      */
     protected function getParameters(): array {
         return $this->parameters;
-    }
-
-    /**
-     * @return string
-     */
-    public function redirect(): string {
-        return $this->redirectPage ?? '';
     }
 }
