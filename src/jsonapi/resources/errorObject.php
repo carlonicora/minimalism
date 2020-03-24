@@ -1,16 +1,23 @@
 <?php
-namespace carlonicora\minimalism\jsonapi\responses;
+namespace carlonicora\minimalism\jsonapi\resources;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
-use carlonicora\minimalism\interfaces\responseInterface;
-use carlonicora\minimalism\jsonapi\resources\errorObject;
 use carlonicora\minimalism\jsonapi\traits\metaTrait;
 
-class errorResponse extends abstractResponseObject implements responseInterface {
+class errorObject extends abstractResponseObject {
     use metaTrait;
 
-    /** @var array  */
-    public array $errors=[];
+    /** @var int|null  */
+    public ?int $id=null;
+
+    /** @var string  */
+    public ?string $code=null;
+
+    /** @var string  */
+    public string $title;
+
+    /** @var string|null  */
+    public ?string $detail=null;
 
     /**
      * errorObject constructor.
@@ -20,9 +27,11 @@ class errorResponse extends abstractResponseObject implements responseInterface 
      * @param int|null $id
      */
     public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null) {
-        $this->errors[] = new errorObject($httpStatusCode, $detail, $code, $id);
-
         $this->status = $httpStatusCode;
+        $this->title = $this->generateText();
+        $this->detail = $detail;
+        $this->code = $code;
+        $this->id = $id;
     }
 
     /**
@@ -30,12 +39,23 @@ class errorResponse extends abstractResponseObject implements responseInterface 
      */
     public function toArray(): array {
         $response = [
-            'errors' => []
+            'status' => $this->status
         ];
 
-        /** @var errorObject $error */
-        foreach ($this->errors ?? [] as $error) {
-            $response['errors'][] = $error->toArray();
+        if ($this->id !== null){
+            $response['id'] = $this->id;
+        }
+
+        if ($this->code !== null){
+            $response['code'] = $this->code;
+        }
+
+        if ($this->title !== null){
+            $response['title'] = $this->title;
+        }
+
+        if ($this->detail !== null){
+            $response['detail'] = $this->detail;
         }
 
         if (!empty($this->meta)){
@@ -46,7 +66,7 @@ class errorResponse extends abstractResponseObject implements responseInterface 
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function toJson(): string {
         $response = $this->toArray();
