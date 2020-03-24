@@ -3,36 +3,23 @@ namespace carlonicora\minimalism\jsonapi\responses;
 
 use carlonicora\minimalism\abstracts\abstractResponseObject;
 use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\resources\errorObject;
 use carlonicora\minimalism\jsonapi\traits\metaTrait;
 
 class errorResponse extends abstractResponseObject implements responseInterface {
     use metaTrait;
 
-    /** @var int|null  */
-    public ?int $id=null;
-
-    /** @var string  */
-    public ?string $code=null;
-
-    /** @var string  */
-    public string $title;
-
-    /** @var string|null  */
-    public ?string $detail=null;
+    /** @var array  */
+    public array $errors=[];
 
     /**
      * errorObject constructor.
-     * @param string $httpStatusCode
-     * @param string|null $detail
-     * @param string|null $code
-     * @param int|null $id
+     * @param errorObject $error
      */
-    public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null) {
-        $this->status = $httpStatusCode;
-        $this->title = $this->generateText();
-        $this->detail = $detail;
-        $this->code = $code;
-        $this->id = $id;
+    public function __construct(errorObject $error) {
+        $this->errors[] = $error;
+
+        $this->status = $error->status;
     }
 
     /**
@@ -40,23 +27,12 @@ class errorResponse extends abstractResponseObject implements responseInterface 
      */
     public function toArray(): array {
         $response = [
-            'status' => $this->status
+            'errors' => []
         ];
 
-        if ($this->id !== null){
-            $response['id'] = $this->id;
-        }
-
-        if ($this->code !== null){
-            $response['code'] = $this->code;
-        }
-
-        if ($this->title !== null){
-            $response['title'] = $this->title;
-        }
-
-        if ($this->detail !== null){
-            $response['detail'] = $this->detail;
+        /** @var errorObject $error */
+        foreach ($this->errors ?? [] as $error) {
+            $response['errors'][] = $error->toArray();
         }
 
         if (!empty($this->meta)){
