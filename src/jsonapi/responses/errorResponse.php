@@ -14,12 +14,15 @@ class errorResponse extends abstractResponseObject implements responseInterface 
 
     /**
      * errorObject constructor.
-     * @param errorObject $error
+     * @param string $httpStatusCode
+     * @param string|null $detail
+     * @param string|null $code
+     * @param int|null $id
      */
-    public function __construct(errorObject $error) {
-        $this->errors[] = $error;
+    public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null) {
+        $this->errors[] = new errorObject($httpStatusCode, $detail, $code, $id);
 
-        $this->status = $error->status;
+        $this->status = $httpStatusCode;
     }
 
     /**
