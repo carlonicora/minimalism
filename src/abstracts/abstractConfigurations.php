@@ -23,7 +23,7 @@ use mysqli;
 
 abstract class abstractConfigurations implements configurationsInterface {
     /** @var string $rootDirectory */
-    protected string $rootDirectory;
+    public string $rootDirectory;
 
     /** @var string */
     public string $appDirectory;
