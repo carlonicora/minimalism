@@ -1,27 +1,56 @@
 <?php
 namespace carlonicora\minimalism\services\mailer\objects;
 
+use RuntimeException;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+use Twig\Loader\ArrayLoader;
+use Twig\Loader\FilesystemLoader;
+
 class email {
     /** @var array  */
     public array $recipients = [];
 
     /** @var string  */
-    public string $subject;
-
-    /** @var string  */
-    public string $body;
+    public ?string $subject=null;
 
     /** @var string  */
     public string $contentType = 'text/html';
 
+    /** @var Environment|null  */
+    private ?Environment $template=null;
+
+    /** @var string|null */
+    private ?string $templateName=null;
+
     /**
      * email constructor.
      * @param string $subject
-     * @param string $body
+     * @param string|null $templateName
+     * @param string|null $templateDirectory
      */
-    public function __construct(string $subject, string $body) {
+    public function __construct(string $subject, ?string $templateName=null, ?string $templateDirectory=null) {
         $this->subject = $subject;
-        $this->body = $body;
+
+        if ($templateName !== null) {
+            $this->templateName = $templateName;
+
+            $loader = new FilesystemLoader($templateDirectory);
+            $this->template = new Environment($loader);
+        }
+    }
+
+    /**
+     * @param string $template
+     */
+    public function addTemplate(string $template): void {
+        $this->templateName = 'email.twig';
+        $loader = new ArrayLoader([
+            $this->templateName => $template
+        ]);
+        $this->template = new Environment($loader);
     }
 
     /**
@@ -33,5 +62,23 @@ class email {
             'email' => $email,
             'name' => $name
         ];
+    }
+
+    /**
+     * @param array|null $parameters
+     * @return string
+     */
+    public function getBody(?array $parameters = null): string {
+        try {
+            $response = $this->template->render($this->templateName, $parameters);
+        } catch (LoaderError $e) {
+            throw new RuntimeException('Failed to create email body');
+        } catch (RuntimeError $e) {
+            throw new RuntimeException('Failed to create email body');
+        } catch (SyntaxError $e) {
+            throw new RuntimeException('Failed to create email body');
+        }
+
+        return $response;
     }
 }
