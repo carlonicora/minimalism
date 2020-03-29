@@ -75,22 +75,17 @@ class email {
     }
 
     /**
-     * @param array|null $parameters
-     * @return string
+     * @param array $parameters
      */
-    public function getBody(?array $parameters = null): string {
-        if ($this->body === null) {
-            try {
-                return $this->template->render($this->templateName, $parameters);
-            } catch (LoaderError $e) {
-                throw new RuntimeException('Failed to create email body');
-            } catch (RuntimeError $e) {
-                throw new RuntimeException('Failed to create email body');
-            } catch (SyntaxError $e) {
-                throw new RuntimeException('Failed to create email body');
-            }
-        } else {
-            return $this->body;
+    public function addParameters(array $parameters): void {
+        try {
+            $this->body = $this->template->render($this->templateName, $parameters);
+        } catch (LoaderError $e) {
+            throw new RuntimeException('Failed to create email body');
+        } catch (RuntimeError $e) {
+            throw new RuntimeException('Failed to create email body');
+        } catch (SyntaxError $e) {
+            throw new RuntimeException('Failed to create email body');
         }
     }
 }
