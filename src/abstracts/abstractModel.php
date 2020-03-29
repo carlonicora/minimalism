@@ -60,19 +60,22 @@ abstract class abstractModel {
             foreach ($parameters ?? [] as $parameterKey=>$value) {
                 $parameterName = $value;
                 $isParameterRequired = false;
+                $isParameterEncrypted = false;
+
                 if (is_array($value)) {
                     $parameterName = $value['name'];
                     $isParameterRequired = $value['required'] ?? false;
+                    $isParameterEncrypted = $value['encrypted'] ?? false;
                 }
 
                 if (array_key_exists($parameterKey, $this->parameterValues) && $this->parameterValues[$parameterKey] !== null) {
-                    if (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
+                    if ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))){
                         $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValues[$parameterKey]);
                     } else {
                         $this->$parameterName = $this->parameterValues[$parameterKey];
                     }
                 } else if (array_key_exists($parameterKey, $this->parameterValueList) && $this->parameterValueList[$parameterKey] !== null){
-                    if (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
+                    if ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))){
                         $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValueList[$parameterKey]);
                     } else {
                         $this->$parameterName = $this->parameterValueList[$parameterKey];
