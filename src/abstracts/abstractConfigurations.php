@@ -7,6 +7,7 @@ use carlonicora\minimalism\databases\security\tables\clients;
 use carlonicora\minimalism\exceptions\dbConnectionException;
 use carlonicora\minimalism\factories\databaseFactory;
 use carlonicora\minimalism\factories\encrypterFactory;
+use carlonicora\minimalism\factories\minimalismFactory;
 use carlonicora\minimalism\helpers\logger;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use carlonicora\minimalism\interfaces\securityClientInterface;
@@ -320,6 +321,8 @@ abstract class abstractConfigurations implements configurationsInterface {
      *
      */
     public function resume(): void {
+        minimalismFactory::initialise($this);
+
         databaseFactory::initialise($this);
         resourceBuilderFactory::initialise($this);
         encrypterFactory::initialise($this);
