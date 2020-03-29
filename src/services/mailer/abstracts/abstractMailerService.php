@@ -25,6 +25,8 @@ abstract class abstractMailerService implements mailerServiceInterface {
     public function __construct(abstractConfigurations $configurations){
         $this->username = $configurations->configData()->mailer()->username;
         $this->password = $configurations->configData()->mailer()->password;
+        $this->senderName = $configurations->configData()->mailer()->senderName;
+        $this->senderEmail = $configurations->configData()->mailer()->senderEmail;
     }
 
     /**
