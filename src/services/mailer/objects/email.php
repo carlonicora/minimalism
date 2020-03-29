@@ -16,6 +16,9 @@ class email {
     /** @var string  */
     public ?string $subject=null;
 
+    /** @var string|null  */
+    public ?string $body=null;
+
     /** @var string  */
     public string $contentType = 'text/html';
 
@@ -40,6 +43,13 @@ class email {
             $loader = new FilesystemLoader($templateDirectory);
             $this->template = new Environment($loader);
         }
+    }
+
+    /**
+     * @param string $body
+     */
+    public function addBody(string $body) : void{
+        $this->body = $body;
     }
 
     /**
@@ -69,16 +79,18 @@ class email {
      * @return string
      */
     public function getBody(?array $parameters = null): string {
-        try {
-            $response = $this->template->render($this->templateName, $parameters);
-        } catch (LoaderError $e) {
-            throw new RuntimeException('Failed to create email body');
-        } catch (RuntimeError $e) {
-            throw new RuntimeException('Failed to create email body');
-        } catch (SyntaxError $e) {
-            throw new RuntimeException('Failed to create email body');
+        if ($this->body === null) {
+            try {
+                return $this->template->render($this->templateName, $parameters);
+            } catch (LoaderError $e) {
+                throw new RuntimeException('Failed to create email body');
+            } catch (RuntimeError $e) {
+                throw new RuntimeException('Failed to create email body');
+            } catch (SyntaxError $e) {
+                throw new RuntimeException('Failed to create email body');
+            }
+        } else {
+            return $this->body;
         }
-
-        return $response;
     }
 }
