@@ -49,6 +49,11 @@ class appController extends abstractController {
      * @return string
      */
     public function render(): string{
+        $error = $this->model->preRender();
+        if ($error !== null){
+            return $error->toJson();
+        }
+
         $response = null;
 
         /** @var responseInterface $data */

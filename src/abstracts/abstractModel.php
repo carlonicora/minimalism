@@ -2,8 +2,8 @@
 namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\factories\encrypterFactory;
-use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\jsonapi\responses\dataResponse;
+use carlonicora\minimalism\jsonapi\responses\errorResponse;
 
 abstract class abstractModel {
     /** @var abstractConfigurations */
@@ -29,6 +29,9 @@ abstract class abstractModel {
 
     /** @var dataResponse  */
     protected dataResponse $response;
+
+    /** @var errorResponse|null  */
+    protected ?errorResponse $error=null;
 
     /**
      * model constructor.
@@ -81,8 +84,8 @@ abstract class abstractModel {
                         $this->$parameterName = $this->parameterValueList[$parameterKey];
                     }
                 } else if ($isParameterRequired){
-                    errorReporter::returnHttpCode(412,'Required parameter' . $parameterName . ' missing.');
-                    exit;
+                    $this->error = new errorResponse(errorResponse::HTTP_STATUS_412, 'Required parameter' . $parameterName . ' missing.');
+                    break;
                 }
             }
         }
@@ -100,5 +103,12 @@ abstract class abstractModel {
      */
     public function redirect(): string {
         return $this->redirectPage ?? '';
+    }
+
+    /**
+     * @return errorResponse|null
+     */
+    public function preRender() : ?errorResponse {
+        return $this->error;
     }
 }

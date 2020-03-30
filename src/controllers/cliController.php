@@ -8,6 +8,11 @@ class cliController extends abstractController {
      * @return string
      */
     public function render(): string {
+        $error = $this->model->preRender();
+        if ($error !== null){
+            return $error->toJson();
+        }
+
         $this->model->run();
 
         return '';
