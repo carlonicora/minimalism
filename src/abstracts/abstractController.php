@@ -127,15 +127,13 @@ abstract class abstractController {
         $basePath = substr($configurationClassName, 0, $lastDashPosition) . '\\models\\';
 
         $this->modelName = array_shift($uriVariables);
-        $nextUriParam = current($uriVariables);
-        while (
-            $nextUriParam !== false &&
-            (is_dir($this->configurations->appDirectory . '\\models\\' . $this->modelName . '\\' . $nextUriParam)
-                || class_exists($basePath . $this->modelName . '\\' . $nextUriParam))
-        ) {
-            $this->modelName .= '\\' . $nextUriParam;
-            array_shift($uriVariables);
-            $nextUriParam = current($uriVariables);
+        foreach ($uriVariables as $uriParam) {
+            if (is_dir($this->configurations->appDirectory . '\\models\\' . $this->modelName . '\\' . $uriParam)
+                || class_exists($basePath . $this->modelName . '\\' . $uriParam))
+            {
+                $this->modelName     .= '\\' . $uriParam;
+                array_shift($uriVariables);
+            }
         }
 
         if (!class_exists($basePath . $this->modelName)) {
