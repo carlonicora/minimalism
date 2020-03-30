@@ -75,6 +75,17 @@ class dataResponse extends abstractResponseObject implements responseInterface {
     /**
      * @param resourceObject $data
      */
+    public function addIncluded(resourceObject $data): void {
+        if ($this->included === null){
+            $this->included = [];
+        }
+
+        $this->included[] = $data;
+    }
+
+    /**
+     * @param resourceObject $data
+     */
     private function buildIncluded(resourceObject $data): void {
         if ($data->relationships !== null){
             foreach ($data->relationships as $relationshipType=>$relationships){
