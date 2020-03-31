@@ -54,15 +54,15 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         $this->resource->addMetas($this->buildMeta());
         $this->resource->addLinks($this->buildLinks());
 
-        foreach ($this->oneToOneRelationFields as &$toOneResourceBuilderClass) {
+        foreach ($this->oneToOneRelationFields as $key => $toOneResourceBuilderClass) {
             if (false === is_array($toOneResourceBuilderClass)) {
-                $toOneResourceBuilderClass = ['id' => $toOneResourceBuilderClass . 'Id', 'class' => $toOneResourceBuilderClass];
+                $this->oneToOneRelationFields[$key] = ['id' => $toOneResourceBuilderClass . 'Id', 'class' => $toOneResourceBuilderClass];
             }
         }
 
-        foreach ($this->toManyRelationFields as &$toManyResourceBuilderClass) {
+        foreach ($this->toManyRelationFields as $key => $toManyResourceBuilderClass) {
             if (false === is_array($toManyResourceBuilderClass)) {
-                $toManyResourceBuilderClass = ['id' => $toManyResourceBuilderClass . 'Id', 'class' => $toManyResourceBuilderClass];
+                $this->toManyRelationFields[$key] = ['id' => $toManyResourceBuilderClass . 'Id', 'class' => $toManyResourceBuilderClass];
             }
         }
     }

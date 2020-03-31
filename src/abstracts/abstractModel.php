@@ -65,17 +65,13 @@ class abstractModel {
                     $isParameterRequired = $value['required'] ?? false;
                 }
 
-                if (array_key_exists($parameterKey, $this->parameterValues) && $this->parameterValues[$parameterKey] !== null) {
+                $allParameters = array_merge($this->parameterValues, $this->parameterValueList);
+
+                if (array_key_exists($parameterKey, $allParameters) && $allParameters[$parameterKey] !== null) {
                     if (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
-                        $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValues[$parameterKey]);
+                        $this->$parameterName = encrypterFactory::encrypter()->decryptId($allParameters[$parameterKey]);
                     } else {
-                        $this->$parameterName = $this->parameterValues[$parameterKey];
-                    }
-                } else if (array_key_exists($parameterKey, $this->parameterValueList) && $this->parameterValueList[$parameterKey] !== null){
-                    if (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
-                        $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValueList[$parameterKey]);
-                    } else {
-                        $this->$parameterName = $this->parameterValueList[$parameterKey];
+                        $this->$parameterName = $allParameters[$parameterKey];
                     }
                 } else if ($isParameterRequired){
                     errorReporter::returnHttpCode(412,'Required parameter' . $parameterName . ' missing.');

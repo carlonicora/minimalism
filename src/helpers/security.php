@@ -137,13 +137,7 @@ class security {
      * @return bool
      */
     public static function decryptPassword($password, $hash): bool {
-        $returnValue = false;
-
-        if (password_verify($password, $hash)){
-            $returnValue = true;
-        }
-
-        return $returnValue;
+        return password_verify($password, $hash);
     }
 
     /**

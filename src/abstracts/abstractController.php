@@ -166,4 +166,11 @@ abstract class abstractController {
             $this->initialiseModel($this->model->redirectPage);
         }
     }
+
+    /**
+     * @return string
+     */
+    public function redirect(): string {
+        return $this->redirectPage ?? '';
+    }
 }
