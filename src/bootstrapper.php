@@ -26,19 +26,20 @@ class bootstrapper{
     private ?string $modelName=null;
 
     /** @var int  */
-    private int $controllerType=self::API_CONTROLLER;
+    private int $controllerType;
 
     /**
      * bootstrapper constructor.
+     * @param int $controllerType
      */
-    public function __construct() {
+    public function __construct(int $controllerType=self::API_CONTROLLER) {
+        $this->controllerType = $controllerType;
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
         $this->services = new servicesFactory();
-
-        //$sessionManager = new sessionManager();
 
         try {
             if (isset($_SESSION['minimalismServices'])){
