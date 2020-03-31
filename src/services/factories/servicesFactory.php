@@ -128,7 +128,7 @@ class servicesFactory {
             }
         }
 
-        return $namespace . '\\' . $class;
+        return substr($namespace, 1) . '\\' . $class;
     }
 
     /**

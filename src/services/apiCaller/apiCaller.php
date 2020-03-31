@@ -5,12 +5,13 @@ use carlonicora\minimalism\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\jsonapi\resources\errorObject;
 use carlonicora\minimalism\jsonapi\resources\resourceObject;
 use carlonicora\minimalism\jsonapi\responses\dataResponse;
+use carlonicora\minimalism\services\abstracts\abstractService;
 use carlonicora\minimalism\services\apiCaller\configurations\apiCallerConfigurations;
 use carlonicora\minimalism\services\factories\servicesFactory;
 use carlonicora\minimalism\services\security\factories\serviceFactory;
 use carlonicora\minimalism\services\security\security;
 
-class apiCaller {
+class apiCaller extends abstractService {
     /** @var apiCallerConfigurations */
     private apiCallerConfigurations $configData;
 

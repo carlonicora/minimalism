@@ -40,6 +40,14 @@ abstract class abstractController implements controllerInterface {
     public function __construct(servicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
         $this->services = $services;
 
+        if ($parameterValueList === null){
+            $parameterValueList = [];
+        }
+
+        if ($parameterValues === null){
+            $parameterValues = [];
+        }
+
         $this->initialiseParameters($parameterValueList, $parameterValues);
         $this->initialiseModel($modelName);
     }
