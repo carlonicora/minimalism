@@ -32,9 +32,9 @@ class email {
      * email constructor.
      * @param string $subject
      * @param string|null $templateName
-     * @param string|null $templateDirectory
+     * @param array|string|null $templateDirectory
      */
-    public function __construct(string $subject, ?string $templateName=null, ?string $templateDirectory=null) {
+    public function __construct(string $subject, ?string $templateName=null, $templateDirectory=null) {
         $this->subject = $subject;
 
         if ($templateName !== null) {
