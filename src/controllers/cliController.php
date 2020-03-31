@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\controllers;
 
-use carlonicora\minimalism\abstracts\abstractController;
+use carlonicora\minimalism\controllers\abstracts\abstractController;
 
 class cliController extends abstractController {
     /**
@@ -19,14 +19,15 @@ class cliController extends abstractController {
     }
 
     /**
-     *
+     * @param array $parameterValueList
+     * @param array $parameterValues
      */
-    protected function initialiseParameters(): void {
+    protected function initialiseParameters(array $parameterValueList, array $parameterValues): void {
         if (isset($_SERVER['argv'][1]) && !isset($_SERVER['argv'][2])){
-            $this->parameterValues = json_decode($_SERVER['argv'][1], true, 512, JSON_THROW_ON_ERROR);
+            $this->passedParameters = json_decode($_SERVER['argv'][1], true, 512, JSON_THROW_ON_ERROR);
         } else if (count($_SERVER['argv']) > 1){
             for ($argumentCount = 1, $argumentCountMax = count($_SERVER['argv']); $argumentCount < $argumentCountMax; $argumentCount += 2){
-                $this->parameterValues[substr($_SERVER['argv'][$argumentCount], 1)] = $_SERVER['argv'][$argumentCount + 1];
+                $this->passedParameters[substr($_SERVER['argv'][$argumentCount], 1)] = $_SERVER['argv'][$argumentCount + 1];
             }
         }
     }

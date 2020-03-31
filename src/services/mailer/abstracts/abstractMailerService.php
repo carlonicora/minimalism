@@ -1,11 +1,12 @@
 <?php
 namespace carlonicora\minimalism\services\mailer\abstracts;
 
+use carlonicora\minimalism\services\abstracts\abstractService;
 use carlonicora\minimalism\services\mailer\configurations\mailerConfigurations;
 use carlonicora\minimalism\services\mailer\interfaces\mailerServiceInterface;
 use carlonicora\minimalism\services\mailer\objects\email;
 
-abstract class abstractMailerService implements mailerServiceInterface {
+abstract class abstractMailerService extends abstractService implements mailerServiceInterface {
     /** @var mailerConfigurations  */
     protected mailerConfigurations $configData;
 
@@ -14,7 +15,7 @@ abstract class abstractMailerService implements mailerServiceInterface {
      * @param mailerConfigurations $configurations
      */
     public function __construct(mailerConfigurations $configurations){
-        $this->configData = new $configurations;
+        $this->configData = $configurations;
     }
 
     /**

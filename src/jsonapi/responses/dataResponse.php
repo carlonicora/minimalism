@@ -1,8 +1,9 @@
 <?php
 namespace carlonicora\minimalism\jsonapi\responses;
 
-use carlonicora\minimalism\abstracts\abstractResponseObject;
-use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\abstracts\abstractResponseObject;
+use carlonicora\minimalism\jsonapi\resources\errorObject;
 use carlonicora\minimalism\jsonapi\resources\resourceObject;
 use carlonicora\minimalism\jsonapi\resources\resourceRelationship;
 use carlonicora\minimalism\jsonapi\traits\linksTrait;
@@ -14,6 +15,9 @@ class dataResponse extends abstractResponseObject implements responseInterface {
 
     /** @var resourceObject|null */
     public ?resourceObject $data=null;
+
+    /** @var array|null  */
+    public ?array $errors=null;
 
     /** @var array|null */
     public ?array $dataList=null;
@@ -29,7 +33,17 @@ class dataResponse extends abstractResponseObject implements responseInterface {
         if (isset($data)){
             $this->data = new resourceObject($data);
         }
-        $this->status = self::HTTP_STATUS_200;
+    }
+
+    /**
+     * @param errorObject $error
+     */
+    public function addError(errorObject $error) : void {
+        if ($this->errors === null){
+            $this->errors = [];
+        }
+
+        $this->errors[] = $error;
     }
 
     /**
@@ -41,14 +55,23 @@ class dataResponse extends abstractResponseObject implements responseInterface {
         if ($this->data !== null) {
             $response['data'] = $this->data->toArray();
             $this->buildIncluded($this->data);
-
-        } else {
+        } else if ($this->dataList !== null) {
             $response['data'] = [];
 
             /** @var resourceObject $data */
             foreach ($this->dataList ?? [] as $data){
                 $response['data'][] = $data->toArray();
                 $this->buildIncluded($data);
+            }
+        } else {
+            $response['errors'] = [];
+            /** @var errorObject $error */
+            foreach ($this->errors ?? [] as $error) {
+                $response['errors'][] = $error->toArray();
+
+                if ($this->status === self::HTTP_STATUS_200){
+                    $this->status = $error->status;
+                }
             }
         }
 

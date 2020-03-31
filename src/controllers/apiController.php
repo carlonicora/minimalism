@@ -1,12 +1,14 @@
 <?php
 namespace carlonicora\minimalism\controllers;
 
-use carlonicora\minimalism\abstracts\abstractController;
-use carlonicora\minimalism\helpers\errorReporter;
-use carlonicora\minimalism\helpers\headers;
-use carlonicora\minimalism\helpers\security;
-use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\controllers\abstracts\abstractController;
+use carlonicora\minimalism\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\services\factories\servicesFactory;
+use carlonicora\minimalism\jsonapi\interfaces\responseInterface;
 use carlonicora\minimalism\jsonapi\responses\dataResponse;
+use carlonicora\minimalism\services\security\factories\serviceFactory;
+use carlonicora\minimalism\services\security\security;
+use Exception;
 
 class apiController extends abstractController {
     /** @var string */
@@ -15,17 +17,21 @@ class apiController extends abstractController {
     /** @var string */
     public string $verb;
 
+    /** @var array|null */
+    private ?array $headers=null;
+
     /**
      * apiController constructor.
-     * @param $configurations
-     * @param null $modelName
-     * @param null $parameterValueList
-     * @param null $parameterValues
+     * @param servicesFactory $services
+     * @param string|null $modelName
+     * @param array|null $parameterValueList
+     * @param array|null $parameterValues
+     * @throws Exception
      */
-    public function __construct($configurations, $modelName = null, $parameterValueList = null, $parameterValues = null) {
+    public function __construct(servicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
         $this->initialiseVerb();
 
-        parent::__construct($configurations, $modelName, $parameterValueList, $parameterValues);
+        parent::__construct($services, $modelName, $parameterValueList, $parameterValues);
 
         $this->validateSignature();
     }
@@ -60,16 +66,17 @@ class apiController extends abstractController {
 
     /**
      *
+     * @throws serviceNotFoundException
+     * @throws Exception
      */
     protected function validateSignature(): void {
-        $this->signature = headers::getHeader($this->configurations->httpHeaderSignature);
+        /** @var security $security */
+        $security = $this->services->service(serviceFactory::class);
+        $this->signature =$this->getHeader($security->getHttpHeaderSignature());
 
-        $security = new security($this->configurations);
         $url = $_SERVER['REQUEST_URI'];
 
-        if (!$security->validateSignature($this->signature, $this->verb, $url,  $this->parameterValues, $this->configurations->getSecurityClient(), $this->configurations->getSecuritySession())){
-            errorReporter::report($this->configurations,  11, 'Failure in validating signature', 401);
-        }
+        $security->validateSignature($this->signature, $this->verb, $url,  $this->passedParameters, $security->getSecurityClient(), $security->getSecuritySession());
     }
 
     /**
@@ -89,7 +96,7 @@ class apiController extends abstractController {
                     $this->modelName = str_replace('-', '\\', $variable);
                     $isModelVariable = false;
                 } else {
-                    $this->parameterValueList[] = $variable;
+                    $this->passedParameters[] = $variable;
                 }
             }
         }
@@ -113,5 +120,37 @@ class apiController extends abstractController {
         header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $apiResponse->generateText());
 
         return $apiResponse->toJson();
+    }
+
+    /**
+     * @param string $headerName
+     * @return string|null
+     */
+    private function getHeader(string $headerName): ?string {
+        if ($this->headers === null){
+            $this->headers = getallheaders();
+        }
+
+        return $this->headers[$headerName] ?? null;
+    }
+}
+
+/**
+ *
+ */
+if (!function_exists('getallheaders'))  {
+    function getallheaders()
+    {
+        if (!is_array($_SERVER)) {
+            return array();
+        }
+
+        $headers = array();
+        foreach ($_SERVER as $name => $value) {
+            if (strpos($name, 'HTTP_') === 0) {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
     }
 }

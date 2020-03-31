@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\jsonapi\resources;
 
-use carlonicora\minimalism\abstracts\abstractResponseObject;
+use carlonicora\minimalism\jsonapi\abstracts\abstractResponseObject;
 use carlonicora\minimalism\jsonapi\traits\metaTrait;
 
 class errorObject extends abstractResponseObject {
@@ -21,17 +21,13 @@ class errorObject extends abstractResponseObject {
 
     /**
      * errorObject constructor.
-     * @param string $httpStatusCode
-     * @param string|null $detail
-     * @param string|null $code
-     * @param int|null $id
+     * @param array $error
      */
-    public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null) {
-        $this->status = $httpStatusCode;
-        $this->title = $this->generateText();
-        $this->detail = $detail;
-        $this->code = $code;
-        $this->id = $id;
+    public function __construct(array $error) {
+        $this->status = $error['status'];
+        $this->detail = $error['detail'];
+        $this->code = $error['code'];
+        $this->id = $error['id'];
     }
 
     /**

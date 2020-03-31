@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\services\interfaces;
 
 use carlonicora\minimalism\exceptions\configurationException;
+use carlonicora\minimalism\services\factories\servicesFactory;
 
 interface serviceFactoryInterface {
     /**
@@ -10,7 +11,8 @@ interface serviceFactoryInterface {
     public function __construct();
 
     /**
+     * @param servicesFactory $services
      * @return mixed
      */
-    public function create();
+    public function create(servicesFactory $services);
 }

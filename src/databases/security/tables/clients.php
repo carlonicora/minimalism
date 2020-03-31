@@ -1,13 +1,13 @@
 <?php
 namespace carlonicora\minimalism\databases\security\tables;
 
-use carlonicora\minimalism\abstracts\abstractDatabaseManager;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
-use carlonicora\minimalism\interfaces\securityClientInterface;
+use carlonicora\minimalism\services\database\abstracts\abstractDatabaseManager;
+use carlonicora\minimalism\services\security\interfaces\securityClientInterface;
 use Exception;
 use RuntimeException;
 
-class clients extends abstractDatabaseManager implements securityClientInterface{
+class clients extends abstractDatabaseManager implements securityClientInterface {
     /** @var array  */
     protected array $fields = [
         'id' => self::INTEGER + self::PRIMARY_KEY + self::AUTO_INCREMENT,

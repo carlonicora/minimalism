@@ -1,13 +1,16 @@
 <?php
 namespace carlonicora\minimalism\controllers;
 
-use carlonicora\minimalism\abstracts\abstractController;
-use carlonicora\minimalism\abstracts\abstractWebModel;
-use carlonicora\minimalism\helpers\errorReporter;
-use carlonicora\minimalism\helpers\sessionManager;
-use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\controllers\abstracts\abstractController;
+use carlonicora\minimalism\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\services\factories\servicesFactory;
+use carlonicora\minimalism\jsonapi\interfaces\responseInterface;
 use carlonicora\minimalism\jsonapi\responses\dataResponse;
 use carlonicora\minimalism\jsonapi\responses\errorResponse;
+use carlonicora\minimalism\models\abstracts\abstractWebModel;
+use carlonicora\minimalism\services\paths\factories\serviceFactory;
+use carlonicora\minimalism\services\paths\paths;
+use RuntimeException;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Exception;
@@ -18,29 +21,34 @@ class appController extends abstractController {
 
     /**
      * apiController constructor.
-     * @param $configurations
-     * @param null $modelName
-     * @param null $parameterValueList
-     * @param null $parameterValues
+     * @param servicesFactory $services
+     * @param string|null $modelName
+     * @param array|null $parameterValueList
+     * @param array|null $parameterValues
+     * @throws Exception
      */
-    public function __construct($configurations, $modelName = null, $parameterValueList = null, $parameterValues = null) {
-        parent::__construct($configurations, $modelName, $parameterValueList, $parameterValues);
+    public function __construct(servicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
+        parent::__construct($services, $modelName, $parameterValueList, $parameterValues);
 
         $this->initialiseView();
     }
 
     /**
      *
+     * @throws serviceNotFoundException
      */
     private function initialiseView(): void {
+        /** @var paths $paths */
+        $paths = $this->services->service(serviceFactory::class);
+
         /** @var abstractWebModel $model */
         $model = $this->model;
         if ($model->getViewName() !== '') {
             try {
-                $twigLoader = new FilesystemLoader($this->configurations->appDirectory . DIRECTORY_SEPARATOR . 'views');
+                $twigLoader = new FilesystemLoader($paths->getRoot() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'views');
                 $this->view = new Environment($twigLoader);
-            } catch (Exception $exception) {
-                errorReporter::report($this->configurations, 4, null, 404);
+            } catch (Exception $e) {
+                throw new RuntimeException('View failure: ' . $e->getMessage(), 404);
             }
         }
     }
@@ -82,8 +90,9 @@ class appController extends abstractController {
         $GLOBALS['http_response_code'] = $code;
         header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $data->generateText());
 
-        $sessionManager = new sessionManager();
-        $sessionManager->saveSession($this->configurations);
+        $this->services->cleanNonPersistentVariables();
+        $_SESSION['configurations'] = $this->services;
+        setcookie('minimalismConfigurations', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
 
         return $response;
     }

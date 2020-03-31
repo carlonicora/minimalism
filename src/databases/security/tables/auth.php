@@ -1,9 +1,10 @@
 <?php
 namespace carlonicora\minimalism\databases\security\tables;
 
-use carlonicora\minimalism\abstracts\abstractDatabaseManager;
 use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
-use carlonicora\minimalism\interfaces\securitySessionInterface;
+use carlonicora\minimalism\exceptions\dbSqlException;
+use carlonicora\minimalism\services\database\abstracts\abstractDatabaseManager;
+use carlonicora\minimalism\services\security\interfaces\securitySessionInterface;
 use RuntimeException;
 use Exception;
 
@@ -66,6 +67,7 @@ class auth extends abstractDatabaseManager implements securitySessionInterface {
 
     /**
      * @return bool
+     * @throws dbSqlException
      */
     public function deleteOldTokens(): bool {
         $sql = 'DELETE FROM auth WHERE expirationDate < ?;';
@@ -77,6 +79,7 @@ class auth extends abstractDatabaseManager implements securitySessionInterface {
     /**
      * @param $publicKey
      * @return bool
+     * @throws dbSqlException
      */
     public function deleteFromPublicKey($publicKey): bool {
         $sql = 'DELETE from auth WHERE publicKey = ?;';

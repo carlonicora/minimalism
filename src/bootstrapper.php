@@ -1,82 +1,100 @@
 <?php
 namespace carlonicora\minimalism;
 
-use carlonicora\minimalism\abstracts\abstractController;
 use carlonicora\minimalism\controllers\apiController;
 use carlonicora\minimalism\controllers\appController;
 use carlonicora\minimalism\controllers\cliController;
+use carlonicora\minimalism\controllers\interfaces\controllerInterface;
 use carlonicora\minimalism\exceptions\configurationException;
-use carlonicora\minimalism\helpers\sessionManager;
-use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\services\factories\servicesFactory;
 use carlonicora\minimalism\jsonapi\responses\errorResponse;
 use Exception;
-use RuntimeException;
 
 /**
  * Class bootstrapper
  * @package carlonicora\minimalism
  */
 class bootstrapper{
-    /** @var abstractConfigurations $configurations */
-    private abstractConfigurations $configurations;
-
-    /** @var int */
     public const API_CONTROLLER=1;
-
-    /** @var int */
     public const APP_CONTROLLER=2;
-
-    /** @var int */
     public const CLI_CONTROLLER=3;
+
+    /** @var servicesFactory  */
+    private servicesFactory $services;
+
+    /** @var string|null  */
+    private ?string $modelName=null;
+
+    /** @var int  */
+    private int $controllerType=self::API_CONTROLLER;
 
     /**
      * bootstrapper constructor.
-     * @param string $configurationName
-     * @param int $applicationType
      */
-    public function __construct(string $configurationName, int $applicationType=self::API_CONTROLLER){
-        $this->configurations = new $configurationName($applicationType);
+    public function __construct() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-        $sessionManager = new sessionManager();
+        $this->services = new servicesFactory();
+
+        //$sessionManager = new sessionManager();
+
         try {
-            $sessionManager->loadFromSession($this->configurations);
+            if (isset($_SESSION['minimalismServices'])){
+                $this->services = $_SESSION['services'];
+                $this->services->cleanNonPersistentVariables();
+            } else {
+                $this->services->initialise();
+
+                if (isset($_COOKIE['minimalismServices'])){
+                    $this->services->unserialiseCookies($_COOKIE['minimalismServices']);
+                }
+            }
         } catch (configurationException $e) {
-            $errorResponse = new errorResponse(errorResponse::HTTP_STATUS_500, $e->getMessage());
-            echo $errorResponse->toJson();
+            $this->returnError(new errorResponse(errorResponse::HTTP_STATUS_500, $e->getMessage()));
             exit;
         }
     }
 
     /**
-     * @param null|string $modelName
-     * @param null|array $parameterValueList
-     * @param null|array $parameterValues
-     * @return abstractController
-     * @throws Exception
+     * @param array|null $parameterValueList
+     * @param array|null $parameterValues
+     * @return controllerInterface
      */
-    public function loadController(string $modelName=null, array $parameterValueList=null, array $parameterValues=null): abstractController {
-        switch ($this->configurations->applicationType) {
-            case self::API_CONTROLLER:
-                $response = new apiController($this->configurations, $modelName, $parameterValueList, $parameterValues);
-                break;
-            case self::APP_CONTROLLER:
-                $response = new appController($this->configurations, $modelName, $parameterValueList, $parameterValues);
-                break;
-            case self::CLI_CONTROLLER:
-                $response = new cliController($this->configurations, $modelName, $parameterValueList, $parameterValues);
-                break;
-            default:
-                throw new RuntimeException('A precise type of controller is required');
-                break;
+    public function loadController(array $parameterValueList=null, array $parameterValues=null): controllerInterface {
+        try {
+            switch ($this->controllerType) {
+                case self::APP_CONTROLLER:
+                    $response = new appController($this->services, $this->modelName, $parameterValueList, $parameterValues);
+                    break;
+                case self::CLI_CONTROLLER:
+                    $response = new cliController($this->services, $this->modelName, $parameterValueList, $parameterValues);
+                    break;
+                default:
+                    $response = new apiController($this->services, $this->modelName, $parameterValueList, $parameterValues);
+                    break;
+            }
+        } catch (Exception $e) {
+            $this->returnError(new errorResponse($e->getCode(), $e->getMessage()));
+            exit;
         }
 
         return $response;
     }
 
     /**
-     * @return abstractConfigurations
+     * @param errorResponse $error
      */
-    public function getConfigurations(): abstractConfigurations{
-        return $this->configurations;
+    private function returnError(errorResponse $error): void {
+        echo $error->toJson();
+        exit;
+    }
+
+    /**
+     * @param string $modelName
+     */
+    public function setModel(string $modelName) : void {
+        $this->modelName = $modelName;
     }
 }

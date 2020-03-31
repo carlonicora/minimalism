@@ -24,8 +24,8 @@ class mailerConfigurations {
      * @throws configurationException
      */
     public function __construct() {
-        $this->mailerClass = 'carlonicora\\minimalism\\services\\mailer\\modules\\' .
-            (getenv('MINIMALISM_MAILING_TYPE') ?? 'mandrillapp') .
+        $this->mailerClass = '\\carlonicora\\minimalism\\services\\mailer\\modules\\' .
+            (getenv('MINIMALISM_MAILING_TYPE') ?: 'mandrillapp') .
             'MailerService';
 
         if (!class_exists($this->mailerClass)){

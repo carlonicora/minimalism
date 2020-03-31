@@ -1,10 +1,11 @@
 <?php
 namespace carlonicora\minimalism\services\encrypter;
 
+use carlonicora\minimalism\services\abstracts\abstractService;
 use carlonicora\minimalism\services\encrypter\configurations\encrypterConfigurations;
 use Hashids\Hashids;
 
-class encrypter {
+class encrypter extends abstractService {
     /** @var Hashids */
     private Hashids $hashids;
 

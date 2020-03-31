@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism\jsonapi\responses;
 
-use carlonicora\minimalism\abstracts\abstractResponseObject;
-use carlonicora\minimalism\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\interfaces\responseInterface;
+use carlonicora\minimalism\jsonapi\abstracts\abstractResponseObject;
 use carlonicora\minimalism\jsonapi\resources\errorObject;
 use carlonicora\minimalism\jsonapi\traits\metaTrait;
 
@@ -20,7 +20,12 @@ class errorResponse extends abstractResponseObject implements responseInterface 
      * @param int|null $id
      */
     public function __construct(string $httpStatusCode, string $detail=null, string $code=null, int $id = null) {
-        $this->errors[] = new errorObject($httpStatusCode, $detail, $code, $id);
+        $this->errors[] = new errorObject([
+            'status' => $httpStatusCode,
+            'detail' => $detail,
+            'code' => $code,
+            'id' => $id
+        ]);
 
         $this->status = $httpStatusCode;
     }
