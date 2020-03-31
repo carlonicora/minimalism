@@ -1,15 +1,15 @@
 <?php
 namespace carlonicora\minimalism\services\mailer\interfaces;
 
-use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\services\mailer\configurations\mailerConfigurations;
 use carlonicora\minimalism\services\mailer\objects\email;
 
 interface mailerServiceInterface {
     /**
      * mailerServiceInterface constructor.
-     * @param abstractConfigurations $configurations
+     * @param mailerConfigurations $configurations
      */
-    public function __construct(abstractConfigurations $configurations);
+    public function __construct(mailerConfigurations $configurations);
 
     /**
      * @param string $senderEmail

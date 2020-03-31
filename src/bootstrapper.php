@@ -5,8 +5,10 @@ use carlonicora\minimalism\abstracts\abstractController;
 use carlonicora\minimalism\controllers\apiController;
 use carlonicora\minimalism\controllers\appController;
 use carlonicora\minimalism\controllers\cliController;
+use carlonicora\minimalism\exceptions\configurationException;
 use carlonicora\minimalism\helpers\sessionManager;
 use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\jsonapi\responses\errorResponse;
 use Exception;
 use RuntimeException;
 
@@ -36,7 +38,13 @@ class bootstrapper{
         $this->configurations = new $configurationName($applicationType);
 
         $sessionManager = new sessionManager();
-        $sessionManager->loadFromSession($this->configurations);
+        try {
+            $sessionManager->loadFromSession($this->configurations);
+        } catch (configurationException $e) {
+            $errorResponse = new errorResponse(errorResponse::HTTP_STATUS_500, $e->getMessage());
+            echo $errorResponse->toJson();
+            exit;
+        }
     }
 
     /**

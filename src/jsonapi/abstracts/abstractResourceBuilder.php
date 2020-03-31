@@ -1,7 +1,6 @@
 <?php
 namespace carlonicora\minimalism\jsonapi\abstracts;
 
-use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use carlonicora\minimalism\jsonapi\factories\resourceBuilderFactory;
 use carlonicora\minimalism\jsonapi\interfaces\resourceBuilderInterface;
@@ -103,7 +102,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
      */
     protected function getId(): string {
         if (in_array($this->idField, $this->hashEncodedFields, true)) {
-            return encrypterFactory::encrypter()->encryptId((int)$this->data[$this->idField]);
+            return $this->configurations->services->encrypter->encryptId((int)$this->data[$this->idField]);
         }
 
         return $this->data[$this->idField];
@@ -123,7 +122,7 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         $attributes = [];
         foreach ($this->hashEncodedFields as $hashEncodedField) {
             if (false === empty($this->data[$hashEncodedField]) && $this->idField !== $hashEncodedField) {
-                $attributes[$hashEncodedField] = encrypterFactory::encrypter()->encryptId((int)$this->data[$hashEncodedField]);
+                $attributes[$hashEncodedField] = $this->configurations->services->encrypter->encryptId((int)$this->data[$hashEncodedField]);
             }
         }
 

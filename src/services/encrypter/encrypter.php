@@ -1,19 +1,19 @@
 <?php
-namespace carlonicora\minimalism\helpers;
+namespace carlonicora\minimalism\services\encrypter;
 
-use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\services\encrypter\configurations\encrypterConfigurations;
 use Hashids\Hashids;
 
-class idEncrypter {
+class encrypter {
     /** @var Hashids */
     private Hashids $hashids;
 
     /**
      * idEncrypter constructor.
-     * @param abstractConfigurations $configurations
+     * @param encrypterConfigurations $configurations
      */
-    public function __construct(abstractConfigurations $configurations) {
-        $this->hashids = new Hashids($configurations->encrypterKey, $configurations->encrypterLength);
+    public function __construct(encrypterConfigurations $configurations) {
+        $this->hashids = new Hashids($configurations->key, $configurations->length);
     }
 
     /**

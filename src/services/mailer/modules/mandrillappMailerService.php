@@ -27,11 +27,11 @@ class mandrillappMailerService extends abstractMailerService {
         $mail->SMTPAuth = true;
         $mail->SMTPSecure = 'tls';
 
-        $mail->Username = $this->username;
-        $mail->Password = $this->password;
+        $mail->Username = $this->configData->username;
+        $mail->Password = $this->configData->password;
 
-        $mail->From = $this->senderEmail;
-        $mail->FromName = $this->senderName;
+        $mail->From = $this->configData->senderEmail;
+        $mail->FromName = $this->configData->senderName;
 
         $mail->IsHTML(true);
         $mail->Subject = $email->subject;

@@ -1,32 +1,20 @@
 <?php
 namespace carlonicora\minimalism\services\mailer\abstracts;
 
-use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\services\mailer\configurations\mailerConfigurations;
 use carlonicora\minimalism\services\mailer\interfaces\mailerServiceInterface;
 use carlonicora\minimalism\services\mailer\objects\email;
 
 abstract class abstractMailerService implements mailerServiceInterface {
-    /** @var string|null  */
-    protected ?string $senderEmail=null;
-
-    /** @var string|null  */
-    protected ?string $senderName=null;
-
-    /** @var string  */
-    protected string $username;
-
-    /** @var string  */
-    protected string $password;
+    /** @var mailerConfigurations  */
+    protected mailerConfigurations $configData;
 
     /**
      * abstractMailerService constructor.
-     * @param abstractConfigurations $configurations
+     * @param mailerConfigurations $configurations
      */
-    public function __construct(abstractConfigurations $configurations){
-        $this->username = $configurations->configData()->mailer()->username;
-        $this->password = $configurations->configData()->mailer()->password;
-        $this->senderName = $configurations->configData()->mailer()->senderName;
-        $this->senderEmail = $configurations->configData()->mailer()->senderEmail;
+    public function __construct(mailerConfigurations $configurations){
+        $this->configData = new $configurations;
     }
 
     /**
@@ -34,8 +22,8 @@ abstract class abstractMailerService implements mailerServiceInterface {
      * @param string $senderName
      */
     final public function setSender(string $senderEmail, string $senderName): void {
-        $this->senderEmail = $senderEmail;
-        $this->senderName = $senderName;
+        $this->configData->senderEmail = $senderEmail;
+        $this->configData->senderName = $senderName;
     }
 
     /**

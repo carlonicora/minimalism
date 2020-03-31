@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\mailer\configurations;
 
-use RuntimeException;
+use carlonicora\minimalism\exceptions\configurationException;
 
 class mailerConfigurations {
     /** @var string|null  */
@@ -21,6 +21,7 @@ class mailerConfigurations {
 
     /**
      * mailingConfigurations constructor.
+     * @throws configurationException
      */
     public function __construct() {
         $this->mailerClass = 'carlonicora\\minimalism\\services\\mailer\\modules\\' .
@@ -28,7 +29,11 @@ class mailerConfigurations {
             'MailerService';
 
         if (!class_exists($this->mailerClass)){
-            throw new RuntimeException('The selected mailer service does not exists!');
+            throw new configurationException('mailer', 'The selected mailer service does not exists!');
+        }
+
+        if (getenv('MINIMALISM_MAILING_PASSWORD') === null) {
+            throw new configurationException('mailer', 'MINIMALISM_MAILING_PASSWORD is a required configuration');
         }
 
         $this->username = getenv('MINIMALISM_MAILING_USERNAME');
@@ -36,5 +41,12 @@ class mailerConfigurations {
 
         $this->senderEmail = getenv('MINIMALISM_MAILING_SENDER_EMAIL');
         $this->senderName = getenv('MINIMALISM_MAILING_SENDER_NAME');
+    }
+
+    /**
+     * @return string
+     */
+    public function getMailerClass() : string {
+        return $this->mailerClass;
     }
 }

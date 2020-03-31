@@ -6,17 +6,15 @@ use carlonicora\minimalism\databases\security\tables\auth;
 use carlonicora\minimalism\databases\security\tables\clients;
 use carlonicora\minimalism\exceptions\dbConnectionException;
 use carlonicora\minimalism\factories\databaseFactory;
-use carlonicora\minimalism\factories\encrypterFactory;
-use carlonicora\minimalism\factories\minimalismFactory;
 use carlonicora\minimalism\helpers\logger;
 use carlonicora\minimalism\interfaces\configurationsInterface;
 use carlonicora\minimalism\interfaces\securityClientInterface;
 use carlonicora\minimalism\interfaces\securitySessionInterface;
 use carlonicora\minimalism\jsonapi\factories\resourceBuilderFactory;
+use carlonicora\minimalism\services\services;
 use Dotenv\Dotenv;
 use carlonicora\minimalism\helpers\errorReporter;
 use Exception;
-use carlonicora\minimalism\configurations\configData;
 use ReflectionClass;
 use ReflectionException;
 use mysqli;
@@ -82,8 +80,8 @@ abstract class abstractConfigurations implements configurationsInterface {
     /** @var int */
     public int $encrypterLength;
 
-    /** @var configData|null  */
-    public ?configData $configData=null;
+    /** @var services|null  */
+    public ?services $services=null;
 
     abstract public function serialiseCookies(): string;
     abstract public function unserialiseCookies(string $cookies): void;
@@ -120,7 +118,7 @@ abstract class abstractConfigurations implements configurationsInterface {
             errorReporter::report($this, 1, $exception->getMessage());
         }
 
-        $this->configData = new configData();
+        $this->services = new services();
 
         if ($this->applicationType !== bootstrapper::CLI_CONTROLLER) {
             $protocol = ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http';
@@ -177,13 +175,6 @@ abstract class abstractConfigurations implements configurationsInterface {
             $securitySession = databaseFactory::create(auth::class);
             $this->securitySession = $securitySession;
         } catch (dbConnectionException $e) {}
-    }
-
-    /**
-     * @return configData
-     */
-    public function configData(): configData {
-        return $this->configData;
     }
 
     /**
@@ -321,10 +312,7 @@ abstract class abstractConfigurations implements configurationsInterface {
      *
      */
     public function resume(): void {
-        minimalismFactory::initialise($this);
-
         databaseFactory::initialise($this);
         resourceBuilderFactory::initialise($this);
-        encrypterFactory::initialise($this);
     }
 }

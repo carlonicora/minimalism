@@ -2,6 +2,7 @@
 namespace carlonicora\minimalism\helpers;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
+use carlonicora\minimalism\exceptions\configurationException;
 
 class sessionManager {
     /**
@@ -15,6 +16,8 @@ class sessionManager {
 
     /**
      * @param abstractConfigurations $configurations
+     * @throws configurationException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public function loadFromSession(abstractConfigurations &$configurations): void {
         if (isset($_SESSION['configurations'])){

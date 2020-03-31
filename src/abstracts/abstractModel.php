@@ -1,7 +1,6 @@
 <?php
 namespace carlonicora\minimalism\abstracts;
 
-use carlonicora\minimalism\factories\encrypterFactory;
 use carlonicora\minimalism\jsonapi\responses\dataResponse;
 use carlonicora\minimalism\jsonapi\responses\errorResponse;
 
@@ -73,13 +72,13 @@ abstract class abstractModel {
 
                 if (array_key_exists($parameterKey, $this->parameterValues) && $this->parameterValues[$parameterKey] !== null) {
                     if ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))){
-                        $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValues[$parameterKey]);
+                        $this->$parameterName = $this->configurations->services->encrypter->decryptId($this->parameterValues[$parameterKey]);
                     } else {
                         $this->$parameterName = $this->parameterValues[$parameterKey];
                     }
                 } else if (array_key_exists($parameterKey, $this->parameterValueList) && $this->parameterValueList[$parameterKey] !== null){
                     if ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))){
-                        $this->$parameterName = encrypterFactory::encrypter()->decryptId($this->parameterValueList[$parameterKey]);
+                        $this->$parameterName = $this->configurations->services->encrypter->decryptId($this->parameterValueList[$parameterKey]);
                     } else {
                         $this->$parameterName = $this->parameterValueList[$parameterKey];
                     }

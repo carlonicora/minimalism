@@ -18,7 +18,7 @@ class sendgridMailerService extends abstractMailerService {
         $sendGridEmail = new Mail();
 
         try {
-            $sendGridEmail->setFrom($this->senderEmail, $this->senderName);
+            $sendGridEmail->setFrom($this->configData->senderEmail, $this->configData->senderName);
         } catch (SendGrid\Mail\TypeException $e) {
             throw new RuntimeException($e->getMessage());
         }
@@ -35,7 +35,7 @@ class sendgridMailerService extends abstractMailerService {
 
         $sendGridEmail->addContent($email->contentType, $email->body);
 
-        $sendgrid = new SendGrid($this->password);
+        $sendgrid = new SendGrid($this->configData->password);
         $sendgrid->send($sendGridEmail);
 
         return true;
