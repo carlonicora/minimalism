@@ -2,8 +2,8 @@
 namespace carlonicora\minimalism\abstracts;
 
 use carlonicora\minimalism\factories\encrypterFactory;
-use carlonicora\minimalism\helpers\errorReporter;
 use carlonicora\minimalism\jsonapi\responses\dataResponse;
+use carlonicora\minimalism\jsonapi\responses\errorResponse;
 
 class abstractModel {
     /** @var abstractConfigurations */
@@ -29,6 +29,9 @@ class abstractModel {
 
     /** @var dataResponse  */
     protected dataResponse $response;
+
+    /** @var errorResponse|null  */
+    protected ?errorResponse $error=null;
 
     /**
      * model constructor.
@@ -60,22 +63,25 @@ class abstractModel {
             foreach ($parameters ?? [] as $parameterKey=>$value) {
                 $parameterName = $value;
                 $isParameterRequired = false;
+                $isParameterEncrypted = false;
+
                 if (is_array($value)) {
                     $parameterName = $value['name'];
                     $isParameterRequired = $value['required'] ?? false;
+                    $isParameterEncrypted = $value['encrypted'] ?? false;
                 }
 
                 $allParameters = array_merge($this->parameterValues, $this->parameterValueList);
 
                 if (array_key_exists($parameterKey, $allParameters) && $allParameters[$parameterKey] !== null) {
-                    if (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)){
+                    if ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))) {
                         $this->$parameterName = encrypterFactory::encrypter()->decryptId($allParameters[$parameterKey]);
                     } else {
                         $this->$parameterName = $allParameters[$parameterKey];
                     }
                 } else if ($isParameterRequired){
-                    errorReporter::returnHttpCode(412,'Required parameter' . $parameterName . ' missing.');
-                    exit;
+                    $this->error = new errorResponse(errorResponse::HTTP_STATUS_412, 'Required parameter' . $parameterName . ' missing.');
+                    break;
                 }
             }
         }
@@ -86,5 +92,19 @@ class abstractModel {
      */
     protected function getParameters(): array {
         return $this->parameters;
+    }
+
+    /**
+     * @return string
+     */
+    public function redirect(): string {
+        return $this->redirectPage ?? '';
+    }
+
+    /**
+     * @return errorResponse|null
+     */
+    public function preRender() : ?errorResponse {
+        return $this->error;
     }
 }

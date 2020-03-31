@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "9.3.0",
+  "version": "9.4.0-beta8",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "type": "library",
@@ -26,7 +26,9 @@
     "ext-openssl": "*",
     "twig/twig":"~2.0",
     "vlucas/phpdotenv":"~4.0",
-    "hashids/hashids": "~4.0"
+    "hashids/hashids": "~4.0",
+    "phpmailer/phpmailer": "*",
+    "sendgrid/sendgrid": "~7"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master"

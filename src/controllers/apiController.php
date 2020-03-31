@@ -95,6 +95,11 @@ class apiController extends abstractController {
      * @return string
      */
     public function render(): string{
+        $error = $this->model->preRender();
+        if ($error !== null){
+            return $error->toJson();
+        }
+
         /** @var responseInterface $apiResponse */
         $apiResponse = $this->model->{$this->verb}();
 
