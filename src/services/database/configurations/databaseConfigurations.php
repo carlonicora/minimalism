@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\services\database\configuration;
+namespace carlonicora\minimalism\services\database\configurations;
 
 use mysqli;
 

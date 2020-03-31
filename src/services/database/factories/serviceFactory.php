@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\database\factories;
 
-use carlonicora\minimalism\services\database\configuration\databaseConfigurations;
+use carlonicora\minimalism\services\database\configurations\databaseConfigurations;
 use carlonicora\minimalism\services\database\database;
 use carlonicora\minimalism\services\factories\servicesFactory;
 use carlonicora\minimalism\services\interfaces\serviceFactoryInterface;
