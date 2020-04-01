@@ -9,7 +9,7 @@ use carlonicora\minimalism\services\paths\paths;
 use carlonicora\minimalism\services\resourceBuilder\resourceBuilder;
 use carlonicora\minimalism\services\security\security;
 
-class services {
+trait minimalismServiceTrait {
     /** @var servicesFactory */
     protected static servicesFactory $services;
 

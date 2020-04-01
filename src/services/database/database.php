@@ -11,9 +11,6 @@ class database extends abstractService {
     /** @var databaseConfigurations  */
     private databaseConfigurations $configData;
 
-    /** @var array */
-    protected array $tableManagers = [];
-
     /**
      * database constructor.
      * @param databaseConfigurations $configData
@@ -28,8 +25,8 @@ class database extends abstractService {
      * @throws dbConnectionException
      */
     public function create(string $dbReader): abstractDatabaseManager {
-        if (array_key_exists($dbReader, $this->tableManagers)) {
-            return $this->tableManagers[$dbReader];
+        if (array_key_exists($dbReader, $this->configData->tableManagers)) {
+            return $this->configData->tableManagers[$dbReader];
         }
 
         if (!class_exists($dbReader)) {
@@ -64,7 +61,7 @@ class database extends abstractService {
 
         $response->setConnection($connection);
 
-        $this->tableManagers[$dbReader] = $response;
+        $this->configData->tableManagers[$dbReader] = $response;
 
         return $response;
     }

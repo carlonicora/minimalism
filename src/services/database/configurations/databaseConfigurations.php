@@ -10,6 +10,9 @@ class databaseConfigurations {
     /** @var array */
     public array $databaseConnectionStrings = [];
 
+    /** @var array */
+    public array $tableManagers = [];
+
     /**
      * databaseConfigurations constructor.
      */
@@ -71,5 +74,6 @@ class databaseConfigurations {
      */
     public function resetDatabases() : void {
         $this->databases = [];
+        $this->tableManagers = [];
     }
 }
