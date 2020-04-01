@@ -1,6 +1,6 @@
 <?php /** @noinspection UnserializeExploitsInspection */
 
-namespace carlonicora\minimalism;
+namespace carlonicora\minimalism\core;
 
 use carlonicora\minimalism\core\controllers\apiController;
 use carlonicora\minimalism\core\controllers\appController;
