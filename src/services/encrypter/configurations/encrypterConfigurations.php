@@ -15,7 +15,7 @@ class encrypterConfigurations {
      * @throws configurationException
      */
     public function __construct() {
-        if (getenv('MINIMALISM_ENCRYPTER_KEY') === null){
+        if (!getenv('MINIMALISM_ENCRYPTER_KEY')){
             throw new configurationException('encrypter', 'MINIMALISM_ENCRYPTER_KEY is a required configuration');
         }
 

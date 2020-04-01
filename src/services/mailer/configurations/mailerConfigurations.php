@@ -32,7 +32,7 @@ class mailerConfigurations {
             throw new configurationException('mailer', 'The selected mailer service does not exists!');
         }
 
-        if (getenv('MINIMALISM_MAILING_PASSWORD') === null) {
+        if (!getenv('MINIMALISM_MAILING_PASSWORD')) {
             throw new configurationException('mailer', 'MINIMALISM_MAILING_PASSWORD is a required configuration');
         }
 
