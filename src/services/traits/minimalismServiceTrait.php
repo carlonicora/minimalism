@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\services;
+namespace carlonicora\minimalism\services\traits;
 
 use carlonicora\minimalism\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\services\database\database;
