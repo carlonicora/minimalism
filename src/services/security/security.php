@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\security;
 
-use carlonicora\minimalism\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\abstracts\abstractService;
 use carlonicora\minimalism\services\security\configurations\securityConfigurations;
 use carlonicora\minimalism\services\security\interfaces\securityClientInterface;
 use carlonicora\minimalism\services\security\interfaces\securitySessionInterface;

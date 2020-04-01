@@ -1,13 +1,13 @@
 <?php
 namespace carlonicora\minimalism;
 
-use carlonicora\minimalism\controllers\apiController;
-use carlonicora\minimalism\controllers\appController;
-use carlonicora\minimalism\controllers\cliController;
-use carlonicora\minimalism\controllers\interfaces\controllerInterface;
-use carlonicora\minimalism\exceptions\configurationException;
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\jsonapi\responses\errorResponse;
+use carlonicora\minimalism\core\controllers\apiController;
+use carlonicora\minimalism\core\controllers\appController;
+use carlonicora\minimalism\core\controllers\cliController;
+use carlonicora\minimalism\core\controllers\interfaces\controllerInterface;
+use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\jsonapi\responses\errorResponse;
 use Exception;
 
 /**

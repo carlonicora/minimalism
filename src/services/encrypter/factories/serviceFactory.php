@@ -3,8 +3,8 @@ namespace carlonicora\minimalism\services\encrypter\factories;
 
 use carlonicora\minimalism\services\encrypter\configurations\encrypterConfigurations;
 use carlonicora\minimalism\services\encrypter\encrypter;
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\services\interfaces\serviceFactoryInterface;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 
 class serviceFactory implements serviceFactoryInterface {
     /** @var encrypterConfigurations  */

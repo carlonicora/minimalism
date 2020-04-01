@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\mailer\abstracts;
 
-use carlonicora\minimalism\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\abstracts\abstractService;
 use carlonicora\minimalism\services\mailer\configurations\mailerConfigurations;
 use carlonicora\minimalism\services\mailer\interfaces\mailerServiceInterface;
 use carlonicora\minimalism\services\mailer\objects\email;

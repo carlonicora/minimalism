@@ -1,10 +1,10 @@
 <?php
 namespace carlonicora\minimalism\services\resourceBuilder\abstracts;
 
-use carlonicora\minimalism\exceptions\serviceNotFoundException;
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\jsonapi\resources\resourceObject;
-use carlonicora\minimalism\jsonapi\resources\resourceRelationship;
+use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\jsonapi\resources\resourceObject;
+use carlonicora\minimalism\core\jsonapi\resources\resourceRelationship;
 use carlonicora\minimalism\services\encrypter\encrypter;
 use carlonicora\minimalism\services\resourceBuilder\factories\serviceFactory;
 use carlonicora\minimalism\services\resourceBuilder\interfaces\resourceBuilderInterface;
@@ -57,15 +57,15 @@ abstract class abstractResourceBuilder implements resourceBuilderInterface {
         $this->resource->addMetas($this->buildMeta());
         $this->resource->addLinks($this->buildLinks());
 
-        foreach ($this->oneToOneRelationFields as &$toOneResourceBuilderClass) {
+        foreach ($this->oneToOneRelationFields as $toOneResourceBuilderKey => $toOneResourceBuilderClass) {
             if (false === is_array($toOneResourceBuilderClass)) {
-                $toOneResourceBuilderClass = ['id' => $toOneResourceBuilderClass . 'Id', 'class' => $toOneResourceBuilderClass];
+                $this->oneToOneRelationFields[$toOneResourceBuilderKey] = ['id' => $toOneResourceBuilderClass . 'Id', 'class' => $toOneResourceBuilderClass];
             }
         }
 
-        foreach ($this->toManyRelationFields as &$toManyResourceBuilderClass) {
+        foreach ($this->toManyRelationFields as $toManyResourceBuilderKey => $toManyResourceBuilderClass) {
             if (false === is_array($toManyResourceBuilderClass)) {
-                $toManyResourceBuilderClass = ['id' => $toManyResourceBuilderClass . 'Id', 'class' => $toManyResourceBuilderClass];
+                $this->toManyRelationFields[$toManyResourceBuilderKey] = ['id' => $toManyResourceBuilderClass . 'Id', 'class' => $toManyResourceBuilderClass];
             }
         }
     }

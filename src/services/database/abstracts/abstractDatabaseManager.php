@@ -1,9 +1,9 @@
 <?php
 namespace carlonicora\minimalism\services\database\abstracts;
 
-use carlonicora\minimalism\exceptions\dbRecordNotFoundException;
-use carlonicora\minimalism\exceptions\dbSqlException;
-use carlonicora\minimalism\exceptions\dbUpdateException;
+use carlonicora\minimalism\core\exceptions\dbRecordNotFoundException;
+use carlonicora\minimalism\core\exceptions\dbSqlException;
+use carlonicora\minimalism\core\exceptions\dbUpdateException;
 use mysqli;
 use Exception;
 

@@ -1,1 +1,1 @@
-FROM carlonicora/cli-base:7.4.3.1
+FROM carlonicora/cli-base:7.4.3.2

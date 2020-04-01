@@ -1,9 +1,9 @@
 <?php
 namespace carlonicora\minimalism\services\mailer\factories;
 
-use carlonicora\minimalism\exceptions\configurationException;
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\services\interfaces\serviceFactoryInterface;
+use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\services\mailer\configurations\mailerConfigurations;
 use carlonicora\minimalism\services\mailer\interfaces\mailerServiceInterface;
 

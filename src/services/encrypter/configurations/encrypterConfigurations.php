@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\encrypter\configurations;
 
-use carlonicora\minimalism\exceptions\configurationException;
+use carlonicora\minimalism\core\exceptions\configurationException;
 
 class encrypterConfigurations {
     /** @var string */

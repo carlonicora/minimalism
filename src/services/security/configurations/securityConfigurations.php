@@ -1,13 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\security\configurations;
 
-use carlonicora\minimalism\databases\security\tables\auth;
-use carlonicora\minimalism\databases\security\tables\clients;
-use carlonicora\minimalism\exceptions\dbConnectionException;
-use carlonicora\minimalism\exceptions\serviceNotFoundException;
-use carlonicora\minimalism\services\database\database;
-use carlonicora\minimalism\services\database\factories\serviceFactory;
-use carlonicora\minimalism\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\security\interfaces\securityClientInterface;
 use carlonicora\minimalism\services\security\interfaces\securitySessionInterface;
 
@@ -42,20 +36,6 @@ class securityConfigurations {
 
     /**
      * @param servicesFactory $services
-     * @throws serviceNotFoundException
      */
-    public function setupSecurityInterfaces(servicesFactory $services): void {
-        /** @var database $database */
-        $database = $services->service(serviceFactory::class);
-
-        try {
-            /** @var securityClientInterface $securityClient */
-            $securityClient = $database->create(clients::class);
-            $this->securityClient = $securityClient;
-
-            /** @var securitySessionInterface $securitySession */
-            $securitySession = $database->create(auth::class);
-            $this->securitySession = $securitySession;
-        } catch (dbConnectionException $e) {}
-    }
+    public function setupSecurityInterfaces(servicesFactory $services): void {}
 }

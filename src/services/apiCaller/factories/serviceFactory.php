@@ -3,8 +3,8 @@ namespace carlonicora\minimalism\services\apiCaller\factories;
 
 use carlonicora\minimalism\services\apiCaller\apiCaller;
 use carlonicora\minimalism\services\apiCaller\configurations\apiCallerConfigurations;
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\services\interfaces\serviceFactoryInterface;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 
 class serviceFactory implements serviceFactoryInterface {
     /** @var apiCallerConfigurations  */

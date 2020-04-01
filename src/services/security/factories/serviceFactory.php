@@ -1,9 +1,8 @@
 <?php
 namespace carlonicora\minimalism\services\security\factories;
 
-use carlonicora\minimalism\exceptions\serviceNotFoundException;
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\services\interfaces\serviceFactoryInterface;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\services\security\configurations\securityConfigurations;
 use carlonicora\minimalism\services\security\security;
 
@@ -21,7 +20,6 @@ class serviceFactory implements serviceFactoryInterface {
     /**
      * @param servicesFactory $services
      * @return security|mixed
-     * @throws serviceNotFoundException
      */
     public function create(servicesFactory $services) {
         $this->configData->setupSecurityInterfaces($services);

@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\paths;
 
-use carlonicora\minimalism\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\abstracts\abstractService;
 use Exception;
 use RuntimeException;
 

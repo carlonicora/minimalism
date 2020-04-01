@@ -3,8 +3,8 @@ namespace carlonicora\minimalism\services\database\factories;
 
 use carlonicora\minimalism\services\database\configurations\databaseConfigurations;
 use carlonicora\minimalism\services\database\database;
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\services\interfaces\serviceFactoryInterface;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 
 class serviceFactory implements serviceFactoryInterface {
     /** @var databaseConfigurations  */

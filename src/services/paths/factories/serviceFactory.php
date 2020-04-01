@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism\services\paths\factories;
 
-use carlonicora\minimalism\services\factories\servicesFactory;
-use carlonicora\minimalism\services\interfaces\serviceFactoryInterface;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\services\paths\paths;
 use Exception;
 

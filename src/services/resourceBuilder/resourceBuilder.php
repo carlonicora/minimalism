@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism\services\resourceBuilder;
 
-use carlonicora\minimalism\services\abstracts\abstractService;
-use carlonicora\minimalism\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\resourceBuilder\interfaces\resourceBuilderInterface;
 
 class resourceBuilder extends abstractService {
