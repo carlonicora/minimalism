@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection UnserializeExploitsInspection */
+
 namespace carlonicora\minimalism;
 
 use carlonicora\minimalism\core\controllers\apiController;
@@ -20,13 +21,16 @@ class bootstrapper{
     public const CLI_CONTROLLER=3;
 
     /** @var servicesFactory  */
-    private servicesFactory $services;
+    private ?servicesFactory $services=null;
 
     /** @var string|null  */
     private ?string $modelName=null;
 
     /** @var int  */
     private int $controllerType;
+
+    /** @var string|null */
+    public static ?string $servicesCache=null;
 
     /**
      * bootstrapper constructor.
@@ -39,14 +43,23 @@ class bootstrapper{
             session_start();
         }
 
-        $this->services = new servicesFactory();
+        if (isset($_SESSION['minimalismServices'])){
+            $this->services = $_SESSION['minimalismServices'];
+        } else {
+            self::$servicesCache = realpath('.') . DIRECTORY_SEPARATOR . 'services.cache';
+            if (file_exists(self::$servicesCache) && filemtime(self::$servicesCache) > (time() - 5 * 60)) {
+                /** @noinspection UnserializeExploitsInspection */
+                $this->services = unserialize(file_get_contents(self::$servicesCache));
+                self::$servicesCache = null;
+            }
+        }
 
         try {
-            if (isset($_SESSION['minimalismServices'])){
-                $this->services = $_SESSION['minimalismServices'];
+            if ($this->services !== null){
                 $this->services->cleanNonPersistentVariables();
                 $this->services->initialiseStatics();
             } else {
+                $this->services = new servicesFactory();
                 $this->services->initialise();
 
                 if (isset($_COOKIE['minimalismServices'])){

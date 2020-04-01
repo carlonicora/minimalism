@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\core\controllers;
 
+use carlonicora\minimalism\bootstrapper;
 use carlonicora\minimalism\core\controllers\abstracts\abstractController;
 
 class cliController extends abstractController {
@@ -14,6 +15,10 @@ class cliController extends abstractController {
         }
 
         $this->model->run();
+
+        if (bootstrapper::$servicesCache !== null){
+            file_put_contents(bootstrapper::$servicesCache, serialize($this->services));
+        }
 
         return '';
     }

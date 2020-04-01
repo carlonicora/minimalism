@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\core\controllers;
 
+use carlonicora\minimalism\bootstrapper;
 use carlonicora\minimalism\core\controllers\abstracts\abstractController;
 use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
@@ -118,6 +119,10 @@ class apiController extends abstractController {
         $GLOBALS['http_response_code'] = $code;
 
         header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $apiResponse->generateText());
+
+        if (bootstrapper::$servicesCache !== null){
+            file_put_contents(bootstrapper::$servicesCache, serialize($this->services));
+        }
 
         return $apiResponse->toJson();
     }
