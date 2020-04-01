@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\jsonapi\abstracts;
+namespace carlonicora\minimalism\services\resourceBuilder\abstracts;
 
 use carlonicora\minimalism\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\services\factories\servicesFactory;

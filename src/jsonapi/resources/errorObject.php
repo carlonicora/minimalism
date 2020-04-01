@@ -14,7 +14,7 @@ class errorObject extends abstractResponseObject {
     public ?string $code=null;
 
     /** @var string  */
-    public string $title;
+    public ?string $title=null;
 
     /** @var string|null  */
     public ?string $detail=null;

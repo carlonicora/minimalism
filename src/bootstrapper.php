@@ -45,6 +45,7 @@ class bootstrapper{
             if (isset($_SESSION['minimalismServices'])){
                 $this->services = $_SESSION['minimalismServices'];
                 $this->services->cleanNonPersistentVariables();
+                $this->services->initialiseStatics();
             } else {
                 $this->services->initialise();
 

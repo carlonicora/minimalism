@@ -148,4 +148,10 @@ class apiCaller extends abstractService {
         return $response;
     }
 
+    /**
+     * @param servicesFactory $services
+     */
+    public function initialiseStatics(servicesFactory $services): void {
+        $this->services = $services;
+    }
 }

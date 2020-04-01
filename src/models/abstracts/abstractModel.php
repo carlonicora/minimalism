@@ -65,14 +65,14 @@ abstract class abstractModel {
                     $isParameterEncrypted = $value['encrypted'] ?? false;
                 }
 
-                if (array_key_exists($parameterKey, $passedParameters) && $this->$passedParameters[$parameterKey] !== null) {
+                if (array_key_exists($parameterKey, $passedParameters) && $passedParameters[$parameterKey] !== null) {
                     if ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))){
                         $this->$parameterName = $this->services->service('encrypter')->decryptId($passedParameters[$parameterKey]);
                     } else {
-                        $this->$parameterName = $$passedParameters[$parameterKey];
+                        $this->$parameterName = $passedParameters[$parameterKey];
                     }
                 } else if ($isParameterRequired){
-                    throw new RuntimeException('Required parameter' . $parameterName . ' missing.', 412);
+                    throw new RuntimeException('Required parameter ' . $parameterName . ' missing.', 412);
                 }
             }
         }

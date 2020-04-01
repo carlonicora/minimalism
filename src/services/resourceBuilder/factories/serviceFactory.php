@@ -18,7 +18,6 @@ class serviceFactory implements serviceFactoryInterface {
      * @return resourceBuilder
      */
     public function create(servicesFactory $services) : resourceBuilder {
-        return new resourceBuilder();
+        return new resourceBuilder($services);
     }
-
 }

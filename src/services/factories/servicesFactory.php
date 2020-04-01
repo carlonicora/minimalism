@@ -166,4 +166,14 @@ class servicesFactory {
 
         return json_encode($allTheCookies, JSON_THROW_ON_ERROR, 512);
     }
+
+    /**
+     *
+     */
+    public function initialiseStatics() : void {
+        /** @var serviceInterface $service */
+        foreach ($this->services as $service){
+            $service->initialiseStatics($this);
+        }
+    }
 }

@@ -86,7 +86,7 @@ abstract class abstractController implements controllerInterface {
                         try {
                             $this->passedParameters = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
                         } catch (Exception $e) {
-                            throw new RuntimeException('model ' . $this->modelName . ' not found', 412);
+                            $this->passedParameters = [];
                         }
                     }
 
@@ -152,7 +152,7 @@ abstract class abstractController implements controllerInterface {
             throw new RuntimeException($e->getMessage(), 500);
         }
 
-        $modelClass = $namespace . '\\models\\' . $this->modelName;
+        $modelClass = $namespace . 'models\\' . $this->modelName;
 
         if (!class_exists($modelClass)){
             throw new RuntimeException('model ' . $this->modelName . ' not found', 404);
