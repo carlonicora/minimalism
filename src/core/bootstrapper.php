@@ -7,6 +7,7 @@ use carlonicora\minimalism\core\controllers\appController;
 use carlonicora\minimalism\core\controllers\cliController;
 use carlonicora\minimalism\core\controllers\interfaces\controllerInterface;
 use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\jsonapi\responses\dataResponse;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\jsonapi\responses\errorResponse;
 use Exception;
@@ -37,6 +38,8 @@ class bootstrapper{
      * @param int $controllerType
      */
     public function __construct(int $controllerType=self::API_CONTROLLER) {
+        $this->denyAccessToSpecificFileTypes();
+
         $this->controllerType = $controllerType;
 
         if (session_status() === PHP_SESSION_NONE) {
@@ -72,6 +75,15 @@ class bootstrapper{
         }
     }
 
+    private function denyAccessToSpecificFileTypes() : void {
+        $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
+
+        if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js'], true)){
+            $this->returnError(new errorResponse(errorResponse::HTTP_STATUS_404));
+            exit;
+        }
+    }
+
     /**
      * @param array|null $parameterValueList
      * @param array|null $parameterValues
@@ -102,7 +114,10 @@ class bootstrapper{
      * @param errorResponse $error
      */
     private function returnError(errorResponse $error): void {
-        echo $error->toJson();
+        $code = $error->getStatus();
+        $GLOBALS['http_response_code'] = $code;
+
+        header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $error->generateText());
         exit;
     }
 
