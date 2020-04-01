@@ -1,6 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\abstracts;
 
+use carlonicora\minimalism\services\factories\servicesFactory;
 use carlonicora\minimalism\services\interfaces\serviceInterface;
 
 class abstractService implements serviceInterface {
@@ -20,4 +21,9 @@ class abstractService implements serviceInterface {
     public function serialiseCookies(): array{
         return [];
     }
+
+    /**
+     * @param servicesFactory $services
+     */
+    public function initialiseStatics(servicesFactory $services): void{}
 }

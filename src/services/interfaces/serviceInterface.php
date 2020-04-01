@@ -1,6 +1,8 @@
 <?php
 namespace carlonicora\minimalism\services\interfaces;
 
+use carlonicora\minimalism\services\factories\servicesFactory;
+
 interface serviceInterface {
     /**
      *
@@ -16,4 +18,9 @@ interface serviceInterface {
      * @return array
      */
     public function serialiseCookies(): array;
+
+    /**
+     * @param servicesFactory $services
+     */
+    public function initialiseStatics(servicesFactory $services): void;
 }

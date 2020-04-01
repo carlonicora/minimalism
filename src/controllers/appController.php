@@ -69,8 +69,8 @@ class appController extends abstractController {
 
         /**
         if (array_key_exists('forceRedirect', $data)) {
-            header('Location:' . $data['forceRedirect']);
-            exit;
+        header('Location:' . $data['forceRedirect']);
+        exit;
         }
          */
 
@@ -91,8 +91,8 @@ class appController extends abstractController {
         header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $data->generateText());
 
         $this->services->cleanNonPersistentVariables();
-        $_SESSION['configurations'] = $this->services;
-        setcookie('minimalismConfigurations', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
+        $_SESSION['minimalismServices'] = $this->services;
+        setcookie('minimalismServices', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
 
         return $response;
     }
