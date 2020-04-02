@@ -187,6 +187,20 @@ class security extends abstractService {
     }
 
     /**
+     * @param securityClientInterface $securityClient
+     */
+    public function setSecurityClient(securityClientInterface $securityClient): void {
+        $this->configData->securityClient = $securityClient;
+    }
+
+    /**
+     * @param securitySessionInterface $securitySession
+     */
+    public function setSecuritySession(securitySessionInterface $securitySession): void {
+        $this->configData->securitySession = $securitySession;
+    }
+
+    /**
      * @return string
      */
     public function getClientId(): string {
