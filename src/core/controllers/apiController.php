@@ -1,8 +1,9 @@
 <?php
 namespace carlonicora\minimalism\core\controllers;
 
-use carlonicora\minimalism\bootstrapper;
+use carlonicora\minimalism\core\bootstrapper;
 use carlonicora\minimalism\core\controllers\abstracts\abstractController;
+use carlonicora\minimalism\core\controllers\traits\httpHeaders;
 use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\jsonapi\interfaces\responseInterface;
@@ -12,14 +13,13 @@ use carlonicora\minimalism\services\security\security;
 use Exception;
 
 class apiController extends abstractController {
+    use httpHeaders;
+
     /** @var string */
     private string $signature;
 
     /** @var string */
     public string $verb;
-
-    /** @var array|null */
-    private ?array $headers=null;
 
     /**
      * apiController constructor.
@@ -125,37 +125,5 @@ class apiController extends abstractController {
         }
 
         return $apiResponse->toJson();
-    }
-
-    /**
-     * @param string $headerName
-     * @return string|null
-     */
-    private function getHeader(string $headerName): ?string {
-        if ($this->headers === null){
-            $this->headers = getallheaders();
-        }
-
-        return $this->headers[$headerName] ?? null;
-    }
-}
-
-/**
- *
- */
-if (!function_exists('getallheaders'))  {
-    function getallheaders()
-    {
-        if (!is_array($_SERVER)) {
-            return array();
-        }
-
-        $headers = array();
-        foreach ($_SERVER as $name => $value) {
-            if (strpos($name, 'HTTP_') === 0) {
-                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-            }
-        }
-        return $headers;
     }
 }
