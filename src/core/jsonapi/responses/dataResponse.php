@@ -47,6 +47,25 @@ class dataResponse extends abstractResponseObject implements responseInterface {
     }
 
     /**
+     * @param resourceObject $data
+     */
+    public function addData(resourceObject $data) : void {
+        if ($this->dataList === null) {
+            if ($this->data !== null) {
+                $this->dataList = [];
+                $this->dataList[] = $this->data;
+                $this->data = null;
+            } else {
+                $this->data = $data;
+            }
+        }
+
+        if ($this->dataList !== null){
+            $this->dataList[] = $data;
+        }
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array {
@@ -118,7 +137,15 @@ class dataResponse extends abstractResponseObject implements responseInterface {
                         $this->included = [];
                     }
 
-                    if (!in_array($relationship->data->id, array_column($this->included, 'id'), true)){
+                    $addIncluded = true;
+                    foreach ($this->included as $included) {
+                        if ($included->id === $relationship->data->id && $included->type === $relationship->data->type){
+                            $addIncluded = false;
+                            break;
+                        }
+                    }
+
+                    if ($addIncluded){
                         $this->included[] = $relationship->data;
                     }
                 }
