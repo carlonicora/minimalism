@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\factories;
 
 use carlonicora\minimalism\abstracts\abstractConfigurations;
 use carlonicora\minimalism\helpers\idEncrypter;
+use carlonicora\minimalism\helpers\stringEncrypter;
 
 class encrypterFactory {
     /** @var abstractConfigurations */
@@ -10,6 +11,9 @@ class encrypterFactory {
 
     /** @var idEncrypter|null */
     private static ?idEncrypter $idEncrypter=null;
+
+    /** @var stringEncrypter|null */
+    private static ?stringEncrypter $stringEncrypter=null;
 
     /**
      * @param abstractConfigurations $configurations
@@ -27,5 +31,16 @@ class encrypterFactory {
         }
 
         return self::$idEncrypter;
+    }
+
+    /**
+     * @return stringEncrypter
+     */
+    public static function stringEncrypter(): stringEncrypter {
+        if (self::$stringEncrypter === null){
+            self::$stringEncrypter = new stringEncrypter();
+        }
+
+        return self::$stringEncrypter;
     }
 }
