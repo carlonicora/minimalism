@@ -2,10 +2,16 @@
 namespace carlonicora\minimalism\services\paths;
 
 use carlonicora\minimalism\core\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
+use carlonicora\minimalism\services\paths\configurations\pathsConfigurations;
 use Exception;
 use RuntimeException;
 
 class paths extends abstractService {
+    /** @var pathsConfigurations  */
+    private pathsConfigurations $configData;
+
     /** @var string */
     private string $root;
 
@@ -16,10 +22,18 @@ class paths extends abstractService {
     private string $log;
 
     /**
-     * paths constructor.
+     * abstractApiCaller constructor.
+     * @param serviceConfigurationsInterface $configData
+     * @param servicesFactory $services
      * @throws Exception
      */
-    public function __construct() {
+    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
+        parent::__construct($configData, $services);
+
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
+        /** @noinspection UnusedConstructorDependenciesInspection */
+        $this->configData = $configData;
+
         $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
 
         $this->initialiseDirectoryStructure();

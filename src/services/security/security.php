@@ -2,6 +2,8 @@
 namespace carlonicora\minimalism\services\security;
 
 use carlonicora\minimalism\core\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\services\security\configurations\securityConfigurations;
 use carlonicora\minimalism\services\security\interfaces\securityClientInterface;
 use carlonicora\minimalism\services\security\interfaces\securitySessionInterface;
@@ -13,10 +15,14 @@ class security extends abstractService {
     private securityConfigurations $configData;
 
     /**
-     * security constructor.
-     * @param securityConfigurations $configData
+     * abstractApiCaller constructor.
+     * @param serviceConfigurationsInterface $configData
+     * @param servicesFactory $services
      */
-    public function __construct(securityConfigurations $configData) {
+    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
+        parent::__construct($configData, $services);
+
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->configData = $configData;
     }
 

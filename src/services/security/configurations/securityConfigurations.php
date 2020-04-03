@@ -1,11 +1,12 @@
 <?php
 namespace carlonicora\minimalism\services\security\configurations;
 
+use carlonicora\minimalism\core\services\abstracts\abstractServiceConfigurations;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\security\interfaces\securityClientInterface;
 use carlonicora\minimalism\services\security\interfaces\securitySessionInterface;
 
-class securityConfigurations {
+class securityConfigurations extends abstractServiceConfigurations {
     /** @var string  */
     public string $httpHeaderSignature;
 

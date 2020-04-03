@@ -61,10 +61,10 @@ class servicesFactory {
      * @throws configurationException
      * @noinspection PhpDocRedundantThrowsInspection
      */
-    private function loadService(string $serviceClass) : void {
+    public function loadService(string $serviceClass) : void {
         if (!array_key_exists($serviceClass, $this->services)){
             /** @var serviceFactoryInterface $service */
-            $service = new $serviceClass();
+            $service = new $serviceClass($this);
             $this->services[$serviceClass] = $service->create($this);
         }
     }

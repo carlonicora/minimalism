@@ -1,20 +1,22 @@
 <?php
 namespace carlonicora\minimalism\services\security\factories;
 
+use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\abstracts\abstractServiceFactory;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
-use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\services\security\configurations\securityConfigurations;
 use carlonicora\minimalism\services\security\security;
 
-class serviceFactory implements serviceFactoryInterface {
-    /** @var securityConfigurations  */
-    private securityConfigurations $configData;
-
+class serviceFactory extends abstractServiceFactory {
     /**
      * serviceFactory constructor.
+     * @param servicesFactory $services
+     * @throws configurationException
      */
-    public function __construct() {
+    public function __construct(servicesFactory $services) {
         $this->configData = new securityConfigurations();
+
+        parent::__construct($services);
     }
 
     /**
@@ -23,6 +25,6 @@ class serviceFactory implements serviceFactoryInterface {
      */
     public function create(servicesFactory $services) {
         $this->configData->setupSecurityInterfaces($services);
-        return new security($this->configData);
+        return new security($this->configData, $services);
     }
 }

@@ -2,8 +2,9 @@
 namespace carlonicora\minimalism\services\encrypter\configurations;
 
 use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\abstracts\abstractServiceConfigurations;
 
-class encrypterConfigurations {
+class encrypterConfigurations extends abstractServiceConfigurations {
     /** @var string */
     public string $key;
 

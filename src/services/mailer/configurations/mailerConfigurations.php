@@ -2,8 +2,9 @@
 namespace carlonicora\minimalism\services\mailer\configurations;
 
 use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\abstracts\abstractServiceConfigurations;
 
-class mailerConfigurations {
+class mailerConfigurations extends abstractServiceConfigurations {
     /** @var string|null  */
     public ?string $username=null;
 

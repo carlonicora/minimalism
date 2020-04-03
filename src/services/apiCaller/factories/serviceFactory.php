@@ -1,20 +1,22 @@
 <?php
 namespace carlonicora\minimalism\services\apiCaller\factories;
 
+use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\abstracts\abstractServiceFactory;
 use carlonicora\minimalism\services\apiCaller\apiCaller;
 use carlonicora\minimalism\services\apiCaller\configurations\apiCallerConfigurations;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
-use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 
-class serviceFactory implements serviceFactoryInterface {
-    /** @var apiCallerConfigurations  */
-    private apiCallerConfigurations $configData;
-
+class serviceFactory extends abstractServiceFactory {
     /**
      * serviceFactory constructor.
+     * @param servicesFactory $services
+     * @throws configurationException
      */
-    public function __construct() {
+    public function __construct(servicesFactory $services) {
         $this->configData = new apiCallerConfigurations();
+
+        parent::__construct($services);
     }
 
     /**

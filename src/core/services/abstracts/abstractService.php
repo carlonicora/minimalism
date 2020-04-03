@@ -2,9 +2,23 @@
 namespace carlonicora\minimalism\core\services\abstracts;
 
 use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\core\services\interfaces\serviceInterface;
 
 class abstractService implements serviceInterface {
+    /** @var servicesFactory  */
+    protected servicesFactory $services;
+
+    /**
+     * abstractService constructor.
+     * @param serviceConfigurationsInterface $configData
+     * @param servicesFactory $services
+     * @noinspection PhpUnusedParameterInspection
+     */
+    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
+        $this->services = $services;
+    }
+
     /**
      *
      */
@@ -25,5 +39,7 @@ class abstractService implements serviceInterface {
     /**
      * @param servicesFactory $services
      */
-    public function initialiseStatics(servicesFactory $services): void{}
+    final public function initialiseStatics(servicesFactory $services): void{
+        $this->services = $services;
+    }
 }

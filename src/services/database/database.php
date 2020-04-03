@@ -3,6 +3,8 @@ namespace carlonicora\minimalism\services\database;
 
 use carlonicora\minimalism\core\exceptions\dbConnectionException;
 use carlonicora\minimalism\core\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\services\database\abstracts\abstractDatabaseManager;
 use carlonicora\minimalism\services\database\configurations\databaseConfigurations;
 use mysqli;
@@ -12,10 +14,14 @@ class database extends abstractService {
     private databaseConfigurations $configData;
 
     /**
-     * database constructor.
-     * @param databaseConfigurations $configData
+     * abstractApiCaller constructor.
+     * @param serviceConfigurationsInterface $configData
+     * @param servicesFactory $services
      */
-    public function __construct(databaseConfigurations $configData) {
+    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
+        parent::__construct($configData, $services);
+
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->configData = $configData;
     }
 

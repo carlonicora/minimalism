@@ -6,6 +6,7 @@ use carlonicora\minimalism\core\jsonapi\resources\errorObject;
 use carlonicora\minimalism\core\jsonapi\resources\resourceObject;
 use carlonicora\minimalism\core\jsonapi\responses\dataResponse;
 use carlonicora\minimalism\core\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\services\apiCaller\configurations\apiCallerConfigurations;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\security\factories\serviceFactory;
@@ -15,17 +16,16 @@ class apiCaller extends abstractService {
     /** @var apiCallerConfigurations */
     private apiCallerConfigurations $configData;
 
-    /** @var servicesFactory  */
-    private servicesFactory $services;
-
     /**
      * abstractApiCaller constructor.
-     * @param apiCallerConfigurations $configData
+     * @param serviceConfigurationsInterface $configData
      * @param servicesFactory $services
      */
-    public function __construct(apiCallerConfigurations $configData, servicesFactory $services) {
+    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
+        parent::__construct($configData, $services);
+
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->configData = $configData;
-        $this->services = $services;
     }
 
     /**
@@ -146,12 +146,5 @@ class apiCaller extends abstractService {
         }
 
         return $response;
-    }
-
-    /**
-     * @param servicesFactory $services
-     */
-    public function initialiseStatics(servicesFactory $services): void {
-        $this->services = $services;
     }
 }

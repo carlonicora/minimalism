@@ -1,14 +1,13 @@
 <?php
 namespace carlonicora\minimalism\core\services\interfaces;
 
-use carlonicora\minimalism\core\exceptions\configurationException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 
 interface serviceFactoryInterface {
     /**
-     * @throws configurationException
+     * @param servicesFactory $services
      */
-    public function __construct();
+    public function __construct(servicesFactory $services);
 
     /**
      * @param servicesFactory $services

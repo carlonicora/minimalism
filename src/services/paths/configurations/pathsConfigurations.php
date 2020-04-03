@@ -1,7 +1,9 @@
 <?php
 namespace carlonicora\minimalism\services\paths\configurations;
 
-class pathsConfigurations {
+use carlonicora\minimalism\core\services\abstracts\abstractServiceConfigurations;
+
+class pathsConfigurations extends abstractServiceConfigurations {
     /**
      * mailingConfigurations constructor.
      */

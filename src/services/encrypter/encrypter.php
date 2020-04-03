@@ -1,20 +1,32 @@
-<?php
+<?php /** @noinspection UnusedConstructorDependenciesInspection */
+
 namespace carlonicora\minimalism\services\encrypter;
 
 use carlonicora\minimalism\core\services\abstracts\abstractService;
+use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\services\encrypter\configurations\encrypterConfigurations;
 use Hashids\Hashids;
 
 class encrypter extends abstractService {
+    /** @var encrypterConfigurations  */
+    private encrypterConfigurations $configData;
+
     /** @var Hashids */
     private Hashids $hashids;
 
     /**
-     * idEncrypter constructor.
-     * @param encrypterConfigurations $configurations
+     * encrypter constructor.
+     * @param serviceConfigurationsInterface $configData
+     * @param servicesFactory $services
      */
-    public function __construct(encrypterConfigurations $configurations) {
-        $this->hashids = new Hashids($configurations->key, $configurations->length);
+    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
+        parent::__construct($configData, $services);
+
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
+        $this->configData = $configData;
+
+        $this->hashids = new Hashids($this->configData->key, $this->configData->length);
     }
 
     /**
