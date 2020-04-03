@@ -10,7 +10,7 @@ abstract class abstractServicesLoader {
     /**
      * @param servicesFactory $services
      */
-    final public static function initialise(servicesFactory $services) : void {
+    public static function initialise(servicesFactory $services) : void {
         self::$services = $services;
     }
 }
