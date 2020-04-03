@@ -61,6 +61,15 @@ class paths extends abstractService {
     }
 
     /**
+     * @return string
+     */
+    public function getNamespace() : string {
+        $content = file_get_contents( $this->root . DIRECTORY_SEPARATOR . 'composer.json');
+        $content = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        return key($content['autoload']['psr-4']);
+    }
+
+    /**
      * @throws Exception
      */
     private function initialiseDirectoryStructure(): void {

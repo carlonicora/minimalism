@@ -60,7 +60,6 @@ class bootstrapper{
         try {
             if ($this->services !== null){
                 $this->services->cleanNonPersistentVariables();
-                $this->services->initialiseStatics();
             } else {
                 $this->services = new servicesFactory();
                 $this->services->initialise();
@@ -69,12 +68,18 @@ class bootstrapper{
                     $this->services->unserialiseCookies($_COOKIE['minimalismServices']);
                 }
             }
+            $this->services->initialiseStatics();
+            $this->services->initialiseServicesLoader();
         } catch (configurationException $e) {
             $this->returnError(new errorResponse(errorResponse::HTTP_STATUS_500, $e->getMessage()));
             exit;
+
         }
     }
 
+    /**
+     *
+     */
     private function denyAccessToSpecificFileTypes() : void {
         $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
 

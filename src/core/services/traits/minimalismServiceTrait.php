@@ -14,13 +14,6 @@ trait minimalismServiceTrait {
     protected static servicesFactory $services;
 
     /**
-     * @param servicesFactory $services
-     */
-    public static function initialise(servicesFactory $services) : void {
-        self::$services = $services;
-    }
-
-    /**
      * @return database
      * @throws serviceNotFoundException
      */

@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\core\services\factories;
 
 use carlonicora\minimalism\core\exceptions\configurationException;
 use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\core\services\abstracts\abstractServicesLoader;
 use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\core\services\interfaces\serviceInterface;
 use carlonicora\minimalism\services\paths\factories\serviceFactory;
@@ -40,6 +41,24 @@ class servicesFactory {
             if ($serviceClass !== self::class && $serviceClass !== serviceFactory::class) {
                 $this->loadService($serviceClass);
             }
+        }
+    }
+
+    /**
+     *
+     */
+    public function initialiseServicesLoader() : void {
+        /** @var paths $paths */
+        try {
+            $paths = $this->service(serviceFactory::class);
+
+            /** @var abstractServicesLoader $serviceLoader */
+            $serviceLoader = $paths->getNamespace() . '\\serviceLoader';
+
+            if (class_exists($serviceLoader)){
+                $serviceLoader::initialise($this);
+            }
+        } catch (serviceNotFoundException $e) {
         }
     }
 
