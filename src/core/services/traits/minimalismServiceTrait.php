@@ -6,7 +6,6 @@ use carlonicora\minimalism\services\database\database;
 use carlonicora\minimalism\services\encrypter\encrypter;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\paths\paths;
-use carlonicora\minimalism\services\resourceBuilder\resourceBuilder;
 use carlonicora\minimalism\services\security\security;
 
 trait minimalismServiceTrait {
@@ -38,19 +37,6 @@ trait minimalismServiceTrait {
     public static function paths():paths {
         /** @noinspection PhpFullyQualifiedNameUsageInspection */
         return self::$services->service(\carlonicora\minimalism\services\paths\factories\serviceFactory::class);
-    }
-
-    /**
-     * @return resourceBuilder
-     * @throws serviceNotFoundException
-     */
-    public static function resourceBuilder() : resourceBuilder {
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        return self::$services->service(\carlonicora\minimalism\services\resourceBuilder\factories\serviceFactory::class);
     }
 
     /**
