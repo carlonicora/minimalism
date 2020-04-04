@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\resourceBuilder\abstracts;
 
-use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\jsonapi\resources\resourceObject;
 use carlonicora\minimalism\core\jsonapi\resources\resourceRelationship;

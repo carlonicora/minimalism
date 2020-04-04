@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\core\services\abstracts;
 
-use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\exceptions\configurationException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;

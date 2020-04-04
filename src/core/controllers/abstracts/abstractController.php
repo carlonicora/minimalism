@@ -2,7 +2,7 @@
 namespace carlonicora\minimalism\core\controllers\abstracts;
 
 use carlonicora\minimalism\core\controllers\interfaces\controllerInterface;
-use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\models\abstracts\abstractModel;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\paths\factories\serviceFactory;

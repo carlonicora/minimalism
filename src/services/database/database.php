@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\database;
 
-use carlonicora\minimalism\core\exceptions\dbConnectionException;
+use carlonicora\minimalism\services\database\exceptions\dbConnectionException;
 use carlonicora\minimalism\core\services\abstracts\abstractService;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;

@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\services\apiCaller;
 
-use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\jsonapi\resources\errorObject;
 use carlonicora\minimalism\core\jsonapi\resources\resourceObject;
 use carlonicora\minimalism\core\jsonapi\responses\dataResponse;

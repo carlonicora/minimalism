@@ -1,7 +1,7 @@
 <?php
 namespace carlonicora\minimalism\core\services\traits;
 
-use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\services\database\database;
 use carlonicora\minimalism\services\encrypter\encrypter;
 use carlonicora\minimalism\core\services\factories\servicesFactory;

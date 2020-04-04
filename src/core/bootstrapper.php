@@ -6,7 +6,7 @@ use carlonicora\minimalism\core\controllers\apiController;
 use carlonicora\minimalism\core\controllers\appController;
 use carlonicora\minimalism\core\controllers\cliController;
 use carlonicora\minimalism\core\controllers\interfaces\controllerInterface;
-use carlonicora\minimalism\core\exceptions\configurationException;
+use carlonicora\minimalism\core\services\exceptions\configurationException;
 use carlonicora\minimalism\core\jsonapi\responses\dataResponse;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\jsonapi\responses\errorResponse;

@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\core\exceptions;
+namespace carlonicora\minimalism\services\database\exceptions;
 
 use Exception;
 

@@ -1,8 +1,8 @@
 <?php
 namespace carlonicora\minimalism\core\services\factories;
 
-use carlonicora\minimalism\core\exceptions\configurationException;
-use carlonicora\minimalism\core\exceptions\serviceNotFoundException;
+use carlonicora\minimalism\core\services\exceptions\configurationException;
+use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\abstracts\abstractServicesLoader;
 use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\core\services\interfaces\serviceInterface;

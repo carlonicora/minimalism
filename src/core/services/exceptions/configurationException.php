@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\core\exceptions;
+namespace carlonicora\minimalism\core\services\exceptions;
 
 use Exception;
 use Throwable;
