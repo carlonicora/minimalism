@@ -12,7 +12,7 @@ class controllerFactory {
      * @throws prerequisiteException
      */
     public function loadControllerName() : string {
-        $controllers = glob(realpath('./vendor') . '/*/*/src/controller.php');
+        $controllers = glob(realpath('./vendor') . '/*/*-module-*/src/controller.php');
 
         if (count($controllers) === 0) {
             throw new prerequisiteException('Core module not loaded');

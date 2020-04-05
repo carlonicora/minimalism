@@ -17,8 +17,7 @@ trait minimalismServiceTrait {
      * @throws serviceNotFoundException
      */
     public static function database() : database {
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        return self::$services->service(\carlonicora\minimalism\services\database\factories\serviceFactory::class);
+        return self::$services->service(database::class);
     }
 
     /**
@@ -26,8 +25,7 @@ trait minimalismServiceTrait {
      * @throws serviceNotFoundException
      */
     public static function encrypter():encrypter {
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        return self::$services->service(\carlonicora\minimalism\services\encrypter\factories\serviceFactory::class);
+        return self::$services->service(encrypter::class);
     }
 
     /**
@@ -35,8 +33,7 @@ trait minimalismServiceTrait {
      * @throws serviceNotFoundException
      */
     public static function paths():paths {
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        return self::$services->service(\carlonicora\minimalism\services\paths\factories\serviceFactory::class);
+        return self::$services->service(paths::class);
     }
 
     /**
@@ -44,7 +41,6 @@ trait minimalismServiceTrait {
      * @throws serviceNotFoundException
      */
     public static function security() : security {
-        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-        return self::$services->service(\carlonicora\minimalism\services\security\factories\serviceFactory::class);
+        return self::$services->service(security::class);
     }
 }
