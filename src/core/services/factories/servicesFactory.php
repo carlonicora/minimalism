@@ -6,12 +6,15 @@ use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\abstracts\abstractServicesLoader;
 use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\core\services\interfaces\serviceInterface;
+use carlonicora\minimalism\core\traits\filesystem;
 use carlonicora\minimalism\services\paths\factories\serviceFactory;
 use carlonicora\minimalism\services\paths\paths;
 use Dotenv\Dotenv;
 use Exception;
 
 class servicesFactory {
+    use filesystem;
+
     /** @var array */
     private array $services = [];
 
@@ -28,7 +31,7 @@ class servicesFactory {
         $this->loadService(serviceFactory::class);
 
         /** @var paths $paths */
-        $paths = $this->services[serviceFactory::class];
+        $paths = $this->services[paths::class];
 
         $env = Dotenv::createImmutable($paths->getRoot());
         try{
@@ -37,10 +40,8 @@ class servicesFactory {
             throw new configurationException('minimalism', $e->getMessage());
         }
 
-        foreach ($this->getServices() as $serviceClass){
-            if ($serviceClass !== self::class && $serviceClass !== serviceFactory::class) {
-                $this->loadService($serviceClass);
-            }
+        foreach ($this->getServiceFactories() as $serviceFactoryClass){
+            $this->loadService($serviceFactoryClass);
         }
     }
 
@@ -76,14 +77,40 @@ class servicesFactory {
     }
 
     /**
+     * @param string $serviceFactoryClass
+     */
+    public function loadService(string $serviceFactoryClass) : void {
+        $serviceClass = '';
+        $namespaceParts = explode('\\', $serviceFactoryClass);
+        for ($counter=0; $counter<=count($namespaceParts)-3;$counter++){
+            $serviceClass .=  $namespaceParts[$counter] . '\\';
+        }
+        $serviceClass .= $namespaceParts[count($namespaceParts)-3];
+
+        if (!array_key_exists($serviceClass, $this->services)){
+            /** @var serviceFactoryInterface $service */
+            $service = new $serviceFactoryClass($this);
+            $this->services[$serviceClass] = $service->create($this);
+        }
+    }
+
+    /**
      * @param string $serviceClass
      * @throws configurationException
      * @noinspection PhpDocRedundantThrowsInspection
      */
-    public function loadService(string $serviceClass) : void {
+    public function loadDependency(string $serviceClass) : void {
         if (!array_key_exists($serviceClass, $this->services)){
+
+            $serviceFactoryClass = '';
+            $namespaceParts = explode('\\', $serviceClass);
+            for ($counter=0; $counter<=count($namespaceParts)-2;$counter++){
+                $serviceFactoryClass .=  $namespaceParts[$counter] . '\\';
+            }
+            $serviceFactoryClass .= 'factories\\serviceFactory';
+
             /** @var serviceFactoryInterface $service */
-            $service = new $serviceClass($this);
+            $service = new $serviceFactoryClass($this);
             $this->services[$serviceClass] = $service->create($this);
         }
     }
@@ -91,11 +118,13 @@ class servicesFactory {
     /**
      * @return array
      */
-    private function getServices() : array {
-        $external = glob(realpath('./vendor') . '/*/*/src/services/*/factories/serviceFactory.php');
+    private function getServiceFactories() : array {
+        $minimalism = glob(realpath('./vendor') . '/carlonicora/minimalism/src/services/*/factories/serviceFactory.php');
+        $plugins =  glob(realpath('./vendor') . '/*/*/src/factories/serviceFactory.php');
+        $builtIn = glob(realpath('./vendor') . '/*/*/src/services/*/factories/serviceFactory.php');
         $internal = glob(realpath('./src') . '/services/*/factories/serviceFactory.php');
 
-        $files = array_merge($external, $internal);
+        $files = array_unique(array_merge($minimalism, $plugins, $builtIn, $internal));
 
         $response = [];
 
@@ -104,50 +133,6 @@ class servicesFactory {
         }
 
         return $response;
-    }
-
-    /**
-     * @param string $fileName
-     * @return string
-     */
-    private function getClassNameFromFile(string $fileName) : string {
-        $fp = fopen($fileName, 'rb');
-        $class = $namespace = $buffer = '';
-        $i = 0;
-        while (!$class) {
-            if (feof($fp)) {
-                break;
-            }
-
-            $buffer .= fread($fp, 512);
-            $tokens = token_get_all($buffer);
-
-            if (strpos($buffer, '{') === false) {
-                continue;
-            }
-
-            for ($iMax = count($tokens); $i< $iMax; $i++) {
-                if ($tokens[$i][0] === T_NAMESPACE) {
-                    for ($j=$i+1, $jMax = count($tokens); $j< $jMax; $j++) {
-                        if ($tokens[$j][0] === T_STRING) {
-                            $namespace .= '\\'.$tokens[$j][1];
-                        } else if ($tokens[$j] === '{' || $tokens[$j] === ';') {
-                            break;
-                        }
-                    }
-                }
-
-                if ($tokens[$i][0] === T_CLASS) {
-                    for ($j=$i+1, $jMax = count($tokens); $j< $jMax; $j++) {
-                        if ($tokens[$j] === '{') {
-                            $class = $tokens[$i+2][1];
-                        }
-                    }
-                }
-            }
-        }
-
-        return substr($namespace, 1) . '\\' . $class;
     }
 
     /**

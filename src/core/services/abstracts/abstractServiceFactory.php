@@ -35,7 +35,7 @@ abstract class abstractServiceFactory implements serviceFactoryInterface {
      */
     private function setupDependencies(): void {
         foreach ($this->configData->getDependencies() ?? [] as $serviceName) {
-            $this->services->loadService($serviceName);
+            $this->services->loadDependency($serviceName);
         }
     }
 }

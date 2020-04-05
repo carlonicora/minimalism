@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\core\controllers\traits;
+namespace carlonicora\minimalism\core\traits;
 
 trait httpHeaders {
     /** @var array|null */

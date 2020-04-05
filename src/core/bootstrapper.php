@@ -2,45 +2,36 @@
 
 namespace carlonicora\minimalism\core;
 
-use carlonicora\minimalism\core\controllers\apiController;
-use carlonicora\minimalism\core\controllers\appController;
-use carlonicora\minimalism\core\controllers\cliController;
-use carlonicora\minimalism\core\controllers\interfaces\controllerInterface;
+use carlonicora\minimalism\core\interfaces\controllerInterface;
+use carlonicora\minimalism\core\modules\factories\controllerFactory;
 use carlonicora\minimalism\core\services\exceptions\configurationException;
-use carlonicora\minimalism\core\jsonapi\responses\dataResponse;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
-use carlonicora\minimalism\core\jsonapi\responses\errorResponse;
 use Exception;
+use carlonicora\minimalism\core\modules\exceptions\prerequisiteException;
+use RuntimeException;
 
 /**
  * Class bootstrapper
  * @package carlonicora\minimalism
  */
 class bootstrapper{
-    public const API_CONTROLLER=1;
-    public const APP_CONTROLLER=2;
-    public const CLI_CONTROLLER=3;
-
     /** @var servicesFactory  */
     private ?servicesFactory $services=null;
 
     /** @var string|null  */
     private ?string $modelName=null;
 
-    /** @var int  */
-    private int $controllerType;
-
     /** @var string|null */
     public static ?string $servicesCache=null;
 
+    /** @var controllerInterface|null  */
+    private ?controllerInterface $controller=null;
+
     /**
      * bootstrapper constructor.
-     * @param int $controllerType
      */
-    public function __construct(int $controllerType=self::API_CONTROLLER) {
+    public function __construct() {
         $this->denyAccessToSpecificFileTypes();
-
-        $this->controllerType = $controllerType;
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -71,10 +62,24 @@ class bootstrapper{
             $this->services->initialiseStatics();
             $this->services->initialiseServicesLoader();
         } catch (configurationException $e) {
-            $this->returnError(new errorResponse(errorResponse::HTTP_STATUS_500, $e->getMessage()));
+            $this->writeError($e);
             exit;
-
         }
+    }
+
+    /**
+     * @param Exception $e
+     */
+    private function writeError(Exception $e) : void {
+        if ($this->controller !== null) {
+            $this->controller->writeException($e);
+        } else {
+            $errorCode = $e->getCode() ?? 500;
+            $GLOBALS['http_response_code'] = $errorCode;
+            header($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1' . ' ' . $errorCode . ' ' . $e->getMessage());
+            echo $e->getMessage();
+        }
+        exit;
     }
 
     /**
@@ -84,7 +89,7 @@ class bootstrapper{
         $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
 
         if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js'], true)){
-            $this->returnError(new errorResponse(errorResponse::HTTP_STATUS_404));
+            $this->writeError(new Exception('Filetype not supported', 404));
             exit;
         }
     }
@@ -93,37 +98,17 @@ class bootstrapper{
      * @param array|null $parameterValueList
      * @param array|null $parameterValues
      * @return controllerInterface
+     * @return Exception
      */
     public function loadController(array $parameterValueList=null, array $parameterValues=null): controllerInterface {
+        $controllerFactory = new controllerFactory();
         try {
-            switch ($this->controllerType) {
-                case self::APP_CONTROLLER:
-                    $response = new appController($this->services, $this->modelName, $parameterValueList, $parameterValues);
-                    break;
-                case self::CLI_CONTROLLER:
-                    $response = new cliController($this->services, $this->modelName, $parameterValueList, $parameterValues);
-                    break;
-                default:
-                    $response = new apiController($this->services, $this->modelName, $parameterValueList, $parameterValues);
-                    break;
-            }
-        } catch (Exception $e) {
-            $this->returnError(new errorResponse($e->getCode(), $e->getMessage()));
-            exit;
+            $controllerName = $controllerFactory->loadControllerName();
+        } catch (prerequisiteException $e) {
+            throw new RuntimeException($e->getMessage());
         }
 
-        return $response;
-    }
-
-    /**
-     * @param errorResponse $error
-     */
-    private function returnError(errorResponse $error): void {
-        $code = $error->getStatus();
-        $GLOBALS['http_response_code'] = $code;
-
-        header(dataResponse::generateProtocol() . ' ' . $code . ' ' . $error->generateText());
-        exit;
+        return new $controllerName($this->services, $this->modelName, $parameterValueList, $parameterValues);
     }
 
     /**

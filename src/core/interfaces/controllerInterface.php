@@ -1,7 +1,8 @@
 <?php
-namespace carlonicora\minimalism\core\controllers\interfaces;
+namespace carlonicora\minimalism\core\interfaces;
 
 use carlonicora\minimalism\core\services\factories\servicesFactory;
+use Exception;
 
 interface controllerInterface {
     /**
@@ -10,6 +11,7 @@ interface controllerInterface {
      * @param string $modelName
      * @param array $parameterValueList
      * @param array $parameterValues
+     * @throws Exception
      */
     public function __construct(servicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null);
 
@@ -17,4 +19,9 @@ interface controllerInterface {
      * @return string
      */
     public function render() : string;
+
+    /**
+     * @param Exception $e
+     */
+    public function writeException(Exception $e): void;
 }
