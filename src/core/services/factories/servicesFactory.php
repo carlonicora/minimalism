@@ -51,7 +51,7 @@ class servicesFactory {
     public function initialiseServicesLoader() : void {
         /** @var paths $paths */
         try {
-            $paths = $this->service(serviceFactory::class);
+            $paths = $this->service(paths::class);
 
             /** @var abstractServicesLoader $serviceLoader */
             $serviceLoader = $paths->getNamespace() . 'servicesLoader';
