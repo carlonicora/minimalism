@@ -180,4 +180,14 @@ class servicesFactory {
             $service->initialiseStatics($this);
         }
     }
+
+    /**
+     *
+     */
+    public function destroyStatics() : void {
+        /** @var serviceInterface $service */
+        foreach ($this->services as $service){
+            $service->destroyStatics();
+        }
+    }
 }
