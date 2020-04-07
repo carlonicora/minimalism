@@ -15,6 +15,9 @@ abstract class abstractResponseObject {
     public const HTTP_STATUS_204='204';
 
     /** @var string  */
+    public const HTTP_STATUS_205='205';
+
+    /** @var string  */
     public const HTTP_STATUS_304='304';
 
     /** @var string  */
