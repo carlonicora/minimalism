@@ -41,10 +41,14 @@ class bootstrapper{
             $this->services = $_SESSION['minimalismServices'];
         } else {
             self::$servicesCache = realpath('.') . DIRECTORY_SEPARATOR . 'services.cache';
-            if (file_exists(self::$servicesCache) && filemtime(self::$servicesCache) > (time() - 5 * 60)) {
-                /** @noinspection UnserializeExploitsInspection */
-                $this->services = unserialize(file_get_contents(self::$servicesCache));
-                self::$servicesCache = null;
+            if (file_exists(self::$servicesCache)){
+                if (filemtime(self::$servicesCache) > (time() - 5 * 60)) {
+                    /** @noinspection UnserializeExploitsInspection */
+                    $this->services = unserialize(file_get_contents(self::$servicesCache));
+                    self::$servicesCache = null;
+                } else {
+                    unlink(self::$servicesCache);
+                }
             }
         }
 
