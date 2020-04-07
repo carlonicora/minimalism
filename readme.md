@@ -59,6 +59,7 @@ The following services are freely available
 * [apiCaller](https://github.com/carlonicora/minimalism-service-api-caller) - a simple interface to run API requests
 that returns data through the [{json:api}](https://jsonapi.org) standard.
 * [encrypter](https://github.com/carlonicora/minimalism-service-encrypter) - encrypt IDs to send/receive online
+* [firebase](https://github.com/carlonicora/minimalism-service-firebase) - sends push notifications via firebase
 * [geolocator](https://github.com/carlonicora/minimalism-service-geolocator) - transform an IP address in a location
 * [imgix](https://github.com/carlonicora/minimalism-service-imgix) - generates urls for images stored in imgix
 * [mailer](https://github.com/carlonicora/minimalism-service-mailer) - sends email (supports mandrillapp and sendgrid)
@@ -82,7 +83,8 @@ MAJOR.MINOR.PATCH
 
 # License
 
-This project is licensed under the [MIT license](https://opensource.org/licenses/MIT) - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the [MIT license](https://opensource.org/licenses/MIT) - see the
+[LICENSE.md](LICENSE.md) file for details
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
