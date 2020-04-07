@@ -22,5 +22,10 @@ interface serviceInterface {
     /**
      * @param servicesFactory $services
      */
-    public function initialiseStatics(servicesFactory $services): void;
+    public function initialiseStatics(servicesFactory $services) : void;
+
+    /**
+     *
+     */
+    public function destroyStatics() : void;
 }

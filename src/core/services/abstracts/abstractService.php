@@ -42,4 +42,9 @@ class abstractService implements serviceInterface {
     final public function initialiseStatics(servicesFactory $services): void{
         $this->services = $services;
     }
+
+    /**
+     *
+     */
+    public function destroyStatics() : void {}
 }
