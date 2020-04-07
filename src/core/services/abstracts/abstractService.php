@@ -39,7 +39,7 @@ class abstractService implements serviceInterface {
     /**
      * @param servicesFactory $services
      */
-    final public function initialiseStatics(servicesFactory $services): void{
+    public function initialiseStatics(servicesFactory $services): void{
         $this->services = $services;
     }
 
