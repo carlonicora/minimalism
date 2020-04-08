@@ -99,12 +99,17 @@ class bootstrapper{
     }
 
     /**
+     * @param string|null $modelName
      * @param array|null $parameterValueList
      * @param array|null $parameterValues
      * @return controllerInterface
      * @return Exception
      */
-    public function loadController(array $parameterValueList=null, array $parameterValues=null): controllerInterface {
+    public function loadController(string $modelName=null, array $parameterValueList=null, array $parameterValues=null): controllerInterface {
+        if ($modelName !== null){
+            $this->modelName = $modelName;
+        }
+
         $controllerFactory = new controllerFactory();
         try {
             $controllerName = $controllerFactory->loadControllerName();
