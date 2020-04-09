@@ -42,4 +42,13 @@ abstract class abstractApiController extends abstractController {
             }
         }
     }
+
+    /**
+     * @param string|null $modelName
+     * @param string|null $verb
+     * @throws Exception
+     */
+    protected function initialiseModel(string $modelName = null, string $verb = null): void {
+        parent::initialiseModel($modelName, $this->verb);
+    }
 }
