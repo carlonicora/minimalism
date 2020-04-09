@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\core\interfaces;
+namespace carlonicora\minimalism\core\modules\interfaces;
 
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use Exception;

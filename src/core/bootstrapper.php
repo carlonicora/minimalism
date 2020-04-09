@@ -2,7 +2,7 @@
 
 namespace carlonicora\minimalism\core;
 
-use carlonicora\minimalism\core\interfaces\controllerInterface;
+use carlonicora\minimalism\core\modules\interfaces\controllerInterface;
 use carlonicora\minimalism\core\modules\factories\controllerFactory;
 use carlonicora\minimalism\core\services\exceptions\configurationException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
