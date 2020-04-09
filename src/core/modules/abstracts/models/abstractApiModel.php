@@ -1,11 +1,10 @@
 <?php
-namespace carlonicora\minimalism\core\modules\abstracts;
+namespace carlonicora\minimalism\core\modules\abstracts\models;
 
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 
 abstract class abstractApiModel extends abstractModel {
-
     /** @var bool */
     protected bool $requiresAuthDELETE=false;
 
@@ -74,4 +73,10 @@ abstract class abstractApiModel extends abstractModel {
      * @return mixed
      */
     abstract public function PUT();
+
+    /**
+     *
+     */
+    public function preRender(): void {
+    }
 }

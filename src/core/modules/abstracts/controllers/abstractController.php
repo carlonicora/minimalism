@@ -1,6 +1,7 @@
 <?php
-namespace carlonicora\minimalism\core\modules\abstracts;
+namespace carlonicora\minimalism\core\modules\abstracts\controllers;
 
+use carlonicora\minimalism\core\modules\abstracts\models\abstractModel;
 use carlonicora\minimalism\core\modules\interfaces\controllerInterface;
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
@@ -30,6 +31,9 @@ abstract class abstractController implements controllerInterface {
     /** @var array  */
     protected array $bodyParameters = [];
 
+    /** @var string */
+    public string $verb;
+
     /**
      * abstractController constructor.
      * @param servicesFactory $services
@@ -39,6 +43,8 @@ abstract class abstractController implements controllerInterface {
      * @throws Exception
      */
     public function __construct(servicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
+        $this->initialiseVerb();
+
         $this->services = $services;
 
         if ($parameterValueList === null){
@@ -101,10 +107,24 @@ abstract class abstractController implements controllerInterface {
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     protected function getHttpType(): string {
-        return $_SERVER['REQUEST_METHOD'];
+        return $this->verb;
+    }
+
+    /**
+     *
+     */
+    protected function initialiseVerb(): void {
+        $this->verb = $_SERVER['REQUEST_METHOD'];
+        if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+            if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
+                $this->verb = 'DELETE';
+            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
+                $this->verb = 'PUT';
+            }
+        }
     }
 
     /**

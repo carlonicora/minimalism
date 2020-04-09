@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\core\modules\abstracts;
+namespace carlonicora\minimalism\core\modules\abstracts\models;
 
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
