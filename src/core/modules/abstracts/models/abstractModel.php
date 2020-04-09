@@ -56,8 +56,8 @@ abstract class abstractModel {
                 }
 
                 if (array_key_exists($parameterKey, $passedParameters) && $passedParameters[$parameterKey] !== null) {
-                    if (($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))) && class_exists('carlonicora/minimalism/service/encrypter/encrypter')){
-                        $this->$parameterName = $this->services->service('carlonicora/minimalism/service/encrypter/encrypter')->decryptId($passedParameters[$parameterKey]);
+                    if (($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true))) && class_exists('carlonicora\minimalism\services\encrypter\encrypter')){
+                        $this->$parameterName = $this->services->service('carlonicora\minimalism\services\encrypter\encrypter')->decryptId($passedParameters[$parameterKey]);
                     } else {
                         $this->$parameterName = $passedParameters[$parameterKey];
                     }
