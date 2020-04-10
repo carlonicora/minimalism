@@ -182,4 +182,13 @@ abstract class abstractController implements controllerInterface {
      * @return string
      */
     abstract public function render(): string;
+
+    /**
+     *
+     */
+    protected function completeRender(): void {
+        $this->services->cleanNonPersistentVariables();
+        $_SESSION['minimalismServices'] = $this->services;
+        setcookie('minimalismServices', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
+    }
 }
