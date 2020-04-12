@@ -80,7 +80,8 @@ class bootstrapper{
         } else {
             $errorCode = $e->getCode() ?? 500;
             $GLOBALS['http_response_code'] = $errorCode;
-            header($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1' . ' ' . $errorCode . ' ' . $e->getMessage());
+            $header = ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1') . ' ' . $errorCode . ' ' . $e->getMessage();
+            header($header);
             echo $e->getMessage();
         }
         exit;
