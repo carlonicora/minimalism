@@ -191,4 +191,11 @@ abstract class abstractController implements controllerInterface {
         $_SESSION['minimalismServices'] = $this->services;
         setcookie('minimalismServices', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
     }
+
+    /**
+     * @return string
+     */
+    protected function getHttpType(): string {
+        return 'GET';
+    }
 }
