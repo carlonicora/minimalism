@@ -85,5 +85,5 @@ abstract class abstractModel {
     /**
      *
      */
-    abstract public function preRender() : void;
+    abstract public function preRender();
 }
