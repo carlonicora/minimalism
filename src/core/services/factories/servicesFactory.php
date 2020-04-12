@@ -6,15 +6,14 @@ use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\abstracts\abstractServicesLoader;
 use carlonicora\minimalism\core\services\interfaces\serviceFactoryInterface;
 use carlonicora\minimalism\core\services\interfaces\serviceInterface;
-use carlonicora\minimalism\core\traits\filesystem;
 use carlonicora\minimalism\services\paths\factories\serviceFactory;
 use carlonicora\minimalism\services\paths\paths;
 use Dotenv\Dotenv;
 use Exception;
+use ReflectionClass;
+use ReflectionException;
 
 class servicesFactory {
-    use filesystem;
-
     /** @var array */
     private array $services = [];
 
@@ -129,7 +128,19 @@ class servicesFactory {
         $response = [];
 
         foreach ($files as $fileName){
-            $response[] = $this->getClassNameFromFile($fileName);
+            /** @noinspection PhpIncludeInspection */
+            require_once $fileName;
+        }
+
+        $classes = get_declared_classes();
+        foreach($classes as $singleClass) {
+            try {
+                $reflect = new ReflectionClass($singleClass);
+                if ($reflect->implementsInterface(serviceFactoryInterface::class) && !$reflect->isAbstract()) {
+                    $response[] = $singleClass;
+                }
+            } catch (ReflectionException $e) {
+            }
         }
 
         return $response;

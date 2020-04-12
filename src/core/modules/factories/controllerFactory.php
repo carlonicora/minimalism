@@ -2,11 +2,8 @@
 namespace carlonicora\minimalism\core\modules\factories;
 
 use carlonicora\minimalism\core\modules\exceptions\prerequisiteException;
-use carlonicora\minimalism\core\traits\filesystem;
 
 class controllerFactory {
-    use filesystem;
-
     /**
      * @return string
      * @throws prerequisiteException
@@ -22,6 +19,10 @@ class controllerFactory {
             throw new prerequisiteException('Multiple core modules loaded');
         }
 
-        return $this->getClassNameFromFile($controllers[0]);
+        $classList = get_declared_classes();
+        /** @noinspection PhpIncludeInspection */
+        require_once $controllers[0];
+        $newClasses = array_values(array_diff_key(get_declared_classes(),$classList));
+        return $newClasses[0];
     }
 }

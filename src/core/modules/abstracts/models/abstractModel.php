@@ -61,7 +61,7 @@ abstract class abstractModel {
                     } else {
                         $this->$parameterName = $passedParameters[$parameterKey];
                     }
-                } else if ($isParameterRequired){
+                } elseif ($isParameterRequired){
                     throw new RuntimeException('Required parameter ' . $parameterName . ' missing.', 412);
                 }
             }

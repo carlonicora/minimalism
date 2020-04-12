@@ -37,7 +37,7 @@ abstract class abstractApiController extends abstractController {
         if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
             if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
                 $this->verb = 'DELETE';
-            } else if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
+            } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
                 $this->verb = 'PUT';
             }
         }
