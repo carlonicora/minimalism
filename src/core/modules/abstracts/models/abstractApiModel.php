@@ -73,10 +73,4 @@ abstract class abstractApiModel extends abstractModel {
      * @return mixed
      */
     abstract public function PUT();
-
-    /**
-     *
-     */
-    public function preRender(): void {
-    }
 }
