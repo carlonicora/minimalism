@@ -128,9 +128,9 @@ abstract class abstractController implements controllerInterface {
 
         $this->modelName = array_shift($uriVariables);
         foreach ($uriVariables as $uriParam) {
-            $classPath = $basePath . $this->modelName . '\\' . $uriParam;
+            $classPath = $basePath . $this->modelName . DIRECTORY_SEPARATOR . $uriParam;
             if (is_dir($classPath) || is_file($classPath . '.php')) {
-                $this->modelName .= '\\' . $uriParam;
+                $this->modelName .= DIRECTORY_SEPARATOR . $uriParam;
                 array_shift($uriVariables);
             }
         }
@@ -159,7 +159,7 @@ abstract class abstractController implements controllerInterface {
             throw new RuntimeException($e->getMessage(), 500);
         }
 
-        $modelClass = $namespace . 'models\\' . $this->modelName;
+        $modelClass = $namespace . 'models\\' . str_replace('/', '\\', $this->modelName);
 
         if (!class_exists($modelClass)){
             throw new RuntimeException('model ' . $this->modelName . ' not found', 404);
