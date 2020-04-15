@@ -37,6 +37,27 @@ A service is always instantiates during bootstrap, and ready to be used during t
 
 ## Installing
 
+To use minimalism, you need to specify which module your app will use. So far the supported modules are 
+[minimalism-module-jsonapi-api](https://github.com/carlonicora/minimalism-module-jsonapi-api) to create APIs based on
+[{json:api}](https://jsonapi.org), [minimalism-module-cli](https://github.com/carlonicora/minimalism-module-cli) to
+create CLI applications and
+[minimalism-module-jsonapi-web](https://github.com/carlonicora/minimalism-module-jsonapi-api) to create websites that
+leverage the [{json:api}](https://jsonapi.org) standard.
+
+To start using minimalism, you need to require one of these three in your `composer.json` file
+
+```
+$ composer require carlonicora/minimalism-module-jsonapi-web
+```
+
+```json
+{
+    "require": {
+        "carlonicora/minimalism-module-jsonapi-web": "~1.0"
+    }
+}
+```
+
 # Requirements
 
 minimalism requires **php 7.4**
@@ -47,7 +68,7 @@ minimalism requires **php 7.4**
 
 * [minimalism-module-jsonapi-api](https://github.com/carlonicora/minimalism-module-jsonapi-api) - the module to develop
 APIs which uses the [{json:api}](https://jsonapi.org) standard.
-* [minimalism-module-jsonapi-cli](https://github.com/carlonicora/minimalism-module-jsonapi-cli) - the module to develop
+* [minimalism-module-cli](https://github.com/carlonicora/minimalism-module-cli) - the module to develop
 CLI applications which uses the [{json:api}](https://jsonapi.org) standard.
 * [minimalism-module-jsonapi-web](https://github.com/carlonicora/minimalism-module-jsonapi-api) - the module to develop
 web applications which uses the [{json:api}](https://jsonapi.org) standard. 
@@ -56,6 +77,8 @@ web applications which uses the [{json:api}](https://jsonapi.org) standard.
 
 The following services are freely available
 
+* [activeCampaign](https://github.com/carlonicora/minimalism-service-active-campaign) - a service to integrate your app
+with the activeCampaign API.
 * [apiCaller](https://github.com/carlonicora/minimalism-service-api-caller) - a simple interface to run API requests
 that returns data through the [{json:api}](https://jsonapi.org) standard.
 * [encrypter](https://github.com/carlonicora/minimalism-service-encrypter) - encrypt IDs to send/receive online
