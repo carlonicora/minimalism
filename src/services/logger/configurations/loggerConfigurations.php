@@ -26,7 +26,7 @@ class loggerConfigurations extends abstractServiceConfigurations {
             DIRECTORY_SEPARATOR .
             'minimalism' .
             DIRECTORY_SEPARATOR;
-        $this->errorLog = $directory . date('Ymd').'error.log';
-        $this->notificationLog = $directory . date('Ymd').'notifications.log';
+        $this->errorLog = $directory . 'errors.log';
+        $this->notificationLog = $directory . 'notifications.log';
     }
 }
