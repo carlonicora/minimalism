@@ -7,6 +7,7 @@ use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\paths\paths;
 use Exception;
+use JsonException;
 use RuntimeException;
 
 abstract class abstractController implements controllerInterface {
@@ -185,6 +186,7 @@ abstract class abstractController implements controllerInterface {
 
     /**
      *
+     * @throws JsonException
      */
     protected function completeRender(): void {
         $this->services->cleanNonPersistentVariables();

@@ -8,6 +8,7 @@ use carlonicora\minimalism\core\services\exceptions\configurationException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use Exception;
 use carlonicora\minimalism\core\modules\exceptions\prerequisiteException;
+use JsonException;
 use RuntimeException;
 
 /**
@@ -65,7 +66,7 @@ class bootstrapper{
             }
             $this->services->initialiseStatics();
             $this->services->initialiseServicesLoader();
-        } catch (configurationException $e) {
+        } catch (configurationException|JsonException $e) {
             $this->writeError($e);
             exit;
         }

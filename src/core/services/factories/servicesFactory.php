@@ -10,6 +10,7 @@ use carlonicora\minimalism\services\paths\factories\serviceFactory;
 use carlonicora\minimalism\services\paths\paths;
 use Dotenv\Dotenv;
 use Exception;
+use JsonException;
 use ReflectionClass;
 use ReflectionException;
 
@@ -58,7 +59,7 @@ class servicesFactory {
             if (class_exists($serviceLoader)){
                 $serviceLoader::initialise($this);
             }
-        } catch (serviceNotFoundException $e) {
+        } catch (serviceNotFoundException|JsonException $e) {
         }
     }
 
@@ -158,6 +159,7 @@ class servicesFactory {
 
     /**
      * @param string $cookies
+     * @throws JsonException
      */
     public function unserialiseCookies(string $cookies) : void {
         $cookiesArray = json_decode($cookies, true, 512, JSON_THROW_ON_ERROR);
@@ -169,6 +171,7 @@ class servicesFactory {
 
     /**
      * @return string
+     * @throws JsonException
      */
     public function serialiseCookies() : string {
         $cookies = [];

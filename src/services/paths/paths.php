@@ -6,6 +6,7 @@ use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
 use carlonicora\minimalism\services\paths\configurations\pathsConfigurations;
 use Exception;
+use JsonException;
 use RuntimeException;
 
 class paths extends abstractService {
@@ -62,6 +63,7 @@ class paths extends abstractService {
 
     /**
      * @return string
+     * @throws JsonException
      */
     public function getNamespace() : string {
         $content = file_get_contents( $this->root . DIRECTORY_SEPARATOR . 'composer.json');
