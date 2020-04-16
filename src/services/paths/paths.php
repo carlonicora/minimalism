@@ -35,7 +35,8 @@ class paths extends abstractService {
         /** @noinspection UnusedConstructorDependenciesInspection */
         $this->configData = $configData;
 
-        $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
+
+        $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/';
 
         $this->initialiseDirectoryStructure();
     }

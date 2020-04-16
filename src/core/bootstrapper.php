@@ -92,11 +92,13 @@ class bootstrapper{
      *
      */
     private function denyAccessToSpecificFileTypes() : void {
-        $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
+        if ($_SERVER['REQUEST_URI'] !== null) {
+            $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
 
-        if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js'], true)){
-            $this->writeError(new Exception('Filetype not supported', 404));
-            exit;
+            if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js'], true)) {
+                $this->writeError(new Exception('Filetype not supported', 404));
+                exit;
+            }
         }
     }
 
