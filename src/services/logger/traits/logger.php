@@ -44,7 +44,7 @@ trait logger {
      */
     protected function loggerWriteError(int $code, string $message, ?string $serviceName=null, ?Exception $exception=null): void {
         foreach ($this->logFolders as $logFolder){
-            $errorFile = $logFolder . ($serviceName ?? 'minimalism') . 'log';
+            $errorFile = $logFolder . ($serviceName ?? 'minimalism') . '.log';
 
             /** @noinspection ForgottenDebugOutputInspection */
             error_log(
