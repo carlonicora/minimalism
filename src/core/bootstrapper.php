@@ -75,7 +75,7 @@ class bootstrapper{
     /**
      * @param Exception $e
      */
-    private function writeError(Exception $e) : void {
+    public function writeError(Exception $e) : void {
         if ($this->controller !== null) {
             $this->controller->writeException($e);
         } else {
