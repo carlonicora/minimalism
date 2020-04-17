@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "10.2.0-beta4",
+  "version": "10.2.0",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
