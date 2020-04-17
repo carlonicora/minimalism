@@ -1,5 +1,5 @@
 <?php
-namespace carlonicora\minimalism\core\traits;
+namespace carlonicora\minimalism\services\logger\traits;
 
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
@@ -14,7 +14,7 @@ trait logger {
      * @param servicesFactory $services
      * @throws serviceNotFoundException
      */
-    protected function initialiseLogger(servicesFactory $services) : void {
+    protected function loggerInitialise(servicesFactory $services) : void {
         /** @var paths $paths */
         $paths = $services->service(paths::class);
         $this->logFolders = $paths->getLogFolders();
@@ -26,7 +26,7 @@ trait logger {
      * @param Exception|null $exception
      * @return string
      */
-    private function createMessage(int $code, string $message, ?Exception $exception=null) : string {
+    private function loggerCreateMessage(int $code, string $message, ?Exception $exception=null) : string {
         $response = date('Y-m-d H:i:s') . ' - ' . $code  . ' - '. $message . PHP_EOL;
         if ($exception !== null) {
             $response .= $exception->getTraceAsString() . PHP_EOL;
@@ -42,13 +42,13 @@ trait logger {
      * @param string|null $serviceName
      * @param Exception|null $exception
      */
-    protected function writeError(int $code, string $message, ?string $serviceName=null, ?Exception $exception=null): void {
+    protected function loggerWriteError(int $code, string $message, ?string $serviceName=null, ?Exception $exception=null): void {
         foreach ($this->logFolders as $logFolder){
             $errorFile = $logFolder . ($serviceName ?? 'minimalism') . 'log';
 
             /** @noinspection ForgottenDebugOutputInspection */
             error_log(
-                $this->createMessage($code, $message, $exception),
+                $this->loggerCreateMessage($code, $message, $exception),
                 3,
                 $errorFile
             );
