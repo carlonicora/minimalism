@@ -92,7 +92,7 @@ class bootstrapper{
      *
      */
     private function denyAccessToSpecificFileTypes() : void {
-        if ($_SERVER['REQUEST_URI'] !== null) {
+        if (array_key_exists('REQUEST_URI', $_SERVER)) {
             $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
 
             if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js'], true)) {
