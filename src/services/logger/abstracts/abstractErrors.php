@@ -22,5 +22,7 @@ abstract class abstractErrors implements errorsInterface {
      * @param int $errorId
      * @return string
      */
-    abstract public function getErrorDescription(int $errorId): string;
+    public function getErrorDescription(int $errorId): string{
+        return '';
+    }
 }
