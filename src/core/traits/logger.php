@@ -6,7 +6,7 @@ use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\paths\paths;
 use Exception;
 
-class logger {
+trait logger {
     /** @var array  */
     protected array $logFolders = [];
 
