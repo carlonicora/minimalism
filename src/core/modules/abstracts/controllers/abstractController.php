@@ -127,16 +127,19 @@ abstract class abstractController implements controllerInterface {
 
         $basePath = getcwd() . DIRECTORY_SEPARATOR . 'src'. DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR;
 
+        $response = [];
         $this->modelName = array_shift($uriVariables);
         foreach ($uriVariables as $uriParam) {
             $classPath = $basePath . $this->modelName . DIRECTORY_SEPARATOR . $uriParam;
             if (is_dir($classPath) || is_file($classPath . '.php')) {
                 $this->modelName .= DIRECTORY_SEPARATOR . $uriParam;
                 array_shift($uriVariables);
+            } else {
+                $response[] = $uriVariables[0];
             }
         }
 
-        return $uriVariables;
+        return $response;
     }
 
     /**
@@ -198,6 +201,6 @@ abstract class abstractController implements controllerInterface {
      * @return string
      */
     protected function getHttpType(): string {
-        return 'GET';
+        return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
 }
