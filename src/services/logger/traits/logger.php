@@ -44,14 +44,30 @@ trait logger {
      */
     protected function loggerWriteError(int $code, string $message, ?string $serviceName=null, ?Exception $exception=null): void {
         foreach ($this->logFolders as $logFolder){
-            $errorFile = $logFolder . ($serviceName ?? 'minimalism') . '.log';
+            $errorFile = $logFolder . ($serviceName ?? 'minimalism') . '.error.log';
+            $errorMessage = $this->loggerCreateMessage($code, $message, $exception);
 
-            /** @noinspection ForgottenDebugOutputInspection */
-            error_log(
-                $this->loggerCreateMessage($code, $message, $exception),
-                3,
-                $errorFile
-            );
+            $this->loggerWriteLog($errorMessage, $errorFile);
         }
+    }
+
+    /**
+     * @param string $message
+     */
+    protected function loggerWriteTiming(string $message): void {
+        foreach ($this->logFolders as $logFolder){
+            $timingFile = $logFolder . 'timing.log';
+
+            $this->loggerWriteLog($message, $timingFile);
+        }
+    }
+
+    /**
+     * @param string $message
+     * @param string $fileName
+     */
+    private function loggerWriteLog(string $message, string $fileName) : void {
+        /** @noinspection ForgottenDebugOutputInspection */
+        error_log($message,3,$fileName);
     }
 }

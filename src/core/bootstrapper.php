@@ -6,6 +6,8 @@ use carlonicora\minimalism\core\modules\interfaces\controllerInterface;
 use carlonicora\minimalism\core\modules\factories\controllerFactory;
 use carlonicora\minimalism\core\services\exceptions\configurationException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\services\logger\logger;
+use carlonicora\minimalism\services\logger\objects\log;
 use Exception;
 use carlonicora\minimalism\core\modules\exceptions\prerequisiteException;
 use JsonException;
@@ -32,6 +34,8 @@ class bootstrapper{
      * bootstrapper constructor.
      */
     public function __construct() {
+        $startLog = new log('Request started');
+
         $this->denyAccessToSpecificFileTypes();
 
         if (session_status() === PHP_SESSION_NONE) {
@@ -40,37 +44,47 @@ class bootstrapper{
 
         if (isset($_SESSION['minimalismServices'])){
             $this->services = $_SESSION['minimalismServices'];
+            $servicesLog = new log('Services loaded from session');
         } else {
             self::$servicesCache = realpath('.') . DIRECTORY_SEPARATOR . 'services.cache';
-            if (file_exists(self::$servicesCache)){
-                if (filemtime(self::$servicesCache) > (time() - 5 * 60)) {
-                    /** @noinspection UnserializeExploitsInspection */
-                    $this->services = unserialize(file_get_contents(self::$servicesCache));
-                    self::$servicesCache = null;
-                } else {
+            if (file_exists(self::$servicesCache) && filemtime(self::$servicesCache) > (time() - 5 * 60)) {
+                /** @noinspection UnserializeExploitsInspection */
+                $this->services = unserialize(file_get_contents(self::$servicesCache));
+                self::$servicesCache = null;
+                $servicesLog = new log('Services loaded from cache');
+            } else {
+                /** @noinspection NotOptimalIfConditionsInspection */
+                if (file_exists(self::$servicesCache)){
                     unlink(self::$servicesCache);
                 }
-            }
-        }
 
-        try {
-            if ($this->services !== null){
-                $this->services->cleanNonPersistentVariables();
-            } else {
-                $this->services = new servicesFactory();
-                $this->services->initialise();
+                try{
+                    $this->services = new servicesFactory();
+                    $this->services->initialise();
 
-                if (isset($_COOKIE['minimalismServices'])){
-                    $this->services->unserialiseCookies($_COOKIE['minimalismServices']);
+                    if (isset($_COOKIE['minimalismServices'])){
+                        $this->services->unserialiseCookies($_COOKIE['minimalismServices']);
+                    }
+                    $servicesLog = new log('Services loaded from scratch');
+                } catch (configurationException|JsonException $e) {
+                    $this->writeError($e);
+                    exit;
                 }
             }
-            $this->services->initialiseStatics();
-            $this->services->initialiseServicesLoader();
-        } catch (configurationException|JsonException $e) {
-            $this->writeError($e);
-            exit;
         }
+
+        $this->services->cleanNonPersistentVariables();
+        $this->services->initialiseStatics();
+        $this->services->initialiseServicesLoader();
+
+        /** @var logger $logger */
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $logger = $this->services->service(logger::class);
+        $logger->addSystemEvent($startLog);
+        $logger->addSystemEvent($servicesLog);
     }
+
+
 
     /**
      * @param Exception $e
@@ -99,6 +113,18 @@ class bootstrapper{
                 $this->writeError(new Exception('Filetype not supported', 404));
                 exit;
             }
+        }
+    }
+
+    /**
+     *
+     */
+    public function __destruct(){
+        try {
+            /** @var logger $logger */
+            $logger = $this->services->service(logger::class);
+            $logger->flush();
+        } catch (services\exceptions\serviceNotFoundException $e) {
         }
     }
 
