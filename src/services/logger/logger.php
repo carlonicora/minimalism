@@ -75,7 +75,7 @@ class logger extends abstractService{
      * @param log $next
      * @return int
      */
-    private function compare(log $previous, log $next){
+    private function compare(log $previous, log $next) : int{
         return $previous->time <= $next->time ? 0 : 1;
     }
 
@@ -119,6 +119,7 @@ class logger extends abstractService{
 
     /**
      * @param servicesFactory $services
+     * @throws serviceNotFoundException
      */
     public function initialiseStatics(servicesFactory $services): void {
         $this->loggerInitialise($services);

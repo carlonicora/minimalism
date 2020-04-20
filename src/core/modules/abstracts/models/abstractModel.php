@@ -95,4 +95,9 @@ abstract class abstractModel {
      *
      */
     abstract public function preRender();
+
+    /**
+     * @return mixed
+     */
+    public function postRender(): void{}
 }
