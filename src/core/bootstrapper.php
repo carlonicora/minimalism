@@ -12,6 +12,7 @@ use Exception;
 use carlonicora\minimalism\core\modules\exceptions\prerequisiteException;
 use JsonException;
 use RuntimeException;
+use Throwable;
 
 /**
  * Class bootstrapper
@@ -87,9 +88,9 @@ class bootstrapper{
 
 
     /**
-     * @param Exception $e
+     * @param Throwable $e
      */
-    public function writeError(Exception $e) : void {
+    public function writeError(Throwable $e) : void {
         if ($this->controller !== null) {
             $this->controller->writeException($e);
         } else {

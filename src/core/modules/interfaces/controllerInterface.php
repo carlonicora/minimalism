@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\core\modules\interfaces;
 
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use Exception;
+use Throwable;
 
 interface controllerInterface {
     /**
@@ -21,7 +22,8 @@ interface controllerInterface {
     public function render() : string;
 
     /**
-     * @param Exception $e
+     * @param Throwable $e
+     * @param string $httpStatusCode
      */
-    public function writeException(Exception $e): void;
+    public function writeException(Throwable $e, string $httpStatusCode = '500'): void;
 }

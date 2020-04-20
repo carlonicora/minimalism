@@ -4,7 +4,7 @@ namespace carlonicora\minimalism\services\logger\traits;
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
 use carlonicora\minimalism\services\paths\paths;
-use Exception;
+use Throwable;
 
 trait logger {
     /** @var array  */
@@ -23,10 +23,10 @@ trait logger {
     /**
      * @param int $code
      * @param string $message
-     * @param Exception|null $exception
+     * @param Throwable|null $exception
      * @return string
      */
-    private function loggerCreateMessage(int $code, string $message, ?Exception $exception=null) : string {
+    private function loggerCreateMessage(int $code, string $message, ?Throwable $exception=null) : string {
         $response = date('Y-m-d H:i:s') . ' - ' . $code  . ' - '. $message . PHP_EOL;
         if ($exception !== null) {
             $response .= $exception->getTraceAsString() . PHP_EOL;
@@ -40,9 +40,9 @@ trait logger {
      * @param int $code
      * @param string $message
      * @param string|null $serviceName
-     * @param Exception|null $exception
+     * @param Throwable|null $exception
      */
-    protected function loggerWriteError(int $code, string $message, ?string $serviceName=null, ?Exception $exception=null): void {
+    protected function loggerWriteError(int $code, string $message, ?string $serviceName=null, ?Throwable $exception=null): void {
         foreach ($this->logFolders as $logFolder){
             $errorFile = $logFolder . ($serviceName ?? 'minimalism') . '.error.log';
             $errorMessage = $this->loggerCreateMessage($code, $message, $exception);
