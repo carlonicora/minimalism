@@ -143,7 +143,7 @@ abstract class abstractController implements controllerInterface {
             if (is_dir($classPath) || is_file($classPath . '.php')) {
                 $this->modelName .= DIRECTORY_SEPARATOR . $uriParam;
             } else {
-                $response = $uriVariables[0];
+                $response[] = $uriVariables[0];
             }
             array_shift($uriVariables);
         }

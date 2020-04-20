@@ -34,7 +34,7 @@ class bootstrapper{
      * bootstrapper constructor.
      */
     public function __construct() {
-        $startLog = new log('Request started');
+        $startLog = new log('Request started (' . ($_SERVER['REQUEST_URI'] ?? '') . ')');
 
         $this->denyAccessToSpecificFileTypes();
 

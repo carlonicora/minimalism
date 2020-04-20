@@ -46,7 +46,7 @@ class logger extends abstractService{
         }
 
         if ($loggedMessage !== null){
-            $this->events[$loggedMessage->time] = $loggedMessage;
+            $this->events[] = $loggedMessage;
         }
     }
 
@@ -65,35 +65,44 @@ class logger extends abstractService{
             return;
         }
 
-        $this->addEvent('request completed');
+        $this->addEvent('Request completed');
 
         $this->write();
+    }
+
+    /**
+     * @param log $previous
+     * @param log $next
+     * @return int
+     */
+    private function compare(log $previous, log $next){
+        return $previous->time <= $next->time ? 0 : 1;
     }
 
     /**
      *
      */
     private function write(): void {
-        $log = '';
+        $message = '';
 
         $start = 0;
         $previous = 0;
 
-        ksort($this->events);
+        usort($this->events, [$this, 'compare']);
 
         /** @var log $log */
         foreach ($this->events as $log){
             if ($previous === 0) {
-                $log .= $log->message . ' - ' . date('d.m.Y H:i:s') . PHP_EOL;
+                $message .= $log->message . ' - ' . date('d.m.Y H:i:s') . PHP_EOL;
                 $start = $log->time;
             } else {
-                $log .= '    ' . $log->message . ' (' . $this->getDifference($log->time, $previous) . ')'.PHP_EOL;
+                $message .= '    ' . $log->message . ' (' . $this->getDifference($log->time, $previous) . ')'.PHP_EOL;
             }
             $previous = $log->time;
         }
-        $log .= '    in ' . $this->getDifference($previous, $start) .PHP_EOL.PHP_EOL;
+        $message .= '    in ' . $this->getDifference($previous, $start) .PHP_EOL.PHP_EOL;
 
-        $this->loggerWriteTiming($log);
+        $this->loggerWriteTiming($message);
     }
 
 
@@ -106,5 +115,13 @@ class logger extends abstractService{
         $intResponse = (int)(($end-$start) * 10000);
 
         return $intResponse/10000 . ' seconds';
+    }
+
+    /**
+     * @param servicesFactory $services
+     */
+    public function initialiseStatics(servicesFactory $services): void {
+        $this->loggerInitialise($services);
+        $this->events = [];
     }
 }
