@@ -97,7 +97,9 @@ abstract class abstractModel {
     abstract public function preRender();
 
     /**
+     * @param int|null $code
+     * @param string|null $response
      * @return mixed
      */
-    public function postRender(): void{}
+    public function postRender(?int $code, ?string $response): void{}
 }

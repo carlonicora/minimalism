@@ -197,14 +197,17 @@ abstract class abstractController implements controllerInterface {
     abstract public function render(): string;
 
     /**
-     *
+     * @param int $code
+     * @param string $response
      * @throws JsonException
      */
-    protected function completeRender(): void {
+    protected function completeRender(int $code=null, string $response=null): void {
         $this->services->cleanNonPersistentVariables();
         $_SESSION['minimalismServices'] = $this->services;
         setcookie('minimalismServices', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
         $this->logger->addSystemEvent(null, 'Session persisted');
+
+        $this->model->postRender($code, $response);
     }
 
     /**
