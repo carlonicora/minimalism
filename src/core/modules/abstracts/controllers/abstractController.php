@@ -5,6 +5,7 @@ use carlonicora\minimalism\core\modules\abstracts\models\abstractModel;
 use carlonicora\minimalism\core\modules\interfaces\controllerInterface;
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\services\logger\logger;
 use carlonicora\minimalism\services\paths\paths;
 use Exception;
 use JsonException;
@@ -32,6 +33,9 @@ abstract class abstractController implements controllerInterface {
     /** @var array  */
     protected array $bodyParameters = [];
 
+    /** @var logger  */
+    protected logger $logger;
+
     /**
      * abstractController constructor.
      * @param servicesFactory $services
@@ -43,6 +47,8 @@ abstract class abstractController implements controllerInterface {
     public function __construct(servicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
         $this->services = $services;
 
+        $this->logger = $services->service(logger::class);
+
         if ($parameterValueList === null){
             $parameterValueList = [];
         }
@@ -52,7 +58,10 @@ abstract class abstractController implements controllerInterface {
         }
 
         $this->initialiseParameters($parameterValueList, $parameterValues);
+        $this->logger->addSystemEvent(null, 'Parameters Initialised');
+
         $this->initialiseModel($modelName);
+        $this->logger->addSystemEvent(null, 'Model Initialised');
     }
 
     /**
@@ -195,6 +204,7 @@ abstract class abstractController implements controllerInterface {
         $this->services->cleanNonPersistentVariables();
         $_SESSION['minimalismServices'] = $this->services;
         setcookie('minimalismServices', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
+        $this->logger->addSystemEvent(null, 'Session persisted');
     }
 
     /**

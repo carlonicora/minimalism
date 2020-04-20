@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\core\modules\abstracts\models;
 
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
+use carlonicora\minimalism\services\logger\logger;
 use Exception;
 use RuntimeException;
 
@@ -19,6 +20,9 @@ abstract class abstractModel {
     /** @var array */
     protected array $parameters=[];
 
+    /** @var logger  */
+    protected logger $logger;
+
     /**
      * model constructor.
      * @param servicesFactory $services
@@ -28,9 +32,14 @@ abstract class abstractModel {
      */
     public function __construct(servicesFactory $services, array $passedParameters, array $file=null){
         $this->services = $services;
+
+        $this->logger = $services->service(logger::class);
+
         $this->file = $file;
 
         $this->buildParameters($passedParameters);
+
+        $this->logger->addSystemEvent(null, 'Model parameters built');
 
         $this->redirectPage = null;
     }
