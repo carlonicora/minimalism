@@ -28,7 +28,7 @@ abstract class abstractModel {
      * @param servicesFactory $services
      * @param array $passedParameters
      * @param array $file
-     * @throws serviceNotFoundException
+     * @throws serviceNotFoundException|Exception
      */
     public function __construct(servicesFactory $services, array $passedParameters, array $file=null){
         $this->services = $services;
@@ -46,7 +46,6 @@ abstract class abstractModel {
 
     /**
      * @param array $passedParameters
-     * @throws serviceNotFoundException
      * @throws Exception
      */
     private function buildParameters(array $passedParameters): void{
@@ -81,7 +80,7 @@ abstract class abstractModel {
      * @param string $parameter
      * @return string
      */
-    protected function encryptParameter(string $parameter) {
+    protected function encryptParameter(string $parameter) : string {
         return $parameter;
     }
 
