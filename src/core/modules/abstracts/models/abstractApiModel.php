@@ -3,6 +3,7 @@ namespace carlonicora\minimalism\core\modules\abstracts\models;
 
 use carlonicora\minimalism\core\services\exceptions\serviceNotFoundException;
 use carlonicora\minimalism\core\services\factories\servicesFactory;
+use Exception;
 
 abstract class abstractApiModel extends abstractModel {
     /** @var bool */
@@ -27,6 +28,7 @@ abstract class abstractApiModel extends abstractModel {
      * @param string $verb
      * @param array|null $file
      * @throws serviceNotFoundException
+     * @throws Exception
      */
     public function __construct(servicesFactory $services, array $passedParameters, string $verb, array $file=null){
         $this->verb = $verb;

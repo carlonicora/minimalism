@@ -10,6 +10,7 @@ use carlonicora\minimalism\services\paths\paths;
 use Exception;
 use JsonException;
 use RuntimeException;
+use Throwable;
 
 abstract class abstractController implements controllerInterface {
     /** @var string */
@@ -186,10 +187,10 @@ abstract class abstractController implements controllerInterface {
     }
 
     /**
-     * @param Exception $e
-     * @return void
+     * @param Throwable $e
+     * @param string $httpStatusCode
      */
-    abstract public function writeException(Exception $e): void;
+    abstract public function writeException(Throwable $e, string $httpStatusCode = '500'): void;
 
     /**
      * @return string
