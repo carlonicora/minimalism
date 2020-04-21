@@ -92,10 +92,12 @@ class bootstrapper{
      * @param Exception $e
      */
     public function writeError(Exception $e) : void {
-        try {
-            $this->loggerInitialise($this->services);
-            $this->loggerWriteError($e->getCode(), $e->getMessage(), 'minimalism', $e);
-        } catch (services\exceptions\serviceNotFoundException $e) {
+        if ($this->services !== null) {
+            try {
+                $this->loggerInitialise($this->services);
+                $this->loggerWriteError($e->getCode(), $e->getMessage(), 'minimalism', $e);
+            } catch (services\exceptions\serviceNotFoundException $e) {
+            }
         }
 
         if ($this->controller !== null) {
@@ -117,7 +119,7 @@ class bootstrapper{
         if (array_key_exists('REQUEST_URI', $_SERVER)) {
             $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
 
-            if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js'], true)) {
+            if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js', 'ico'], true)) {
                 $this->writeError(new Exception('Filetype not supported', 404));
                 exit;
             }
