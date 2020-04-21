@@ -19,6 +19,8 @@ use Throwable;
  * @package carlonicora\minimalism
  */
 class bootstrapper{
+    use \carlonicora\minimalism\services\logger\traits\logger;
+
     /** @var servicesFactory  */
     private ?servicesFactory $services=null;
 
@@ -91,6 +93,12 @@ class bootstrapper{
      * @param Throwable $e
      */
     public function writeError(Throwable $e) : void {
+        try {
+            $this->loggerInitialise($this->services);
+            $this->loggerWriteError($e->getCode(), $e->getMessage(), 'minimalism', $e);
+        } catch (services\exceptions\serviceNotFoundException $e) {
+        }
+
         if ($this->controller !== null) {
             $this->controller->writeException($e);
         } else {
