@@ -11,7 +11,7 @@ class pathsConfigurations extends abstractServiceConfigurations {
      * mailingConfigurations constructor.
      */
     public function __construct() {
-        $this->logFolders[] = realpath('.') . DIRECTORY_SEPARATOR .
+        $this->logFolders[] = realpath('.') . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR .
             'logs' . DIRECTORY_SEPARATOR . 'minimalism';
 
         if((getenv('MINIMALISM_ADDITIONAL_LOG_FOLDERS'))){

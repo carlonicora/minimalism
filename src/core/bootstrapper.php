@@ -49,7 +49,7 @@ class bootstrapper{
             $this->services = $_SESSION['minimalismServices'];
             $servicesLog = new log('Services loaded from session');
         } else {
-            self::$servicesCache = realpath('.') . DIRECTORY_SEPARATOR . 'services.cache';
+            self::$servicesCache = realpath('.') . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'services.cache';
             if (file_exists(self::$servicesCache) && filemtime(self::$servicesCache) > (time() - 5 * 60)) {
                 /** @noinspection UnserializeExploitsInspection */
                 $this->services = unserialize(file_get_contents(self::$servicesCache));

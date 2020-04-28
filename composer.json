@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "10.4.6",
+  "version": "10.5.0-beta1",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
@@ -23,5 +23,14 @@
     "php": "^7.4",
     "ext-json": "*",
     "vlucas/phpdotenv":"~4.0"
+  },
+  "scripts": {
+    "minimalism-post-install": "bin/minimalism-post-install.sh"
+  },
+  "bin": [
+    "bin/minimalism-post-install.sh"
+  ],
+  "scripts-descriptions": {
+    "minimalism-post-install": "Creates cache and logs folders, sets permissions"
   }
 }

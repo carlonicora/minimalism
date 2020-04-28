@@ -78,7 +78,7 @@ class paths extends abstractService {
     private function initialiseDirectoryStructure(): void {
         $this->root = realpath('.');
 
-        $this->log = $this->root . DIRECTORY_SEPARATOR . 'logs';
+        $this->log = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'logs';
 
         if (!file_exists($this->log) && !mkdir($this->log) && !is_dir($this->log)) {
             throw new RuntimeException('Cannot create log directory', 500);
