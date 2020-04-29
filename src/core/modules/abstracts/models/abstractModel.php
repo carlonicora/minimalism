@@ -63,8 +63,10 @@ abstract class abstractModel {
                     $isParameterEncrypted = $value['encrypted'] ?? false;
                 }
 
-                if (array_key_exists($parameterKey, $passedParameters) && $passedParameters[$parameterKey] !== null) {
-                    if (($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)))){
+                if (array_key_exists($parameterKey, $passedParameters)) {
+                    if ($passedParameters[$parameterKey] !== null
+                        && ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)))
+                    ) {
                         $this->$parameterName = $this->decryptParameter($passedParameters[$parameterKey]);
                     } else {
                         $this->$parameterName = $passedParameters[$parameterKey];
