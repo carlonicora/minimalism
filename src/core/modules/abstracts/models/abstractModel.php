@@ -23,6 +23,9 @@ abstract class abstractModel {
     /** @var logger  */
     protected logger $logger;
 
+    /** @var array  */
+    protected array $passedParameters = [];
+
     /**
      * model constructor.
      * @param servicesFactory $services
@@ -62,6 +65,8 @@ abstract class abstractModel {
                     $isParameterRequired = $value['required'] ?? false;
                     $isParameterEncrypted = $value['encrypted'] ?? false;
                 }
+
+                $this->passedParameters[] = $parameterKey;
 
                 if (array_key_exists($parameterKey, $passedParameters)) {
                     if ($passedParameters[$parameterKey] !== null
