@@ -160,6 +160,7 @@ class servicesFactory {
     /**
      * @param string $cookies
      * @throws JsonException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public function unserialiseCookies(string $cookies) : void {
         $cookiesArray = json_decode($cookies, true, 512, JSON_THROW_ON_ERROR);
@@ -172,6 +173,7 @@ class servicesFactory {
     /**
      * @return string
      * @throws JsonException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public function serialiseCookies() : string {
         $cookies = [];

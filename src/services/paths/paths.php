@@ -65,6 +65,7 @@ class paths extends abstractService {
     /**
      * @return string
      * @throws JsonException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public function getNamespace() : string {
         $content = file_get_contents( $this->root . DIRECTORY_SEPARATOR . 'composer.json');
