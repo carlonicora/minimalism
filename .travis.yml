@@ -1,0 +1,16 @@
+language: php
+
+php:
+  - '7.4'
+
+install:
+  - composer install
+  - composer require satooshi/php-coveralls:~1.0@stable # Require phpCoveralls
+
+# Run before the build
+before_script:
+  - mkdir -p build/logs # Create a folder to store clover files
+
+# After success, run sh to bind coveralls
+after_success:
+  - sh -c 'if( [ "$TRAVIS_PHP_VERSION" != "hhvm" ] ); then php vendor/bin/coveralls -v; fi;'
