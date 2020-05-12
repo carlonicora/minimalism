@@ -7,7 +7,7 @@ applications) and forget everything that goes behind the scene.
 ## Status
 
 This framework is fastly evolving and changing. As it is a personal project evolved in something more than a pet
-project, you should expect quick changes. Every time the structure of the core component of minimalism is changed, a
+project, you should expect quick changes. Every time the structure of the Core component of minimalism is changed, a
 new major version will be released.
 
 # Modules and Services
@@ -16,7 +16,7 @@ Every element inside minimalism is either a **module** or a **service**.
 
 ## Modules
 
-A module is a core element which defines the type of models and controllers used. It is the foundation of the
+A module is a Core element which defines the type of models and controllers used. It is the foundation of the
 logical structure of an application.
 
 Every application can have only one model.
