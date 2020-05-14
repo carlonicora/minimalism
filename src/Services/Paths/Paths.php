@@ -35,6 +35,7 @@ class Paths extends AbstractService {
         /** @noinspection UnusedConstructorDependenciesInspection */
         $this->configData = $configData;
 
+        $this->root = realpath('.');
 
         $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
 
@@ -62,6 +63,14 @@ class Paths extends AbstractService {
         return $this->log;
     }
 
+    public function getCache() : string
+    {
+        return $this->root . DIRECTORY_SEPARATOR
+            . 'data' . DIRECTORY_SEPARATOR
+            . 'cache' . DIRECTORY_SEPARATOR
+            . 'services.cache';
+    }
+
     /**
      * @return string
      * @throws JsonException
@@ -77,8 +86,6 @@ class Paths extends AbstractService {
      * @throws Exception
      */
     private function initialiseDirectoryStructure(): void {
-        $this->root = realpath('.');
-
         $this->log = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'logs';
 
         if (!file_exists($this->log) && !mkdir($this->log) && !is_dir($this->log)) {

@@ -1,29 +1,27 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Interfaces;
 
+use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use Exception;
-use Throwable;
+use CarloNicora\Minimalism\Services\Logger\Logger;
 
 interface ControllerInterface {
     /**
-     * abstractController constructor.
+     * ControllerInterface constructor.
      * @param ServicesFactory $services
-     * @param string $modelName
-     * @param array $parameterValueList
-     * @param array $parameterValues
-     * @throws Exception
      */
-    public function __construct(ServicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null);
+    public function __construct(ServicesFactory $services);
 
     /**
-     * @return string
+     * @param string|null $modelName
+     * @param array|null $parameterValueList
+     * @param array|null $parameterValues
+     * @return ControllerInterface
      */
-    public function render() : string;
+    public function initialise(string $modelName=null, array $parameterValueList=null, array $parameterValues=null): ControllerInterface;
 
     /**
-     * @param Throwable $e
-     * @param string $httpStatusCode
+     * @return Response
      */
-    public function writeException(Throwable $e, string $httpStatusCode = '500'): void;
+    public function render() : Response;
 }

@@ -11,15 +11,12 @@ abstract class AbstractApiController extends AbstractController {
     /**
      * abstractController constructor.
      * @param ServicesFactory $services
-     * @param string $modelName
-     * @param array $parameterValueList
-     * @param array $parameterValues
      * @throws Exception
      */
-    public function __construct(ServicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
+    public function __construct(ServicesFactory $services){
         $this->initialiseVerb();
 
-        parent::__construct($services, $modelName, $parameterValueList, $parameterValues);
+        parent::__construct($services);
     }
 
     /**

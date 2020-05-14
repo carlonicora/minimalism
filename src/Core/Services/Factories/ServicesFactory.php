@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Core\Services\Factories;
 
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
-use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractServicesLoader;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceFactoryInterface;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Paths\Factories\ServiceFactory;
@@ -21,15 +20,15 @@ class ServicesFactory {
     /**
      * services constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
+        $this->loadService(ServiceFactory::class);
     }
 
     /**
      * @throws ConfigurationException
      */
     public function initialise() : void {
-        $this->loadService(ServiceFactory::class);
-
         /** @var Paths $paths */
         $paths = $this->services[Paths::class];
 
@@ -37,29 +36,10 @@ class ServicesFactory {
         try{
             $env->load();
         } catch (Exception $e) {
-            throw new ConfigurationException('minimalism', $e->getMessage(), ConfigurationException::ERROR_CONFIGURATION_FILE_ERROR);
         }
 
         foreach ($this->getServiceFactories() as $serviceFactoryClass){
             $this->loadService($serviceFactoryClass);
-        }
-    }
-
-    /**
-     *
-     */
-    public function initialiseServicesLoader() : void {
-        /** @var Paths $paths */
-        try {
-            $paths = $this->service(Paths::class);
-
-            /** @var AbstractServicesLoader $serviceLoader */
-            $serviceLoader = $paths->getNamespace() . 'servicesLoader';
-
-            if (class_exists($serviceLoader)){
-                $serviceLoader::initialise($this);
-            }
-        } catch (ServiceNotFoundException|JsonException $e) {
         }
     }
 
@@ -119,10 +99,10 @@ class ServicesFactory {
      * @return array
      */
     private function getServiceFactories() : array {
-        $minimalism = glob(realpath('./vendor') . '/carlonicora/minimalism/src/services/*/factories/serviceFactory.php');
-        $plugins =  glob(realpath('./vendor') . '/*/*/src/factories/serviceFactory.php');
-        $builtIn = glob(realpath('./vendor') . '/*/*/src/services/*/factories/serviceFactory.php');
-        $internal = glob(realpath('./src') . '/services/*/factories/serviceFactory.php');
+        $minimalism = glob(realpath('./vendor') . '/CarloNicora/Minimalism/src/Services/*/Factories/ServiceFactory.php');
+        $plugins =  glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
+        $builtIn = glob(realpath('./vendor') . '/*/*/src/Services/*/Factories/ServiceFactory.php');
+        $internal = glob(realpath('./src') . '/Services/*/Factories/ServiceFactory.php');
 
         $files = array_unique(array_merge($minimalism, $plugins, $builtIn, $internal));
 
@@ -158,15 +138,19 @@ class ServicesFactory {
     }
 
     /**
-     * @param string $cookies
-     * @throws JsonException
-     * @noinspection PhpDocRedundantThrowsInspection
+     * @param string $cookieName
+     * @throws ConfigurationException
      */
-    public function unserialiseCookies(string $cookies) : void {
-        $cookiesArray = json_decode($cookies, true, 512, JSON_THROW_ON_ERROR);
-        /** @var ServiceInterface $service */
-        foreach ($this->services as $service) {
-            $service->unserialiseCookies($cookiesArray);
+    public function unserialiseCookies(string $cookieName) : void {
+        try {
+            $cookiesArray = json_decode($_COOKIE[$cookieName], true, 512, JSON_THROW_ON_ERROR);
+
+            /** @var ServiceInterface $service */
+            foreach ($this->services as $service) {
+                $service->unserialiseCookies($cookiesArray);
+            }
+        } catch (JsonException $e) {
+            setcookie($cookieName, 0);
         }
     }
 

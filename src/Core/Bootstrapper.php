@@ -2,18 +2,17 @@
 
 namespace CarloNicora\Minimalism\Core;
 
+use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Factories\ControllerFactory;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Core\Modules\Exceptions\PrerequisiteException;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Services\Logger\Objects\Log;
 use CarloNicora\Minimalism\Services\Logger\Traits\LoggerTrait;
+use CarloNicora\Minimalism\Services\Paths\Paths;
 use Exception;
-use JsonException;
 use RuntimeException;
-use Throwable;
 
 /**
  * Class Bootstrapper
@@ -23,92 +22,78 @@ class Bootstrapper{
     use LoggerTrait;
 
     /** @var ServicesFactory  */
-    private ?ServicesFactory $services=null;
+    private ServicesFactory $services;
 
     /** @var string|null  */
     private ?string $modelName=null;
 
-    /** @var string|null */
-    public static ?string $servicesCache=null;
-
     /** @var ControllerInterface|null  */
     private ?ControllerInterface $controller=null;
+
+    /** @var array|Log[]  */
+    private array $logs=[];
+
+    /** @var Paths  */
+    private Paths $paths;
+
+    /** @var Logger|null  */
+    private ?Logger $logger=null;
+
+    /** @var ControllerFactory  */
+    private ControllerFactory $controllerFactory;
 
     /**
      * Bootstrapper constructor.
      * @throws Exception
      */
     public function __construct() {
-        $startLog = new Log('Request started (' . ($_SERVER['REQUEST_URI'] ?? '') . ')');
+        $this->logs[] = new Log('Request started (' . ($_SERVER['REQUEST_URI'] ?? '') . ')');
+
+        $this->services = new ServicesFactory();
+        $this->paths = $this->services->service(Paths::class);
+
+        $this->controllerFactory = new ControllerFactory();
 
         $this->denyAccessToSpecificFileTypes();
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (isset($_SESSION['minimalismServices'])){
-            $this->services = $_SESSION['minimalismServices'];
-            $servicesLog = new Log('Services loaded from session');
-        } else {
-            self::$servicesCache = realpath('.') . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'services.cache';
-            if (file_exists(self::$servicesCache) && filemtime(self::$servicesCache) > (time() - 5 * 60)) {
-                /** @noinspection UnserializeExploitsInspection */
-                $this->services = unserialize(file_get_contents(self::$servicesCache));
-                self::$servicesCache = null;
-                $servicesLog = new Log('Services loaded from cache');
-            } else {
-                /** @noinspection NotOptimalIfConditionsInspection */
-                if (file_exists(self::$servicesCache)){
-                    unlink(self::$servicesCache);
-                }
-
-                try{
-                    $this->services = new ServicesFactory();
-                    $this->services->initialise();
-
-                    if (isset($_COOKIE['minimalismServices'])){
-                        $this->services->unserialiseCookies($_COOKIE['minimalismServices']);
-                    }
-                    $servicesLog = new Log('Services loaded from scratch');
-                } catch (ConfigurationException|JsonException $e) {
-                    $this->writeError($e);
-                    throw $e;
-                }
-            }
-        }
-
-        $this->services->cleanNonPersistentVariables();
-        $this->services->initialiseStatics();
-        $this->services->initialiseServicesLoader();
-
-        /** @var Logger $logger */
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $logger = $this->services->service(Logger::class);
-        $logger->addSystemEvent($startLog);
-        $logger->addSystemEvent($servicesLog);
     }
 
     /**
-     * @param Throwable $e
+     * @return Bootstrapper
      */
-    public function writeError(Throwable $e) : void {
-        if ($this->services !== null) {
-            try {
-                $this->loggerInitialise($this->services);
-                $this->loggerWriteError($e->getCode(), $e->getMessage(), 'minimalism', $e);
-            } catch (services\Exceptions\ServiceNotFoundException $e) {
+    public function initialise() : Bootstrapper
+    {
+        if ($this->controller === null) {
+            $this->startSession();
+
+            if (isset($_SESSION['minimalismServices'])) {
+                $this->services = $this->loadServicesFromSession();
+            } elseif ($this->areServicesCached()) {
+                $this->services = $this->loadServicesFromCache();
+            } else {
+                $this->services = $this->createServices();
+            }
+
+            if ($this->controller === null) {
+                $this->services->cleanNonPersistentVariables();
+                $this->services->initialiseStatics();
+
+                $this->logger = $this->services->service(Logger::class);
+
+                foreach ($this->logs as $log) {
+                    $this->logger->addSystemEvent($log);
+                }
             }
         }
 
-        if ($this->controller !== null) {
-            $this->controller->writeException($e);
-        } else {
-            $errorCode = $e->getCode() ?? 500;
-            $GLOBALS['http_response_code'] = $errorCode;
-            $header = ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1') . ' ' . $errorCode . ' ' . $e->getMessage();
-            header($header);
-            echo $e->getMessage();
+        return $this;
+    }
+
+    /**
+     *
+     */
+    public function __destruct(){
+        if ($this->logger !== null) {
+            $this->logger->flush();
         }
     }
 
@@ -120,8 +105,8 @@ class Bootstrapper{
             $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
 
             if (true === in_array(strtolower($fileType), ['jpg', 'png', 'css', 'js', 'ico'], true)) {
-                $this->writeError(new Exception('Filetype not supported', 404));
-                exit;
+                $this->controller = new ErrorController($this->services);
+                $this->controller->setException(new Exception('Filetype not supported', 404));
             }
         }
     }
@@ -129,13 +114,73 @@ class Bootstrapper{
     /**
      *
      */
-    public function __destruct(){
-        try {
-            /** @var Logger $logger */
-            $logger = $this->services->service(Logger::class);
-            $logger->flush();
-        } catch (services\Exceptions\ServiceNotFoundException $e) {
+    private function startSession() : void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+            $this->logs[] = new Log('Session started');
         }
+    }
+
+    /**
+     * @return ServicesFactory
+     */
+    private function loadServicesFromSession() : ServicesFactory
+    {
+        $this->services = $_SESSION['minimalismServices'];
+
+        $this->logs[] = new Log('Services loaded from session');
+
+        return $this->services;
+    }
+
+    /**
+     * @return bool
+     */
+    private function areServicesCached() : bool
+    {
+        if (file_exists($this->paths->getCache())) {
+            if (filemtime($this->paths->getCache()) < (time() - 5 * 60)){
+                unlink($this->paths->getCache());
+                return false;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return ServicesFactory
+     */
+    private function loadServicesFromCache() : ServicesFactory
+    {
+        $this->services = unserialize(file_get_contents($this->paths->getCache()));
+
+        $this->logs[] = new Log('Services loaded from cache');
+
+        return $this->services;
+    }
+
+    /**
+     * @return ServicesFactory
+     * @throws ConfigurationException
+     */
+    private function createServices() : ServicesFactory
+    {
+        try{
+            $this->services->initialise();
+
+            if (isset($_COOKIE['minimalismServices'])){
+                $this->services->unserialiseCookies('minimalismServices');
+            }
+            $this->logs[] = new Log('Services loaded from scratch');
+        } catch (ConfigurationException $e) {
+            $this->controller = new ErrorController($this->services);
+            $this->controller->setException(new Exception($e->getMessage(), 500, $e));
+        }
+
+        return $this->services;
     }
 
     /**
@@ -146,18 +191,22 @@ class Bootstrapper{
      * @return Exception
      */
     public function loadController(string $modelName=null, array $parameterValueList=null, array $parameterValues=null): ControllerInterface {
-        if ($modelName !== null){
-            $this->modelName = $modelName;
+        if ($this->controller === null) {
+            if ($modelName !== null) {
+                $this->setModel($modelName);
+            }
+
+            try {
+                $controllerName = $this->controllerFactory->loadControllerName();
+                $this->controller = new $controllerName($this->services);
+                $this->controller->initialise($this->modelName, $parameterValueList, $parameterValues);
+            } catch (ConfigurationException $e) {
+                $this->controller = new ErrorController($this->services);
+                $this->controller->setException(new Exception($e->getMessage(), 500, $e));
+            }
         }
 
-        $controllerFactory = new ControllerFactory();
-        try {
-            $controllerName = $controllerFactory->loadControllerName();
-        } catch (PrerequisiteException $e) {
-            throw new RuntimeException($e->getMessage());
-        }
-
-        return new $controllerName($this->services, $this->modelName, $parameterValueList, $parameterValues);
+        return $this->controller;
     }
 
     /**

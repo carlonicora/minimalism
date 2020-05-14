@@ -58,10 +58,9 @@ class Logger extends AbstractService{
         $this->systemEventsOnly = false;
     }
 
-    /**
-     */
     public function flush(): void {
         if ($this->systemEventsOnly && !$this->configData->saveSystemOnly) {
+            $this->events = [];
             return;
         }
 
@@ -103,6 +102,8 @@ class Logger extends AbstractService{
         $message .= '    in ' . $this->getDifference($previous, $start) .PHP_EOL.PHP_EOL;
 
         $this->loggerWriteTiming($message);
+
+        $this->events = [];
     }
 
 

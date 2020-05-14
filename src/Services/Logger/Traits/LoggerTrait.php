@@ -14,7 +14,7 @@ trait LoggerTrait {
      * @param ServicesFactory $services
      * @throws ServiceNotFoundException
      */
-    protected function loggerInitialise(ServicesFactory $services) : void {
+    public function loggerInitialise(ServicesFactory $services) : void {
         /** @var Paths $paths */
         $paths = $services->service(Paths::class);
         $this->logFolders = $paths->getLogFolders();
@@ -42,7 +42,7 @@ trait LoggerTrait {
      * @param string|null $serviceName
      * @param Throwable|null $exception
      */
-    protected function loggerWriteError(int $code, string $message, ?string $serviceName=null, ?Throwable $exception=null): void {
+    public function loggerWriteError(int $code, string $message, ?string $serviceName=null, ?Throwable $exception=null): void {
         foreach ($this->logFolders as $logFolder){
             $errorFile = $logFolder . ($serviceName ?? 'minimalism') . '.error.log';
             $errorMessage = $this->loggerCreateMessage($code, $message, $exception);
@@ -54,7 +54,7 @@ trait LoggerTrait {
     /**
      * @param string $message
      */
-    protected function loggerWriteTiming(string $message): void {
+    public function loggerWriteTiming(string $message): void {
         foreach ($this->logFolders as $logFolder){
             $timingFile = $logFolder . 'timing.log';
 
@@ -66,7 +66,7 @@ trait LoggerTrait {
      * @param string $message
      * @param string $fileName
      */
-    private function loggerWriteLog(string $message, string $fileName) : void {
+    public function loggerWriteLog(string $message, string $fileName) : void {
         /** @noinspection ForgottenDebugOutputInspection */
         error_log($message,3,$fileName);
     }

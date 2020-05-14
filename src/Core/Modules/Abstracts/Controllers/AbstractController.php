@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Models\AbstractModel;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
+use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Logger\Logger;
@@ -10,7 +11,6 @@ use CarloNicora\Minimalism\Services\Paths\Paths;
 use Exception;
 use JsonException;
 use RuntimeException;
-use Throwable;
 
 abstract class AbstractController implements ControllerInterface {
     /** @var string */
@@ -40,16 +40,23 @@ abstract class AbstractController implements ControllerInterface {
     /**
      * abstractController constructor.
      * @param ServicesFactory $services
-     * @param string $modelName
-     * @param array $parameterValueList
-     * @param array $parameterValues
      * @throws Exception
      */
-    public function __construct(ServicesFactory $services, string $modelName=null, array $parameterValueList=null, array $parameterValues=null){
+    public function __construct(ServicesFactory $services){
         $this->services = $services;
 
         $this->logger = $services->service(Logger::class);
+    }
 
+    /**
+     * @param string|null $modelName
+     * @param array|null $parameterValueList
+     * @param array|null $parameterValues
+     * @return ControllerInterface
+     * @throws Exception
+     */
+    public function initialise(string $modelName=null, array $parameterValueList=null, array $parameterValues=null): ControllerInterface
+    {
         if ($parameterValueList === null){
             $parameterValueList = [];
         }
@@ -63,6 +70,8 @@ abstract class AbstractController implements ControllerInterface {
 
         $this->initialiseModel($modelName);
         $this->logger->addSystemEvent(null, 'Model Initialised');
+
+        return $this;
     }
 
     /**
@@ -187,15 +196,9 @@ abstract class AbstractController implements ControllerInterface {
     }
 
     /**
-     * @param Throwable $e
-     * @param string $httpStatusCode
+     * @return Response
      */
-    abstract public function writeException(Throwable $e, string $httpStatusCode = '500'): void;
-
-    /**
-     * @return string
-     */
-    abstract public function render(): string;
+    abstract public function render(): Response;
 
     /**
      * @param int $code
