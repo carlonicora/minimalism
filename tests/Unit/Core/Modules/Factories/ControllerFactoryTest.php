@@ -42,7 +42,7 @@ class ControllerFactoryTest extends AbstractTestCase
      */
     public function testSuccedLoadingControllerName() : void
     {
-        $genericControllerFile = '/opt/project/tests/Unit/Mocks/SecondaryGenericController.php';
+        $genericControllerFile = './tests/Unit/Mocks/SecondaryGenericController.php';
         $this->setProperty($this->controllerFactory, 'controllers', [$genericControllerFile]);
 
         $controller = $this->controllerFactory->loadController();
@@ -55,7 +55,7 @@ class ControllerFactoryTest extends AbstractTestCase
      */
     public function testSuccedLoadingControllerNameByLoadingItTwice() : void
     {
-        $genericControllerFile = '/opt/project/tests/Unit/Mocks/SecondaryGenericController.php';
+        $genericControllerFile = './tests/Unit/Mocks/SecondaryGenericController.php';
         $this->setProperty($this->controllerFactory, 'controllers', [$genericControllerFile]);
 
         $controller = $this->controllerFactory->loadController();

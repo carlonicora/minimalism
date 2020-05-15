@@ -27,7 +27,7 @@ class LoggerTraitTest extends AbstractTestCase
     {
         $this->trait->loggerInitialise($this->services);
 
-        $fileName = '/opt/project/data/logs/minimalism/tempfile.tmp';
+        $fileName = './data/logs/minimalism/tempfile.tmp';
         if (file_exists($fileName)) {
             unlink($fileName);
         }
@@ -41,7 +41,7 @@ class LoggerTraitTest extends AbstractTestCase
     {
         $this->trait->loggerInitialise($this->services);
 
-        $fileName = '/opt/project/data/logs/minimalism/temp.error.log';
+        $fileName = './data/logs/minimalism/temp.error.log';
         if (file_exists($fileName)) {
             unlink($fileName);
         }

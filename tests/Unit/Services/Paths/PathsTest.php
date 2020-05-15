@@ -13,7 +13,8 @@ class PathsTest extends AbstractTestCase
 
     public function testLog() : void
     {
-        $this->assertEquals('/opt/project/data/logs/minimalism', $this->services->paths()->getLog());
+        $log = $this->services->paths()->getLog();
+        $this->assertEquals('/data/logs/minimalism', substr($log, -21));
     }
 
     /**
