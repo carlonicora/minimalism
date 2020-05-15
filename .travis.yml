@@ -4,8 +4,8 @@ php:
   - '7.4'
 
 install:
+  - composer require satooshi/php-coveralls:~1.0@stable
   - composer install
-  - composer require satooshi/php-coveralls:~1.0@stable # Require phpCoveralls
 
 # Run before the build
 before_script:
