@@ -1,4 +1,9 @@
 # minimalism
+[![Build Status](https://travis-ci.com/carlonicora/minimalism.svg?branch=master)](https://travis-ci.com/carlonicora/minimalism)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Coverage Status](https://coveralls.io/repos/github/carlonicora/minimalism/badge.svg?branch=master)](https://coveralls.io/github/carlonicora/minimalism?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b7565aa8862e94cadcf5/maintainability)](https://codeclimate.com/github/carlonicora/minimalism/maintainability)
+
 
 minimalism is a service-based PHP MVC framework for fast web, api and cli applications. It has been designed to offer 
 a simple approach to developing softwares. Developers can focus on writing **models** (and **views** in case of web
