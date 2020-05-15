@@ -1,11 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 
-use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use Exception;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
+use CarloNicora\Minimalism\Core\Response;
 
-abstract class AbstractApiModel extends AbstractModel {
+abstract class AbstractApiModel extends AbstractModel implements ApiModelInterface
+{
     /** @var bool */
     protected bool $requiresAuthDELETE=false;
 
@@ -21,24 +21,27 @@ abstract class AbstractApiModel extends AbstractModel {
     /** @var string */
     public string $verb='GET';
 
-    /**
-     * abstractApiModel constructor.
-     * @param ServicesFactory $services
-     * @param array $passedParameters
-     * @param string $verb
-     * @param array|null $file
-     * @throws ServiceNotFoundException
-     * @throws Exception
-     */
-    public function __construct(ServicesFactory $services, array $passedParameters, string $verb, array $file=null){
+    public function setVerb(string $verb) : void
+    {
         $this->verb = $verb;
-        parent::__construct($services, $passedParameters, $file);
+    }
+
+    /**
+     * @param $verb
+     * @return mixed
+     */
+    public function requiresAuth($verb): bool
+    {
+        $authName = 'requiresAuth' . $verb;
+
+        return $this->$authName;
     }
 
     /**
      * @return array
      */
-    protected function getParameters(): array {
+    public function getParameters(): array
+    {
         if (array_key_exists($this->verb, $this->parameters)){
             return $this->parameters[$this->verb];
         }
@@ -47,32 +50,22 @@ abstract class AbstractApiModel extends AbstractModel {
     }
 
     /**
-     * @param $verb
-     * @return mixed
+     * @return Response
      */
-    public function requiresAuth($verb): bool {
-        $authName = 'requiresAuth' . $verb;
-
-        return $this->$authName;
-    }
+    abstract public function DELETE() : Response;
 
     /**
-     * @return mixed
+     * @return Response
      */
-    abstract public function DELETE();
+    abstract public function GET() : Response;
 
     /**
-     * @return mixed
+     * @return Response
      */
-    abstract public function GET();
+    abstract public function POST() : Response;
 
     /**
-     * @return mixed
+     * @return Response
      */
-    abstract public function POST();
-
-    /**
-     * @return mixed
-     */
-    abstract public function PUT();
+    abstract public function PUT() : Response;
 }

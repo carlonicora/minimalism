@@ -1,35 +1,37 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use Exception;
 
-abstract class AbstractApiController extends AbstractController {
+abstract class AbstractApiController extends AbstractController
+{
     /** @var string */
     public string $verb;
+
+    /** @var ModelInterface|ApiModelInterface  */
+    protected ModelInterface $model;
 
     /**
      * abstractController constructor.
      * @param ServicesFactory $services
      * @throws Exception
      */
-    public function __construct(ServicesFactory $services){
-        $this->initialiseVerb();
-
+    public function __construct(ServicesFactory $services)
+    {
         parent::__construct($services);
-    }
 
-    /**
-     * @return string
-     */
-    protected function getHttpType(): string {
-        return $this->verb;
+        $this->initialiseVerb();
     }
 
     /**
      *
      */
-    protected function initialiseVerb(): void {
+    protected function initialiseVerb(): void
+    {
         $this->verb = $_SERVER['REQUEST_METHOD'];
         if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
             if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
@@ -42,10 +44,15 @@ abstract class AbstractApiController extends AbstractController {
 
     /**
      * @param string|null $modelName
-     * @param string|null $verb
+     * @return ControllerInterface
      * @throws Exception
      */
-    protected function initialiseModel(string $modelName = null, string $verb = null): void {
-        parent::initialiseModel($modelName, $this->verb);
+    public function initialiseModel(string $modelName = null): ControllerInterface
+    {
+        $response = parent::initialiseModel($modelName);
+
+        $this->model->setVerb($this->verb);
+
+        return $response;
     }
 }

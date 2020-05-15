@@ -2,7 +2,6 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Core\Services\Factories;
 
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Logger\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
@@ -12,46 +11,43 @@ class ServicesFactoryTest extends AbstractTestCase
 {
     public function testServiceNotFound() : void
     {
-        $services = new ServicesFactory();
-
         $this->expectException(ServiceNotFoundException::class);
 
-        $services->service('Something Not Existing');
+        $this->services->service('Something Not Existing');
     }
 
     public function testLoadDependency() : void
     {
-        $services = new ServicesFactory();
-        $this->setProperty($services, 'services', []);
+        $this->setProperty($this->services, 'services', []);
 
-        $services->loadService(ServiceFactory::class);
+        $this->services->loadService(ServiceFactory::class);
 
-        $this->assertNotNull($services->service(Logger::class));
+        $this->assertNotNull($this->services->service(Logger::class));
     }
 
+    /**
+     * @throws JsonException
+     */
     public function testSerialiseCookied() : void
     {
-        $services = new ServicesFactory();
-        $services->loadService(ServiceFactory::class);
+        $this->services->loadService(ServiceFactory::class);
 
-        $this->assertNotNull($services->serialiseCookies());
+        $this->assertNotNull($this->services->serialiseCookies());
     }
 
     public function testFailUnserialiseCookies() : void
     {
-        $services = new ServicesFactory();
-        $services->loadService(ServiceFactory::class);
-
         $_COOKIE['cookieDough'] = 'not a valid json';
 
-        $services->unserialiseCookies('cookieDough');
+        $this->services->unserialiseCookies('cookieDough');
 
         $this->assertNotNull($_COOKIE['cookieDough']);
     }
 
+    /** @noinspection PhpVoidFunctionResultUsedInspection */
     public function testDestroyStatics() : void
     {
-        $services = new ServicesFactory();
-        $this->assertNull($services->destroyStatics());
+        /** @noinspection UnnecessaryAssertionInspection */
+        $this->assertNull($this->services->destroyStatics());
     }
 }

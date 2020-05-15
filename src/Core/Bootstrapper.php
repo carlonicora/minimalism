@@ -10,15 +10,14 @@ use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Services\Logger\Objects\Log;
 use CarloNicora\Minimalism\Services\Logger\Traits\LoggerTrait;
-use CarloNicora\Minimalism\Services\Paths\Paths;
 use Exception;
-use RuntimeException;
 
 /**
  * Class Bootstrapper
  * @package CarloNicora\Minimalism
  */
-class Bootstrapper{
+class Bootstrapper
+{
     use LoggerTrait;
 
     /** @var ServicesFactory  */
@@ -33,9 +32,6 @@ class Bootstrapper{
     /** @var array|Log[]  */
     private array $logs=[];
 
-    /** @var Paths  */
-    private Paths $paths;
-
     /** @var Logger|null  */
     private ?Logger $logger=null;
 
@@ -46,13 +42,13 @@ class Bootstrapper{
      * Bootstrapper constructor.
      * @throws Exception
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->logs[] = new Log('Request started (' . ($_SERVER['REQUEST_URI'] ?? '') . ')');
 
         $this->services = new ServicesFactory();
-        $this->paths = $this->services->service(Paths::class);
 
-        $this->controllerFactory = new ControllerFactory();
+        $this->controllerFactory = new ControllerFactory($this->services);
 
         $this->denyAccessToSpecificFileTypes();
     }
@@ -91,7 +87,8 @@ class Bootstrapper{
     /**
      *
      */
-    public function __destruct(){
+    public function __destruct()
+    {
         if ($this->logger !== null) {
             $this->logger->flush();
         }
@@ -100,7 +97,8 @@ class Bootstrapper{
     /**
      *
      */
-    private function denyAccessToSpecificFileTypes() : void {
+    private function denyAccessToSpecificFileTypes() : void
+    {
         if (array_key_exists('REQUEST_URI', $_SERVER)) {
             $fileType = substr(strrchr($_SERVER['REQUEST_URI'], '.'), 1);
 
@@ -139,9 +137,9 @@ class Bootstrapper{
      */
     private function areServicesCached() : bool
     {
-        if (file_exists($this->paths->getCache())) {
-            if (filemtime($this->paths->getCache()) < (time() - 5 * 60)){
-                unlink($this->paths->getCache());
+        if (file_exists($this->services->paths()->getCache())) {
+            if (filemtime($this->services->paths()->getCache()) < (time() - 5 * 60)){
+                unlink($this->services->paths()->getCache());
                 return false;
             }
             return true;
@@ -155,7 +153,7 @@ class Bootstrapper{
      */
     private function loadServicesFromCache() : ServicesFactory
     {
-        $this->services = unserialize(file_get_contents($this->paths->getCache()));
+        $this->services = unserialize(file_get_contents($this->services->paths()->getCache()));
 
         $this->logs[] = new Log('Services loaded from cache');
 
@@ -185,21 +183,24 @@ class Bootstrapper{
 
     /**
      * @param string|null $modelName
-     * @param array|null $parameterValueList
-     * @param array|null $parameterValues
+     * @param array $parameterValueList
+     * @param array $parameterValues
      * @return ControllerInterface
      * @return Exception
      */
-    public function loadController(string $modelName=null, array $parameterValueList=null, array $parameterValues=null): ControllerInterface {
+    public function loadController(string $modelName=null, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
+    {
         if ($this->controller === null) {
             if ($modelName !== null) {
                 $this->setModel($modelName);
             }
 
             try {
-                $controllerName = $this->controllerFactory->loadControllerName();
-                $this->controller = new $controllerName($this->services);
-                $this->controller->initialise($this->modelName, $parameterValueList, $parameterValues);
+                $this->controller = $this->controllerFactory
+                    ->loadController()
+                    ->initialiseParameters($parameterValueList, $parameterValues)
+                    ->initialiseModel($this->modelName);
+
             } catch (ConfigurationException $e) {
                 $this->controller = new ErrorController($this->services);
                 $this->controller->setException(new Exception($e->getMessage(), 500, $e));
@@ -212,7 +213,8 @@ class Bootstrapper{
     /**
      * @param string $modelName
      */
-    public function setModel(string $modelName) : void {
+    public function setModel(string $modelName) : void
+    {
         $this->modelName = $modelName;
     }
 }

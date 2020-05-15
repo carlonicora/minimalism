@@ -27,14 +27,20 @@ class ErrorController implements ControllerInterface
     }
 
     /**
-     * @param string|null $modelName
      * @param array|null $parameterValueList
      * @param array|null $parameterValues
      * @return ControllerInterface
      */
-    public function initialise(string $modelName = null, array $parameterValueList = null, array $parameterValues = null): ControllerInterface {
+    public function initialiseParameters(array $parameterValueList = null, array $parameterValues = null): ControllerInterface
+    {
         return $this;
     }
+
+    public function initialiseModel(string $modelName, string $verb = 'GET'): ControllerInterface
+    {
+        return $this;
+    }
+
 
     /**
      * @return Response
@@ -63,5 +69,13 @@ class ErrorController implements ControllerInterface
     public function setException(Exception $exception) : void
     {
         $this->exception = $exception;
+    }
+
+    /**
+     * @param int|null $code
+     * @param string|null $response
+     */
+    public function completeRender(int $code = null, string $response = null): void
+    {
     }
 }

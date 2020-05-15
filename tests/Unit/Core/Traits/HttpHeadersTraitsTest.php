@@ -12,6 +12,8 @@ class HttpHeadersTraitsTest extends AbstractTestCase
         /** @var MockObject|HttpHeadersTrait $trait */
         $trait = $this->getMockForTrait(HttpHeadersTrait::class);
 
+        $_SERVER['HTTP_1'] = 1;
+
         $this->assertNull($trait->getHeader('null'));
     }
 }

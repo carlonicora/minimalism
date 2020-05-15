@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceFactoryInterface;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use CarloNicora\Minimalism\Services\Paths\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Services\Paths\Paths;
 use Dotenv\Dotenv;
@@ -13,7 +14,8 @@ use JsonException;
 use ReflectionClass;
 use ReflectionException;
 
-class ServicesFactory {
+class ServicesFactory
+{
     /** @var array */
     private array $services = [];
 
@@ -23,16 +25,28 @@ class ServicesFactory {
     public function __construct()
     {
         $this->loadService(ServiceFactory::class);
+        $this->loadService(\CarloNicora\Minimalism\Services\ParameterValidator\Factories\ServiceFactory::class);
+    }
+
+    /**
+     * @return Paths
+     */
+    public function paths() : Paths
+    {
+        return $this->services[Paths::class];
+    }
+
+    public function parameterValidator() : ParameterValidator
+    {
+        return $this->service(ParameterValidator::class);
     }
 
     /**
      * @throws ConfigurationException
      */
-    public function initialise() : void {
-        /** @var Paths $paths */
-        $paths = $this->services[Paths::class];
-
-        $env = Dotenv::createImmutable($paths->getRoot());
+    public function initialise() : void
+    {
+        $env = Dotenv::createImmutable($this->paths()->getRoot());
         try{
             $env->load();
         } catch (Exception $e) {
@@ -48,7 +62,8 @@ class ServicesFactory {
      * @return mixed
      * @throws ServiceNotFoundException
      */
-    public function service(string $serviceName) {
+    public function service(string $serviceName)
+    {
         if (!array_key_exists($serviceName, $this->services)){
             throw new ServiceNotFoundException($serviceName);
         }
@@ -59,7 +74,8 @@ class ServicesFactory {
     /**
      * @param string $serviceFactoryClass
      */
-    public function loadService(string $serviceFactoryClass) : void {
+    public function loadService(string $serviceFactoryClass) : void
+    {
         $serviceClass = '';
         $namespaceParts = explode('\\', $serviceFactoryClass);
         for ($counter=0; $counter<=count($namespaceParts)-3;$counter++){
@@ -79,7 +95,8 @@ class ServicesFactory {
      * @throws ConfigurationException
      * @noinspection PhpDocRedundantThrowsInspection
      */
-    public function loadDependency(string $serviceClass) : void {
+    public function loadDependency(string $serviceClass) : void
+    {
         if (!array_key_exists($serviceClass, $this->services)){
 
             $serviceFactoryClass = '';
@@ -98,7 +115,8 @@ class ServicesFactory {
     /**
      * @return array
      */
-    private function getServiceFactories() : array {
+    private function getServiceFactories() : array
+    {
         $minimalism = glob(realpath('./vendor') . '/CarloNicora/Minimalism/src/Services/*/Factories/ServiceFactory.php');
         $plugins =  glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
         $builtIn = glob(realpath('./vendor') . '/*/*/src/Services/*/Factories/ServiceFactory.php');
@@ -130,7 +148,8 @@ class ServicesFactory {
     /**
      *
      */
-    public function cleanNonPersistentVariables(): void{
+    public function cleanNonPersistentVariables(): void
+    {
         /** @var ServiceInterface $service */
         foreach ($this->services as $service) {
             $service->cleanNonPersistentVariables();
@@ -141,7 +160,8 @@ class ServicesFactory {
      * @param string $cookieName
      * @throws ConfigurationException
      */
-    public function unserialiseCookies(string $cookieName) : void {
+    public function unserialiseCookies(string $cookieName) : void
+    {
         try {
             $cookiesArray = json_decode($_COOKIE[$cookieName], true, 512, JSON_THROW_ON_ERROR);
 
@@ -159,7 +179,8 @@ class ServicesFactory {
      * @throws JsonException
      * @noinspection PhpDocRedundantThrowsInspection
      */
-    public function serialiseCookies() : string {
+    public function serialiseCookies() : string
+    {
         $cookies = [];
         /** @var ServiceInterface $service */
         foreach ($this->services as $service) {
@@ -174,7 +195,8 @@ class ServicesFactory {
     /**
      *
      */
-    public function initialiseStatics() : void {
+    public function initialiseStatics() : void
+    {
         /** @var ServiceInterface $service */
         foreach ($this->services as $service){
             $service->initialiseStatics($this);
@@ -184,7 +206,8 @@ class ServicesFactory {
     /**
      *
      */
-    public function destroyStatics() : void {
+    public function destroyStatics() : void
+    {
         /** @var ServiceInterface $service */
         foreach ($this->services as $service){
             $service->destroyStatics();

@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules;
 
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Response;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
 use Exception;
 
@@ -11,16 +10,14 @@ class ErrorControllerTest extends AbstractTestCase
 {
     public function testInitialisation() : void
     {
-        $services = new ServicesFactory();
-        $errorController = new ErrorController($services);
+        $errorController = new ErrorController($this->services);
 
-        $this->assertEquals($errorController, $errorController->initialise());
+        $this->assertEquals($errorController, $errorController->initialiseParameters([])->initialiseModel(''));
     }
 
     public function testSetException() : void
     {
-        $services = new ServicesFactory();
-        $errorController = new ErrorController($services);
+        $errorController = new ErrorController($this->services);
 
         $e = new Exception();
 
@@ -31,8 +28,7 @@ class ErrorControllerTest extends AbstractTestCase
 
     public function testRender() : void
     {
-        $services = new ServicesFactory();
-        $errorController = new ErrorController($services);
+        $errorController = new ErrorController($this->services);
 
         $e = new Exception('message', 500);
 
@@ -43,5 +39,24 @@ class ErrorControllerTest extends AbstractTestCase
         $response->data = $e->getMessage();
 
         $this->assertEquals($response, $errorController->render());
+    }
+
+    public function testCompleteRender() : void
+    {
+        $errorController = new ErrorController($this->services);
+
+        $e = new Exception('message', 500);
+
+        $errorController->setException($e);
+
+        $response = new Response();
+        $response->httpStatus = $e->getCode();
+        $response->data = $e->getMessage();
+
+        $errorController->render();
+
+        $errorController->completeRender();
+
+        $this->assertEquals(1,1);
     }
 }

@@ -1,6 +1,8 @@
 <?php
 namespace CarloNicora\Minimalism\Tests\Unit\Abstracts;
 
+use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Services\Logger\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Tests\Unit\Factories\MockFactory;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -10,6 +12,9 @@ abstract class AbstractTestCase extends TestCase
 {
     /** @var MockFactory  */
     protected MockFactory $mockFactory;
+
+    /** @var ServicesFactory|null  */
+    protected ?ServicesFactory $services;
 
     /**
      * AbstractTestCase constructor.
@@ -22,6 +27,14 @@ abstract class AbstractTestCase extends TestCase
         parent::__construct($name, $data, $dataName);
 
         $this->mockFactory = new MockFactory();
+    }
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->services = new ServicesFactory();
+        $this->services->loadService(ServiceFactory::class);
     }
 
     /**
@@ -64,7 +77,7 @@ abstract class AbstractTestCase extends TestCase
      * @param $parameterName
      * @param $parameterValue
      */
-    protected function setProperty(&$object, $parameterName, $parameterValue)
+    protected function setProperty($object, $parameterName, $parameterValue): void
     {
         try {
             $reflection = new ReflectionClass(get_class($object));

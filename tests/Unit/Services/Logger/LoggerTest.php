@@ -1,13 +1,9 @@
 <?php
 namespace CarloNicora\Minimalism\Tests\Unit\Services\Logger;
 
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Services\Logger\Objects\Log;
-use CarloNicora\Minimalism\Services\Paths\Paths;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
-use PHPUnit\Framework\Constraint\Count;
 
 class LoggerTest extends AbstractTestCase
 {
@@ -25,10 +21,7 @@ class LoggerTest extends AbstractTestCase
             $_ENV['MINIMALISM_SERVICE_LOGGER_SAVE_SYSTEM_ONLY'] = 'true';
         }
 
-        $services = new ServicesFactory();
-        $services->loadService(ServiceFactory::class);
-
-        $this->logger = $services->service(Logger::class);
+        $this->logger = $this->services->service(Logger::class);
 
         unset($_ENV['MINIMALISM_SERVICE_LOGGER_SAVE_SYSTEM_ONLY']);
     }

@@ -10,9 +10,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class LoggerTraitTest extends AbstractTestCase
 {
-    /** @var ServicesFactory  */
-    public ServicesFactory $services;
-
     /** @var MockObject|LoggerTrait  */
     private ?MockObject $trait=null;
 

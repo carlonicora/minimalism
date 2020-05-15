@@ -3,7 +3,8 @@ namespace CarloNicora\Minimalism\Core\Services\Interfaces;
 
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 
-interface ServiceInterface {
+interface ServiceInterface
+{
     /**
      *
      */

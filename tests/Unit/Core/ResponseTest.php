@@ -22,6 +22,8 @@ class ResponseTest extends AbstractTestCase
 
         $response->writeContentType();
 
+        /** @noinspection ForgottenDebugOutputInspection */
+        /** @noinspection PhpUnitAssertContainsInspection */
         $this->assertContains('Content-Type: test', xdebug_get_headers());
     }
 

@@ -1,0 +1,7 @@
+{
+  "autoload": {
+    "psr-4": {
+      "CarloNicora\\Minimalism\\Tests\\Unit\\Mocks\\": "../"
+    }
+  }
+}

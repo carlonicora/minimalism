@@ -8,10 +8,12 @@ use CarloNicora\Minimalism\Core\Bootstrapper;
 use CarloNicora\Minimalism\Core\Modules\Factories\ControllerFactory;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Services\Logger\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Tests\Unit\Traits\MethodReflectionTrait;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use CarloNicora\Minimalism\Tests\Unit\Helpers\GenericController;
+use CarloNicora\Minimalism\Tests\Unit\Mocks\GenericController;
 
 class MockFactory extends TestCase
 {
@@ -50,12 +52,16 @@ class MockFactory extends TestCase
      */
     public function createControllerFactoryWithoutModules() : MockObject
     {
+        $services = new ServicesFactory();
+
         $response = $this->getMockBuilder(ControllerFactory::class)
-            ->onlyMethods(['loadControllerName'])
+            ->enableOriginalConstructor()
+            ->setConstructorArgs([$services])
+            ->onlyMethods(['loadController'])
             ->getMock();
 
         $response->expects($this->once())
-            ->method('loadControllerName')
+            ->method('loadController')
             ->willThrowException(
                 new ConfigurationException('minimalism', '', ConfigurationException::ERROR_NO_MODULE_AVAILABLE)
             );
@@ -65,23 +71,30 @@ class MockFactory extends TestCase
 
     /**
      * @return MockObject|ControllerFactory
+     * @throws Exception
      */
     public function createControllerFactory() : MockObject
     {
+        $services = new ServicesFactory();
+        $services->loadService(ServiceFactory::class);
+
         $response = $this->getMockBuilder(ControllerFactory::class)
-            ->onlyMethods(['loadControllerName'])
+            ->enableOriginalConstructor()
+            ->setConstructorArgs([$services])
+            ->onlyMethods(['loadController'])
             ->getMock();
 
+        /** @noinspection PhpIncludeInspection */
         require_once realpath('.') . DIRECTORY_SEPARATOR
             . 'tests' . DIRECTORY_SEPARATOR
             . 'Unit' . DIRECTORY_SEPARATOR
-            . 'Helpers' . DIRECTORY_SEPARATOR
+            . 'Mocks' . DIRECTORY_SEPARATOR
             . 'GenericController.php';
 
         $response->expects($this->once())
-            ->method('loadControllerName')
+            ->method('loadController')
             ->willReturn(
-                GenericController::class
+                new GenericController($services)
             );
 
         return $response;

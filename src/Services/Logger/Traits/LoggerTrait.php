@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Services\Logger\Traits;
 
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Paths\Paths;
 use Throwable;
 
 trait LoggerTrait {
@@ -15,9 +14,7 @@ trait LoggerTrait {
      * @throws ServiceNotFoundException
      */
     public function loggerInitialise(ServicesFactory $services) : void {
-        /** @var Paths $paths */
-        $paths = $services->service(Paths::class);
-        $this->logFolders = $paths->getLogFolders();
+        $this->logFolders = $services->paths()->getLogFolders();
     }
 
     /**

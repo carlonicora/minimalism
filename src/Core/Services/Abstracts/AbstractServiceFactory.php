@@ -6,7 +6,8 @@ use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceFactoryInterface;
 
-abstract class AbstractServiceFactory implements ServiceFactoryInterface {
+abstract class AbstractServiceFactory implements ServiceFactoryInterface
+{
     /** @var ServiceConfigurationsInterface  */
     protected ServiceConfigurationsInterface $configData;
 
@@ -18,7 +19,8 @@ abstract class AbstractServiceFactory implements ServiceFactoryInterface {
      * @param ServicesFactory $services
      * @throws ConfigurationException
      */
-    public function __construct(ServicesFactory $services) {
+    public function __construct(ServicesFactory $services)
+    {
         $this->services = $services;
         $this->setupDependencies();
     }
@@ -33,7 +35,8 @@ abstract class AbstractServiceFactory implements ServiceFactoryInterface {
      *
      * @throws ConfigurationException
      */
-    private function setupDependencies(): void {
+    private function setupDependencies(): void
+    {
         foreach ($this->configData->getDependencies() ?? [] as $serviceName) {
             $this->services->loadDependency($serviceName);
         }

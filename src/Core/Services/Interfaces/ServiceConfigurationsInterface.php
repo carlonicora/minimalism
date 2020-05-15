@@ -1,7 +1,8 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Services\Interfaces;
 
-interface ServiceConfigurationsInterface {
+interface ServiceConfigurationsInterface
+{
     /**
      * @return array
      */

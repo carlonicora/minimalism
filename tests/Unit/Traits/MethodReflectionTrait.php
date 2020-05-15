@@ -6,7 +6,7 @@ use ReflectionException;
 
 trait MethodReflectionTrait
 {
-    protected function setAttribute(&$object, $attributeName, $value) : void
+    protected function setAttribute($object, $attributeName, $value) : void
     {
         try {
             $reflection = new ReflectionClass(get_class($object));

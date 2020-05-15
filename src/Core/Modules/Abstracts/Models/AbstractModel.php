@@ -1,14 +1,15 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 
-use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Logger\Logger;
-use DateTime;
+use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
+use CarloNicora\Minimalism\Services\ParameterValidator\Objects\DefaultDecrypter;
 use Exception;
-use RuntimeException;
 
-abstract class AbstractModel {
+abstract class AbstractModel implements ModelInterface
+{
     /** @var ServicesFactory */
     protected ServicesFactory $services;
 
@@ -16,7 +17,7 @@ abstract class AbstractModel {
     protected ?array $file;
 
     /** @var string */
-    public ?string $redirectPage;
+    protected ?string $redirectPage;
 
     /** @var array */
     protected array $parameters=[];
@@ -27,173 +28,93 @@ abstract class AbstractModel {
     /** @var array  */
     protected array $passedParameters = [];
 
+    /** @var array  */
+    protected array $receivedParameters = [];
+
     public const PARAMETER_TYPE_INT = 'validateIntParameter';
     public const PARAMETER_TYPE_STRING = 'validateStringParameter';
     public const PARAMETER_TYPE_BOOL = 'validateBoolParameter';
     public const PARAMETER_TYPE_TIMESTAMP = 'validateTimestampParameter';
     public const PARAMETER_TYPE_DATETIME = 'validateDatetimeParameter';
-    public const PARAMETER_TYPE_DECIMAL = 'validateDecimalParameter';
+    public const PARAMETER_TYPE_FLOAT = 'validateFloatParameter';
 
     /**
      * model constructor.
      * @param ServicesFactory $services
-     * @param array $passedParameters
-     * @param array $file
-     * @throws ServiceNotFoundException|Exception
      */
-    public function __construct(ServicesFactory $services, array $passedParameters, array $file=null){
+    public function __construct(ServicesFactory $services)
+    {
         $this->services = $services;
 
         $this->logger = $services->service(Logger::class);
-
-        $this->file = $file;
-
-        $this->buildParameters($passedParameters);
-
-        $this->logger->addSystemEvent(null, 'Model parameters built');
-
-        $this->redirectPage = null;
     }
 
     /**
      * @param array $passedParameters
+     * @param array|null $file
      * @throws Exception
      */
-    private function buildParameters(array $passedParameters): void{
-        if ($this->parameters !== null) {
-            $parameters = $this->getParameters();
+    public function initialise(array $passedParameters, array $file=null) : void
+    {
+        $this->file = $file;
 
-            foreach ($parameters ?? [] as $parameterKey=>$value) {
-                $parameterName = $value;
-                $isParameterRequired = false;
-                $isParameterEncrypted = false;
+        $this->services->parameterValidator()->validate($this, $passedParameters);
 
-                $parameterValidation = $value['validation'] ?? self::PARAMETER_TYPE_STRING;
-
-                if (is_array($value)) {
-                    $parameterName = $value['name'];
-                    $isParameterRequired = $value['required'] ?? false;
-                    $isParameterEncrypted = $value['encrypted'] ?? false;
-                    $parameterValidation = $value['validation'] ?? self::PARAMETER_TYPE_STRING;
-                }
-
-                $this->passedParameters[] = $parameterKey;
-
-                if (array_key_exists($parameterKey, $passedParameters)) {
-                    if ($passedParameters[$parameterKey] !== null
-                        && ($isParameterEncrypted || (!empty($this->encryptedParameters) && in_array($parameterName, $this->encryptedParameters, true)))
-                    ) {
-                        $this->$parameterName = $this->decryptParameter($passedParameters[$parameterKey]);
-                    } elseif (method_exists($this, $parameterValidation)){
-                        $this->$parameterName = $this->$parameterValidation($passedParameters[$parameterKey]);
-                    } else {
-                        $this->$parameterName = $passedParameters[$parameterKey];
-                    }
-                } elseif ($isParameterRequired){
-                    throw new RuntimeException('Required parameter ' . $parameterName . ' missing.', 412);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param $variable
-     * @return string
-     */
-    protected function validateStringParameter($variable) : string {
-        return (string)$variable;
-    }
-
-    /**
-     * @param $variable
-     * @return int
-     */
-    protected function validateIntParameter($variable) : int {
-        return (int)$variable;
-    }
-
-    /**
-     * @param $variable
-     * @return float
-     */
-    protected function validateDecimalParameter($variable) : float {
-        return (float)$variable;
-    }
-
-    /**
-     * @param $parameter
-     * @return bool
-     */
-    protected function validateBoolParameter($parameter) : bool {
-        return (bool)$parameter;
-    }
-
-    /**
-     * @param $parameter
-     * @return DateTime
-     * @throws Exception
-     */
-    protected function validateDatetimeParameter($parameter) : DateTime {
-        if ((is_int($parameter))){
-            return new DateTime('@' . $parameter);
-        }
-
-        if ((is_string($parameter))){
-            return new DateTime($parameter);
-        }
-
-        throw new RuntimeException('no valid parameter');
-    }
-
-    /**
-     * @param $parameter
-     * @return int
-     * @throws Exception
-     */
-    protected function validateTimestampParameter($parameter) : int {
-        if ((is_int($parameter))) {
-            return $parameter;
-        }
-
-        if ((is_string($parameter))) {
-            $date = new DateTime($parameter);
-            return $date->getTimestamp();
-        }
-
-        throw new RuntimeException('no valid parameter');
-    }
-
-    /**
-     * @param string $parameter
-     * @return string
-     */
-    protected function decryptParameter(string $parameter) : string {
-        return $parameter;
+        $this->logger->addSystemEvent(null, 'Model parameters built');
     }
 
     /**
      * @return array
      */
-    protected function getParameters(): array {
+    public function getParameters(): array
+    {
         return $this->parameters;
     }
 
     /**
      * @return string
      */
-    public function redirect(): string {
+    public function redirect(): string
+    {
         return $this->redirectPage ?? '';
     }
 
     /**
      *
      */
-    abstract public function preRender();
+    abstract public function preRender() : void;
 
     /**
-     * @param int|null $code
-     * @param string|null $response
+     * @param int $code
+     * @param string $response
      * @return mixed
      */
-    public function postRender(?int $code, ?string $response): void{}
+    public function postRender(int $code, string $response): void
+    {
+    }
+
+    /**
+     * @param string $parameterName
+     */
+    public function addReceivedParameters(string $parameterName): void
+    {
+        $this->receivedParameters[] = $parameterName;
+    }
+
+    /**
+     * @param string $parameterName
+     * @param $parameterValue
+     */
+    public function setParameter(string $parameterName, $parameterValue): void
+    {
+        $this->$parameterName = $parameterValue;
+    }
+
+    /**
+     * @return DecrypterInterface
+     */
+    public function decrypter(): DecrypterInterface
+    {
+        return new DefaultDecrypter();
+    }
 }
