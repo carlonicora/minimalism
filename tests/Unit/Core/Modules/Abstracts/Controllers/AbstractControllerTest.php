@@ -51,7 +51,7 @@ class AbstractControllerTest extends AbstractTestCase
      */
     public function testInitialiseModelFailsWrongComposer() : void
     {
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/WrongComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/WrongComposer');
 
         $this->expectExceptionCode(500);
         $this->controller->initialiseModel();
@@ -62,7 +62,7 @@ class AbstractControllerTest extends AbstractTestCase
      */
     public function testInitialiseModelFailsComposerNoNamespace() : void
     {
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/ComposerNoNamespace');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/ComposerNoNamespace');
 
         $this->expectExceptionCode(ConfigurationException::ERROR_NAMESPACE_NOT_CONFIGURED);
         $this->controller->initialiseModel('modelName');
@@ -78,7 +78,7 @@ class AbstractControllerTest extends AbstractTestCase
                 'intParameter' => '123'
             ]
         );
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
         $this->controller->initialiseModel('GenericModel');
 
         $this->assertEquals(1,1);
@@ -89,7 +89,7 @@ class AbstractControllerTest extends AbstractTestCase
      */
     public function testInitialiseNonExistingModel() : void
     {
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
 
         $this->expectExceptionCode(404);
         $this->controller->initialiseModel('NonExistingModel');
@@ -188,7 +188,7 @@ class AbstractControllerTest extends AbstractTestCase
             'intParameter' => '123'
         ]);
 
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
         $this->controller->initialiseModel('SecondGenericModel');
 
         $this->assertEquals('GenericModel', $this->getProperty($this->controller, 'modelName'));
@@ -199,7 +199,7 @@ class AbstractControllerTest extends AbstractTestCase
      */
     public function testParseUriParameters() : void
     {
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
 
         $_SERVER['REQUEST_URI'] = '/Subfolder/10/ThirdGenericModel';
         $this->controller->initialiseParameters();
@@ -212,7 +212,7 @@ class AbstractControllerTest extends AbstractTestCase
      */
     public function testParseUriParametersIndex() : void
     {
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
 
         $_SERVER['REQUEST_URI'] = '10';
         $this->controller->initialiseParameters();
@@ -229,7 +229,7 @@ class AbstractControllerTest extends AbstractTestCase
             'requiredEncryptedParameter' => '1'
         ]);
 
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
         $this->controller->initialiseModel('GenericModel');
 
         $this->controller->completeRender(200, 'Result');

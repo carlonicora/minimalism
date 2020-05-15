@@ -29,7 +29,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             'requiredEncryptedParameter' => '1'
         ]);
 
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
         $this->controller->initialiseModel('ApiModel');
 
         $this->assertEquals(1, 1);
@@ -46,7 +46,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             'requiredEncryptedParameter' => '1'
         ]);
 
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
         $this->controller->initialiseModel('ApiModel');
 
         $model = $this->getProperty($this->controller, 'model');
@@ -67,7 +67,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             'requiredEncryptedParameter' => '1'
         ]);
 
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
         $this->controller->initialiseModel('ApiModel');
 
         $model = $this->getProperty($this->controller, 'model');
@@ -88,7 +88,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             'requiredEncryptedParameter' => '1'
         ]);
 
-        $this->setProperty($this->services->paths(), 'root', '/opt/project/tests/Unit/Mocks/MockComposer');
+        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/MockComposer');
         $this->controller->initialiseModel('ApiModel');
 
         $model = $this->getProperty($this->controller, 'model');

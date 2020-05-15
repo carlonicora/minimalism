@@ -117,19 +117,25 @@ class Paths extends AbstractService {
         return $namespace;
     }
 
+
+
     /**
      * @throws Exception
      */
-    private function initialiseDirectoryStructure(): void {
-        $this->log = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'logs';
+    private function initialiseDirectoryStructure(): void
+    {
+        $this->validateDirectory(($directory = $this->root . DIRECTORY_SEPARATOR . 'data'));
+        $this->validateDirectory(($directory .= DIRECTORY_SEPARATOR . 'logs'));
+        $this->validateDirectory(($this->log = $directory . DIRECTORY_SEPARATOR . 'minimalism'));
+    }
 
-        if (!file_exists($this->log) && !mkdir($this->log) && !is_dir($this->log)) {
-            throw new RuntimeException('Cannot create log directory', 500);
-        }
-
-        $this->log .= DIRECTORY_SEPARATOR . 'minimalism';
-
-        if (!file_exists($this->log) && !mkdir($this->log) && !is_dir($this->log)) {
+    /**
+     * @param string $directory
+     * @throws Exception
+     */
+    private function validateDirectory(string $directory) : void
+    {
+        if (!file_exists($directory) && !mkdir($directory,0777, true) && !is_dir($directory)) {
             throw new RuntimeException('Cannot create log directory', 500);
         }
     }
