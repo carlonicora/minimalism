@@ -33,4 +33,12 @@ interface LogMessageInterface
      * @return string
      */
     public function getMessageCode() : string;
+
+    /**
+     * @param string $exceptionName
+     * @param bool $includeMessage
+     * @param bool $includeThrowable
+     * @throws Throwable
+     */
+    public function throw(string $exceptionName, bool $includeMessage=false, bool $includeThrowable=false) : void;
 }
