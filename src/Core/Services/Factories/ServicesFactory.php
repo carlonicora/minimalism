@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceFactoryInterface;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use CarloNicora\Minimalism\Services\Paths\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Services\Paths\Paths;
@@ -21,11 +22,14 @@ class ServicesFactory
 
     /**
      * services constructor.
+     * @throws Exception
      */
     public function __construct()
     {
         $this->loadService(ServiceFactory::class);
+        $this->paths()->initialiseDirectoryStructure();
         $this->loadService(\CarloNicora\Minimalism\Services\ParameterValidator\Factories\ServiceFactory::class);
+        $this->loadService(\CarloNicora\Minimalism\Services\Logger\Factories\ServiceFactory::class);
     }
 
     /**
@@ -36,9 +40,20 @@ class ServicesFactory
         return $this->services[Paths::class];
     }
 
+    /**
+     * @return ParameterValidator
+     */
     public function parameterValidator() : ParameterValidator
     {
         return $this->service(ParameterValidator::class);
+    }
+
+    /**
+     * @return Logger
+     */
+    public function logger() : Logger
+    {
+        return $this->service(Logger::class);
     }
 
     /**

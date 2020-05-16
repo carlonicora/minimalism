@@ -4,13 +4,11 @@ namespace CarloNicora\Minimalism\Core\Modules;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Traits\LoggerTrait;
+use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
 use Exception;
 
 class ErrorController implements ControllerInterface
 {
-    use LoggerTrait;
-
     /** @var ServicesFactory  */
     private ServicesFactory $services;
 
@@ -52,13 +50,8 @@ class ErrorController implements ControllerInterface
         $response->httpStatus = $this->exception->getCode();
         $response->data = $this->exception->getMessage();
 
-        if ($this->services !== null) {
-            $this->loggerInitialise($this->services);
-            $this->loggerWriteError($this->exception->getCode(),
-                $this->exception->getMessage(),
-                'minimalism',
-                $this->exception);
-        }
+        $this->services->logger()->error()->log(MinimalismErrorEvents::GENERIC_ERROR($this->exception));
+
 
         return $response;
     }

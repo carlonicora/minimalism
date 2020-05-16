@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\DefaultDecrypter;
 use Exception;
@@ -21,9 +20,6 @@ abstract class AbstractModel implements ModelInterface
 
     /** @var array */
     protected array $parameters=[];
-
-    /** @var Logger  */
-    protected Logger $logger;
 
     /** @var array  */
     protected array $passedParameters = [];
@@ -45,8 +41,6 @@ abstract class AbstractModel implements ModelInterface
     public function __construct(ServicesFactory $services)
     {
         $this->services = $services;
-
-        $this->logger = $services->service(Logger::class);
     }
 
     /**
@@ -59,8 +53,6 @@ abstract class AbstractModel implements ModelInterface
         $this->file = $file;
 
         $this->services->parameterValidator()->validate($this, $passedParameters);
-
-        $this->logger->addSystemEvent(null, 'Model parameters built');
     }
 
     /**

@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
+use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Services\ParameterValidator\Configurations\ParameterValidatorConfigurations;
 use CarloNicora\Minimalism\Services\ParameterValidator\Factories\ParameterValidatorFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorFactoryInterface;
@@ -57,5 +58,7 @@ class ParameterValidator extends AbstractService {
             $parameterValidator = $this->factory->createParameterValidator($parameterObject);
             $parameterValidator->renderParameter($model, $passedParameters);
         }
+
+        $this->services->logger()->info()->log(MinimalismInfoEvents::PARAMETERS_VALIDATED());
     }
 }

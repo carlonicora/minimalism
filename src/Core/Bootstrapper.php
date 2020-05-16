@@ -7,9 +7,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Factories\ControllerFactory;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Logger;
-use CarloNicora\Minimalism\Services\Logger\Objects\Log;
-use CarloNicora\Minimalism\Services\Logger\Traits\LoggerTrait;
+use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use Exception;
 
 /**
@@ -18,8 +16,6 @@ use Exception;
  */
 class Bootstrapper
 {
-    use LoggerTrait;
-
     /** @var ServicesFactory  */
     private ServicesFactory $services;
 
@@ -28,12 +24,6 @@ class Bootstrapper
 
     /** @var ControllerInterface|null  */
     private ?ControllerInterface $controller=null;
-
-    /** @var array|Log[]  */
-    private array $logs=[];
-
-    /** @var Logger|null  */
-    private ?Logger $logger=null;
 
     /** @var ControllerFactory  */
     private ControllerFactory $controllerFactory;
@@ -44,9 +34,8 @@ class Bootstrapper
      */
     public function __construct()
     {
-        $this->logs[] = new Log('Request started (' . ($_SERVER['REQUEST_URI'] ?? '') . ')');
-
         $this->services = new ServicesFactory();
+        $this->services->logger()->info()->log(MinimalismInfoEvents::START());
 
         $this->controllerFactory = new ControllerFactory($this->services);
 
@@ -72,26 +61,10 @@ class Bootstrapper
             if ($this->controller === null) {
                 $this->services->cleanNonPersistentVariables();
                 $this->services->initialiseStatics();
-
-                $this->logger = $this->services->service(Logger::class);
-
-                foreach ($this->logs as $log) {
-                    $this->logger->addSystemEvent($log);
-                }
             }
         }
 
         return $this;
-    }
-
-    /**
-     *
-     */
-    public function __destruct()
-    {
-        if ($this->logger !== null) {
-            $this->logger->flush();
-        }
     }
 
     /**
@@ -116,7 +89,6 @@ class Bootstrapper
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
-            $this->logs[] = new Log('Session started');
         }
     }
 
@@ -125,9 +97,10 @@ class Bootstrapper
      */
     private function loadServicesFromSession() : ServicesFactory
     {
+        $events = $this->services->logger()->info()->getEvents();
         $this->services = $_SESSION['minimalismServices'];
-
-        $this->logs[] = new Log('Services loaded from session');
+        $this->services->logger()->info()->setEvents($events);
+        $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_LOADED_FROM_SESSION());
 
         return $this->services;
     }
@@ -153,9 +126,10 @@ class Bootstrapper
      */
     private function loadServicesFromCache() : ServicesFactory
     {
+        $events = $this->services->logger()->info()->getEvents();
         $this->services = unserialize(file_get_contents($this->services->paths()->getCache()));
-
-        $this->logs[] = new Log('Services loaded from cache');
+        $this->services->logger()->info()->setEvents($events);
+        $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_LOADED_FROM_CACHE());
 
         return $this->services;
     }
@@ -172,7 +146,7 @@ class Bootstrapper
             if (isset($_COOKIE['minimalismServices'])){
                 $this->services->unserialiseCookies('minimalismServices');
             }
-            $this->logs[] = new Log('Services loaded from scratch');
+            $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_INITIALISED());
         } catch (ConfigurationException $e) {
             $this->controller = new ErrorController($this->services);
             $this->controller->setException(new Exception($e->getMessage(), 500, $e));

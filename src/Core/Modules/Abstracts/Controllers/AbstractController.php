@@ -5,7 +5,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Logger;
+use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use Exception;
 use JsonException;
 use RuntimeException;
@@ -36,9 +36,6 @@ abstract class AbstractController implements ControllerInterface
     /** @var string|null  */
     protected ?string $phpInput=null;
 
-    /** @var Logger  */
-    protected Logger $logger;
-
     /** @var string  */
     protected string $verb='GET';
 
@@ -50,7 +47,6 @@ abstract class AbstractController implements ControllerInterface
     {
         $this->services = $services;
 
-        $this->logger = $services->service(Logger::class);
         $this->getPhpInputParameters();
     }
 
@@ -100,7 +96,7 @@ abstract class AbstractController implements ControllerInterface
             }
         }
 
-        $this->logger->addSystemEvent(null, 'Parameters Initialised');
+        $this->services->logger()->info()->log(MinimalismInfoEvents::PARAMETERS_INITIALISED());
 
         return $this;
     }
@@ -130,7 +126,7 @@ abstract class AbstractController implements ControllerInterface
             $this->initialiseModel($this->model->redirect());
         }
 
-        $this->logger->addSystemEvent(null, 'Model Initialised');
+        $this->services->logger()->info()->log(MinimalismInfoEvents::MODEL_INITIALISED($this->modelName));
 
         return $this;
     }
@@ -202,7 +198,7 @@ abstract class AbstractController implements ControllerInterface
 
         $this->services->cleanNonPersistentVariables();
         $_SESSION['minimalismServices'] = $this->services;
-        $this->logger->addSystemEvent(null, 'Session persisted');
+        $this->services->logger()->info()->log(MinimalismInfoEvents::SESSION_PERSISTED());
 
         $this->model->postRender($code, $response);
     }

@@ -21,9 +21,6 @@ class Paths extends AbstractService {
     /** @var string */
     private string $url;
 
-    /** @var string */
-    private string $log;
-
     /**
      * abstractApiCaller constructor.
      * @param ServiceConfigurationsInterface $configData
@@ -40,8 +37,6 @@ class Paths extends AbstractService {
         $this->root = realpath('.');
 
         $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
-
-        $this->initialiseDirectoryStructure();
     }
 
     /**
@@ -84,7 +79,11 @@ class Paths extends AbstractService {
      * @return string
      */
     public function getLog() : string {
-        return $this->log;
+        return $this->root
+            . DIRECTORY_SEPARATOR . 'data'
+            . DIRECTORY_SEPARATOR . 'logs'
+            . DIRECTORY_SEPARATOR . 'minimalism'
+            .DIRECTORY_SEPARATOR;
     }
 
     public function getCache() : string
@@ -117,16 +116,14 @@ class Paths extends AbstractService {
         return $namespace;
     }
 
-
-
     /**
      * @throws Exception
      */
-    private function initialiseDirectoryStructure(): void
+    public function initialiseDirectoryStructure(): void
     {
         $this->validateDirectory(($directory = $this->root . DIRECTORY_SEPARATOR . 'data'));
         $this->validateDirectory(($directory .= DIRECTORY_SEPARATOR . 'logs'));
-        $this->validateDirectory(($this->log = $directory . DIRECTORY_SEPARATOR . 'minimalism'));
+        $this->validateDirectory($directory . DIRECTORY_SEPARATOR . 'minimalism');
     }
 
     /**
@@ -135,15 +132,12 @@ class Paths extends AbstractService {
      */
     private function validateDirectory(string $directory) : void
     {
-        if (!file_exists($directory) && !mkdir($directory,0777, true) && !is_dir($directory)) {
+        try {
+            if (!file_exists($directory) && !mkdir($directory, 0777) && !is_dir($directory)) {
+                throw new RuntimeException('Cannot create log directory', 500);
+            }
+        } catch (Exception $e) {
             throw new RuntimeException('Cannot create log directory', 500);
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function getLogFolders() : array {
-        return $this->configData->logFolders;
     }
 }
