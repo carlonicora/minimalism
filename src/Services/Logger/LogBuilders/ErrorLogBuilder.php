@@ -12,7 +12,7 @@ class ErrorLogBuilder extends AbstractLogBuilder
      */
     public function log(LogMessageInterface $logMessage): LogMessageInterface
     {
-        $errorMessage = $logMessage->generateMessage();
+        $errorMessage = $logMessage->generateMessage() . PHP_EOL;
 
         $errorFile = $this->logDirectory . $logMessage->getService() . '.error.log';
 
