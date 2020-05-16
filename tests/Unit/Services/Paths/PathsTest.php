@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Services\Paths;
 
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
+use Exception;
 use JsonException;
 
 class PathsTest extends AbstractTestCase
@@ -52,6 +53,9 @@ class PathsTest extends AbstractTestCase
         $this->services->paths()->getModelsFolder();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFailInitialiseDirectoryStructure() : void
     {
         $this->setProperty($this->services->paths(), 'root', '~/etc/s');

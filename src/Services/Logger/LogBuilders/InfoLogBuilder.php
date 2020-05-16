@@ -13,10 +13,13 @@ class InfoLogBuilder extends AbstractLogBuilder
 
     /**
      * @param LogMessageInterface $logMessage
+     * @return LogMessageInterface
      */
-    public function log(LogMessageInterface $logMessage): void
+    public function log(LogMessageInterface $logMessage): LogMessageInterface
     {
        $this->events[] = $logMessage;
+
+       return $logMessage;
     }
 
     /**

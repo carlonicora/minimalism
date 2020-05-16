@@ -6,7 +6,11 @@ use CarloNicora\Minimalism\Services\Logger\Interfaces\LogMessageInterface;
 
 class ErrorLogBuilder extends AbstractLogBuilder
 {
-    public function log(LogMessageInterface $logMessage): void
+    /**
+     * @param LogMessageInterface $logMessage
+     * @return LogMessageInterface
+     */
+    public function log(LogMessageInterface $logMessage): LogMessageInterface
     {
         $errorMessage = $logMessage->generateMessage();
 
@@ -14,5 +18,7 @@ class ErrorLogBuilder extends AbstractLogBuilder
 
         /** @noinspection ForgottenDebugOutputInspection */
         error_log($errorMessage,3,$errorFile);
+
+        return $logMessage;
     }
 }

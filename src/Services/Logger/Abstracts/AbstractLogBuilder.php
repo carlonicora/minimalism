@@ -35,6 +35,7 @@ abstract class AbstractLogBuilder implements LogBuilderInterface
 
     /**
      * @param LogMessageInterface $logMessage
+     * @return LogMessageInterface
      */
-    abstract public function log(LogMessageInterface $logMessage): void;
+    abstract public function log(LogMessageInterface $logMessage): LogMessageInterface;
 }

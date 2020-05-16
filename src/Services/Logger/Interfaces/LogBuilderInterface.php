@@ -13,8 +13,9 @@ interface LogBuilderInterface
 
     /**
      * @param LogMessageInterface $logMessage
+     * @return LogMessageInterface
      */
-    public function log(LogMessageInterface $logMessage) : void;
+    public function log(LogMessageInterface $logMessage) : LogMessageInterface;
 
     /**
      *
