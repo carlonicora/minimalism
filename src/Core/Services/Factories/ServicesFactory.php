@@ -88,8 +88,9 @@ class ServicesFactory
 
     /**
      * @param string $serviceFactoryClass
+     * @return ServiceInterface|null
      */
-    public function loadService(string $serviceFactoryClass) : void
+    public function loadService(string $serviceFactoryClass) : ?ServiceInterface
     {
         $serviceClass = '';
         $namespaceParts = explode('\\', $serviceFactoryClass);
@@ -102,7 +103,11 @@ class ServicesFactory
             /** @var ServiceFactoryInterface $service */
             $service = new $serviceFactoryClass($this);
             $this->services[$serviceClass] = $service->create($this);
+
+            return $this->services[$serviceClass];
         }
+
+        return null;
     }
 
     /**
