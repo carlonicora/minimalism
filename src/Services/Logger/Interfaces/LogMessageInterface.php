@@ -28,4 +28,9 @@ interface LogMessageInterface
      * @return float
      */
     public function getTime() : float;
+
+    /**
+     * @return string
+     */
+    public function getMessageCode() : string;
 }

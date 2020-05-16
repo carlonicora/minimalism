@@ -52,6 +52,13 @@ abstract class AbstractLogMessage implements LogMessageInterface
         return $this->time;
     }
 
+    /**
+     * @return string
+     */
+    public function getMessageCode(): string
+    {
+        return (string)$this->id;
+    }
 
     /**
      * @param string $message
