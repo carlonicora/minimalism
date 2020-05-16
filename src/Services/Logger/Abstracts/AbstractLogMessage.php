@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Services\Logger\Abstracts;
 
 use CarloNicora\Minimalism\Services\Logger\Interfaces\LogMessageInterface;
+use Exception;
 use Throwable;
 
 abstract class AbstractLogMessage implements LogMessageInterface
@@ -84,7 +85,7 @@ abstract class AbstractLogMessage implements LogMessageInterface
      * @param string|null $message
      * @throws Throwable
      */
-    public function throw(string $exceptionName, ?string $message = null): void
+    public function throw(string $exceptionName= Exception::class, ?string $message = null): void
     {
         throw new $exceptionName(
             $message ?? $this->message,

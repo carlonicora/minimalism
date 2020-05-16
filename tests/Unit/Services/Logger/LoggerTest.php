@@ -53,4 +53,21 @@ class LoggerTest extends AbstractTestCase
 
         $this->assertEquals(1,1);
     }
+
+    public function testInfoLogger() : void
+    {
+        $this->setProperty($this->logger->info(), 'events', []);
+        $log = $this->logger->info()->log(MinimalismInfoEvents::PARAMETERS_VALIDATED());
+
+        $this->assertEquals('7', $log->getMessageCode());
+    }
+
+    public function testInfoThrowException() : void
+    {
+        $this->setProperty($this->logger->info(), 'events', []);
+
+        $this->expectExceptionCode(7);
+
+        $this->logger->info()->log(MinimalismInfoEvents::PARAMETERS_VALIDATED())->throw();
+    }
 }

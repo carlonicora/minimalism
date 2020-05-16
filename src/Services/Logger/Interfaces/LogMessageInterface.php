@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Logger\Interfaces;
 
+use Exception;
 use Throwable;
 
 interface LogMessageInterface
@@ -39,5 +40,5 @@ interface LogMessageInterface
      * @param string|null $message
      * @throws Throwable
      */
-    public function throw(string $exceptionName, ?string $message=null) : void;
+    public function throw(string $exceptionName=Exception::class, ?string $message=null) : void;
 }
