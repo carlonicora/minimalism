@@ -36,9 +36,8 @@ interface LogMessageInterface
 
     /**
      * @param string $exceptionName
-     * @param bool $includeMessage
-     * @param bool $includeThrowable
+     * @param string|null $message
      * @throws Throwable
      */
-    public function throw(string $exceptionName, bool $includeMessage=false, bool $includeThrowable=false) : void;
+    public function throw(string $exceptionName, ?string $message=null) : void;
 }

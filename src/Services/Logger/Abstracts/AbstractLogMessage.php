@@ -81,17 +81,14 @@ abstract class AbstractLogMessage implements LogMessageInterface
 
     /**
      * @param string $exceptionName
-     * @param bool $includeMessage
-     * @param bool $includeThrowable
+     * @param string|null $message
      * @throws Throwable
      */
-    public function throw(string $exceptionName, bool $includeMessage=false, bool $includeThrowable=false): void
+    public function throw(string $exceptionName, ?string $message = null): void
     {
         throw new $exceptionName(
-            $includeMessage ? $this->message : '',
+            $message ?? $this->message,
             $this->getMessageCode(),
-            $includeThrowable ? $this->e : null);
+            $this->e);
     }
-
-
 }
