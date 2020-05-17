@@ -63,37 +63,38 @@ class InfoLogBuilder extends AbstractLogBuilder
      */
     public function flush() : void
     {
+        if (count($this->events) > 0) {
+            $this->events[] = MinimalismInfoEvents::END();
 
-        $this->events[] = MinimalismInfoEvents::END();
+            $start = 0;
+            $previous = 0;
 
-        $start = 0;
-        $previous = 0;
+            usort($this->events, [$this, 'compare']);
 
-        usort($this->events, [$this, 'compare']);
+            $info = [];
 
-        $info = [];
+            foreach ($this->events as $logMessage) {
+                $event = json_decode($logMessage->generateMessage(), true, 512, JSON_THROW_ON_ERROR);
 
-        foreach ($this->events as $logMessage) {
-            $event = json_decode($logMessage->generateMessage(), true, 512, JSON_THROW_ON_ERROR);
+                if ($previous === 0) {
+                    $start = $logMessage->getTime();
+                } else {
+                    $event['duration'] = $this->getDifference($logMessage->getTime(), $previous);
+                }
 
-            if ($previous === 0) {
-                $start = $logMessage->getTime();
-            } else {
-                $event['duration'] = $this->getDifference($logMessage->getTime(), $previous);
+                $info[] = $event;
+                $previous = $logMessage->getTime();
             }
 
-            $info[] = $event;
-            $previous = $logMessage->getTime();
+            $info[0]['duration'] = $this->getDifference($previous, $start);
+
+            $infoMessage = json_encode($info, JSON_THROW_ON_ERROR) . PHP_EOL;
+
+            $infoFile = $this->logDirectory . 'system.log';
+
+            /** @noinspection ForgottenDebugOutputInspection */
+            error_log($infoMessage, 3, $infoFile);
         }
-
-        $info[0]['duration'] = $this->getDifference($previous, $start);
-
-        $infoMessage = json_encode($info, JSON_THROW_ON_ERROR) . PHP_EOL;
-
-        $infoFile = $this->logDirectory . 'system.log';
-
-        /** @noinspection ForgottenDebugOutputInspection */
-        error_log($infoMessage, 3, $infoFile);
     }
 
     /**
