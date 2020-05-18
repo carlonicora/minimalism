@@ -26,6 +26,11 @@ interface ControllerInterface
     public function initialiseModel(string $modelName): ControllerInterface;
 
     /**
+     * @return ControllerInterface
+     */
+    public function postInitialise() : ControllerInterface;
+
+    /**
      * @return Response
      */
     public function render() : Response;

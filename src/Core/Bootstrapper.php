@@ -173,10 +173,16 @@ class Bootstrapper
                 $this->controller = $this->controllerFactory
                     ->loadController()
                     ->initialiseParameters($parameterValueList, $parameterValues)
-                    ->initialiseModel($this->modelName);
+                    ->initialiseModel($this->modelName)
+                    ->postInitialise();
 
             } catch (ConfigurationException $e) {
                 $this->controller = new ErrorController($this->services);
+                $this->controller
+                    ->initialiseParameters()
+                    ->initialiseModel('')
+                    ->postInitialise();
+
                 $this->controller->setException(new Exception($e->getMessage(), 500, $e));
             }
         }

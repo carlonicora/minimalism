@@ -21,4 +21,9 @@ class GenericController extends AbstractController
     {
         return $this;
     }
+
+    public function postInitialise(): ControllerInterface
+    {
+        return $this;
+    }
 }

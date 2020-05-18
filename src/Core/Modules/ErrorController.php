@@ -34,11 +34,23 @@ class ErrorController implements ControllerInterface
         return $this;
     }
 
+    /**
+     * @param string $modelName
+     * @param string $verb
+     * @return $this|ControllerInterface
+     */
     public function initialiseModel(string $modelName, string $verb = 'GET'): ControllerInterface
     {
         return $this;
     }
 
+    /**
+     * @return $this|ControllerInterface
+     */
+    public function postInitialise(): ControllerInterface
+    {
+        return $this;
+    }
 
     /**
      * @return Response

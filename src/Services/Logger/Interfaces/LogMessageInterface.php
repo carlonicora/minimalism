@@ -41,4 +41,11 @@ interface LogMessageInterface
      * @throws Throwable
      */
     public function throw(string $exceptionName=Exception::class, ?string $message=null) : void;
+
+    /**
+     * @param string $exceptionName
+     * @param string|null $message
+     * @return Throwable
+     */
+    public function generateException(string $exceptionName=Exception::class, ?string $message=null) : Throwable;
 }

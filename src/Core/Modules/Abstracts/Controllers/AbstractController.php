@@ -210,4 +210,9 @@ abstract class AbstractController implements ControllerInterface
     {
         return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
+
+    /**
+     * @return ControllerInterface
+     */
+    abstract public function postInitialise(): ControllerInterface;
 }
