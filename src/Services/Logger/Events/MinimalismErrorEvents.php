@@ -13,4 +13,10 @@ class MinimalismErrorEvents extends ErrorLogMessage
     {
         return new self(1, 'Exception Generated', [], $e);
     }
-}
+
+    public static function SERVICE_CACHE_ERROR(Throwable $e) : LogMessageInterface
+    {
+        return new self(2, 'Services could not be cached', [], $e);
+    }
+
+ }

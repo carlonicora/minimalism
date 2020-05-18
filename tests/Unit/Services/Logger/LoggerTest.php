@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
 use JsonException;
+use Throwable;
 
 class LoggerTest extends AbstractTestCase
 {
@@ -62,6 +63,9 @@ class LoggerTest extends AbstractTestCase
         $this->assertEquals('7', $log->getMessageCode());
     }
 
+    /**
+     * @throws Throwable
+     */
     public function testInfoThrowException() : void
     {
         $this->setProperty($this->logger->info(), 'events', []);
