@@ -1,9 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Interfaces;
 
+use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
 use Exception;
+use Throwable;
 
 interface ModelInterface
 {
@@ -30,6 +32,12 @@ interface ModelInterface
      * @return array
      */
     public function getParameters() : array;
+
+    /**
+     * @param Throwable $e
+     * @return Response
+     */
+    public function getResponseFromError(Throwable $e) : Response;
 
     /**
      *

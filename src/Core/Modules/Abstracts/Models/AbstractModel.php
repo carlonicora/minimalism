@@ -2,10 +2,12 @@
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\DefaultDecrypter;
 use Exception;
+use Throwable;
 
 abstract class AbstractModel implements ModelInterface
 {
@@ -69,6 +71,19 @@ abstract class AbstractModel implements ModelInterface
     public function redirect(): string
     {
         return $this->redirectPage ?? '';
+    }
+
+    /**
+     * @param Throwable $e
+     * @return Response
+     */
+    public function getResponseFromError(Throwable $e): Response
+    {
+        $response = new Response();
+        $response->httpStatus = (string)$e->getCode();
+        $response->data = $e->getMessage();
+
+        return $response;
     }
 
     /**
