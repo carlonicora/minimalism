@@ -9,7 +9,7 @@ use RuntimeException;
 
 class TimestampValidator extends AbstractParameterValidator
 {
-    public function setParameter(ModelInterface $model, string $parameter): void
+    public function setParameter(ModelInterface $model, $parameter): void
     {
         try {
             if (strpos($parameter, '-') !== false) {

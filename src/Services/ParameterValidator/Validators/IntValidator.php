@@ -6,7 +6,7 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Abstracts\AbstractParamet
 
 class IntValidator extends AbstractParameterValidator
 {
-    public function setParameter(ModelInterface $model, string $parameter): void
+    public function setParameter(ModelInterface $model, $parameter): void
     {
         $model->setParameter($this->object->parameterName, (int)$parameter);
     }

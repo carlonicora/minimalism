@@ -9,7 +9,7 @@ use RuntimeException;
 
 class DateTimeValidator extends AbstractParameterValidator
 {
-    public function setParameter(ModelInterface $model, string $parameter): void
+    public function setParameter(ModelInterface $model, $parameter): void
     {
         if (strpos($parameter, '-') === false) {
             $parameter = '@' . $parameter;
