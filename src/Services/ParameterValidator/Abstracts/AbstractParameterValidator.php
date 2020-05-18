@@ -44,8 +44,8 @@ abstract class AbstractParameterValidator implements ParameterValidatorInterface
 
     /**
      * @param ModelInterface $model
-     * @param string $parameter
+     * @param mixed $parameter
      * @throws Exception
      */
-    abstract public function setParameter(ModelInterface $model, string $parameter) : void;
+    abstract public function setParameter(ModelInterface $model, $parameter) : void;
 }
