@@ -124,7 +124,7 @@ class ServicesFactory
             for ($counter=0; $counter<=count($namespaceParts)-2;$counter++){
                 $serviceFactoryClass .=  $namespaceParts[$counter] . '\\';
             }
-            $serviceFactoryClass .= 'factories\\serviceFactory';
+            $serviceFactoryClass .= 'Factories\\ServiceFactory';
 
             /** @var ServiceFactoryInterface $service */
             $service = new $serviceFactoryClass($this);
