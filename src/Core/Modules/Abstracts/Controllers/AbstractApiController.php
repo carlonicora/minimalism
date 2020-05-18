@@ -5,7 +5,10 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
 use Exception;
+use JsonException;
+use Throwable;
 
 abstract class AbstractApiController extends AbstractController
 {
@@ -54,5 +57,24 @@ abstract class AbstractApiController extends AbstractController
         $this->model->setVerb($this->verb);
 
         return $response;
+    }
+
+    /**
+     * @param int|null $code
+     * @param string|null $response
+     * @throws JsonException
+     */
+    public function completeRender(int $code = null, string $response = null): void
+    {
+        parent::completeRender($code, $response);
+
+        if ((int)$code < 400 && $this->services->paths()->getCache() !== null){
+            try {
+                file_put_contents($this->services->paths()->getCache(), serialize($this->services));
+            } catch (Throwable $exception) {
+                $this->services->logger()->error()
+                    ->log(MinimalismErrorEvents::SERVICE_CACHE_ERROR($exception));
+            }
+        }
     }
 }
