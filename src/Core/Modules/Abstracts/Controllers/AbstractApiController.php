@@ -7,8 +7,6 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
 use Exception;
-use JsonException;
-use Throwable;
 
 abstract class AbstractApiController extends AbstractController
 {
@@ -62,7 +60,6 @@ abstract class AbstractApiController extends AbstractController
     /**
      * @param int|null $code
      * @param string|null $response
-     * @throws JsonException
      */
     public function completeRender(int $code = null, string $response = null): void
     {
@@ -71,7 +68,7 @@ abstract class AbstractApiController extends AbstractController
         if ((int)$code < 400 && $this->services->paths()->getCache() !== null){
             try {
                 file_put_contents($this->services->paths()->getCache(), serialize($this->services));
-            } catch (Throwable $exception) {
+            } catch (Exception $exception) {
                 $this->services->logger()->error()
                     ->log(MinimalismErrorEvents::SERVICE_CACHE_ERROR($exception));
             }

@@ -7,7 +7,6 @@ use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\DefaultDecrypter;
 use Exception;
-use Throwable;
 
 abstract class AbstractModel implements ModelInterface
 {
@@ -74,10 +73,10 @@ abstract class AbstractModel implements ModelInterface
     }
 
     /**
-     * @param Throwable $e
+     * @param Exception $e
      * @return Response
      */
-    public function getResponseFromError(Throwable $e): Response
+    public function getResponseFromError(Exception $e): Response
     {
         $response = new Response();
         $response->httpStatus = (string)$e->getCode();

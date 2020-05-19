@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Services\Logger\Abstracts;
 
 use CarloNicora\Minimalism\Services\Logger\Interfaces\LogMessageInterface;
 use Exception;
-use Throwable;
 
 abstract class AbstractLogMessage implements LogMessageInterface
 {
@@ -16,8 +15,8 @@ abstract class AbstractLogMessage implements LogMessageInterface
     /** @var string  */
     protected ?string $message=null;
 
-    /** @var Throwable|null  */
-    protected ?Throwable $e=null;
+    /** @var Exception|null  */
+    protected ?Exception $e=null;
 
     /** @var float  */
     private float $time;
@@ -27,9 +26,9 @@ abstract class AbstractLogMessage implements LogMessageInterface
      * @param int $id
      * @param string $message
      * @param array $context
-     * @param Throwable|null $e
+     * @param Exception|null $e
      */
-    public function __construct(int $id, string $message, array $context=[], Throwable $e=null)
+    public function __construct(int $id, string $message, array $context=[], Exception $e=null)
     {
         $this->message = $this->mergeContext($message, $context);
         $this->id = $id;
@@ -83,9 +82,9 @@ abstract class AbstractLogMessage implements LogMessageInterface
     /**
      * @param string $exceptionName
      * @param string|null $message
-     * @throws Throwable
+     * @throws Exception
      */
-    public function throw(string $exceptionName= Exception::class, ?string $message = null): void
+    public function throw(string $exceptionName=Exception::class, ?string $message = null): void
     {
         throw $this->generateException($exceptionName, $message);
     }
@@ -93,9 +92,9 @@ abstract class AbstractLogMessage implements LogMessageInterface
     /**
      * @param string $exceptionName
      * @param string|null $message
-     * @return Throwable
+     * @return Exception
      */
-    public function generateException(string $exceptionName = Exception::class, ?string $message = null): Throwable
+    public function generateException(string $exceptionName=Exception::class, ?string $message = null): Exception
     {
         return new $exceptionName(
             $message ?? $this->message,

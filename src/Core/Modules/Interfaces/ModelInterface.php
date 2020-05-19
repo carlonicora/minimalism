@@ -5,7 +5,6 @@ use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
 use Exception;
-use Throwable;
 
 interface ModelInterface
 {
@@ -34,10 +33,10 @@ interface ModelInterface
     public function getParameters() : array;
 
     /**
-     * @param Throwable $e
+     * @param Exception $e
      * @return Response
      */
-    public function getResponseFromError(Throwable $e) : Response;
+    public function getResponseFromError(Exception $e) : Response;
 
     /**
      *

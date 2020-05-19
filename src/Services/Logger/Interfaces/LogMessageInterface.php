@@ -2,7 +2,6 @@
 namespace CarloNicora\Minimalism\Services\Logger\Interfaces;
 
 use Exception;
-use Throwable;
 
 interface LogMessageInterface
 {
@@ -11,9 +10,9 @@ interface LogMessageInterface
      * @param int $id
      * @param string $message
      * @param array $context
-     * @param Throwable|null $e
+     * @param Exception|null $e
      */
-    public function __construct(int $id, string $message, array $context=[], Throwable $e=null);
+    public function __construct(int $id, string $message, array $context=[], Exception $e=null);
 
     /**
      * @return string
@@ -38,14 +37,14 @@ interface LogMessageInterface
     /**
      * @param string $exceptionName
      * @param string|null $message
-     * @throws Throwable
+     * @throws Exception
      */
     public function throw(string $exceptionName=Exception::class, ?string $message=null) : void;
 
     /**
      * @param string $exceptionName
      * @param string|null $message
-     * @return Throwable
+     * @return Exception
      */
-    public function generateException(string $exceptionName=Exception::class, ?string $message=null) : Throwable;
+    public function generateException(string $exceptionName=Exception::class, ?string $message=null) : Exception;
 }

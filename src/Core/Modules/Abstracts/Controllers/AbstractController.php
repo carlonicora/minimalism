@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use Exception;
 use JsonException;
@@ -190,11 +191,16 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @param int $code
      * @param string $response
-     * @throws JsonException
      */
     public function completeRender(int $code=null, string $response=null): void
     {
-        setcookie('minimalismServices', $this->services->serialiseCookies(), time() + (30 * 24 * 60 * 60));
+        try {
+            $cookieValue = $this->services->serialiseCookies();
+            setcookie('minimalismServices', $cookieValue, time() + (30 * 24 * 60 * 60));
+        } catch (JsonException $e) {
+            $this->services->logger()->error()
+                ->log(MinimalismErrorEvents::COOKIE_SETTING_ERROR($e));
+        }
 
         $this->services->cleanNonPersistentVariables();
         $_SESSION['minimalismServices'] = $this->services;
