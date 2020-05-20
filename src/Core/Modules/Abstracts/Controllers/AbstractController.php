@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
@@ -186,7 +187,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @return Response
      */
-    abstract public function render(): Response;
+    abstract public function render(): ResponseInterface;
 
     /**
      * @param int $code

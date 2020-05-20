@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
@@ -76,11 +77,11 @@ abstract class AbstractModel implements ModelInterface
      * @param Exception $e
      * @return Response
      */
-    public function getResponseFromError(Exception $e): Response
+    public function getResponseFromError(Exception $e): ResponseInterface
     {
         $response = new Response();
-        $response->httpStatus = (string)$e->getCode();
-        $response->data = $e->getMessage();
+        $response->setStatus((string)$e->getCode());
+        $response->setData($e->getMessage());
 
         return $response;
     }

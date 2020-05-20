@@ -19,20 +19,20 @@ interface ApiModelInterface extends ModelInterface
     /**
      * @return Response
      */
-    public function DELETE() : Response;
+    public function DELETE() : ResponseInterface;
 
     /**
      * @return Response
      */
-    public function GET() : Response;
+    public function GET() : ResponseInterface;
 
     /**
      * @return Response
      */
-    public function POST() : Response;
+    public function POST() : ResponseInterface;
 
     /**
      * @return Response
      */
-    public function PUT() : Response;
+    public function PUT() : ResponseInterface;
 }

@@ -36,7 +36,7 @@ interface ModelInterface
      * @param Exception $e
      * @return Response
      */
-    public function getResponseFromError(Exception $e) : Response;
+    public function getResponseFromError(Exception $e) : ResponseInterface;
 
     /**
      *

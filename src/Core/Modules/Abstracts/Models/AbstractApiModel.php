@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
 
 abstract class AbstractApiModel extends AbstractModel implements ApiModelInterface
@@ -52,20 +53,20 @@ abstract class AbstractApiModel extends AbstractModel implements ApiModelInterfa
     /**
      * @return Response
      */
-    abstract public function DELETE() : Response;
+    abstract public function DELETE() : ResponseInterface;
 
     /**
      * @return Response
      */
-    abstract public function GET() : Response;
+    abstract public function GET() : ResponseInterface;
 
     /**
      * @return Response
      */
-    abstract public function POST() : Response;
+    abstract public function POST() : ResponseInterface;
 
     /**
      * @return Response
      */
-    abstract public function PUT() : Response;
+    abstract public function PUT() : ResponseInterface;
 }

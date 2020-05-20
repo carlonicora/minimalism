@@ -13,5 +13,5 @@ interface WebModelInterface
     /**
      * @return Response
      */
-    public function generateData() : Response;
+    public function generateData() : ResponseInterface;
 }

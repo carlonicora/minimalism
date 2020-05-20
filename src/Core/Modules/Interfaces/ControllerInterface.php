@@ -33,7 +33,7 @@ interface ControllerInterface
     /**
      * @return Response
      */
-    public function render() : Response;
+    public function render() : ResponseInterface;
 
     /**
      * @param int|null $code

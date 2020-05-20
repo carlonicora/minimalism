@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 
-use CarloNicora\Minimalism\Core\Response;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 
 abstract class AbstractWebModel extends AbstractModel
 {
@@ -19,5 +19,5 @@ abstract class AbstractWebModel extends AbstractModel
     /**
      * @return mixed
      */
-    abstract public function generateData() : Response;
+    abstract public function generateData() : ResponseInterface;
 }
