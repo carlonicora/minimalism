@@ -1,88 +1,66 @@
 <?php
 namespace CarloNicora\Minimalism\Core;
 
-class Response
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+
+class Response implements ResponseInterface
 {
     /** @var string  */
-    public string $contentType='text/html';
+    private string $data='';
 
     /** @var string  */
-    public string $httpStatus=self::HTTP_STATUS_200;
-
-    /** @var string|null  */
-    public ?string $data=null;
+    private string $contentType='text/html';
 
     /** @var string  */
-    public const HTTP_STATUS_200='200';
+    private string $httpStatus=self::HTTP_STATUS_200;
 
-    /** @var string  */
-    public const HTTP_STATUS_201='201';
+    /**
+     * @return string
+     */
+    public function getData(): string
+    {
+        return $this->data;
+    }
 
-    /** @var string  */
-    public const HTTP_STATUS_204='204';
+    /**
+     * @param string $data
+     */
+    public function setData(string $data): void
+    {
+        $this->data = $data;
+    }
 
-    /** @var string  */
-    public const HTTP_STATUS_205='205';
+    /**
+     * @return string
+     */
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
 
-    /** @var string  */
-    public const HTTP_STATUS_304='304';
+    /**
+     * @param string $httpContentType
+     */
+    public function setContentType(string $httpContentType): void
+    {
+        $this->contentType = $httpContentType;
+    }
 
-    /** @var string  */
-    public const HTTP_STATUS_400='400';
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->httpStatus;
+    }
 
-    /** @var string  */
-    public const HTTP_STATUS_401='401';
-
-    /** @var string  */
-    public const HTTP_STATUS_403='403';
-
-    /** @var string  */
-    public const HTTP_STATUS_404='404';
-
-    /** @var string  */
-    public const HTTP_STATUS_405='405';
-
-    /** @var string  */
-    public const HTTP_STATUS_406='406';
-
-    /** @var string  */
-    public const HTTP_STATUS_409='409';
-
-    /** @var string  */
-    public const HTTP_STATUS_410='410';
-
-    /** @var string  */
-    public const HTTP_STATUS_411='411';
-
-    /** @var string  */
-    public const HTTP_STATUS_412='412';
-
-    /** @var string  */
-    public const HTTP_STATUS_415='415';
-
-    /** @var string  */
-    public const HTTP_STATUS_422='422';
-
-    /** @var string  */
-    public const HTTP_STATUS_428='428';
-
-    /** @var string  */
-    public const HTTP_STATUS_429='429';
-
-    /** @var string  */
-    public const HTTP_STATUS_500='500';
-
-    /** @var string  */
-    public const HTTP_STATUS_501='501';
-
-    /** @var string  */
-    public const HTTP_STATUS_502='502';
-
-    /** @var string  */
-    public const HTTP_STATUS_503='503';
-
-    /** @var string  */
-    public const HTTP_STATUS_504='504';
+    /**
+     * @param string $status
+     */
+    public function setStatus(string $status): void
+    {
+        $this->httpStatus = $status;
+    }
 
     /**
      *
@@ -95,7 +73,7 @@ class Response
         if ($this->httpStatus !== self::HTTP_STATUS_201
             && $this->httpStatus !== self::HTTP_STATUS_204
             && $this->httpStatus !== self::HTTP_STATUS_304) {
-            echo $this->data;
+            echo $this->getData();
         }
     }
 
@@ -104,7 +82,7 @@ class Response
      */
     public function writeContentType() : void
     {
-        header('Content-Type: ' . $this->contentType);
+        header('Content-Type: ' . $this->getContentType());
     }
 
     /**
@@ -112,9 +90,9 @@ class Response
      */
     public function writeProtocol() : void
     {
-        http_response_code((int)$this->httpStatus);
-        $GLOBALS['http_response_code'] = $this->httpStatus;
-        header($this->getProtocol() . ' ' . $this->httpStatus . ' ' . $this->generateStatusText());
+        http_response_code((int)$this->getStatus());
+        $GLOBALS['http_response_code'] = $this->getStatus();
+        header($this->getProtocol() . ' ' . $this->getStatus() . ' ' . $this->generateStatusText());
     }
 
     /**
@@ -130,7 +108,7 @@ class Response
      */
     private function generateStatusText() : string
     {
-        switch ($this->httpStatus) {
+        switch ($this->getStatus()) {
             case self::HTTP_STATUS_201:
                 return 'Created';
                 break;

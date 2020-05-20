@@ -59,8 +59,8 @@ class ErrorController implements ControllerInterface
     {
         $response = new Response();
 
-        $response->httpStatus = $this->exception->getCode();
-        $response->data = $this->exception->getMessage();
+        $response->setStatus($this->exception->getCode());
+        $response->setData($this->exception->getMessage());
 
         $this->services->logger()->error()->log(MinimalismErrorEvents::GENERIC_ERROR($this->exception));
 

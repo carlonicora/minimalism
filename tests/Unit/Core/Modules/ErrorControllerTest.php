@@ -35,8 +35,8 @@ class ErrorControllerTest extends AbstractTestCase
         $errorController->setException($e);
 
         $response = new Response();
-        $response->httpStatus = $e->getCode();
-        $response->data = $e->getMessage();
+        $response->setStatus($e->getCode());
+        $response->setData($e->getMessage());
 
         $this->assertEquals($response, $errorController->render());
     }
@@ -50,8 +50,8 @@ class ErrorControllerTest extends AbstractTestCase
         $errorController->setException($e);
 
         $response = new Response();
-        $response->httpStatus = $e->getCode();
-        $response->data = $e->getMessage();
+        $response->setStatus($e->getCode());
+        $response->setData($e->getMessage());
 
         $errorController->render();
 

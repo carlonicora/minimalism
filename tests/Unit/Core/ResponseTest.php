@@ -9,8 +9,8 @@ class ResponseTest extends AbstractTestCase
     private function generateResponse(string $httpCode=Response::HTTP_STATUS_200) : Response
     {
         $response = new Response();
-        $response->httpStatus = $httpCode;
-        $response->data = 'html';
+        $response->setStatus($httpCode);
+        $response->setData('html');
 
         return $response;
     }
@@ -18,7 +18,7 @@ class ResponseTest extends AbstractTestCase
     public function testContentType() : void
     {
         $response = $this->generateResponse();
-        $response->contentType = 'test';
+        $response->setContentType('test');
 
         $response->writeContentType();
 
