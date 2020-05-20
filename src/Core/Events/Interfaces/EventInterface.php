@@ -1,18 +1,19 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Logger\Interfaces;
+namespace CarloNicora\Minimalism\Core\Events\Interfaces;
 
 use Exception;
 
-interface LogMessageInterface
+interface EventInterface
 {
     /**
      * LogMessageInterface constructor.
      * @param int $id
+     * @param string|null $httpStatusCode
      * @param string $message
      * @param array $context
      * @param Exception|null $e
      */
-    public function __construct(int $id, string $message, array $context=[], Exception $e=null);
+    public function __construct(int $id, ?string $httpStatusCode, string $message, array $context=[], Exception $e=null);
 
     /**
      * @return string
@@ -33,6 +34,11 @@ interface LogMessageInterface
      * @return string
      */
     public function getMessageCode() : string;
+
+    /**
+     * @return string
+     */
+    public function getHttpStatusCode() : string;
 
     /**
      * @param string $exceptionName

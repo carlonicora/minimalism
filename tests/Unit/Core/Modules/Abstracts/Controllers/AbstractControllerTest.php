@@ -217,7 +217,7 @@ class AbstractControllerTest extends AbstractTestCase
         $_SERVER['REQUEST_URI'] = '10';
         $this->controller->initialiseParameters();
 
-        $this->assertEquals('index', $this->getProperty($this->controller, 'modelName'));
+        $this->assertEquals('Index', $this->getProperty($this->controller, 'modelName'));
     }
 
     /**

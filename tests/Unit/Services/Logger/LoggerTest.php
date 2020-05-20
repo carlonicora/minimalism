@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Tests\Unit\Services\Logger;
 
-use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
+use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
 use JsonException;
@@ -70,7 +70,7 @@ class LoggerTest extends AbstractTestCase
     {
         $this->setProperty($this->logger->info(), 'events', []);
 
-        $this->expectExceptionCode(7);
+        $this->expectExceptionCode(500);
 
         $this->logger->info()->log(MinimalismInfoEvents::PARAMETERS_VALIDATED())->throw();
     }

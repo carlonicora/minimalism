@@ -1,10 +1,9 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Logger\LogMessages;
+namespace CarloNicora\Minimalism\Core\Events\Abstracts;
 
-use CarloNicora\Minimalism\Services\Logger\Abstracts\AbstractLogMessage;
 use JsonException;
 
-class ErrorLogMessage extends AbstractLogMessage
+class AbstractInfoEvent extends AbstractEvent
 {
     /**
      * @return string
@@ -19,11 +18,7 @@ class ErrorLogMessage extends AbstractLogMessage
         ];
 
         if ($this->message !== null) {
-            $message['error'] = $this->message;
-        }
-
-        if ($this->e !== null) {
-            $message['Exception'] = $this->e->getTrace();
+            $message['details'] = $this->message;
         }
 
         return json_encode($message, JSON_THROW_ON_ERROR);

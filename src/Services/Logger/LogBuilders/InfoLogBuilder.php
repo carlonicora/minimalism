@@ -1,21 +1,21 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Logger\LogBuilders;
 
+use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
+use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Services\Logger\Abstracts\AbstractLogBuilder;
-use CarloNicora\Minimalism\Services\Logger\Interfaces\LogMessageInterface;
-use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use JsonException;
 
 class InfoLogBuilder extends AbstractLogBuilder
 {
-    /** @var array|LogMessageInterface[]  */
+    /** @var array|EventInterface[]  */
     private array $events=[];
 
     /**
-     * @param LogMessageInterface $logMessage
-     * @return LogMessageInterface
+     * @param EventInterface $logMessage
+     * @return EventInterface
      */
-    public function log(LogMessageInterface $logMessage): LogMessageInterface
+    public function log(EventInterface $logMessage): EventInterface
     {
        $this->events[] = $logMessage;
 
@@ -23,7 +23,7 @@ class InfoLogBuilder extends AbstractLogBuilder
     }
 
     /**
-     * @return array|LogMessageInterface[]
+     * @return array|EventInterface[]
      */
     public function getEvents() : array
     {
@@ -39,11 +39,11 @@ class InfoLogBuilder extends AbstractLogBuilder
     }
 
     /**
-     * @param LogMessageInterface $previous
-     * @param LogMessageInterface $next
+     * @param EventInterface $previous
+     * @param EventInterface $next
      * @return int
      */
-    private function compare(LogMessageInterface $previous, LogMessageInterface $next) : int{
+    private function compare(EventInterface $previous, EventInterface $next) : int{
         return $previous->getTime() <= $next->getTime() ? 0 : 1;
     }
 

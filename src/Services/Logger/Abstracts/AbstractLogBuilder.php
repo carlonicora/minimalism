@@ -1,9 +1,9 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Logger\Abstracts;
 
+use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\Logger\Interfaces\LogBuilderInterface;
-use CarloNicora\Minimalism\Services\Logger\Interfaces\LogMessageInterface;
 
 abstract class AbstractLogBuilder implements LogBuilderInterface
 {
@@ -34,8 +34,8 @@ abstract class AbstractLogBuilder implements LogBuilderInterface
     }
 
     /**
-     * @param LogMessageInterface $logMessage
-     * @return LogMessageInterface
+     * @param EventInterface $logMessage
+     * @return EventInterface
      */
-    abstract public function log(LogMessageInterface $logMessage): LogMessageInterface;
+    abstract public function log(EventInterface $logMessage): EventInterface;
 }

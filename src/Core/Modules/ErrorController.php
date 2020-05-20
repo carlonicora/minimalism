@@ -1,10 +1,10 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
 use Exception;
 
 class ErrorController implements ControllerInterface

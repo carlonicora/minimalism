@@ -1,13 +1,13 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
+use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
-use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use Exception;
 use JsonException;
 use RuntimeException;
@@ -15,7 +15,7 @@ use RuntimeException;
 abstract class AbstractController implements ControllerInterface
 {
     /** @var string */
-    protected string $modelName = 'index';
+    protected string $modelName = 'Index';
 
     /** @var ServicesFactory */
     protected ServicesFactory $services;

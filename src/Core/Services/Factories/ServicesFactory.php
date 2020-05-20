@@ -137,12 +137,11 @@ class ServicesFactory
      */
     private function getServiceFactories() : array
     {
-        $minimalism = glob(realpath('./vendor') . '/CarloNicora/Minimalism/src/Services/*/Factories/ServiceFactory.php');
         $plugins =  glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
         $builtIn = glob(realpath('./vendor') . '/*/*/src/Services/*/Factories/ServiceFactory.php');
         $internal = glob(realpath('./src') . '/Services/*/Factories/ServiceFactory.php');
 
-        $files = array_unique(array_merge($minimalism, $plugins, $builtIn, $internal));
+        $files = array_unique(array_merge($plugins, $builtIn, $internal));
 
         $response = [];
 

@@ -20,7 +20,7 @@ class ControllerFactory
     public function __construct(ServicesFactory $services)
     {
         $this->services = $services;
-        $this->controllers = glob(realpath('./vendor') . '/*/*-module-*/src/controller.php');
+        $this->controllers = glob(realpath('./vendor') . '/*/*-module-*/src/Controller.php');
     }
 
     /**

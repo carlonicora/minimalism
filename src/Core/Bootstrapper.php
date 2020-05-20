@@ -2,12 +2,12 @@
 
 namespace CarloNicora\Minimalism\Core;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Factories\ControllerFactory;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Events\MinimalismInfoEvents;
 use Exception;
 
 /**

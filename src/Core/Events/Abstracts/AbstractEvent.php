@@ -1,16 +1,20 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Logger\Abstracts;
+namespace CarloNicora\Minimalism\Core\Events\Abstracts;
 
-use CarloNicora\Minimalism\Services\Logger\Interfaces\LogMessageInterface;
+use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use Exception;
 
-abstract class AbstractLogMessage implements LogMessageInterface
+abstract class AbstractEvent implements EventInterface
 {
     /** @var string  */
     protected string $serviceName='';
 
     /** @var int  */
     protected int $id;
+
+    /** @var string|null  */
+    protected ?string $httpStatusCode=null;
 
     /** @var string  */
     protected ?string $message=null;
@@ -24,14 +28,16 @@ abstract class AbstractLogMessage implements LogMessageInterface
     /**
      * LogMessageInterface constructor.
      * @param int $id
+     * @param string|null $httpStatusCode
      * @param string $message
      * @param array $context
      * @param Exception|null $e
      */
-    public function __construct(int $id, string $message, array $context=[], Exception $e=null)
+    public function __construct(int $id, ?string $httpStatusCode, string $message, array $context=[], Exception $e=null)
     {
         $this->message = $this->mergeContext($message, $context);
         $this->id = $id;
+        $this->httpStatusCode = $httpStatusCode;
         $this->e = $e;
         $this->time = microtime(true);
     }
@@ -58,6 +64,14 @@ abstract class AbstractLogMessage implements LogMessageInterface
     public function getMessageCode(): string
     {
         return (string)$this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHttpStatusCode(): string
+    {
+        return $this->httpStatusCode ?? ResponseInterface::HTTP_STATUS_500;
     }
 
     /**
@@ -98,7 +112,7 @@ abstract class AbstractLogMessage implements LogMessageInterface
     {
         return new $exceptionName(
             $message ?? $this->message,
-            $this->getMessageCode(),
+            $this->getHttpStatusCode(),
             $this->e);
     }
 }

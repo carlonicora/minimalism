@@ -1,16 +1,16 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Logger\LogBuilders;
 
+use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
 use CarloNicora\Minimalism\Services\Logger\Abstracts\AbstractLogBuilder;
-use CarloNicora\Minimalism\Services\Logger\Interfaces\LogMessageInterface;
 
 class ErrorLogBuilder extends AbstractLogBuilder
 {
     /**
-     * @param LogMessageInterface $logMessage
-     * @return LogMessageInterface
+     * @param EventInterface $logMessage
+     * @return EventInterface
      */
-    public function log(LogMessageInterface $logMessage): LogMessageInterface
+    public function log(EventInterface $logMessage): EventInterface
     {
         $errorMessage = $logMessage->generateMessage() . PHP_EOL;
 

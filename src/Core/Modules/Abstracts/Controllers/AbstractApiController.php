@@ -1,11 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\Events\MinimalismErrorEvents;
 use Exception;
 
 abstract class AbstractApiController extends AbstractController
@@ -72,6 +72,24 @@ abstract class AbstractApiController extends AbstractController
                 $this->services->logger()->error()
                     ->log(MinimalismErrorEvents::SERVICE_CACHE_ERROR($exception));
             }
+        }
+    }
+
+    /**
+     *
+     */
+    protected function parseUriParameters(): void {
+        $uri = strtok($_SERVER['REQUEST_URI'], '?');
+
+        if (!(isset($uri) && $uri === '/')) {
+            $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');
+            $variable = current($variables);
+            if (stripos($variable, 'v') === 0 && is_numeric(substr($variable, 1, 1)) && strpos($variable, '.') !== 0){
+                $this->version = $variable;
+                array_shift($variables);
+            }
+
+            $this->passedParameters = $this->parseModelNameFromUri($variables);
         }
     }
 }

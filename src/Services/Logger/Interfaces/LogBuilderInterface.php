@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Logger\Interfaces;
 
+use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 
 interface LogBuilderInterface
@@ -12,10 +13,10 @@ interface LogBuilderInterface
     public function __construct(ServicesFactory $service);
 
     /**
-     * @param LogMessageInterface $logMessage
-     * @return LogMessageInterface
+     * @param EventInterface $logMessage
+     * @return EventInterface
      */
-    public function log(LogMessageInterface $logMessage) : LogMessageInterface;
+    public function log(EventInterface $logMessage) : EventInterface;
 
     /**
      *
