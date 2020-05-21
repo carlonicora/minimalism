@@ -5,7 +5,7 @@ use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractServiceFactory;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\configurations\LoggerConfigurations;
+use CarloNicora\Minimalism\Services\Logger\Configurations\LoggerConfigurations;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 
 class ServiceFactory extends AbstractServiceFactory {

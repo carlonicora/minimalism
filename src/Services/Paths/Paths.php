@@ -6,7 +6,7 @@ use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
-use CarloNicora\Minimalism\Services\Paths\configurations\PathsConfigurations;
+use CarloNicora\Minimalism\Services\Paths\Configurations\PathsConfigurations;
 use Exception;
 use JsonException;
 use RuntimeException;

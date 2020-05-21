@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Logger;
 use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Logger\configurations\LoggerConfigurations;
+use CarloNicora\Minimalism\Services\Logger\Configurations\LoggerConfigurations;
 use CarloNicora\Minimalism\Services\Logger\Interfaces\LogBuilderInterface;
 use CarloNicora\Minimalism\Services\Logger\LogBuilders\ErrorLogBuilder;
 use CarloNicora\Minimalism\Services\Logger\LogBuilders\InfoLogBuilder;

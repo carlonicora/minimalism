@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Paths\Factories;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractServiceFactory;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
-use CarloNicora\Minimalism\Services\Paths\configurations\PathsConfigurations;
+use CarloNicora\Minimalism\Services\Paths\Configurations\PathsConfigurations;
 use CarloNicora\Minimalism\Services\Paths\Paths;
 use Exception;
 
