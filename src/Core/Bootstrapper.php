@@ -29,6 +29,19 @@ class Bootstrapper
     private ControllerFactory $controllerFactory;
 
     /**
+     *
+     */
+    public static function execute() : void
+    {
+        $bootstrapper = new self();
+        $bootstrapper
+            ->initialise()
+            ->loadController()
+            ->render()
+            ->write();
+    }
+
+    /**
      * Bootstrapper constructor.
      * @throws Exception
      */
