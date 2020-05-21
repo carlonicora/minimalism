@@ -140,8 +140,9 @@ class ServicesFactory
         $plugins =  glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
         $builtIn = glob(realpath('./vendor') . '/*/*/src/Services/*/Factories/ServiceFactory.php');
         $internal = glob(realpath('./src') . '/Services/*/Factories/ServiceFactory.php');
+        $microservice = glob(realpath('./src') . '/Factories/ServiceFactory.php');
 
-        $files = array_unique(array_merge($plugins, $builtIn, $internal));
+        $files = array_unique(array_merge($plugins, $builtIn, $internal, $microservice));
 
         $response = [];
 
