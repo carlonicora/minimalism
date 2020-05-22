@@ -194,8 +194,7 @@ abstract class AbstractController implements ControllerInterface
     public function completeRender(int $code=null, string $response=null): void
     {
         $this->services->cleanNonPersistentVariables();
-
-        $this->model->postRender($code, $response);
+        $this->services->destroyStatics();
     }
 
     /**

@@ -44,13 +44,6 @@ interface ModelInterface
     public function preRender() : void;
 
     /**
-     * @param int $code
-     * @param string $response
-     * @return mixed
-     */
-    public function postRender(int $code, string $response): void;
-
-    /**
      * @return string
      */
     public function redirect(): string;
