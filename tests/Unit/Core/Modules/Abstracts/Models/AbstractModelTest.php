@@ -225,11 +225,4 @@ class AbstractModelTest extends AbstractTestCase
         $this->expectExceptionCode(412);
         $this->genericModel->initialise([]);
     }
-
-    public function testPostRender() : void
-    {
-        $this->genericModel->postRender(200, '');
-
-        $this->assertEquals(1,1);
-    }
 }
