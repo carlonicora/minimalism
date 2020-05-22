@@ -25,8 +25,8 @@ class Bootstrapper
     /** @var ControllerInterface|null  */
     private ?ControllerInterface $controller=null;
 
-    /** @var ControllerFactory  */
-    private ControllerFactory $controllerFactory;
+    /** @var ControllerFactory|null  */
+    private ?ControllerFactory $controllerFactory=null;
 
     /**
      *
@@ -50,8 +50,6 @@ class Bootstrapper
         $this->services = new ServicesFactory();
         $this->services->logger()->info()->log(MinimalismInfoEvents::START());
 
-        $this->controllerFactory = new ControllerFactory($this->services);
-
         $this->denyAccessToSpecificFileTypes();
     }
 
@@ -74,6 +72,7 @@ class Bootstrapper
             if ($this->controller === null) {
                 $this->services->cleanNonPersistentVariables();
                 $this->services->initialiseStatics();
+                $this->controllerFactory = new ControllerFactory($this->services);
             }
         }
 
