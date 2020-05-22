@@ -167,11 +167,11 @@ abstract class AbstractController implements ControllerInterface
         }
 
         $response = [];
-        $this->modelName = array_shift($uriVariables);
+        $this->modelName = ucfirst(array_shift($uriVariables));
         foreach ($uriVariables as $uriParam) {
-            $classPath = $this->services->paths()->getModelsFolder() . $this->modelName . DIRECTORY_SEPARATOR . $uriParam;
+            $classPath = $this->services->paths()->getModelsFolder() . $this->modelName . DIRECTORY_SEPARATOR . ucfirst($uriParam);
             if (is_dir($classPath) || is_file($classPath . '.php')) {
-                $this->modelName .= DIRECTORY_SEPARATOR . $uriParam;
+                $this->modelName .= DIRECTORY_SEPARATOR . ucfirst($uriParam);
             } else {
                 $response[] = $uriVariables[0];
             }
