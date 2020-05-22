@@ -24,4 +24,9 @@ class MinimalismErrorEvents extends AbstractErrorEvent
     {
         return new self(3, ResponseInterface::HTTP_STATUS_500, 'Services could not be saved in the cookies', [], $e);
     }
+
+    public static function CONFIGURATION_ERROR(string $missingConfiguration) : EventInterface
+    {
+        return new self(4, ResponseInterface::HTTP_STATUS_500, 'Error in the environment configuration: %s', [$missingConfiguration]);
+    }
  }
