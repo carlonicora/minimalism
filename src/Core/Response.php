@@ -5,6 +5,9 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 
 class Response implements ResponseInterface
 {
+    /** @var bool  */
+    private bool $isHttpRequest=true;
+
     /** @var string  */
     private string $data='';
 
@@ -63,16 +66,28 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return mixed|void
+     */
+    public function setNotHttpResponse()
+    {
+        $this->isHttpRequest = false;
+    }
+
+    /**
      *
      */
     public function write() : void
     {
-        $this->writeProtocol();
-        $this->writeContentType();
+        if ($this->isHttpRequest) {
+            $this->writeProtocol();
+            $this->writeContentType();
 
-        if ($this->httpStatus !== self::HTTP_STATUS_201
-            && $this->httpStatus !== self::HTTP_STATUS_204
-            && $this->httpStatus !== self::HTTP_STATUS_304) {
+            if ($this->httpStatus !== self::HTTP_STATUS_201
+                && $this->httpStatus !== self::HTTP_STATUS_204
+                && $this->httpStatus !== self::HTTP_STATUS_304) {
+                echo $this->getData();
+            }
+        } else {
             echo $this->getData();
         }
     }

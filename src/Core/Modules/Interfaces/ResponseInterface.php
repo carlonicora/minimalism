@@ -76,6 +76,11 @@ interface ResponseInterface
     public const HTTP_STATUS_504='504';
 
     /**
+     * @return mixed
+     */
+    public function setNotHttpResponse();
+
+    /**
      *
      */
     public function write() : void;

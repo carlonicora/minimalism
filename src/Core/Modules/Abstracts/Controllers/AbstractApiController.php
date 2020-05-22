@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
-use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
+use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\Traits\CompleteRenderTrait;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
@@ -10,6 +10,8 @@ use Exception;
 
 abstract class AbstractApiController extends AbstractController
 {
+    use CompleteRenderTrait;
+
     /** @var string */
     public string $verb;
 
@@ -33,7 +35,7 @@ abstract class AbstractApiController extends AbstractController
      */
     protected function initialiseVerb(): void
     {
-        $this->verb = $_SERVER['REQUEST_METHOD'];
+        $this->verb = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         if ($this->verb === 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
             if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
                 $this->verb = 'DELETE';
@@ -65,21 +67,14 @@ abstract class AbstractApiController extends AbstractController
     {
         parent::completeRender($code, $response);
 
-        if ((int)$code < 400 && $this->services->paths()->getCache() !== null){
-            try {
-                file_put_contents($this->services->paths()->getCache(), serialize($this->services));
-            } catch (Exception $exception) {
-                $this->services->logger()->error()
-                    ->log(MinimalismErrorEvents::SERVICE_CACHE_ERROR($exception));
-            }
-        }
+        $this->saveCache($this->services, $code);
     }
 
     /**
      *
      */
     protected function parseUriParameters(): void {
-        $uri = strtok($_SERVER['REQUEST_URI'], '?');
+        $uri = strtok($_SERVER['REQUEST_URI'] ?? '', '?');
 
         if (!(isset($uri) && $uri === '/')) {
             $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');

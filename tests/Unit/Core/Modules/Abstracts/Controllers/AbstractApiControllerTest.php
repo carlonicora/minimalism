@@ -15,7 +15,6 @@ class AbstractApiControllerTest extends AbstractTestCase
     {
         parent::setUp();
         unset($_SERVER['HTTP_X_HTTP_METHOD']);
-
     }
 
     /**
