@@ -80,6 +80,9 @@ abstract class AbstractApiController extends AbstractController
             $variables = array_filter(explode('/', substr($uri, 1)), 'strlen');
             $variable = current($variables);
             if (stripos($variable, 'v') === 0 && is_numeric(substr($variable, 1, 1)) && strpos($variable, '.') !== 0){
+
+
+
                 $this->version = $variable;
                 array_shift($variables);
             }

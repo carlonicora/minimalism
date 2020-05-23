@@ -76,6 +76,16 @@ class Paths extends AbstractService {
     }
 
     /**
+     * @param string $version
+     */
+    public function setUrlVersion(string $version) : void
+    {
+        if (substr($this->url, -(strlen($version) + 1)) !== $version . '/') {
+            $this->url .= $version . '/';
+        }
+    }
+
+    /**
      * @return string
      */
     public function getLog() : string {
