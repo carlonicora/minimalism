@@ -115,7 +115,7 @@ abstract class AbstractController implements ControllerInterface
         $modelClass = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $this->modelName);
 
         if (!class_exists($modelClass)){
-            throw new RuntimeException('model ' . $this->modelName . ' not found', 404);
+            throw new RuntimeException('model ' . strtolower($this->modelName) . ' not found', 404);
         }
 
         $this->model = new $modelClass($this->services);

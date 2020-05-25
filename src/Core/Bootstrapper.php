@@ -6,6 +6,7 @@ use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Factories\ControllerFactory;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use Exception;
@@ -195,7 +196,8 @@ class Bootstrapper
                     ->initialiseModel('')
                     ->postInitialise();
 
-                $this->controller->setException(new Exception($e->getMessage(), 500, $e));
+                $code = $e->getCode() !== '' ? $e->getCode() : ResponseInterface::HTTP_STATUS_500;
+                $this->controller->setException(new Exception($e->getMessage(), $code, $e));
             }
         }
 
