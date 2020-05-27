@@ -1,8 +1,8 @@
 <?php
 namespace CarloNicora\Minimalism\Services\Paths;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
-use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
@@ -41,20 +41,28 @@ class Paths extends AbstractService {
 
     /**
      * @return string
+     * @throws Exception
      */
     public function getModelsFolder() : string
     {
+        $sourceFolder = '';
+        $content = [];
+
         try {
             $content = file_get_contents($this->root . DIRECTORY_SEPARATOR . 'composer.json');
             $content = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException|Exception|ServiceNotFoundException $e) {
-            throw new RuntimeException($e->getMessage(), 500);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::MODELS_FOLDER_MISSING()
+            )->throw(Exception::class, 'Misconfigured application');
         }
 
         try {
             $sourceFolder = current($content['autoload']['psr-4']);
         } catch (Exception $e) {
-            throw new ConfigurationException('minimalism', 'namespace not found in composer', ConfigurationException::ERROR_NAMESPACE_NOT_CONFIGURED);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::NAMESPACE_MISSING()
+            )->throw();
         }
 
         return $this->root
@@ -106,24 +114,31 @@ class Paths extends AbstractService {
 
     /**
      * @return string
-     * @throws JsonException
+     * @throws Exception
      * @noinspection PhpDocRedundantThrowsInspection
      */
     public function getNamespace() : string {
+        $content = [];
+        $response = '';
+
         try {
             $content = file_get_contents($this->root . DIRECTORY_SEPARATOR . 'composer.json');
             $content = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException|Exception|ServiceNotFoundException $e) {
-            throw new RuntimeException($e->getMessage(), 500);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::COMPOSER_FILE_MISCONFIGURED()
+            )->throw();
         }
 
         try {
-            $namespace = key($content['autoload']['psr-4']);
+            $response = key($content['autoload']['psr-4']);
         } catch (Exception $e) {
-            throw new ConfigurationException('minimalism', 'namespace not found in composer', ConfigurationException::ERROR_NAMESPACE_NOT_CONFIGURED);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::NAMESPACE_MISSING()
+            )->throw();
         }
 
-        return $namespace;
+        return $response;
     }
 
     /**

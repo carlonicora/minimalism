@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Tests\Unit\Services\Logger;
 use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
+use Exception;
 use JsonException;
 use Throwable;
 
@@ -12,6 +13,9 @@ class LoggerTest extends AbstractTestCase
     /** @var Logger  */
     public Logger $logger;
 
+    /**
+     * @throws Exception
+     */
     public function setUp(): void
     {
         parent::setUp();

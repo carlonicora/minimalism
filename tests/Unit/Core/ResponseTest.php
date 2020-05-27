@@ -36,6 +36,17 @@ class ResponseTest extends AbstractTestCase
         $response->write();
     }
 
+    public function testSetNoHttpResponse() : void
+    {
+        $response = $this->generateResponse();
+        $response->setNotHttpResponse();
+        $this->setProperty($response, 'data', 'noHttpResponse');
+
+        $this->expectOutputString('noHttpResponse');
+
+        $response->write();
+    }
+
     public function testHttpResponseCode200() : void
     {
         $response = $this->generateResponse();

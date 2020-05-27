@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Tests\Unit\Services\Paths;
 
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
 use Exception;
-use JsonException;
 
 class PathsTest extends AbstractTestCase
 {
@@ -19,13 +18,16 @@ class PathsTest extends AbstractTestCase
     }
 
     /**
-     * @throws JsonException
+     * @throws Exception
      */
     public function testNamespace() : void
     {
         $this->assertEquals('CarloNicora\\Minimalism\\', $this->services->paths()->getNamespace());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFailGetModelsFolderNoComposer() : void
     {
         $this->setProperty($this->services->paths(), 'root', './tests/');
@@ -35,6 +37,9 @@ class PathsTest extends AbstractTestCase
         $this->services->paths()->getModelsFolder();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFailGetModelsFolderWrongComposer() : void
     {
         $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/WrongComposer');
@@ -44,11 +49,14 @@ class PathsTest extends AbstractTestCase
         $this->services->paths()->getModelsFolder();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFailGetModelsFolderComposerNoNamespace() : void
     {
         $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/ComposerNoNamespace');
 
-        $this->expectExceptionCode(1005);
+        $this->expectExceptionCode(500);
 
         $this->services->paths()->getModelsFolder();
     }
@@ -63,5 +71,11 @@ class PathsTest extends AbstractTestCase
         $this->expectExceptionCode(500);
 
         $this->services->paths()->initialiseDirectoryStructure();
+    }
+
+    public function testSetUrlVersion() : void
+    {
+        $this->services->paths()->setUrlVersion('v1.0');
+        $this->assertEquals('http:///v1.0/', $this->services->paths()->getUrl());
     }
 }

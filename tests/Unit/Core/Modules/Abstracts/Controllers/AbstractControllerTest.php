@@ -2,7 +2,6 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractController;
-use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -64,7 +63,7 @@ class AbstractControllerTest extends AbstractTestCase
     {
         $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/ComposerNoNamespace');
 
-        $this->expectExceptionCode(ConfigurationException::ERROR_NAMESPACE_NOT_CONFIGURED);
+        $this->expectExceptionCode(500);
         $this->controller->initialiseModel('modelName');
     }
 

@@ -41,7 +41,7 @@ class MockFactory extends TestCase
         $response->expects($this->once())
             ->method('initialise')
             ->willThrowException(
-                new ConfigurationException('minimalism', '', ConfigurationException::ERROR_CONFIGURATION_FILE_ERROR)
+                new ConfigurationException('', 500)
             );
 
         return $response;
@@ -63,7 +63,7 @@ class MockFactory extends TestCase
         $response->expects($this->once())
             ->method('loadController')
             ->willThrowException(
-                new ConfigurationException('minimalism', '', ConfigurationException::ERROR_NO_MODULE_AVAILABLE)
+                new ConfigurationException('', 500)
             );
 
         return $response;

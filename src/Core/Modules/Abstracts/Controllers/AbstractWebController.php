@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
+use Exception;
 use JsonException;
 
 abstract class AbstractWebController extends AbstractController
@@ -18,6 +19,7 @@ abstract class AbstractWebController extends AbstractController
     /**
      * @param int|null $code
      * @param string|null $response
+     * @throws Exception
      */
     public function completeRender(int $code = null, string $response = null): void
     {

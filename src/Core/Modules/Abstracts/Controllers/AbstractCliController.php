@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\Traits\CompleteRenderTrait;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
+use Exception;
 use JsonException;
 
 abstract class AbstractCliController extends AbstractController
@@ -48,6 +49,7 @@ abstract class AbstractCliController extends AbstractController
     /**
      * @param int|null $code
      * @param string|null $response
+     * @throws Exception
      */
     public function completeRender(int $code = null, string $response = null): void
     {

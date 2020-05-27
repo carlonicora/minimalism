@@ -10,6 +10,7 @@ trait CompleteRenderTrait
     /**
      * @param ServicesFactory $services
      * @param int|null $code
+     * @throws Exception
      */
     public function saveCache(ServicesFactory $services, int $code = null): void
     {

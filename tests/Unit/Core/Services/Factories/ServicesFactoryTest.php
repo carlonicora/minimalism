@@ -5,10 +5,14 @@ use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Services\Logger\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
+use Exception;
 use JsonException;
 
 class ServicesFactoryTest extends AbstractTestCase
 {
+    /**
+     * @throws Exception
+     */
     public function testServiceNotFound() : void
     {
         $this->expectException(ServiceNotFoundException::class);
@@ -16,6 +20,9 @@ class ServicesFactoryTest extends AbstractTestCase
         $this->services->service('Something Not Existing');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testLoadDependency() : void
     {
         $this->setProperty($this->services, 'services', []);

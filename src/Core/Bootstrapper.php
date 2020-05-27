@@ -30,19 +30,6 @@ class Bootstrapper
     private ?ControllerFactory $controllerFactory=null;
 
     /**
-     *
-     */
-    public static function execute() : void
-    {
-        $bootstrapper = new self();
-        $bootstrapper
-            ->initialise()
-            ->loadController()
-            ->render()
-            ->write();
-    }
-
-    /**
      * Bootstrapper constructor.
      * @throws Exception
      */
@@ -56,6 +43,7 @@ class Bootstrapper
 
     /**
      * @return Bootstrapper
+     * @throws Exception
      */
     public function initialise() : Bootstrapper
     {
@@ -107,6 +95,7 @@ class Bootstrapper
 
     /**
      * @return ServicesFactory
+     * @throws Exception
      */
     private function loadServicesFromSession() : ServicesFactory
     {
@@ -136,6 +125,7 @@ class Bootstrapper
 
     /**
      * @return ServicesFactory
+     * @throws Exception
      */
     private function loadServicesFromCache() : ServicesFactory
     {
@@ -149,7 +139,7 @@ class Bootstrapper
 
     /**
      * @return ServicesFactory
-     * @throws ConfigurationException
+     * @throws ConfigurationException|Exception
      */
     private function createServices() : ServicesFactory
     {
@@ -173,7 +163,6 @@ class Bootstrapper
      * @param array $parameterValueList
      * @param array $parameterValues
      * @return ControllerInterface
-     * @return Exception
      */
     public function loadController(string $modelName=null, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
     {
@@ -189,7 +178,7 @@ class Bootstrapper
                     ->initialiseModel($this->modelName)
                     ->postInitialise();
 
-            } catch (ConfigurationException $e) {
+            } catch (ConfigurationException|Exception $e) {
                 $this->controller = new ErrorController($this->services);
                 $this->controller
                     ->initialiseParameters()

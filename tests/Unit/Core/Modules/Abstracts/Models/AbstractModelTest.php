@@ -212,7 +212,7 @@ class AbstractModelTest extends AbstractTestCase
         ];
         $this->setProperty($this->genericModel, 'parameters', $params);
 
-        $this->expectExceptionCode(1007);
+        $this->expectExceptionCode(500);
 
         $this->genericModel->initialise([]);
     }

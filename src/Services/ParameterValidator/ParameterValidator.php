@@ -16,6 +16,7 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Validators\FloatValidator
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\IntValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\StringValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\TimestampValidator;
+use Exception;
 
 class ParameterValidator extends AbstractService {
     public const PARAMETER_TYPE_INT = IntValidator::class;
@@ -49,13 +50,14 @@ class ParameterValidator extends AbstractService {
     /**
      * @param ModelInterface $model
      * @param array|null $passedParameters
+     * @throws Exception
      */
     public function validate(ModelInterface $model, ?array $passedParameters) : void
     {
         foreach ($model->getParameters() ?? [] as $parameterIdentifier=>$parameter){
             $parameterObject = new ParameterObject($parameterIdentifier, $parameter);
 
-            $parameterValidator = $this->factory->createParameterValidator($parameterObject);
+            $parameterValidator = $this->factory->createParameterValidator($this->services, $parameterObject);
             $parameterValidator->renderParameter($model, $passedParameters);
         }
 

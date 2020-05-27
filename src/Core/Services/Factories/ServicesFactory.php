@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Services\Factories;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceFactoryInterface;
@@ -28,8 +29,8 @@ class ServicesFactory
     {
         $this->loadService(ServiceFactory::class);
         $this->paths()->initialiseDirectoryStructure();
-        $this->loadService(\CarloNicora\Minimalism\Services\ParameterValidator\Factories\ServiceFactory::class);
         $this->loadService(\CarloNicora\Minimalism\Services\Logger\Factories\ServiceFactory::class);
+        $this->loadService(\CarloNicora\Minimalism\Services\ParameterValidator\Factories\ServiceFactory::class);
     }
 
     /**
@@ -42,6 +43,7 @@ class ServicesFactory
 
     /**
      * @return ParameterValidator
+     * @throws Exception
      */
     public function parameterValidator() : ParameterValidator
     {
@@ -50,6 +52,7 @@ class ServicesFactory
 
     /**
      * @return Logger
+     * @throws Exception
      */
     public function logger() : Logger
     {
@@ -75,12 +78,14 @@ class ServicesFactory
     /**
      * @param string $serviceName
      * @return mixed
-     * @throws ServiceNotFoundException
+     * @throws ServiceNotFoundException|Exception
      */
     public function service(string $serviceName)
     {
         if (!array_key_exists($serviceName, $this->services)){
-            throw new ServiceNotFoundException($serviceName);
+            $this->logger()->error()->log(
+                MinimalismErrorEvents::SERVICE_NOT_FOUND($serviceName)
+            )->throw(ServiceNotFoundException::class);
         }
 
         return $this->services[$serviceName];

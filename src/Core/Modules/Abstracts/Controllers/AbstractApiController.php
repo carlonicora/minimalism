@@ -62,6 +62,7 @@ abstract class AbstractApiController extends AbstractController
     /**
      * @param int|null $code
      * @param string|null $response
+     * @throws Exception
      */
     public function completeRender(int $code = null, string $response = null): void
     {
@@ -71,7 +72,7 @@ abstract class AbstractApiController extends AbstractController
     }
 
     /**
-     *
+     * @throws Exception
      */
     protected function parseUriParameters(): void {
         $uri = strtok($_SERVER['REQUEST_URI'] ?? '', '?');

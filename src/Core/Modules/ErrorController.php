@@ -54,6 +54,7 @@ class ErrorController implements ControllerInterface
 
     /**
      * @return Response
+     * @throws Exception
      */
     public function render(): Response
     {

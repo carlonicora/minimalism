@@ -1,9 +1,11 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Factories;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use Exception;
 
 class ControllerFactory
 {
@@ -25,16 +27,20 @@ class ControllerFactory
 
     /**
      * @return ControllerInterface
-     * @throws ConfigurationException
+     * @throws Exception|ConfigurationException
      */
     public function loadController() : ControllerInterface
     {
         if (count($this->controllers) === 0) {
-            throw new ConfigurationException('minimalism', 'Core module not loaded', ConfigurationException::ERROR_NO_MODULE_AVAILABLE);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::MODULE_NOT_LOADED()
+            )->throw(ConfigurationException::class, 'Core module not loaded');
         }
 
         if (count($this->controllers) > 1) {
-            throw new ConfigurationException('minimalism', 'Multiple Core modules loaded', ConfigurationException::ERROR_MULITPLE_MODULES_AVAILABLE);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::MULTIPLE_MODULES_LOADED()
+            )->throw(ConfigurationException::class, 'Multiple Core modules loaded');
         }
 
         $classList = get_declared_classes();

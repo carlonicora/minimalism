@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
@@ -8,7 +9,6 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use Exception;
-use RuntimeException;
 
 abstract class AbstractController implements ControllerInterface
 {
@@ -115,7 +115,9 @@ abstract class AbstractController implements ControllerInterface
         $modelClass = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $this->modelName);
 
         if (!class_exists($modelClass)){
-            throw new RuntimeException('model ' . strtolower($this->modelName) . ' not found', 404);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::MODEL_NOT_FOUND(strtolower($this->modelName))
+            )->throw(Exception::class, null);
         }
 
         $this->model = new $modelClass($this->services);
@@ -141,6 +143,7 @@ abstract class AbstractController implements ControllerInterface
 
     /**
      *
+     * @throws Exception
      */
     protected function parseUriParameters(): void
     {
@@ -158,6 +161,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @param array $uriVariables
      * @return array
+     * @throws Exception
      */
     protected function parseModelNameFromUri(array $uriVariables): array
     {

@@ -1,23 +1,31 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ParameterValidator\Abstracts;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
 use Exception;
-use RuntimeException;
 
 abstract class AbstractParameterValidator implements ParameterValidatorInterface
 {
+    /**
+     * @var ServicesFactory
+     */
+    protected ServicesFactory $services;
+
     /** @var ParameterObject  */
     protected ParameterObject $object;
 
     /**
      * AbstractParameterValidator constructor.
+     * @param ServicesFactory $services
      * @param ParameterObject $object
      */
-    final public function __construct(ParameterObject $object)
+    final public function __construct(ServicesFactory $services, ParameterObject $object)
     {
+        $this->services = $services;
         $this->object = $object;
     }
 
@@ -38,7 +46,9 @@ abstract class AbstractParameterValidator implements ParameterValidatorInterface
                 }
             }
         } elseif ($this->object->isRequired){
-            throw new RuntimeException('Required parameter ' . $this->object->parameterIdentifier . ' missing.', 412);
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::REQUIRED_PARAMETER_MISSING($this->object->parameterIdentifier)
+            )->throw(Exception::class);
         }
     }
 

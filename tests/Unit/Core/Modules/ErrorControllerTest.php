@@ -26,6 +26,9 @@ class ErrorControllerTest extends AbstractTestCase
         $this->assertEquals($e, $this->getProperty($errorController, 'exception'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRender() : void
     {
         $errorController = new ErrorController($this->services);
@@ -41,6 +44,9 @@ class ErrorControllerTest extends AbstractTestCase
         $this->assertEquals($response, $errorController->render());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCompleteRender() : void
     {
         $errorController = new ErrorController($this->services);
