@@ -82,8 +82,7 @@ class Response implements ResponseInterface
             $this->writeProtocol();
             $this->writeContentType();
 
-            if ($this->httpStatus !== self::HTTP_STATUS_201
-                && $this->httpStatus !== self::HTTP_STATUS_204
+            if ($this->httpStatus !== self::HTTP_STATUS_204
                 && $this->httpStatus !== self::HTTP_STATUS_304) {
                 echo $this->getData();
             }
