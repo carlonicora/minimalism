@@ -60,7 +60,7 @@ class ResponseTest extends AbstractTestCase
     {
         $response = $this->generateResponse(Response::HTTP_STATUS_201);
 
-        $this->expectOutputString('');
+        $this->expectOutputString('html');
 
         $response->write();
 
