@@ -58,6 +58,13 @@ abstract class AbstractModel implements ModelInterface
     }
 
     /**
+     * @param string $verb
+     */
+    public function setVerb(string $verb) : void
+    {
+    }
+
+    /**
      * @return array
      */
     public function getParameters(): array

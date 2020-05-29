@@ -6,11 +6,6 @@ use CarloNicora\Minimalism\Core\Response;
 interface ApiModelInterface extends ModelInterface
 {
     /**
-     * @param string $verb
-     */
-    public function setVerb(string $verb) : void;
-
-    /**
      * @param $verb
      * @return mixed
      */

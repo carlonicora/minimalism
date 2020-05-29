@@ -22,11 +22,6 @@ abstract class AbstractApiModel extends AbstractModel implements ApiModelInterfa
     /** @var string */
     public string $verb='GET';
 
-    public function setVerb(string $verb) : void
-    {
-        $this->verb = $verb;
-    }
-
     /**
      * @param $verb
      * @return mixed
@@ -36,6 +31,14 @@ abstract class AbstractApiModel extends AbstractModel implements ApiModelInterfa
         $authName = 'requiresAuth' . $verb;
 
         return $this->$authName;
+    }
+
+    /**
+     * @param string $verb
+     */
+    public function setVerb(string $verb) : void
+    {
+        $this->verb = $verb;
     }
 
     /**

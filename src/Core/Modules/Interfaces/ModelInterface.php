@@ -44,6 +44,11 @@ interface ModelInterface
     public function preRender() : void;
 
     /**
+     * @param string $verb
+     */
+    public function setVerb(string $verb) : void;
+
+    /**
      * @return string
      */
     public function redirect(): string;

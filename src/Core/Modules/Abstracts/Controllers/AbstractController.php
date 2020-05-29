@@ -103,10 +103,11 @@ abstract class AbstractController implements ControllerInterface
 
     /**
      * @param string|null $modelName
+     * @param string $verb
      * @return ControllerInterface
      * @throws Exception
      */
-    public function initialiseModel(string $modelName = null): ControllerInterface
+    public function initialiseModel(string $modelName = null, string $verb='GET'): ControllerInterface
     {
         if (isset($modelName)) {
             $this->modelName = str_replace('-', '\\', $modelName);
@@ -121,6 +122,8 @@ abstract class AbstractController implements ControllerInterface
         }
 
         $this->model = new $modelClass($this->services);
+
+        $this->model->setVerb($verb);
 
         $this->model->initialise(array_merge($this->passedParameters, $this->bodyParameters), $this->file);
 
