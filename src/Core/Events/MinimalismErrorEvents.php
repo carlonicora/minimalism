@@ -148,4 +148,22 @@ class MinimalismErrorEvents extends AbstractErrorEvent
             'The folder for the models is missing in the app'
         );
     }
+
+    public static function CONTROLLER_NOT_DEFINED() : EventInterface
+    {
+        return new self(
+            15,
+            ResponseInterface::HTTP_STATUS_500,
+            'The controller has not been defined'
+        );
+    }
+
+    public static function SECURITY_VALIDATION_FAILED() : EventInterface
+    {
+        return new self(
+            16,
+            ResponseInterface::HTTP_STATUS_401,
+            'Security validation failed.'
+        );
+    }
  }

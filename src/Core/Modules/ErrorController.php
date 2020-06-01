@@ -5,6 +5,8 @@ use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use Exception;
 
 class ErrorController implements ControllerInterface
@@ -82,6 +84,20 @@ class ErrorController implements ControllerInterface
      * @param string|null $response
      */
     public function completeRender(int $code = null, string $response = null): void
+    {
+    }
+
+    /**
+     * @param EncrypterInterface|null $encrypter
+     */
+    public function setEncrypterInterface(?EncrypterInterface $encrypter): void
+    {
+    }
+
+    /**
+     * @param SecurityInterface|null $security
+     */
+    public function setSecurityInterface(?SecurityInterface $security): void
     {
     }
 }

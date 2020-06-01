@@ -1,19 +1,81 @@
 <?php
 namespace CarloNicora\Minimalism\Tests\Unit\Services\Paths;
 
-use CarloNicora\Minimalism\Tests\Unit\Abstracts\AbstractTestCase;
+use CarloNicora\Minimalism\Services\Paths\Configurations\PathsConfigurations;
+use CarloNicora\Minimalism\Services\Paths\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Services\Paths\Paths;
+use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 use Exception;
 
 class PathsTest extends AbstractTestCase
 {
+    /**
+     * @throws Exception
+     */
+    public function testServiceCreation() : Paths
+    {
+        $service = new ServiceFactory($this->getServices());
+        $config = new PathsConfigurations();
+        $services = $this->getServices();
+        $paths = new Paths($config, $services);
+
+        $this->assertEquals($paths, $service->create($services));
+
+        return $paths;
+    }
+
+    /**
+     * @param Paths $paths
+     * @depends testServiceCreation
+     * @throws Exception
+     */
+    public function testGetCorrectModelFolder(Paths $paths) : void
+    {
+        $this->assertEquals('/opt/project/src/Models/', $paths->getModelsFolder());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFailGetModelsFolderNoComposer() : void
+    {
+        $this->expectExceptionCode(500);
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests/');
+
+        $paths->getModelsFolder();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFailGettingModelFolderInvalidJson() : void
+    {
+        $this->expectExceptionCode(500);
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests/Mocks/InvalidComposerJson');
+        $paths->getModelsFolder();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testFailGettingModelFolderNoNamespace() : void
+    {
+        $this->expectExceptionCode(500);
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests/Mocks/NoNamespaceComposerJson');
+        $paths->getModelsFolder();
+    }
+
     public function testRoot() : void
     {
-        $this->assertEquals('http:///', $this->services->paths()->getUrl());
+        $this->assertEquals('http:///', $this->getServices()->paths()->getUrl());
     }
 
     public function testLog() : void
     {
-        $log = $this->services->paths()->getLog();
+        $log = $this->getServices()->paths()->getLog();
         $this->assertEquals('/data/logs/minimalism/', substr($log, -22));
     }
 
@@ -22,43 +84,43 @@ class PathsTest extends AbstractTestCase
      */
     public function testNamespace() : void
     {
-        $this->assertEquals('CarloNicora\\Minimalism\\', $this->services->paths()->getNamespace());
+        $this->assertEquals('CarloNicora\\Minimalism\\', $this->getServices()->paths()->getNamespace());
     }
 
     /**
      * @throws Exception
      */
-    public function testFailGetModelsFolderNoComposer() : void
+    public function testFailGetNamespaceNoComposer() : void
     {
-        $this->setProperty($this->services->paths(), 'root', './tests/');
-
         $this->expectExceptionCode(500);
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests/');
 
-        $this->services->paths()->getModelsFolder();
+        $paths->getNamespace();
     }
 
     /**
      * @throws Exception
      */
-    public function testFailGetModelsFolderWrongComposer() : void
+    public function testFailGetNamespaceInvalidJson() : void
     {
-        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/WrongComposer');
-
         $this->expectExceptionCode(500);
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests/Mocks/InvalidComposerJson');
 
-        $this->services->paths()->getModelsFolder();
+        $paths->getNamespace();
     }
 
     /**
      * @throws Exception
      */
-    public function testFailGetModelsFolderComposerNoNamespace() : void
+    public function testFailGetNamespaceNoNamespace() : void
     {
-        $this->setProperty($this->services->paths(), 'root', './tests/Unit/Mocks/ComposerNoNamespace');
-
         $this->expectExceptionCode(500);
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests/Mocks/NoNamespaceComposerJson');
 
-        $this->services->paths()->getModelsFolder();
+        $paths->getNamespace();
     }
 
     /**
@@ -66,16 +128,30 @@ class PathsTest extends AbstractTestCase
      */
     public function testFailInitialiseDirectoryStructure() : void
     {
-        $this->setProperty($this->services->paths(), 'root', '~/etc/s');
-
         $this->expectExceptionCode(500);
-
-        $this->services->paths()->initialiseDirectoryStructure();
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', '~/etc/s');
+        $paths->initialiseDirectoryStructure();
     }
 
     public function testSetUrlVersion() : void
     {
-        $this->services->paths()->setUrlVersion('v1.0');
-        $this->assertEquals('http:///v1.0/', $this->services->paths()->getUrl());
+        $paths = $this->getServices()->paths();
+        $paths->setUrlVersion('v1.0');
+        $this->assertEquals('http:///v1.0/', $paths->getUrl());
+    }
+
+    public function testGetCache() : void
+    {
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests');
+        $this->assertEquals('./tests/data/cache/services.cache', $paths->getCache());
+    }
+
+    public function testGetRoot() : void
+    {
+        $paths = $this->getServices()->paths();
+        $this->setProperty($paths, 'root', './tests');
+        $this->assertEquals('./tests', $paths->getRoot());
     }
 }

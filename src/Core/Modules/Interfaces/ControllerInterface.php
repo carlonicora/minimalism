@@ -3,6 +3,8 @@ namespace CarloNicora\Minimalism\Core\Modules\Interfaces;
 
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 
 interface ControllerInterface
 {
@@ -41,4 +43,14 @@ interface ControllerInterface
      * @param string|null $response
      */
     public function completeRender(int $code=null, string $response=null): void;
+
+    /**
+     * @param SecurityInterface|null $security
+     */
+    public function setSecurityInterface(?SecurityInterface $security) : void;
+
+    /**
+     * @param EncrypterInterface|null $encrypter
+     */
+    public function setEncrypterInterface(?EncrypterInterface $encrypter) : void;
 }

@@ -5,8 +5,9 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Services\ParameterValidator\Commands\DecrypterCommand;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\Objects\DefaultDecrypter;
 use Exception;
 
 abstract class AbstractModel implements ModelInterface
@@ -28,6 +29,9 @@ abstract class AbstractModel implements ModelInterface
 
     /** @var array  */
     protected array $receivedParameters = [];
+
+    /** @var EncrypterInterface=null */
+    protected ?EncrypterInterface $encrypter=null;
 
     public const PARAMETER_TYPE_INT = 'validateIntParameter';
     public const PARAMETER_TYPE_STRING = 'validateStringParameter';
@@ -120,6 +124,14 @@ abstract class AbstractModel implements ModelInterface
      */
     public function decrypter(): DecrypterInterface
     {
-        return new DefaultDecrypter();
+        return new DecrypterCommand($this->encrypter);
+    }
+
+    /**
+     * @param EncrypterInterface|null $encrypter
+     */
+    public function setEncrypter(?EncrypterInterface $encrypter): void
+    {
+        $this->encrypter = $encrypter;
     }
 }

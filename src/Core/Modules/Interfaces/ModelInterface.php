@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Core\Modules\Interfaces;
 
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
 use Exception;
 
@@ -62,4 +63,9 @@ interface ModelInterface
      * @param string $parameterName
      */
     public function addReceivedParameters(string $parameterName) : void;
+
+    /**
+     * @param EncrypterInterface|null $encrypter
+     */
+    public function setEncrypter(?EncrypterInterface $encrypter): void;
 }

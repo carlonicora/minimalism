@@ -29,6 +29,9 @@ class Bootstrapper
     /** @var ControllerFactory|null  */
     private ?ControllerFactory $controllerFactory=null;
 
+    /** @var string|null  */
+    private ?string $controllerClassName=null;
+
     /**
      * Bootstrapper constructor.
      * @throws Exception
@@ -42,11 +45,14 @@ class Bootstrapper
     }
 
     /**
+     * @param string $controllerClassName
      * @return Bootstrapper
      * @throws Exception
      */
-    public function initialise() : Bootstrapper
+    public function initialise(string $controllerClassName) : Bootstrapper
     {
+        $this->controllerClassName = $controllerClassName;
+
         if ($this->controller === null) {
             $this->startSession();
 
@@ -173,7 +179,7 @@ class Bootstrapper
 
             try {
                 $this->controller = $this->controllerFactory
-                    ->loadController()
+                    ->loadController($this->controllerClassName)
                     ->initialiseParameters($parameterValueList, $parameterValues)
                     ->initialiseModel($this->modelName)
                     ->postInitialise();

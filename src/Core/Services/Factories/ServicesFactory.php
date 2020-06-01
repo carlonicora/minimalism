@@ -6,6 +6,8 @@ use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceFactoryInterface;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Services\Logger\Logger;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use CarloNicora\Minimalism\Services\Paths\Factories\ServiceFactory;
@@ -237,5 +239,33 @@ class ServicesFactory
         foreach ($this->services as $service){
             $service->destroyStatics();
         }
+    }
+
+    /**
+     * @return SecurityInterface|null
+     */
+    public function getSecurityInterface() : ?SecurityInterface
+    {
+        foreach ($this->services as $service) {
+            if (in_array('SecurityInterface', class_implements($service), true)){
+                return $service;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return EncrypterInterface|null
+     */
+    public function getEncrypterInterface() : ?EncrypterInterface
+    {
+        foreach ($this->services as $service) {
+            if (in_array('EncrypterInterface', class_implements($service), true)){
+                return $service;
+            }
+        }
+
+        return null;
     }
 }

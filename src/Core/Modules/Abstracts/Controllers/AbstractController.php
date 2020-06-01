@@ -8,6 +8,8 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use Exception;
 
 abstract class AbstractController implements ControllerInterface
@@ -17,6 +19,12 @@ abstract class AbstractController implements ControllerInterface
 
     /** @var ServicesFactory */
     protected ServicesFactory $services;
+
+    /** @var SecurityInterface|null  */
+    protected ?SecurityInterface $security=null;
+
+    /** @var EncrypterInterface|null  */
+    protected ?EncrypterInterface $encrypter=null;
 
     /** @var ModelInterface */
     protected ModelInterface $model;
@@ -124,6 +132,7 @@ abstract class AbstractController implements ControllerInterface
         $this->model = new $modelClass($this->services);
 
         $this->model->setVerb($verb);
+        $this->model->setEncrypter($this->encrypter);
 
         $this->model->initialise(array_merge($this->passedParameters, $this->bodyParameters), $this->file);
 
@@ -216,4 +225,20 @@ abstract class AbstractController implements ControllerInterface
      * @return ControllerInterface
      */
     abstract public function postInitialise(): ControllerInterface;
+
+    /**
+     * @param SecurityInterface|null $security
+     */
+    public function setSecurityInterface(?SecurityInterface $security): void
+    {
+        $this->security = $security;
+    }
+
+    /**
+     * @param EncrypterInterface|null $encrypter
+     */
+    public function setEncrypterInterface(?EncrypterInterface $encrypter): void
+    {
+        $this->encrypter = $encrypter;
+    }
 }
