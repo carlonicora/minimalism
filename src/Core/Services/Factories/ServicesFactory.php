@@ -247,7 +247,7 @@ class ServicesFactory
     public function getSecurityInterface() : ?SecurityInterface
     {
         foreach ($this->services as $service) {
-            if (in_array('SecurityInterface', class_implements($service), true)){
+            if (in_array(SecurityInterface::class, class_implements($service), true)){
                 return $service;
             }
         }
@@ -261,7 +261,7 @@ class ServicesFactory
     public function getEncrypterInterface() : ?EncrypterInterface
     {
         foreach ($this->services as $service) {
-            if (in_array('EncrypterInterface', class_implements($service), true)){
+            if (in_array(EncrypterInterface::class, class_implements($service), true)){
                 return $service;
             }
         }
