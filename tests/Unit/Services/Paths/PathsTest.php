@@ -31,7 +31,8 @@ class PathsTest extends AbstractTestCase
      */
     public function testGetCorrectModelFolder(Paths $paths) : void
     {
-        $this->assertEquals('/opt/project/src/Models/', $paths->getModelsFolder());
+        $this->setProperty($paths, 'root', './tests/Mocks/ValidComposerNamespace');
+        $this->assertEquals('./tests/Mocks/ValidComposerNamespace/src/Models/', $paths->getModelsFolder());
     }
 
     /**
