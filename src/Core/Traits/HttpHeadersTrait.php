@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Core\Traits;
 trait HttpHeadersTrait
 {
     /** @var array|null */
-    private ?array $headers = null;
+    protected ?array $headers = null;
 
     /**
      * @param string $headerName
