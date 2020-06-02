@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Modules\Api;
 
 use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
+use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractApiController;
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
@@ -58,10 +59,14 @@ class ApiController extends AbstractApiController {
 
             $url = $_SERVER['REQUEST_URI'];
 
-            if ($this->security !== null && !$this->security->isSignatureValid($this->verb, $url, $this->bodyParameters)) {
-                $this->services->logger()->error()
-                    ->log(MinimalismErrorEvents::SECURITY_VALIDATION_FAILED())
-                    ->throw(Exception::class, 'Unauthorised');
+            if ($this->security !== null) {
+                if ($this->security->isSignatureValid($this->verb, $url, $this->bodyParameters)) {
+                    $this->services->logger()->info()->log(MinimalismInfoEvents::SECURITY_CHECK_PASSED());
+                } else {
+                    $this->services->logger()->error()
+                        ->log(MinimalismErrorEvents::SECURITY_VALIDATION_FAILED())
+                        ->throw(Exception::class, 'Unauthorised');
+                }
             }
 
             $errorController = null;
@@ -82,6 +87,8 @@ class ApiController extends AbstractApiController {
             $this->model->preRender();
 
             $response = $this->model->{$this->verb}();
+
+            $this->services->logger()->info()->log(MinimalismInfoEvents::MODEL_RUN($this->verb));
         } catch (Exception $e) {
             $response=$this->model->generateResponseFromError($e);
         }

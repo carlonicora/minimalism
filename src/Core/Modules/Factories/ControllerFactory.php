@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Core\Modules\Factories;
 
 use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
+use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
@@ -38,6 +39,8 @@ class ControllerFactory
         $response = new $controllerClassName($this->services);
         $response->setSecurityInterface($this->services->getSecurityInterface());
         $response->setEncrypterInterface($this->services->getEncrypterInterface());
+
+        $this->services->logger()->info()->log(MinimalismInfoEvents::CONTROLLER_INITIALISED());
 
         return $response;
     }

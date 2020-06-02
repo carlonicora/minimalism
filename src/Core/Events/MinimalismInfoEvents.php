@@ -57,4 +57,19 @@ class MinimalismInfoEvents extends AbstractInfoEvent
     {
         return new self(8, null, 'Session Persisted');
     }
+
+    public static function CONTROLLER_INITIALISED() : EventInterface
+    {
+        return new self(9, null, 'Controller intialised');
+    }
+
+    public static function MODEL_RUN(string $verb = null) : EventInterface
+    {
+        return new self(10, null, 'Model run successfully' . ($verb !== null ? '(' . $verb . ')' : ''));
+    }
+
+    public static function SECURITY_CHECK_PASSED() : EventInterface
+    {
+        return new self(11, null, 'Request security check passed successfully');
+    }
 }
