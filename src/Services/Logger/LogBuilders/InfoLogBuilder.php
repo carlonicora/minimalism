@@ -31,6 +31,14 @@ class InfoLogBuilder extends AbstractLogBuilder
     }
 
     /**
+     *
+     */
+    public function clearEvents() : void
+    {
+        $this->events = [];
+    }
+
+    /**
      * @param array $events
      */
     public function resetEvents(array $events) : void{
@@ -79,6 +87,10 @@ class InfoLogBuilder extends AbstractLogBuilder
             usort($this->events, [$this, 'compare']);
 
             $info = [];
+
+            $logMessage = new MinimalismInfoEvents(0, null, 'Request');
+            $event = json_decode($logMessage->generateMessage(), true, 512, JSON_THROW_ON_ERROR);
+            $info[] = $event;
 
             foreach ($this->events as $logMessage) {
                 $event = json_decode($logMessage->generateMessage(), true, 512, JSON_THROW_ON_ERROR);

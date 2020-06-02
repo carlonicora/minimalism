@@ -106,6 +106,7 @@ class Bootstrapper
     private function loadServicesFromSession() : ServicesFactory
     {
         $events = $this->services->logger()->info()->getEvents();
+        $this->services->logger()->info()->clearEvents();
         $this->services = $_SESSION['minimalismServices'];
         $this->services->logger()->info()->resetEvents($events);
         $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_LOADED_FROM_SESSION());
@@ -136,6 +137,7 @@ class Bootstrapper
     private function loadServicesFromCache() : ServicesFactory
     {
         $events = $this->services->logger()->info()->getEvents();
+        $this->services->logger()->info()->clearEvents();
         $this->services = unserialize(file_get_contents($this->services->paths()->getCache()));
         $this->services->logger()->info()->resetEvents($events);
         $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_LOADED_FROM_CACHE());
