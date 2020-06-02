@@ -33,6 +33,13 @@ class InfoLogBuilder extends AbstractLogBuilder
     /**
      * @param array $events
      */
+    public function resetEvents(array $events) : void{
+        $this->events = $events;
+    }
+
+    /**
+     * @param array $events
+     */
     public function setEvents(array $events) : void
     {
         $this->events = array_merge($this->events, $events);

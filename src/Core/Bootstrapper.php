@@ -107,7 +107,7 @@ class Bootstrapper
     {
         $events = $this->services->logger()->info()->getEvents();
         $this->services = $_SESSION['minimalismServices'];
-        $this->services->logger()->info()->setEvents($events);
+        $this->services->logger()->info()->resetEvents($events);
         $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_LOADED_FROM_SESSION());
 
         return $this->services;
@@ -137,7 +137,7 @@ class Bootstrapper
     {
         $events = $this->services->logger()->info()->getEvents();
         $this->services = unserialize(file_get_contents($this->services->paths()->getCache()));
-        $this->services->logger()->info()->setEvents($events);
+        $this->services->logger()->info()->resetEvents($events);
         $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_LOADED_FROM_CACHE());
 
         return $this->services;
