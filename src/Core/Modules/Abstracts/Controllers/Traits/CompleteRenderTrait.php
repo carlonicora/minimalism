@@ -16,11 +16,26 @@ trait CompleteRenderTrait
     {
         if ((int)$code < 400 && $services->paths()->getCache() !== null){
             try {
-                file_put_contents($services->paths()->getCache(), serialize($services));
+                $this->persistAtPath($services->paths()->getCache(), \serialize($services));
             } catch (Exception $exception) {
                 $services->logger()->error()
                     ->log(MinimalismErrorEvents::SERVICE_CACHE_ERROR($exception));
             }
+        }
+    }
+
+
+    /**
+     * Wrapper around file_put_contents that allows the saveCache method to be unit tested
+     * @internal
+     * @param $filepath
+     * @param $content
+     * @throws Exception
+     */
+    public function persistAtPath($filepath, $content): void
+    {
+        if (false === \file_put_contents($filepath, $content)) {
+            throw new \Exception('File write failed');
         }
     }
 }
