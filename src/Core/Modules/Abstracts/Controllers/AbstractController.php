@@ -54,8 +54,6 @@ abstract class AbstractController implements ControllerInterface
     public function __construct(ServicesFactory $services)
     {
         $this->services = $services;
-
-        $this->getPhpInputParameters();
     }
 
     /**
@@ -71,6 +69,7 @@ abstract class AbstractController implements ControllerInterface
             $this->bodyParameters = $parameterValues;
         } else {
             $this->parseUriParameters();
+            $this->getPhpInputParameters();
 
             switch ($this->getHttpType()) {
                 case 'GET':
