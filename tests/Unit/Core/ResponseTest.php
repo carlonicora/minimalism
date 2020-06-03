@@ -1,6 +1,6 @@
 <?php
 
-namespace CarloNicora\Minimalism\Tests\Core;
+namespace CarloNicora\Minimalism\Tests\Unit\Core;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
@@ -83,5 +83,22 @@ class ResponseTest extends AbstractTestCase
         foreach($constants as $constant) {
             yield $rc->getConstant($constant);
         }
+    }
+
+
+    public function testWriteProtocolWithDefaults()
+    {
+        $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();
+        $mock->expects($this->once())->method('writeRawHTTP')->with('HTTP/1.1 200 OK');
+
+        $mock->writeProtocol();
+    }
+
+    public function testWriteContentTypeWithDefault()
+    {
+        $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();
+        $mock->expects($this->once())->method('writeRawHTTP')->with('Content-Type: text/html');
+
+        $mock->writeContentType();
     }
 }
