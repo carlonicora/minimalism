@@ -76,29 +76,41 @@ class ResponseTest extends AbstractTestCase
         }
     }
 
-    public function statusCodes()
+    protected function statusCodes()
     {
         $rc = new \ReflectionClass(ResponseInterface::class);
         $constants = $rc->getConstants();
-        foreach($constants as $constant) {
-            yield $rc->getConstant($constant);
+        foreach($constants as $constantName => $constantValue) {
+            yield $constantValue;
         }
     }
 
 
-    public function testWriteProtocolWithDefaults()
+    public function testWriteProtocolForAllStatusCodes()
     {
         $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();
-        $mock->expects($this->once())->method('writeRawHTTP')->with('HTTP/1.1 200 OK');
+        foreach ($this->statusCodes() as $k => $statusCode) {
+            $mock->expects($this->at($k))->method('writeRawHTTP')->with(
+                $this->callback(function($protocol) use($statusCode) {
+                    return \strstr($protocol, "HTTP/1.1 $statusCode") !== false;
+                })
+            );
+        }
 
-        $mock->writeProtocol();
+        foreach ($this->statusCodes() as $statusCode) {
+            $mock->setStatus($statusCode);
+            $mock->writeProtocol();
+        }
     }
 
-    public function testWriteContentTypeWithDefault()
+    public function testWriteContentType()
     {
         $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();
-        $mock->expects($this->once())->method('writeRawHTTP')->with('Content-Type: text/html');
+        $mock->expects($this->at(0))->method('writeRawHTTP')->with('Content-Type: text/html');
+        $mock->expects($this->at(1))->method('writeRawHTTP')->with('Content-Type: text/plain');
 
+        $mock->writeContentType();
+        $mock->setContentType('text/plain');
         $mock->writeContentType();
     }
 }
