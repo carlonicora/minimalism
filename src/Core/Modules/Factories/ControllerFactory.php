@@ -35,6 +35,12 @@ class ControllerFactory
             )->throw(ConfigurationException::class, 'Controller not set up');
         }
 
+        if (!\class_exists($controllerClassName)) {
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::GENERIC_ERROR()
+            )->throw(ConfigurationException::class, 'Controller class does not exist');
+        }
+
         /** @var ControllerInterface $response */
         $response = new $controllerClassName($this->services);
         $response->setSecurityInterface($this->services->getSecurityInterface());
