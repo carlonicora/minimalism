@@ -41,6 +41,6 @@ class JsonApiResponse extends Response
             }
         }
 
-        return '';
+        return parent::getData();
     }
 }
