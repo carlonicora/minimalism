@@ -38,6 +38,11 @@ trait JsonApiModelTrait
         $document->addError(new Error($e));
 
         $response->setDocument($document);
+        /**
+         * @todo this will never fall through with the default clause as even an exception
+         *       without any custom code with have by default code 0, which in
+         *       CarloNicora\JsonApi\Objects\Error::__construct is typecast to string
+         */
         $response->setStatus($document->errors[0]->status ?? '500');
 
         return $response;
