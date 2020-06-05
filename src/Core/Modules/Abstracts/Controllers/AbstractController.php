@@ -120,6 +120,10 @@ abstract class AbstractController implements ControllerInterface
             $this->modelName = str_replace('-', '\\', $modelName);
         }
 
+        /**
+         * @todo if this method would allow us to pass in a custom model instance instead of resolving
+         *       the name, we could inject the mock TestModel object and test the method
+         */
         $modelClass = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $this->modelName);
 
         if (!class_exists($modelClass)){
