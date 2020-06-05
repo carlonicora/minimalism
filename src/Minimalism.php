@@ -42,11 +42,22 @@ class Minimalism
         $bootstrapper = new Bootstrapper();
 
         try {
-            $bootstrapper
-                ->initialise($controllerClassName)
-                ->loadController($modelName)
-                ->render()
-                ->write();
+            $redirect = null;
+            $parameters = [];
+
+            do {
+                $response = $bootstrapper
+                    ->initialise($controllerClassName)
+                    ->loadController($modelName, $parameters)
+                    ->render();
+
+                if (($redirect = $response->redirects()) !== null){
+                    $modelName = $redirect;
+                    $parameters = $response->getRedirectionParameters();
+                }
+            } while ($redirect !== null);
+
+            $response->write();
         } catch (Exception $e) {
             http_response_code((int)$e->getCode());
             $GLOBALS['http_response_code'] = $e->getCode();

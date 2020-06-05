@@ -17,6 +17,12 @@ class Response implements ResponseInterface
     /** @var string  */
     private string $httpStatus=self::HTTP_STATUS_200;
 
+    /** @var string|null  */
+    private ?string $redirection=null;
+
+    /** @var array  */
+    private array $redirectionParameters=[];
+
     /**
      * @return string
      */
@@ -89,6 +95,16 @@ class Response implements ResponseInterface
         } else {
             echo $this->getData();
         }
+    }
+
+    /**
+     * Allows for a way to unit test the header calls within this class
+     *
+     * @param $string
+     */
+    protected function writeRawHTTP($string): void
+    {
+        header($string);
     }
 
     /**
@@ -194,5 +210,37 @@ class Response implements ResponseInterface
                 return 'OK';
                 break;
         }
+    }
+
+    /**
+     * @param array $parameters
+     */
+    public function setRedirectionParameters(array $parameters): void
+    {
+        $this->redirectionParameters = $parameters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRedirectionParameters(): array
+    {
+        return $this->redirectionParameters;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function redirects(): ?string
+    {
+        return $this->redirection;
+    }
+
+    /**
+     * @param string $modelName
+     */
+    public function setRedirect(string $modelName): void
+    {
+        $this->redirection = $modelName;
     }
 }

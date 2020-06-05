@@ -124,4 +124,24 @@ interface ResponseInterface
      * @param string $status
      */
     public function setStatus(string $status) : void;
+
+    /**
+     * @param string $modelName
+     */
+    public function setRedirect(string $modelName) : void;
+
+    /**
+     * @return string|null
+     */
+    public function redirects() : ?string;
+
+    /**
+     * @param array $parameters
+     */
+    public function setRedirectionParameters(array $parameters) : void;
+
+    /**
+     * @return array
+     */
+    public function getRedirectionParameters() : array;
 }
