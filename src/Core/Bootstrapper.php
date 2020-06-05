@@ -180,6 +180,13 @@ class Bootstrapper
             }
 
             try {
+                /**
+                 * @todo change the exception type thrown and log message?
+                 */
+                if (\is_null($this->controllerFactory)) {
+                    throw new Exception('Bootstrapper initialise method has not been called');
+                }
+
                 $this->controller = $this->controllerFactory
                     ->loadController($this->controllerClassName)
                     ->initialiseParameters($parameterValueList, $parameterValues)
