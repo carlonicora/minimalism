@@ -210,6 +210,18 @@ class Bootstrapper
 
     /**
      * @param string $modelName
+     * @param array $parameterValueList
+     * @param array $parameterValues
+     * @return ControllerInterface
+     */
+    public function reLoadController(string $modelName, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
+    {
+        $this->controller = null;
+        return $this->loadController($modelName, $parameterValueList, $parameterValues);
+    }
+
+    /**
+     * @param string $modelName
      */
     public function setModel(string $modelName) : void
     {
