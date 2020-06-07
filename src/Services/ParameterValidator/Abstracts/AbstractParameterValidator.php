@@ -15,47 +15,44 @@ abstract class AbstractParameterValidator implements ParameterValidatorInterface
      */
     protected ServicesFactory $services;
 
-    /** @var ParameterObject  */
-    protected ParameterObject $object;
-
     /**
      * AbstractParameterValidator constructor.
      * @param ServicesFactory $services
-     * @param ParameterObject $object
      */
-    final public function __construct(ServicesFactory $services, ParameterObject $object)
+    final public function __construct(ServicesFactory $services)
     {
         $this->services = $services;
-        $this->object = $object;
     }
 
     /**
+     * @param ParameterObject $object
      * @param ModelInterface $model
      * @param array $passedParameters
      * @throws Exception
      */
-    final public function renderParameter(ModelInterface $model, array $passedParameters) : void
+    final public function renderParameter(ParameterObject $object, ModelInterface $model, array $passedParameters) : void
     {
-        if (array_key_exists($this->object->parameterIdentifier, $passedParameters)) {
-            $model->addReceivedParameters($this->object->parameterName);
-            if ($passedParameters[$this->object->parameterIdentifier] !== null) {
-                if ($this->object->isEncrypted) {
-                   $model->setParameter($this->object->parameterName, $model->decrypter()->decryptParameter($passedParameters[$this->object->parameterIdentifier]));
+        if (array_key_exists($object->parameterIdentifier, $passedParameters)) {
+            $model->addReceivedParameters($object->parameterName);
+            if ($passedParameters[$object->parameterIdentifier] !== null) {
+                if ($object->isEncrypted) {
+                   $model->setParameter($object->parameterName, $model->decrypter()->decryptParameter($passedParameters[$object->parameterIdentifier]));
                 } else {
-                    $this->setParameter($model, $passedParameters[$this->object->parameterIdentifier]);
+                    $this->setParameter($object, $model, $passedParameters[$object->parameterIdentifier]);
                 }
             }
-        } elseif ($this->object->isRequired){
+        } elseif ($object->isRequired){
             $this->services->logger()->error()->log(
-                MinimalismErrorEvents::REQUIRED_PARAMETER_MISSING($this->object->parameterIdentifier)
+                MinimalismErrorEvents::REQUIRED_PARAMETER_MISSING($object->parameterIdentifier)
             )->throw(Exception::class);
         }
     }
 
     /**
+     * @param ParameterObject $object
      * @param ModelInterface $model
      * @param mixed $parameter
      * @throws Exception
      */
-    abstract public function setParameter(ModelInterface $model, $parameter) : void;
+    abstract public function setParameter(ParameterObject $object, ModelInterface $model, $parameter) : void;
 }

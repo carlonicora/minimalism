@@ -4,12 +4,20 @@ namespace CarloNicora\Minimalism\Core\JsonApi\Validators;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Abstracts\AbstractParameterValidator;
+use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
+use Exception;
 
 class JsonApiValidator extends AbstractParameterValidator
 {
-    public function setParameter(ModelInterface $model, $parameter): void
+    /**
+     * @param ParameterObject $object
+     * @param ModelInterface $model
+     * @param mixed $parameter
+     * @throws Exception
+     */
+    public function setParameter(ParameterObject $object, ModelInterface $model, $parameter): void
     {
         $document = new Document($parameter);
-        $model->setParameter($this->object->parameterName, $document);
+        $model->setParameter($object->parameterName, $document);
     }
 }

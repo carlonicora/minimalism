@@ -10,14 +10,14 @@ interface ParameterValidatorInterface
     /**
      * ParameterValidatorInterface constructor.
      * @param ServicesFactory $services
-     * @param ParameterObject $object
      */
-    public function __construct(ServicesFactory $services, ParameterObject $object);
+    public function __construct(ServicesFactory $services);
 
     /**$object
+     * @param ParameterObject $object
      * @param ModelInterface $model
      * @param array $passedParameters
      * @return mixed
      */
-    public function renderParameter(ModelInterface $model, array $passedParameters);
+    public function renderParameter(ParameterObject $object, ModelInterface $model, array $passedParameters);
 }
