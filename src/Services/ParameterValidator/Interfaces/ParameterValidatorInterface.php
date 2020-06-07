@@ -13,11 +13,17 @@ interface ParameterValidatorInterface
      */
     public function __construct(ServicesFactory $services);
 
-    /**$object
+    /**
      * @param ParameterObject $object
      * @param ModelInterface $model
      * @param array $passedParameters
      * @return mixed
      */
     public function renderParameter(ParameterObject $object, ModelInterface $model, array $passedParameters);
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    public function transformValue($value);
 }

@@ -1,19 +1,16 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ParameterValidator\Validators;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Abstracts\AbstractParameterValidator;
-use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
 
 class StringValidator extends AbstractParameterValidator
 {
     /**
-     * @param ParameterObject $object
-     * @param ModelInterface $model
-     * @param mixed $parameter
+     * @param $value
+     * @return string
      */
-    public function setParameter(ParameterObject $object, ModelInterface $model, $parameter): void
+    public function transformValue($value): string
     {
-        $model->setParameter($object->parameterName, $parameter);
+        return (string)$value;
     }
 }

@@ -1,38 +1,24 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ParameterValidator\Validators;
 
-use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Abstracts\AbstractParameterValidator;
-use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
 use DateTime;
 use Exception;
 
 class TimestampValidator extends AbstractParameterValidator
 {
     /**
-     * @param ParameterObject $object
-     * @param ModelInterface $model
-     * @param mixed $parameter
+     * @param $value
+     * @return int|mixed
      * @throws Exception
      */
-    public function setParameter(ParameterObject $object, ModelInterface $model, $parameter): void
+    public function transformValue($value): int
     {
-        $passedParameter = '';
-
-        try {
-            if (strpos($parameter, '-') !== false) {
-                $date = new DateTime($parameter);
-            } else {
-                $date = new DateTime('@' . $parameter);
-            }
-            $passedParameter = $date->getTimestamp();
-        } catch (Exception $e) {
-            $this->services->logger()->error()->log(
-                MinimalismErrorEvents::PARAMETER_TYPE_MISMATCH($object->parameterIdentifier)
-            )->throw(Exception::class);
+        if (strpos($value, '-') !== false) {
+            $date = new DateTime($value);
+        } else {
+            $date = new DateTime('@' . $value);
         }
-
-        $model->setParameter($object->parameterName, $passedParameter);
+        return $date->getTimestamp();
     }
 }

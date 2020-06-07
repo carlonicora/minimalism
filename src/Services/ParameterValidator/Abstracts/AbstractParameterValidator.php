@@ -36,7 +36,7 @@ abstract class AbstractParameterValidator implements ParameterValidatorInterface
             $model->addReceivedParameters($object->parameterName);
             if ($passedParameters[$object->parameterIdentifier] !== null) {
                 if ($object->isEncrypted) {
-                   $model->setParameter($object->parameterName, $model->decrypter()->decryptParameter($passedParameters[$object->parameterIdentifier]));
+                    $model->setParameter($object->parameterName, $model->decrypter()->decryptParameter($passedParameters[$object->parameterIdentifier]));
                 } else {
                     $this->setParameter($object, $model, $passedParameters[$object->parameterIdentifier]);
                 }
@@ -54,5 +54,24 @@ abstract class AbstractParameterValidator implements ParameterValidatorInterface
      * @param mixed $parameter
      * @throws Exception
      */
-    abstract public function setParameter(ParameterObject $object, ModelInterface $model, $parameter) : void;
+    final public function setParameter(ParameterObject $object, ModelInterface $model, $parameter) : void
+    {
+        try {
+            $model->setParameter(
+                $object->parameterName,
+                $this->transformValue($parameter)
+            );
+        } catch (Exception $e) {
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::PARAMETER_TYPE_MISMATCH($object->parameterIdentifier)
+            )->throw(Exception::class);
+        }
+    }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    abstract public function transformValue($value);
+
 }
