@@ -24,7 +24,7 @@ class JsonApiValidatorTest extends AbstractTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->instance = new JsonApiValidator($this->getServices(), new ParameterObject('test', []));
+        $this->instance = new JsonApiValidator($this->getServices()/*, new ParameterObject('test', [])*/);
     }
 
     /**
@@ -34,9 +34,8 @@ class JsonApiValidatorTest extends AbstractTestCase
      */
     public function testSetParameterWithUnsupportedType($mixed)
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('JsonApiValidator $parameter must be of type array');
-        $this->instance->setParameter($this->mock, $mixed);
+        $this->expectException(\TypeError::class);
+        $this->instance->setParameter(new ParameterObject('test', []), $this->mock, $mixed);
     }
 
     public function invalidTypes()
@@ -44,7 +43,7 @@ class JsonApiValidatorTest extends AbstractTestCase
         return [
             ['string'],
             [1],
-            [true]
+            [true],
         ];
     }
 
@@ -56,7 +55,7 @@ class JsonApiValidatorTest extends AbstractTestCase
     public function testSetParameterWithSupportedTypes($mixed)
     {
         $this->mock->expects($this->once())->method('setParameter');
-        $this->instance->setParameter($this->mock, $mixed);
+        $this->instance->setParameter(new ParameterObject('test', []), $this->mock, $mixed);
     }
 
     public function validTypes()
