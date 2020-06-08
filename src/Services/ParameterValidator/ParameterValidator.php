@@ -61,8 +61,8 @@ class ParameterValidator extends AbstractService {
         foreach ($model->getParameters() ?? [] as $parameterIdentifier=>$parameter){
             $parameterObject = new ParameterObject($parameterIdentifier, $parameter);
 
-            $parameterValidator = $this->factory->createParameterValidator($this->services, $parameterObject);
-            $parameterValidator->renderParameter($model, $passedParameters);
+            $parameterValidator = $this->factory->createParameterValidator($this->services, $parameterObject->validator);
+            $parameterValidator->renderParameter($parameterObject, $model, $passedParameters);
         }
 
         $this->services->logger()->info()->log(MinimalismInfoEvents::PARAMETERS_VALIDATED());

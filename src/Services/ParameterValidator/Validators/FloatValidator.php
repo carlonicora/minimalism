@@ -1,13 +1,16 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ParameterValidator\Validators;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Abstracts\AbstractParameterValidator;
 
 class FloatValidator extends AbstractParameterValidator
 {
-    public function setParameter(ModelInterface $model, $parameter): void
+    /**
+     * @param $value
+     * @return float
+     */
+    public function transformValue($value): float
     {
-        $model->setParameter($this->object->parameterName, (float)$parameter);
+        return (float)$value;
     }
 }
