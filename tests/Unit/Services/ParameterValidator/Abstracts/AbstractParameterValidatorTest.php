@@ -14,16 +14,12 @@ class AbstractParameterValidatorTest extends AbstractTestCase
     protected const IDENTIFIER = 'test';
 
     /**
-     * @param $parameterObjectParameter
      * @return AbstractParameterValidator
      */
-    public function getInstance($parameterObjectParameter = []): MockObject
+    public function getInstance(): MockObject
     {
         return $this->getMockBuilder(AbstractParameterValidator::class)
-            ->setConstructorArgs([
-                $this->getServices(),
-                new ParameterObject(self::IDENTIFIER, $parameterObjectParameter)
-            ])
+            ->setConstructorArgs([$this->getServices()])
             ->onlyMethods(['setParameter'])
             ->getMockForAbstractClass();
     }
@@ -38,11 +34,15 @@ class AbstractParameterValidatorTest extends AbstractTestCase
 
     public function testRenderParameterWithoutMatchingRequiredParameterObject()
     {
-        $instance = $this->getInstance(['required' => 1]);
+        $instance = $this->getInstance();
         $modelMock = $this->getModelMock();
 
         $this->expectException(\Exception::class);
-        $instance->renderParameter($modelMock, []);
+        $instance->renderParameter(
+            new ParameterObject(self::IDENTIFIER, ['required' => 1]),
+            $modelMock,
+            []
+        );
     }
 
 
@@ -54,7 +54,11 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $instance->expects($this->never())->method('setParameter');
         $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
 
-        $instance->renderParameter($modelMock, [self::IDENTIFIER => null]);
+        $instance->renderParameter(
+            new ParameterObject(self::IDENTIFIER, []),
+            $modelMock,
+            [self::IDENTIFIER => null]
+        );
     }
 
     public function testRenderParameterWithMatchingParameterObjectNotNull()
@@ -63,10 +67,15 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $instance = $this->getInstance();
         $modelMock = $this->getModelMock();
 
-        $instance->expects($this->once())->method('setParameter')->with($modelMock, $value);
+        $parameterObject = new ParameterObject(self::IDENTIFIER, []);
+        $instance->expects($this->once())->method('setParameter')->with($parameterObject, $modelMock, $value);
         $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
 
-        $instance->renderParameter($modelMock, [self::IDENTIFIER => $value]);
+        $instance->renderParameter(
+            $parameterObject,
+            $modelMock,
+            [self::IDENTIFIER => $value]
+        );
     }
 
     public function testRenderParameterWithMatchingParameterObjectEncrypted()
@@ -78,6 +87,10 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
         $modelMock->expects($this->once())->method('decrypter');
 
-        $instance->renderParameter($modelMock, [self::IDENTIFIER => 'value']);
+        $instance->renderParameter(
+            new ParameterObject(self::IDENTIFIER, ['encrypted' => 1]),
+            $modelMock,
+            [self::IDENTIFIER => 'value']
+        );
     }
 }
