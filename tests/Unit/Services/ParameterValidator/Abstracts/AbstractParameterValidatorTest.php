@@ -32,7 +32,7 @@ class AbstractParameterValidatorTest extends AbstractTestCase
     {
         return $this->getMockBuilder(TestModel::class)
             ->setConstructorArgs([$this->getServices()])
-            ->onlyMethods(['addReceivedParameters'])
+            ->onlyMethods(['addReceivedParameters', 'setParameter', 'decrypter'])
             ->getMock();
     }
 
@@ -67,5 +67,17 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
 
         $instance->renderParameter($modelMock, [self::IDENTIFIER => $value]);
+    }
+
+    public function testRenderParameterWithMatchingParameterObjectEncrypted()
+    {
+        $instance = $this->getInstance(['encrypted' => 1]);
+        $modelMock = $this->getModelMock();
+
+        $modelMock->expects($this->once())->method('setParameter');
+        $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
+        $modelMock->expects($this->once())->method('decrypter');
+
+        $instance->renderParameter($modelMock, [self::IDENTIFIER => 'value']);
     }
 }
