@@ -15,6 +15,7 @@ class BoolValidatorTest extends AbstractTestCase
      * @dataProvider provider
      * @param $output
      * @param $input
+     * @throws \Exception
      */
     public function testSetParameter($output, $input)
     {
