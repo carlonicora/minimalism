@@ -20,15 +20,14 @@ class StringValidatorTest extends AbstractTestCase
     {
         $parameterName = 'test';
 
-        $instance = new StringValidator($this->getServices(), new ParameterObject($parameterName, []));
+        $instance = new StringValidator($this->getServices());
 
         $mock = $this->getMockBuilder(TestModel::class)
             ->setConstructorArgs([$this->getServices()])
             ->getMock();
         $mock->expects($this->once())->method('setParameter')->with($parameterName, $this->identicalTo($output));
 
-        // does not typecast input to string
-        $instance->setParameter($mock, $input);
+        $instance->setParameter(new ParameterObject($parameterName, []), $mock, $input);
     }
 
 
@@ -36,13 +35,11 @@ class StringValidatorTest extends AbstractTestCase
     {
         return [
             [ "", "" ],
-            [ null, null ],
-            [ [], [] ],
-            [ 0, 0 ],
+            [ "", null ],
+            [ "0", 0 ],
             [ "0", "0" ],
-            [ ['a', 'b'],  ['a','b'] ],
-            [ 1,  1 ],
-            [ -1,  -1 ],
+            [ "1",  1 ],
+            [ "-1",  -1 ],
             [ "1",  "1" ],
             [ "-1",  "-1" ]
         ];
