@@ -26,8 +26,13 @@ class ParameterValidator extends AbstractService {
     public const PARAMETER_TYPE_DATETIME = DateTimeValidator::class;
     public const PARAMETER_TYPE_FLOAT = FloatValidator::class;
 
-    /** @var ParameterValidatorConfigurations  */
-    private ParameterValidatorConfigurations $configData;
+    /**
+     * @var ParameterValidatorConfigurations
+     * @todo with ParameterValidatorFactoryInterface results in a type mismatch runtime error.
+     *       why is the ParameterValidatorConfigurations instance enforced if the constructor expects
+     *       an implementation of ServiceConfigurationsInterface?
+     */
+    private ServiceConfigurationsInterface $configData;
 
     /** @var ParameterValidatorFactoryInterface */
     private ParameterValidatorFactoryInterface $factory;
@@ -40,7 +45,6 @@ class ParameterValidator extends AbstractService {
     public function __construct(ServiceConfigurationsInterface $configData, ServicesFactory $services) {
         parent::__construct($configData, $services);
 
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         /** @noinspection UnusedConstructorDependenciesInspection */
         $this->configData = $configData;
 
