@@ -28,7 +28,7 @@ class ParameterValidatorFactory implements ParameterValidatorFactoryInterface
         } catch (ReflectionException $e) {
             $services->logger()->error()->log(
                 MinimalismErrorEvents::PARAMETER_VALIDATOR_ERROR($parameter->validator, $e)
-            )->throw(ConfigurationException::class, 'Parameter Validator not foud');
+            )->throw(ConfigurationException::class, 'Parameter Validator not found');
         }
 
         return $response;
