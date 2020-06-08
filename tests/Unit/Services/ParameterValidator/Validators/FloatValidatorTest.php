@@ -3,12 +3,11 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Services\ParameterValidator\Validators;
 
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
-use CarloNicora\Minimalism\Services\ParameterValidator\Validators\BoolValidator;
+use CarloNicora\Minimalism\Services\ParameterValidator\Validators\FloatValidator;
 use CarloNicora\Minimalism\Tests\Mocks\TestModel;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 
-
-class BoolValidatorTest extends AbstractTestCase
+class FloatValidatorTest extends AbstractTestCase
 {
 
     /**
@@ -21,7 +20,7 @@ class BoolValidatorTest extends AbstractTestCase
     {
         $parameterName = 'test';
 
-        $instance = new BoolValidator($this->getServices(), new ParameterObject($parameterName, []));
+        $instance = new FloatValidator($this->getServices(), new ParameterObject($parameterName, []));
 
         $mock = $this->getMockBuilder(TestModel::class)
             ->setConstructorArgs([$this->getServices()])
@@ -35,16 +34,16 @@ class BoolValidatorTest extends AbstractTestCase
     public function provider()
     {
         return [
-            [ false, "" ],
-            [ false, null ],
-            [ false, [] ],
-            [ false, 0 ],
-            [ false, "0" ],
-            [ true,  ['a','b'] ],
-            [ true,  1 ],
-            [ true,  -1 ],
-            [ true,  "1" ],
-            [ true,  "-1" ]
+            [ 0.0, "" ],
+            [ 0.0, null ],
+            [ 0.0, [] ],
+            [ 0.0, 0 ],
+            [ 0.0, "0" ],
+            [ 1.0,  ['a','b'] ],
+            [ 1.0,  1 ],
+            [ -1.0,  -1 ],
+            [ 1.0,  "1" ],
+            [ -1.0,  "-1" ]
         ];
     }
 }
