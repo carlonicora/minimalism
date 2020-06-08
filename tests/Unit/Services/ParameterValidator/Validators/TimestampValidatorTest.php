@@ -20,7 +20,7 @@ class TimestampValidatorTest extends AbstractTestCase
         $dateValue = date('Y-m-d H:i:s');
         $dateValueHoursMinutesSeconds = \date('H:i:s');
 
-        $instance = new TimestampValidator($this->getServices(), new ParameterObject($parameterName, []));
+        $instance = new TimestampValidator($this->getServices());
 
         $mock = $this->getMockBuilder(TestModel::class)
             ->setConstructorArgs([$this->getServices()])
@@ -34,10 +34,10 @@ class TimestampValidatorTest extends AbstractTestCase
         );
 
 
-        $instance->setParameter($mock, $dateValue);
+        $instance->setParameter(new ParameterObject($parameterName, []), $mock, $dateValue);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("Parameter Type mismatch: $parameterName");
-        $instance->setParameter($mock, $dateValueHoursMinutesSeconds);
+        $instance->setParameter(new ParameterObject($parameterName, []), $mock, $dateValueHoursMinutesSeconds);
     }
 }
