@@ -14,20 +14,20 @@ class ParameterValidatorFactory implements ParameterValidatorFactoryInterface
 {
     /**
      * @param ServicesFactory $services
-     * @param string $parameterVaidatorClass
+     * @param string $parameterValidatorClass
      * @return ParameterValidatorInterface
-     * @throws Exception|ConfigurationException
+     * @throws Exception
      */
-    public function createParameterValidator(ServicesFactory $services, string $parameterVaidatorClass) : ParameterValidatorInterface
+    public function createParameterValidator(ServicesFactory $services, string $parameterValidatorClass) : ParameterValidatorInterface
     {
         /** @var ParameterValidatorInterface $response */
         try {
-            $reflector = new ReflectionClass($parameterVaidatorClass);
+            $reflector = new ReflectionClass($parameterValidatorClass);
             $response = $reflector->newInstanceArgs([$services]);
         } catch (ReflectionException $e) {
             $services->logger()->error()->log(
-                MinimalismErrorEvents::PARAMETER_VALIDATOR_ERROR($parameterVaidatorClass, $e)
-            )->throw(ConfigurationException::class, 'Parameter Validator not foud');
+                MinimalismErrorEvents::PARAMETER_VALIDATOR_ERROR($parameterValidatorClass, $e)
+            )->throw(ConfigurationException::class, 'Parameter Validator not found');
         }
 
         return $response;

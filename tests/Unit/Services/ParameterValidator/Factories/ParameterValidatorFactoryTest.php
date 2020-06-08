@@ -16,7 +16,7 @@ class ParameterValidatorFactoryTest extends AbstractTestCase
         $instance = new ParameterValidatorFactory();
         $validator = $instance->createParameterValidator(
             $this->getServices(),
-            new ParameterObject('test', [])
+            StringValidator::class
         );
 
         $this->assertInstanceOf(StringValidator::class, $validator);
@@ -32,7 +32,7 @@ class ParameterValidatorFactoryTest extends AbstractTestCase
 
         $validator = $instance->createParameterValidator(
             $this->getServices(),
-            new ParameterObject('test', ['validator' => 'Class_does_not_exist'])
+            'Class_does_not_exist'
         );
     }
 }
