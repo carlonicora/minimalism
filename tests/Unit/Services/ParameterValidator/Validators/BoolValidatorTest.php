@@ -21,14 +21,14 @@ class BoolValidatorTest extends AbstractTestCase
     {
         $parameterName = 'test';
 
-        $instance = new BoolValidator($this->getServices(), new ParameterObject($parameterName, []));
+        $instance = new BoolValidator($this->getServices());
 
         $mock = $this->getMockBuilder(TestModel::class)
             ->setConstructorArgs([$this->getServices()])
             ->getMock();
         $mock->expects($this->once())->method('setParameter')->with($parameterName, $this->identicalTo($output));
 
-        $instance->setParameter($mock, $input);
+        $instance->setParameter(new ParameterObject($parameterName, []), $mock, $input);
     }
 
 
