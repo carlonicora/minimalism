@@ -20,14 +20,14 @@ class IntValidatorTest extends AbstractTestCase
     {
         $parameterName = 'test';
 
-        $instance = new IntValidator($this->getServices(), new ParameterObject($parameterName, []));
+        $instance = new IntValidator($this->getServices());
 
         $mock = $this->getMockBuilder(TestModel::class)
             ->setConstructorArgs([$this->getServices()])
             ->getMock();
         $mock->expects($this->once())->method('setParameter')->with($parameterName, $this->identicalTo($output));
 
-        $instance->setParameter($mock, $input);
+        $instance->setParameter(new ParameterObject($parameterName, []), $mock, $input);
     }
 
 
