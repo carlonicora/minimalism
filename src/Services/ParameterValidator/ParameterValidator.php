@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Configurations\ParameterV
 use CarloNicora\Minimalism\Services\ParameterValidator\Factories\ParameterValidatorFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorFactoryInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
+use CarloNicora\Minimalism\Services\ParameterValidator\Validators\ArrayValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\BoolValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\DateTimeValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\FloatValidator;
@@ -25,6 +26,7 @@ class ParameterValidator extends AbstractService {
     public const PARAMETER_TYPE_TIMESTAMP = TimestampValidator::class;
     public const PARAMETER_TYPE_DATETIME = DateTimeValidator::class;
     public const PARAMETER_TYPE_FLOAT = FloatValidator::class;
+    public const PARAMETER_TYPE_ARRAY = ArrayValidator::class;
 
     /** @var ParameterValidatorConfigurations  */
     private ParameterValidatorConfigurations $configData;

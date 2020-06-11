@@ -10,11 +10,15 @@ class DateTimeValidator extends AbstractParameterValidator
     /**
     /**
      * @param $value
-     * @return DateTime
+     * @return DateTime|null
      * @throws Exception
      */
-    public function transformValue($value) : DateTime
+    public function transformValue($value) : ?DateTime
     {
+        if ($value === null){
+            return null;
+        }
+
         if (strpos($value, '-') === false) {
             $value = '@' . $value;
         }

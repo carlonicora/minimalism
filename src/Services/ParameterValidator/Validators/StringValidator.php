@@ -7,10 +7,14 @@ class StringValidator extends AbstractParameterValidator
 {
     /**
      * @param $value
-     * @return string
+     * @return string|null
      */
-    public function transformValue($value): string
+    public function transformValue($value): ?string
     {
+        if ($value === null){
+            return null;
+        }
+
         return (string)$value;
     }
 }

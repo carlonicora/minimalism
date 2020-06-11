@@ -9,11 +9,15 @@ class TimestampValidator extends AbstractParameterValidator
 {
     /**
      * @param $value
-     * @return int|mixed
+     * @return int|null
      * @throws Exception
      */
-    public function transformValue($value): int
+    public function transformValue($value): ?int
     {
+        if ($value === null){
+            return null;
+        }
+
         if (strpos($value, '-') !== false) {
             $date = new DateTime($value);
         } else {

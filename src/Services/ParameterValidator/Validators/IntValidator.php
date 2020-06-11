@@ -11,6 +11,10 @@ class IntValidator extends AbstractParameterValidator
      */
     public function transformValue($value) : int
     {
+        if ($value === null){
+            return 0;
+        }
+
         return (int)$value;
     }
 }
