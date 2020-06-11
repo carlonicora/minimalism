@@ -38,7 +38,11 @@ trait JsonApiModelTrait
         $document->addError(new Error($e));
 
         $response->setDocument($document);
-        $response->setStatus($document->errors[0]->status ?? '500');
+        if ($document->errors[0]->status !== null && $document->errors[0]->status !== '0'){
+            $response->setStatus($document->errors[0]->status);
+        } else {
+            $response->setStatus('500');
+        }
 
         return $response;
     }
