@@ -95,6 +95,18 @@ class Bootstrapper
     private function startSession() : void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            if (isset($_COOKIE['PHPSESSID']) && ini_get('session.use_cookies')) {
+                $sessid = $_COOKIE['PHPSESSID'];
+            } elseif (isset($_COOKIE['PHPSESSID']) && !ini_get('session.use_only_cookies')) {
+                $sessid = $_GET['PHPSESSID'];
+            } else {
+                session_start();
+                return;
+            }
+
+            if (!preg_match('/^[a-z0-9]{32}$/', $sessid)) {
+                return;
+            }
             session_start();
         }
     }
