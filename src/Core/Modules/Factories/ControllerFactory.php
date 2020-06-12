@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use Exception;
+use function class_exists;
 
 class ControllerFactory
 {
@@ -33,6 +34,12 @@ class ControllerFactory
             $this->services->logger()->error()->log(
                 MinimalismErrorEvents::CONTROLLER_NOT_DEFINED()
             )->throw(ConfigurationException::class, 'Controller not set up');
+        }
+
+        if (!class_exists($controllerClassName)) {
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::GENERIC_ERROR()
+            )->throw(ConfigurationException::class, 'Controller class does not exist');
         }
 
         /** @var ControllerInterface $response */

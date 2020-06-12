@@ -112,7 +112,7 @@ class Response implements ResponseInterface
      */
     public function writeContentType() : void
     {
-        header('Content-Type: ' . $this->getContentType());
+        $this->writeRawHTTP('Content-Type: ' . $this->getContentType());
     }
 
     /**
@@ -122,7 +122,7 @@ class Response implements ResponseInterface
     {
         http_response_code((int)$this->getStatus());
         $GLOBALS['http_response_code'] = $this->getStatus();
-        header($this->getProtocol() . ' ' . $this->getStatus() . ' ' . $this->generateStatusText());
+        $this->writeRawHTTP($this->getProtocol() . ' ' . $this->getStatus() . ' ' . $this->generateStatusText());
     }
 
     /**

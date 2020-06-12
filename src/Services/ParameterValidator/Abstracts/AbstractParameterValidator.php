@@ -53,8 +53,9 @@ abstract class AbstractParameterValidator implements ParameterValidatorInterface
      * @param ModelInterface $model
      * @param mixed $parameter
      * @throws Exception
+     * @todo final methods cannot be stubbed by PHPUnit as such the final property has been removed
      */
-    final public function setParameter(ParameterObject $object, ModelInterface $model, $parameter) : void
+    public function setParameter(ParameterObject $object, ModelInterface $model, $parameter) : void
     {
         try {
             $model->setParameter(

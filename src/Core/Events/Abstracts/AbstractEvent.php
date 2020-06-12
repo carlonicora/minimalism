@@ -53,7 +53,7 @@ abstract class AbstractEvent implements EventInterface
     /**
      * @return float
      */
-    final public function getTime(): float
+    public function getTime(): float
     {
         return $this->time;
     }

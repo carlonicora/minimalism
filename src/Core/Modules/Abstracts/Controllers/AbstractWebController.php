@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use Exception;
 use JsonException;
+use function setcookie;
 
 abstract class AbstractWebController extends AbstractController
 {
@@ -25,7 +26,7 @@ abstract class AbstractWebController extends AbstractController
     {
         try {
             $cookieValue = $this->services->serialiseCookies();
-            setcookie('minimalismServices', $cookieValue, time() + (30 * 24 * 60 * 60));
+            $this->setCookie('minimalismServices', $cookieValue, (30 * 24 * 60 * 60));
         } catch (JsonException $e) {
             $this->services->logger()->error()
                 ->log(MinimalismErrorEvents::COOKIE_SETTING_ERROR($e));
@@ -35,6 +36,17 @@ abstract class AbstractWebController extends AbstractController
 
         $_SESSION['minimalismServices'] = $this->services;
         $this->services->logger()->info()->log(MinimalismInfoEvents::SESSION_PERSISTED());
+    }
+
+    /**
+     * Helper method that allows us to unit test completeRender
+     * @param string $name
+     * @param string $value
+     * @param int $lifetime
+     */
+    protected function setCookie(string $name, string $value, int $lifetime): void
+    {
+        setcookie($name, $value, time() + $lifetime);
     }
 
     /**

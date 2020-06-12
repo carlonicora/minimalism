@@ -28,7 +28,7 @@ class ParameterValidator extends AbstractService {
     public const PARAMETER_TYPE_FLOAT = FloatValidator::class;
     public const PARAMETER_TYPE_ARRAY = ArrayValidator::class;
 
-    /** @var ParameterValidatorConfigurations  */
+    /** @var ServiceConfigurationsInterface|ParameterValidatorConfigurations  */
     private ParameterValidatorConfigurations $configData;
 
     /** @var ParameterValidatorFactoryInterface */
@@ -42,8 +42,8 @@ class ParameterValidator extends AbstractService {
     public function __construct(ServiceConfigurationsInterface $configData, ServicesFactory $services) {
         parent::__construct($configData, $services);
 
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         /** @noinspection UnusedConstructorDependenciesInspection */
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->configData = $configData;
 
         $this->factory = new ParameterValidatorFactory();
