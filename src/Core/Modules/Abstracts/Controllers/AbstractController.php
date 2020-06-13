@@ -120,18 +120,7 @@ abstract class AbstractController implements ControllerInterface
             $this->modelName = str_replace('-', '\\', $modelName);
         }
 
-        /**
-         * @todo if this method would allow us to pass in a custom model instance instead of resolving
-         *       the name, we could inject the mock TestModel object and test the method
-         */
-        $modelClass = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $this->modelName);
-
-        if (!class_exists($modelClass)){
-            $this->services->logger()->error()->log(
-                MinimalismErrorEvents::MODEL_NOT_FOUND(strtolower($this->modelName))
-            )->throw(Exception::class, null);
-        }
-
+        $modelClass = $this->findModelClass($this->modelName);
         $this->model = new $modelClass($this->services);
 
         $this->model->setVerb($verb);
@@ -146,6 +135,33 @@ abstract class AbstractController implements ControllerInterface
         $this->services->logger()->info()->log(MinimalismInfoEvents::MODEL_INITIALISED($this->modelName));
 
         return $this;
+    }
+
+    /**
+     * @param string $modelName
+     * @return string
+     * @throws Exception
+     */
+    private function findModelClass(string $modelName): string
+    {
+        $response = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $modelName);
+
+        if (class_exists($response)){
+            return $response;
+        }
+
+        foreach ($this->services->paths()->getServicesNamespaces() as $namespace){
+            $response = $namespace . '\\Models\\' . str_replace('/', '\\', $modelName);
+            if (class_exists($response)){
+                return $response;
+            }
+        }
+
+        $this->services->logger()->error()->log(
+            MinimalismErrorEvents::MODEL_NOT_FOUND(strtolower($modelName))
+        )->throw(Exception::class, null);
+
+        return '';
     }
 
     /**
