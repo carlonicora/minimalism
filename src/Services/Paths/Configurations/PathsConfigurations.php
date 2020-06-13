@@ -11,7 +11,7 @@ class PathsConfigurations extends AbstractServiceConfigurations
     /**
      * @var array
      */
-    private array $servicesPaths = [];
+    private array $servicesNamespaces = [];
 
     /**
      * @var array
@@ -19,27 +19,11 @@ class PathsConfigurations extends AbstractServiceConfigurations
     private array $serviceFactories = [];
 
     /**
-     * @var array
-     */
-    private array $plugins=[];
-
-    /**
      * mailingConfigurations constructor.
      */
     public function __construct()
     {
         $this->initialiseServiceFactories();
-        $this->initialiseServicesPaths();
-    }
-
-    /**
-     *
-     */
-    private function initialiseServicesPaths(): void
-    {
-        foreach ($this->plugins ?? [] as $plugin) {
-            $this->servicesPaths[] = dirname($plugin, 2);
-        }
     }
 
     /**
@@ -47,12 +31,12 @@ class PathsConfigurations extends AbstractServiceConfigurations
      */
     private function initialiseServiceFactories(): void
     {
-        $this->plugins = glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
+        $plugins = glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
         $builtIn = glob(realpath('./vendor') . '/*/*/src/Services/*/Factories/ServiceFactory.php');
         $internal = glob(realpath('./src') . '/Services/*/Factories/ServiceFactory.php');
         $microservice = glob(realpath('./src') . '/Factories/ServiceFactory.php');
 
-        $files = array_unique(array_merge($this->plugins, $builtIn, $internal, $microservice));
+        $files = array_unique(array_merge($plugins, $builtIn, $internal, $microservice));
 
         foreach ($files as $fileName) {
             /** @noinspection PhpIncludeInspection */
@@ -64,6 +48,17 @@ class PathsConfigurations extends AbstractServiceConfigurations
             try {
                 $reflect = new ReflectionClass($singleClass);
                 if ($reflect->implementsInterface(ServiceFactoryInterface::class) && !$reflect->isAbstract()) {
+
+                    $serviceNamespaceParts = explode('\\', $singleClass);
+                    $serviceNamespace = '';
+                    for ($partsCount=0; $partsCount<count($serviceNamespaceParts)-2;$partsCount++){
+                        $serviceNamespace .= ($partsCount === 0 ? '' : '\\') . $serviceNamespaceParts[$partsCount];
+                    }
+
+                    if (!in_array($serviceNamespace, $this->servicesNamespaces, true)){
+                        $this->servicesNamespaces[] = $serviceNamespace;
+                    }
+
                     $this->serviceFactories[] = $singleClass;
                 }
             } catch (ReflectionException $e) {
@@ -82,8 +77,8 @@ class PathsConfigurations extends AbstractServiceConfigurations
     /**
      * @return array
      */
-    public function getServicesPaths(): array
+    public function getServicesNamespaces(): array
     {
-        return $this->servicesPaths;
+        return $this->servicesNamespaces;
     }
 }
