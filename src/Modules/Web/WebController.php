@@ -28,9 +28,17 @@ class WebController extends AbstractWebController {
         $model = $this->model;
         if ($model->getViewName() !== '') {
             try {
-                $twigLoader = new FilesystemLoader($this->services->paths()->getRoot()
-                    . DIRECTORY_SEPARATOR . 'src'
-                    . DIRECTORY_SEPARATOR . 'Views');
+                $paths = [];
+                $defaultDirectory = $this->services->paths()->getRoot() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Views';
+                if (file_exists($defaultDirectory)){
+                    $paths[] = $defaultDirectory;
+                }
+
+                foreach ($this->services->paths()->getServicesViewsDirectories() as $additionalPaths) {
+                    $paths[] = $additionalPaths;
+                }
+
+                $twigLoader = new FilesystemLoader($paths);
                 $this->view = new Environment($twigLoader);
             } catch (Exception $e) {
                 throw new RuntimeException('View failure: ' . $e->getMessage(), 404);

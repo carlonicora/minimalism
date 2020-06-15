@@ -18,6 +18,9 @@ class PathsConfigurations extends AbstractServiceConfigurations
      */
     private array $serviceFactories = [];
 
+    /** @var array  */
+    private array $servicesViewsDirectories = [];
+
     /**
      * mailingConfigurations constructor.
      */
@@ -41,6 +44,11 @@ class PathsConfigurations extends AbstractServiceConfigurations
         foreach ($files as $fileName) {
             /** @noinspection PhpIncludeInspection */
             require_once $fileName;
+
+            $possibleViewDirectory = dirname($fileName, 2) . DIRECTORY_SEPARATOR . 'Views';
+            if (file_exists($possibleViewDirectory)){
+                $this->servicesViewsDirectories[] = $possibleViewDirectory;
+            }
         }
 
         $classes = get_declared_classes();
@@ -80,5 +88,13 @@ class PathsConfigurations extends AbstractServiceConfigurations
     public function getServicesNamespaces(): array
     {
         return $this->servicesNamespaces;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServicesViewsDirectories(): array
+    {
+        return $this->servicesViewsDirectories;
     }
 }

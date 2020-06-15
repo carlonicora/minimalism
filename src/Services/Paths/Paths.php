@@ -181,4 +181,12 @@ class Paths extends AbstractService {
     {
         return $this->configData->getServicesNamespaces();
     }
+
+    /**
+     * @return array
+     */
+    public function getServicesViewsDirectories(): array
+    {
+        return $this->configData->getServicesViewsDirectories();
+    }
 }
