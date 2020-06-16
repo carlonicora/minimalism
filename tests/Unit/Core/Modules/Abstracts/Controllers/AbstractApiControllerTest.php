@@ -3,7 +3,6 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractApiController;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 
 class AbstractApiControllerTest extends AbstractTestCase
@@ -68,22 +67,14 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
-        $this->markTestSkipped('We cannot use the mock TestModel as the model namespace is prefixed within the method');
-        $instance->initialiseModel('Tests\\Mocks\\TestModel');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Model not found: index');
+        $instance->initialiseModel();
     }
 
 
     public function testCompleteRender()
     {
-        /**
-        $sfMock = $this->getMockBuilder(ServicesFactory::class)
-            ->onlyMethods(['cleanNonPersistentVariables', 'destroyStatics'])
-            ->getMock();
-
-        $sfMock->expects($this->once())->method('cleanNonPersistentVariables');
-        $sfMock->expects($this->once())->method('destroyStatics');
-         * */
-
         $instance = $this->getMockBuilder(AbstractApiController::class)
             ->setConstructorArgs([$this->getServices()])
             ->onlyMethods(['saveCache'])
