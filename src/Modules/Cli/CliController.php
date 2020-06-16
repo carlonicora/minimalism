@@ -25,7 +25,10 @@ class CliController extends AbstractCliController {
             $response->setData($e->getMessage());
         }
 
-        $this->completeRender($response->getStatus(), $response->getData());
+        /**
+         * @todo ResponseInterface->getStatus by definition returns a string type
+         */
+        $this->completeRender((int)$response->getStatus(), $response->getData());
 
         $response->setNotHttpResponse();
 
