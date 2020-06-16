@@ -4,6 +4,8 @@ namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -158,6 +160,24 @@ class AbstractControllerTest extends AbstractTestCase
         $finalModel->expects($this->once())->method('redirect')->with()->willReturn('');
 
         $this->instance->initialiseModel($initialModel);
+    }
+
+
+    public function testSetSecurityInterface()
+    {
+        $mock = $this->getMockBuilder(SecurityInterface::class)->getMock();
+
+        $this->instance->setSecurityInterface($mock);
+        $this->assertSame($mock, $this->getProperty($this->instance, 'security'));
+    }
+
+
+    public function testSetEncrypterInterface()
+    {
+        $mock = $this->getMockBuilder(EncrypterInterface::class)->getMock();
+
+        $this->instance->setEncrypterInterface($mock);
+        $this->assertSame($mock, $this->getProperty($this->instance, 'encrypter'));
     }
 }
 
