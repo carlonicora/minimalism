@@ -54,7 +54,7 @@ abstract class WebModel extends AbstractWebModel {
     }
 
     /**
-     * @return responseInterface
+     * @return ResponseInterface
      */
     public function generateData() : ResponseInterface{
         return new JsonApiResponse();
