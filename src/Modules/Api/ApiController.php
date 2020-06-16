@@ -29,6 +29,10 @@ class ApiController extends AbstractApiController {
         $response = parent::initialiseModel($modelName, $this->verb);
 
         if ($this->model !== null){
+            /**
+             * @todo restrict to model instances of type ApiModel?
+             *       setIncludedResourceTypes & setRequiredFields are defined in ApiModel
+             */
             foreach ($this->passedParameters as $parameterKey=>$parameter) {
                 if ($parameterKey === 'include') {
                     $this->model->setIncludedResourceTypes(explode(',', $parameter));
@@ -90,10 +94,16 @@ class ApiController extends AbstractApiController {
 
             $this->services->logger()->info()->log(MinimalismInfoEvents::MODEL_RUN($this->verb));
         } catch (Exception $e) {
+            /**
+             * @todo only supports models that extend ApiModel or use JsonApiModelTrait
+             */
             $response=$this->model->generateResponseFromError($e);
         }
 
-        $this->completeRender($response->getStatus(), $response->getData());
+        /**
+         * @todo completeRender expects int but ResponseInterface->getStatus returns string
+         */
+        $this->completeRender((int)$response->getStatus(), $response->getData());
 
         return $response;
     }
