@@ -19,12 +19,12 @@ class ApiController extends AbstractApiController {
     protected ModelInterface $model;
 
     /**
-     * @param string|null $modelName
+     * @param ModelInterface|string|null $modelName
      * @param string $verb
      * @return ControllerInterface
      * @throws Exception
      */
-    public function initialiseModel(string $modelName = null, string $verb='GET'): ControllerInterface
+    public function initialiseModel($modelName = null, string $verb='GET'): ControllerInterface
     {
         $response = parent::initialiseModel($modelName, $this->verb);
 

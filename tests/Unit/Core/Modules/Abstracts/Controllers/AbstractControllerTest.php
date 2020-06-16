@@ -116,5 +116,11 @@ class AbstractControllerTest extends AbstractTestCase
         unset($_POST['test3']);
         $_FILES = [];
     }
+
+
+    public function testInitialiseModelWithDefaults()
+    {
+        $this->instance->initialiseModel();
+    }
 }
 

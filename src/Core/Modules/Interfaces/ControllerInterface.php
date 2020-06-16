@@ -22,11 +22,11 @@ interface ControllerInterface
     public function initialiseParameters(array $parameterValueList=[], array $parameterValues=[]): ControllerInterface;
 
     /**
-     * @param string $modelName
+     * @param ModelInterface|string|null $modelName
      * @param string $verb
      * @return ControllerInterface
      */
-    public function initialiseModel(string $modelName = null, string $verb='GET'): ControllerInterface;
+    public function initialiseModel($modelName = null, string $verb='GET'): ControllerInterface;
 
     /**
      * @return ControllerInterface

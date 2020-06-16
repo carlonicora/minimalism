@@ -46,12 +46,12 @@ abstract class AbstractApiController extends AbstractController
     }
 
     /**
-     * @param string|null $modelName
+     * @param ModelInterface|string|null $modelName
      * @param string $verb
      * @return ControllerInterface
      * @throws Exception
      */
-    public function initialiseModel(string $modelName = null, string $verb='GET'): ControllerInterface
+    public function initialiseModel($modelName = null, string $verb='GET'): ControllerInterface
     {
         return parent::initialiseModel($modelName, $this->verb);
     }
