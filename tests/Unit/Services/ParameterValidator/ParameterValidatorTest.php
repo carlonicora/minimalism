@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Tests\Unit\Services\ParameterValidator;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
+use CarloNicora\Minimalism\Services\ParameterValidator\Configurations\ParameterValidatorConfigurations;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorFactoryInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\BoolValidator;
@@ -22,7 +23,7 @@ class ParameterValidatorTest extends AbstractTestCase
     public function testValidate()
     {
         /** @var MockObject|ServiceConfigurationsInterface $mock */
-        $mockServiceConfigurations = $this->getMockBuilder(ServiceConfigurationsInterface::class)
+        $mockServiceConfigurations = $this->getMockBuilder(ParameterValidatorConfigurations::class)
             ->getMock();
 
         $instance = new ParameterValidator($mockServiceConfigurations, $this->getServices());
