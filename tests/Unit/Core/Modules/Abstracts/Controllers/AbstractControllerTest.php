@@ -3,6 +3,7 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractController;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -120,7 +121,43 @@ class AbstractControllerTest extends AbstractTestCase
 
     public function testInitialiseModelWithDefaults()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Model not found: index');
         $this->instance->initialiseModel();
+    }
+
+
+    public function testInitialiseModelWithModelInstanceAndDefaults()
+    {
+        $mockModel = $this->getMockBuilder(ModelInterface::class)
+            ->setConstructorArgs([$this->getServices()])
+            ->getMock();
+
+        $mockModel->expects($this->once())->method('setVerb')->with('GET');
+        $mockModel->expects($this->once())->method('setEncrypter')->with(null);
+        $mockModel->expects($this->once())->method('initialise')->with([], null);
+        $mockModel->expects($this->once())->method('redirect')->with()->willReturn('');
+
+        $this->instance->initialiseModel($mockModel);
+    }
+
+
+    public function testInitialiseModelWithModelRedirection()
+    {
+        $initialModel = $this->getMockBuilder(ModelInterface::class)
+            ->setConstructorArgs([$this->getServices()])
+            ->getMock();
+        $finalModel = $this->getMockBuilder(ModelInterface::class)
+            ->setConstructorArgs([$this->getServices()])
+            ->getMock();
+
+        $initialModel->expects($this->exactly(2))->method('redirect')->with()->willReturn($finalModel);
+        $finalModel->expects($this->once())->method('setVerb')->with('GET');
+        $finalModel->expects($this->once())->method('setEncrypter')->with(null);
+        $finalModel->expects($this->once())->method('initialise')->with([], null);
+        $finalModel->expects($this->once())->method('redirect')->with()->willReturn('');
+
+        $this->instance->initialiseModel($initialModel);
     }
 }
 
