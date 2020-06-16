@@ -33,6 +33,18 @@ class AbstractApiModelTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         $this->assertEmpty($instance->getParameters());
-        // @todo further testing requires the option to pass in custom ModelInteface
+    }
+
+
+    public function testSetVerb()
+    {
+        $instance = $this->getMockBuilder(AbstractApiModel::class)
+            ->setConstructorArgs([$this->getServices()])
+            ->getMockForAbstractClass();
+
+        $this->assertEquals('GET', $instance->verb);
+
+        $instance->setVerb('POST');
+        $this->assertEquals('POST', $instance->verb);
     }
 }
