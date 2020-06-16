@@ -9,14 +9,18 @@ use PHPUnit\Framework\MockObject\MockObject;
 class AbstractCliControllerTest extends AbstractTestCase
 {
 
+    /**
+     * @note nothing to assert at the moment. $_SERVER['argv'] contains the PHPUnit invocation command
+     * line, and it falls through the initialiseParameters method.
+     * @see AbstractCliController::initialiseParameters()
+     */
     public function testInitialiseParametersWithDefault()
     {
         $instance = $this->getMockBuilder(AbstractCliController::class)
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
-        $this->markTestSkipped('Needs support for passing in ModelInterface instance before being able to test');
-        $instance->initialiseParameters();
+        $this->assertSame($instance, $instance->initialiseParameters());
     }
 
     public function testPostInitialise()
