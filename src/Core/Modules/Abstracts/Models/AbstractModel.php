@@ -18,8 +18,8 @@ abstract class AbstractModel implements ModelInterface
     /** @var array */
     protected ?array $file;
 
-    /** @var string */
-    protected ?string $redirectPage;
+    /** @var ModelInterface|string|null */
+    protected $redirectPage;
 
     /** @var array */
     protected array $parameters=[];
@@ -77,9 +77,9 @@ abstract class AbstractModel implements ModelInterface
     }
 
     /**
-     * @return string
+     * @return ModelInterface|string
      */
-    public function redirect(): string
+    public function redirect()
     {
         return $this->redirectPage ?? '';
     }
