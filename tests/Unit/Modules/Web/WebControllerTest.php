@@ -39,4 +39,11 @@ class WebControllerTest extends AbstractTestCase
         $this->assertEquals('', $response->getStatus());
     }
 
+
+    public function testPostInitialise()
+    {
+        $instance = new WebController($this->getServices());
+
+        $this->assertSame($instance, $instance->postInitialise());
+    }
 }
