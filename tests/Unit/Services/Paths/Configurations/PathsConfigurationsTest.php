@@ -11,4 +11,10 @@ class PathsConfigurationsTest extends AbstractTestCase
         $config = new PathsConfigurations();
         $this->assertInstanceOf(PathsConfigurations::class, $config);
     }
+
+    public function testGetServiceFactories()
+    {
+        $instance = new PathsConfigurations();
+        $this->assertNotEmpty($instance->getServiceFactories());
+    }
 }
