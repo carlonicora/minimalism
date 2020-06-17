@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism;
 
 use CarloNicora\Minimalism\Core\Bootstrapper;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Modules\Api\ApiController;
 use CarloNicora\Minimalism\Modules\Cli\CliController;
 use CarloNicora\Minimalism\Modules\Web\WebController;
@@ -26,18 +27,18 @@ class Minimalism
     }
 
     /**
-     * @param string $modelName
+     * @param ModelInterface|string $model
      */
-    public static function executeCli(string $modelName) : void
+    public static function executeCli($model) : void
     {
-        self::execute(CliController::class, $modelName);
+        self::execute(CliController::class, $model);
     }
 
     /**
      * @param string $controllerClassName
-     * @param string|null $modelName
+     * @param ModelInterface|string|null $model
      */
-    private static function execute(string $controllerClassName, string $modelName=null) : void
+    private static function execute(string $controllerClassName, $model=null) : void
     {
         $bootstrapper = new Bootstrapper();
 
@@ -48,11 +49,11 @@ class Minimalism
             do {
                 $response = $bootstrapper
                     ->initialise($controllerClassName)
-                    ->loadController($modelName, $parameters)
+                    ->loadController($model, $parameters)
                     ->render();
 
                 if (($redirect = $response->redirects()) !== null){
-                    $modelName = $redirect;
+                    $model = $redirect;
                     $parameters = $response->getRedirectionParameters();
                 }
             } while ($redirect !== null);
