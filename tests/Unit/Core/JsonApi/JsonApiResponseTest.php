@@ -28,5 +28,14 @@ class JsonApiResponseTest extends AbstractTestCase
         $document = new Document();
         $instance->setDocument($document);
         $this->assertEquals('{"meta":[]}', $instance->getData());
+
+
+        $mock = $this->getMockBuilder(Document::class)
+            ->getMock();
+
+        $mock->expects($this->once())->method('export')->willThrowException(new \JsonException());
+
+        $instance->setDocument($mock);
+        $this->assertEquals('', $instance->getData());
     }
 }
