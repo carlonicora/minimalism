@@ -4,9 +4,20 @@ namespace CarloNicora\Minimalism\Tests\Unit\Modules\Web\Extensions;
 
 use CarloNicora\Minimalism\Modules\Web\Extensions\TwigExtensions;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Twig\TwigFunction;
 
 class TwigExtensionsTest extends AbstractTestCase
 {
+
+    public function testGetFunctions()
+    {
+        $instance = new TwigExtensions();
+
+        $twigFunctions = $instance->getFunctions();
+        $this->assertCount(2, $twigFunctions);
+        $this->assertInstanceOf(TwigFunction::class, $twigFunctions[0]);
+        $this->assertInstanceOf(TwigFunction::class, $twigFunctions[1]);
+    }
 
     public function testIncluded()
     {
