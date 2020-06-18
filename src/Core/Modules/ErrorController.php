@@ -83,6 +83,7 @@ class ErrorController implements ControllerInterface
     /**
      * @param int|null $code
      * @param string|null $response
+     * @codeCoverageIgnore
      */
     public function completeRender(int $code = null, string $response = null): void
     {
