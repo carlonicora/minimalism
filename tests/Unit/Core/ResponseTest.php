@@ -9,7 +9,6 @@ use ReflectionClass;
 use ReflectionMethod;
 use function ob_get_clean;
 use function ob_start;
-use function strstr;
 
 class ResponseTest extends AbstractTestCase
 {
@@ -47,7 +46,7 @@ class ResponseTest extends AbstractTestCase
 
     public function testWriteDoesntOutputDataOn304()
     {
-        $this->instance->setStatus(ResponseInterface::HTTP_STATUS_204);
+        $this->instance->setStatus(ResponseInterface::HTTP_STATUS_304);
         ob_start();
         $this->instance->write();
         $output = ob_get_clean();
@@ -117,5 +116,19 @@ class ResponseTest extends AbstractTestCase
         $mock->writeContentType();
         $mock->setContentType('text/plain');
         $mock->writeContentType();
+    }
+
+
+    public function testRedirectionCodePath()
+    {
+        $redirectionParameters = ['test1' => 'value', 'test2' => 'value'];
+
+        $this->instance->setRedirectionParameters($redirectionParameters);
+        $this->assertEquals($redirectionParameters, $this->instance->getRedirectionParameters());
+
+        $this->assertNull($this->instance->redirects());
+        $this->instance->setRedirect('Test');
+        $this->assertEquals('Test', $this->instance->redirects());
+
     }
 }
