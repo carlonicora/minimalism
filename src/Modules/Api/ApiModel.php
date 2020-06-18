@@ -100,7 +100,7 @@ class ApiModel extends AbstractApiModel
     }
 
     /**
-     *
+     * @codeCoverageIgnore
      */
     public function preRender(): void
     {
