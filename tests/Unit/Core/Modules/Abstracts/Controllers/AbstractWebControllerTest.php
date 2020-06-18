@@ -5,6 +5,7 @@ namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractWebController;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use JsonException;
 
 class AbstractWebControllerTest extends AbstractTestCase
 {
@@ -17,6 +18,7 @@ class AbstractWebControllerTest extends AbstractTestCase
             ->getMockForAbstractClass();
         $instance->expects($this->once())->method('initialiseView')->with();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->preRender();
     }
 
@@ -36,6 +38,7 @@ class AbstractWebControllerTest extends AbstractTestCase
             (30 * 24 * 60 * 60) // 30 days
         );
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();
         $this->assertSame($servicesMock, $_SESSION['minimalismServices']);
         unset($_SESSION['minimalismServices']);
@@ -51,8 +54,9 @@ class AbstractWebControllerTest extends AbstractTestCase
             ->onlyMethods(['setCookie'])
             ->getMockForAbstractClass();
 
-        $servicesMock->expects($this->once())->method('serialiseCookies')->willThrowException(new \JsonException());
+        $servicesMock->expects($this->once())->method('serialiseCookies')->willThrowException(new JsonException());
         $servicesMock->expects($this->exactly(2))->method('logger');
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();
         unset($_SESSION['minimalismServices']);
     }

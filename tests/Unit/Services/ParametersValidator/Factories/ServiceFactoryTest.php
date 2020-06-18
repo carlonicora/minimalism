@@ -37,6 +37,9 @@ class ServiceFactoryTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testServiceNotFound()
     {
         $instance = $this->getServices();

@@ -5,6 +5,8 @@ namespace CarloNicora\Minimalism\Tests\Unit\Core\Events;
 use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
+use function json_decode;
 
 /**
  * Class MinimalismErrorEventsTest
@@ -17,13 +19,13 @@ class MinimalismErrorEventsTest extends AbstractTestCase
 
     public function testCookieSettingError()
     {
-        $instance = MinimalismErrorEvents::COOKIE_SETTING_ERROR(new \Exception());
+        $instance = MinimalismErrorEvents::COOKIE_SETTING_ERROR(new Exception());
 
         $this->assertEquals('3', $instance->getMessageCode());
         $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
         $this->assertEquals(
             'Services could not be saved in the cookies',
-            \json_decode($instance->generateMessage(), true)['error']
+            json_decode($instance->generateMessage(), true)['error']
         );
     }
 
@@ -35,7 +37,7 @@ class MinimalismErrorEventsTest extends AbstractTestCase
         $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
         $this->assertEquals(
             'Error in the environment configuration: test',
-            \json_decode($instance->generateMessage(), true)['error']
+            json_decode($instance->generateMessage(), true)['error']
         );
     }
 
@@ -47,7 +49,7 @@ class MinimalismErrorEventsTest extends AbstractTestCase
         $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
         $this->assertEquals(
             'No module configured',
-            \json_decode($instance->generateMessage(), true)['error']
+            json_decode($instance->generateMessage(), true)['error']
         );
     }
 
@@ -59,7 +61,7 @@ class MinimalismErrorEventsTest extends AbstractTestCase
         $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
         $this->assertEquals(
             'Multiple modules configured',
-            \json_decode($instance->generateMessage(), true)['error']
+            json_decode($instance->generateMessage(), true)['error']
         );
     }
 
@@ -71,7 +73,7 @@ class MinimalismErrorEventsTest extends AbstractTestCase
         $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
         $this->assertEquals(
             'File write failed: /tmp/test',
-            \json_decode($instance->generateMessage(), true)['error']
+            json_decode($instance->generateMessage(), true)['error']
         );
     }
 }

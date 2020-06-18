@@ -3,7 +3,6 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Modules\Api;
 
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Modules\Api\ApiController;
@@ -14,6 +13,9 @@ use Exception;
 class ApiControllerTest extends AbstractTestCase
 {
 
+    /**
+     * @throws Exception
+     */
     public function testInitialiseModelWithDefaults()
     {
         $instance = new ApiController($this->getServices());
@@ -24,6 +26,9 @@ class ApiControllerTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testInitialiseModelWithModel()
     {
         $instance = new ApiController($this->getServices());
@@ -55,6 +60,9 @@ class ApiControllerTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testPostInitialiseWithDefaults()
     {
         $instance = new ApiController($this->getServices());
@@ -65,6 +73,9 @@ class ApiControllerTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testPostInitialiseWithData()
     {
         global $_SERVER;
@@ -87,6 +98,9 @@ class ApiControllerTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testRender()
     {
         $instance = new ApiController($this->getServices());

@@ -4,7 +4,6 @@ namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractCliController;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class AbstractCliControllerTest extends AbstractTestCase
 {
@@ -20,6 +19,7 @@ class AbstractCliControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertSame($instance, $instance->initialiseParameters());
     }
 
@@ -29,6 +29,7 @@ class AbstractCliControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertSame($instance, $instance->postInitialise());
     }
 
@@ -41,6 +42,7 @@ class AbstractCliControllerTest extends AbstractTestCase
 
         $instance->expects($this->once())->method('saveCache');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();
     }
 }

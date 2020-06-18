@@ -71,6 +71,7 @@ class ResponseTest extends AbstractTestCase
 
     public function testGenerateStatusTextForAllStatusCodes()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $rm = new ReflectionMethod($this->instance, 'generateStatusText');
         $rm->setAccessible(true);
 
@@ -90,6 +91,9 @@ class ResponseTest extends AbstractTestCase
     }
 
 
+    /**
+     * @noinspection PhpUndefinedMethodInspection
+     */
     public function testWriteProtocolForAllStatusCodes()
     {
         $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();
@@ -107,6 +111,9 @@ class ResponseTest extends AbstractTestCase
         }
     }
 
+    /**
+     * @noinspection PhpUndefinedMethodInspection
+     */
     public function testWriteContentType()
     {
         $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();

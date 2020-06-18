@@ -7,10 +7,12 @@ use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Modules\Cli\CliController;
 use CarloNicora\Minimalism\Modules\Cli\CliModel;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 
 class CliControllerTest extends AbstractTestCase
 {
 
+    /** @noinspection PhpUnhandledExceptionInspection */
     public function testRender()
     {
         $instance = new CliController($this->getServices());
@@ -28,7 +30,7 @@ class CliControllerTest extends AbstractTestCase
         $instance->initialiseModel($modelMock);
         $instance->render();
 
-        $modelMock->expects($this->at(1))->method('run')->willThrowException(new \Exception());
+        $modelMock->expects($this->at(1))->method('run')->willThrowException(new Exception());
         $this->assertInstanceOf(Response::class, $instance->render());
 
     }

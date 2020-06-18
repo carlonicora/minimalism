@@ -5,6 +5,7 @@ namespace CarloNicora\Minimalism\Tests\Unit\Services\Logger\LogBuilders;
 use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
 use CarloNicora\Minimalism\Services\Logger\LogBuilders\InfoLogBuilder;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use function json_encode;
 
 class InfoLogBuilderTest extends AbstractTestCase
 {
@@ -20,11 +21,12 @@ class InfoLogBuilderTest extends AbstractTestCase
             ->setConstructorArgs([1, 400, 'message'])
             ->getMock();
 
-        $event->method('generateMessage')->willReturn(\json_encode([
+        $event->method('generateMessage')->willReturn(json_encode([
             'time' => date('Y-m-d H:i:s'),
             'details' => 'message'
         ]));
 
+        /** @noinspection PhpParamsInspection */
         $instance->log($event);
         $this->assertEquals([$event], $instance->getEvents());
         $instance->clearEvents();

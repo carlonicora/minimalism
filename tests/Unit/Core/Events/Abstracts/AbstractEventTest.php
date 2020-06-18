@@ -21,7 +21,9 @@ class AbstractEventTest extends AbstractTestCase
             ])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals('0', $mock->getMessageCode());
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $mock->getHttpStatusCode());
     }
 
@@ -37,6 +39,7 @@ class AbstractEventTest extends AbstractTestCase
             ])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals('1', $mock->getMessageCode());
     }
 }

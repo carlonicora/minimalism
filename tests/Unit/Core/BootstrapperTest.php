@@ -6,10 +6,14 @@ use CarloNicora\Minimalism\Core\Bootstrapper;
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Tests\Mocks\TestController;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 
 class BootstrapperTest extends AbstractTestCase
 {
 
+    /**
+     * @throws Exception
+     */
     public function testDenyAccessToSpecificFileTypes()
     {
         global $_SERVER;
@@ -40,6 +44,9 @@ class BootstrapperTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testLoadControllerAfterInitialised()
     {
         $instance = new Bootstrapper();

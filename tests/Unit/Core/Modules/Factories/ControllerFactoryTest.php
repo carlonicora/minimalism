@@ -6,6 +6,7 @@ use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Modules\Factories\ControllerFactory;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 
 class ControllerFactoryTest extends AbstractTestCase
 {
@@ -20,6 +21,9 @@ class ControllerFactoryTest extends AbstractTestCase
         $this->instance = new ControllerFactory($this->getServices());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testLoadControllerWithNoClassName()
     {
         $this->expectException(ConfigurationException::class);
@@ -27,6 +31,9 @@ class ControllerFactoryTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testLoadControllerWithInvalidClassName()
     {
         $this->expectException(ConfigurationException::class);
@@ -34,6 +41,9 @@ class ControllerFactoryTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testLoadControllerWithErrorController()
     {
         $controller = $this->instance->loadController(ErrorController::class);

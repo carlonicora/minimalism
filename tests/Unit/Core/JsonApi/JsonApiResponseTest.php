@@ -5,6 +5,7 @@ namespace CarloNicora\Minimalism\Tests\Unit\Core\JsonApi;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Core\JsonApi\JsonApiResponse;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use JsonException;
 
 class JsonApiResponseTest extends AbstractTestCase
 {
@@ -33,8 +34,9 @@ class JsonApiResponseTest extends AbstractTestCase
         $mock = $this->getMockBuilder(Document::class)
             ->getMock();
 
-        $mock->expects($this->once())->method('export')->willThrowException(new \JsonException());
+        $mock->expects($this->once())->method('export')->willThrowException(new JsonException());
 
+        /** @noinspection PhpParamsInspection */
         $instance->setDocument($mock);
         $this->assertEquals('', $instance->getData());
     }

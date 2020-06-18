@@ -5,7 +5,6 @@ namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers\T
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\Traits\CompleteRenderTrait;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 use Exception;
-use PHPUnit\Framework\TestCase;
 use function range;
 
 class CompleteRenderTraitTest extends AbstractTestCase
@@ -19,6 +18,7 @@ class CompleteRenderTraitTest extends AbstractTestCase
         $mock->expects($this->exactly(300))->method('persistAtPath');
 
         foreach (range(100, 399) as $statusCode) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $mock->saveCache($this->getServices(), $statusCode);
         }
     }
@@ -31,6 +31,7 @@ class CompleteRenderTraitTest extends AbstractTestCase
         $mock->expects($this->never())->method('persistAtPath');
 
         foreach (range(400, 599) as $statusCode) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $mock->saveCache($this->getServices(), $statusCode);
         }
     }
@@ -43,6 +44,7 @@ class CompleteRenderTraitTest extends AbstractTestCase
             ->getMockForTrait();
         $mock->expects($this->once())->method('persistAtPath')->willThrowException(new Exception('Test exception'));
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $mock->saveCache($this->getServices(), 200);
     }
 }

@@ -2,19 +2,19 @@
 
 namespace CarloNicora\Minimalism\Tests\Unit\Modules\Web;
 
-use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Core\JsonApi\JsonApiResponse;
 use CarloNicora\Minimalism\Modules\Web\Extensions\TwigExtensions;
 use CarloNicora\Minimalism\Modules\Web\WebController;
 use CarloNicora\Minimalism\Modules\Web\WebModel;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 
 class WebControllerTest extends AbstractTestCase
 {
 
     /**
      * @todo create a mock twig view in order to test success/failure execution
-     * @throws \Exception
+     * @throws Exception
      */
     public function testRender()
     {

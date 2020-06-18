@@ -7,7 +7,10 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
+use function array_merge;
+use function json_encode;
 
 class AbstractControllerTest extends AbstractTestCase
 {
@@ -29,10 +32,14 @@ class AbstractControllerTest extends AbstractTestCase
         $this->instance->expects($this->once())->method('parseUriParameters');
         $this->instance->expects($this->once())->method('getPhpInputParameters');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseParameters();
     }
 
 
+    /**
+     * @noinspection PhpUndefinedMethodInspection
+     */
     public function testInitialiseParametersWithEitherValueArrays()
     {
         $this->instance->expects($this->never())->method('parseUriParameters');
@@ -59,6 +66,7 @@ class AbstractControllerTest extends AbstractTestCase
         $_GET['XDEBUG_SESSION_START'] = 'ignored';
         $_GET['test'] = 'test value';
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseParameters();
         $this->assertEquals(['test' => 'test value'], $this->getProperty($this->instance, 'passedParameters'));
 
@@ -79,6 +87,8 @@ class AbstractControllerTest extends AbstractTestCase
 
     /**
      * @dataProvider methods
+     * @noinspection PhpUndefinedMethodInspection
+     * @param $method
      */
     public function testInitialiseParametersWithNonGetData($method)
     {
@@ -93,7 +103,7 @@ class AbstractControllerTest extends AbstractTestCase
             'test2' => 'test value2',
             'test3' => 'test value2'
         ];
-        $this->setProperty($this->instance, 'phpInput', \json_encode($testArrayUsedAsJSON));
+        $this->setProperty($this->instance, 'phpInput', json_encode($testArrayUsedAsJSON));
 
         $_POST['test3'] = 'different test value';
 
@@ -104,7 +114,7 @@ class AbstractControllerTest extends AbstractTestCase
 
         $this->instance->initialiseParameters();
         $this->assertEquals(
-            \array_merge($testArrayUsedAsJSON, $_POST),
+            array_merge($testArrayUsedAsJSON, $_POST),
             $this->getProperty($this->instance, 'bodyParameters')
         );
 
@@ -123,8 +133,9 @@ class AbstractControllerTest extends AbstractTestCase
 
     public function testInitialiseModelWithDefaults()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Model not found: index');
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseModel();
     }
 
@@ -140,6 +151,7 @@ class AbstractControllerTest extends AbstractTestCase
         $mockModel->expects($this->once())->method('initialise')->with([], null);
         $mockModel->expects($this->once())->method('redirect')->with()->willReturn('');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseModel($mockModel);
     }
 
@@ -159,6 +171,7 @@ class AbstractControllerTest extends AbstractTestCase
         $finalModel->expects($this->once())->method('initialise')->with([], null);
         $finalModel->expects($this->once())->method('redirect')->with()->willReturn('');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseModel($initialModel);
     }
 
@@ -167,6 +180,7 @@ class AbstractControllerTest extends AbstractTestCase
     {
         $mock = $this->getMockBuilder(SecurityInterface::class)->getMock();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->setSecurityInterface($mock);
         $this->assertSame($mock, $this->getProperty($this->instance, 'security'));
     }
@@ -176,6 +190,7 @@ class AbstractControllerTest extends AbstractTestCase
     {
         $mock = $this->getMockBuilder(EncrypterInterface::class)->getMock();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->setEncrypterInterface($mock);
         $this->assertSame($mock, $this->getProperty($this->instance, 'encrypter'));
     }

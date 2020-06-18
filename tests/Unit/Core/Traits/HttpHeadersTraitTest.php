@@ -8,6 +8,7 @@ use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 class HttpHeadersTraitTest extends AbstractTestCase
 {
 
+    /** @noinspection PhpUndefinedMethodInspection */
     public function testGetHeader()
     {
         global $_SERVER;

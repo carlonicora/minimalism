@@ -15,9 +15,6 @@ class AbstractParameterValidatorTest extends AbstractTestCase
 
     protected const IDENTIFIER = 'test';
 
-    /**
-     * @return AbstractParameterValidator
-     */
     public function getInstance(): MockObject
     {
         return $this->getMockBuilder(AbstractParameterValidator::class)
@@ -41,6 +38,7 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $modelMock = $this->getModelMock();
 
         $this->expectException(Exception::class);
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->renderParameter(
             new ParameterObject(self::IDENTIFIER, ['required' => 1]),
             $modelMock,
@@ -58,6 +56,7 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $instance->expects($this->never())->method('setParameter');
         $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->renderParameter(
             new ParameterObject(self::IDENTIFIER, []),
             $modelMock,
@@ -76,6 +75,7 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $instance->expects($this->once())->method('setParameter')->with($parameterObject, $modelMock, $value);
         $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->renderParameter(
             $parameterObject,
             $modelMock,
@@ -85,7 +85,7 @@ class AbstractParameterValidatorTest extends AbstractTestCase
 
     public function testRenderParameterWithMatchingParameterObjectEncrypted(): void
     {
-        $instance = $this->getInstance(['encrypted' => 1]);
+        $instance = $this->getInstance();
         /** @var MockObject|ModelInterface $modelMock */
         $modelMock = $this->getModelMock();
 
@@ -93,6 +93,7 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
         $modelMock->expects($this->once())->method('decrypter');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->renderParameter(
             new ParameterObject(self::IDENTIFIER, ['encrypted' => 1]),
             $modelMock,

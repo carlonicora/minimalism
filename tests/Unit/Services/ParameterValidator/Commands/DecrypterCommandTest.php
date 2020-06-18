@@ -28,6 +28,7 @@ class DecrypterCommandTest extends AbstractTestCase
 
         $mock->expects($this->once())->method('decryptId')->with($parameter)->willReturn(0);
 
+        /** @noinspection PhpParamsInspection */
         $instance = new DecrypterCommand($mock);
         $this->assertEquals(0, $instance->decryptParameter($parameter));
     }

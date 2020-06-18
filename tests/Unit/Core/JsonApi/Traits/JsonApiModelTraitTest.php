@@ -15,10 +15,12 @@ class JsonApiModelTraitTest extends AbstractTestCase
     {
         $mock = $this->getMockForTrait(JsonApiModelTrait::class);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $response = $mock->generateResponse(new Document(), ResponseInterface::HTTP_STATUS_200);
         $this->assertEquals('application/vnd.api+json', $response->getContentType());
         $this->assertEquals(ResponseInterface::HTTP_STATUS_200, $response->getStatus());
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $response = $mock->generateResponse(new Document(), ResponseInterface::HTTP_STATUS_404);
         $this->assertEquals(ResponseInterface::HTTP_STATUS_404, $response->getStatus());
     }
@@ -27,9 +29,11 @@ class JsonApiModelTraitTest extends AbstractTestCase
     {
         $mock = $this->getMockForTrait(JsonApiModelTrait::class);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $response = $mock->generateResponseFromError(new Exception('Test exception'));
         $this->assertEquals('500', $response->getStatus());
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $response = $mock->generateResponseFromError(new Exception('Test exception', 501));
         $this->assertEquals('501', $response->getStatus());
     }
