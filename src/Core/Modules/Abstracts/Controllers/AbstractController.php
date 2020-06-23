@@ -144,7 +144,7 @@ abstract class AbstractController implements ControllerInterface
      */
     private function findModelClass(string $modelName): string
     {
-        $response = $this->services->paths()->getNamespace() . 'Models' . str_replace('/', '\\', $modelName);
+        $response = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $modelName);
 
         if (class_exists($response)){
             return $response;
@@ -220,7 +220,7 @@ abstract class AbstractController implements ControllerInterface
                     $modelNameForService .= (!empty($modelNameForService) ? '/' : '') .ucfirst($uriParam);
                     $currentMatchDepth = $currentDepth;
                 } elseif (is_dir($classPath)) {
-                    $modelNameForService .= DIRECTORY_SEPARATOR . ucfirst($uriParam);
+                    $modelNameForService .= (!empty($modelNameForService) ? DIRECTORY_SEPARATOR : '') . ucfirst($uriParam);
                 } else {
                     if ($currentDepth === 1){
                         break;
