@@ -29,6 +29,7 @@ trait JsonApiModelTrait
     /**
      * @param Exception $e
      * @return ResponseInterface
+     * @throws Exception
      */
     public function generateResponseFromError(Exception $e): ResponseInterface
     {

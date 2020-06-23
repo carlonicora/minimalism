@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Core\JsonApi;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
+use Exception;
 use JsonException;
 
 class JsonApiResponse extends Response
@@ -13,6 +14,7 @@ class JsonApiResponse extends Response
 
     /**
      * @return Document
+     * @throws Exception
      */
     public function getDocument(): Document
     {

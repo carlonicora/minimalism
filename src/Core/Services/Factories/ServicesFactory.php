@@ -151,6 +151,7 @@ class ServicesFactory
     /**
      * @param string $cookieName
      * @throws ConfigurationException
+     * @noinspection PhpRedundantCatchClauseInspection
      */
     public function unserialiseCookies(string $cookieName) : void
     {

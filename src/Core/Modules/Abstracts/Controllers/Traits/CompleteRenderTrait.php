@@ -6,6 +6,9 @@ use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use Exception;
 use function file_put_contents;
 use function serialize;
+/**
+ * @property ServicesFactory $services
+ */
 
 trait CompleteRenderTrait
 {

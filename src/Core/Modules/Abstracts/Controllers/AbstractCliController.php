@@ -14,6 +14,7 @@ abstract class AbstractCliController extends AbstractController
      * @param array $parameterValueList
      * @param array $parameterValues
      * @return ControllerInterface
+     * @noinspection PhpRedundantCatchClauseInspection
      */
     public function initialiseParameters(array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
     {

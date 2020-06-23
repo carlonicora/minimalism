@@ -42,6 +42,7 @@ class Paths extends AbstractService {
     /**
      * @return string
      * @throws Exception
+     * @noinspection PhpRedundantCatchClauseInspection
      */
     public function getModelsFolder() : string
     {
@@ -116,6 +117,7 @@ class Paths extends AbstractService {
      * @return string
      * @throws Exception
      * @noinspection PhpDocRedundantThrowsInspection
+     * @noinspection PhpRedundantCatchClauseInspection
      */
     public function getNamespace() : string {
         $content = [];

@@ -10,7 +10,7 @@ use Exception;
 class Minimalism
 {
     /**
-     *
+     * @throws Exception
      */
     public static function executeWeb() : void
     {
@@ -18,7 +18,7 @@ class Minimalism
     }
 
     /**
-     *
+     * @throws Exception
      */
     public static function executeApi() : void
     {
@@ -27,6 +27,7 @@ class Minimalism
 
     /**
      * @param string $modelName
+     * @throws Exception
      */
     public static function executeCli(string $modelName) : void
     {
@@ -36,6 +37,7 @@ class Minimalism
     /**
      * @param string $controllerClassName
      * @param string|null $modelName
+     * @throws Exception
      */
     private static function execute(string $controllerClassName, string $modelName=null) : void
     {

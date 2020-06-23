@@ -8,6 +8,7 @@ class AbstractInfoEvent extends AbstractEvent
     /**
      * @return string
      * @throws JsonException
+     * @noinspection PhpDocRedundantThrowsInspection
      */
     public function generateMessage(): string
     {
