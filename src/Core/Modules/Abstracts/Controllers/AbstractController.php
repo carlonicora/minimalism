@@ -196,21 +196,44 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function parseModelNameFromUri(array $uriVariables): array
     {
+        $response = [];
+
         $firstArgument = current($uriVariables);
         if (false === $firstArgument || is_numeric($firstArgument)) {
             return $uriVariables;
         }
 
-        $response = [];
-        $this->modelName = ucfirst(array_shift($uriVariables));
-        foreach ($uriVariables as $uriParam) {
-            $classPath = $this->services->paths()->getModelsFolder() . $this->modelName . DIRECTORY_SEPARATOR . ucfirst($uriParam);
-            if (is_dir($classPath) || is_file($classPath . '.php')) {
-                $this->modelName .= DIRECTORY_SEPARATOR . ucfirst($uriParam);
-            } else {
-                $response[] = $uriVariables[0];
+        $bestMatchDepth = 0;
+
+        foreach ($this->services->paths()->getServicesModelsDirectories() as $modelsDirectory) {
+            $currentMatchDepth = 0;
+            $currentDepth = 0;
+            $uriVariablesForCurrentService = $uriVariables;
+            $currentResponse = [];
+            $modelNameForService = '';
+            foreach ($uriVariablesForCurrentService as $uriParam) {
+                $currentDepth++;
+                $classPath = $modelsDirectory . DIRECTORY_SEPARATOR . ucfirst($uriParam);
+
+                if (is_file($classPath . '.php')){
+                    $modelNameForService .= DIRECTORY_SEPARATOR . ucfirst($uriParam);
+                    $currentMatchDepth = $currentDepth;
+                } elseif (is_dir($classPath)) {
+                    $modelNameForService .= DIRECTORY_SEPARATOR . ucfirst($uriParam);
+                } else {
+                    if ($currentDepth === 1){
+                        break;
+                    }
+                    $currentResponse[] = $uriVariablesForCurrentService[0];
+                }
+
+                array_shift($uriVariablesForCurrentService);
             }
-            array_shift($uriVariables);
+
+            if ($currentMatchDepth > $bestMatchDepth){
+                $this->modelName = $modelNameForService;
+                $response = $currentResponse;
+            }
         }
 
         return $response;

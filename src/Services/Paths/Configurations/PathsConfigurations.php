@@ -21,6 +21,9 @@ class PathsConfigurations extends AbstractServiceConfigurations
     /** @var array  */
     private array $servicesViewsDirectories = [];
 
+    /** @var array  */
+    private array $servicesModelsDirectories = [];
+
     /**
      * mailingConfigurations constructor.
      */
@@ -41,9 +44,18 @@ class PathsConfigurations extends AbstractServiceConfigurations
 
         $files = array_unique(array_merge($plugins, $builtIn, $internal, $microservice));
 
+        if (file_exists(glob(realpath('./src') . '/Models'))){
+            $this->servicesModelsDirectories[] = glob(realpath('./src') . '/Models');
+        }
+
         foreach ($files as $fileName) {
             /** @noinspection PhpIncludeInspection */
             require_once $fileName;
+
+            $possibleModelDirectory = dirname($fileName, 2) . DIRECTORY_SEPARATOR . 'Models';
+            if (file_exists($possibleModelDirectory)){
+                $this->servicesModelsDirectories[] = $possibleModelDirectory;
+            }
 
             $possibleViewDirectory = dirname($fileName, 2) . DIRECTORY_SEPARATOR . 'Views';
             if (file_exists($possibleViewDirectory)){
@@ -96,5 +108,13 @@ class PathsConfigurations extends AbstractServiceConfigurations
     public function getServicesViewsDirectories(): array
     {
         return $this->servicesViewsDirectories;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServicesModelsDirectories(): array
+    {
+        return $this->servicesModelsDirectories;
     }
 }
