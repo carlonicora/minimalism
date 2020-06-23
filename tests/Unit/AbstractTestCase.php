@@ -57,5 +57,4 @@ class AbstractTestCase extends TestCase
         } catch (ReflectionException $e) {
         }
     }
-
 }

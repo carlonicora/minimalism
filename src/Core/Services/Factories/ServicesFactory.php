@@ -15,8 +15,6 @@ use CarloNicora\Minimalism\Services\Paths\Paths;
 use Dotenv\Dotenv;
 use Exception;
 use JsonException;
-use ReflectionClass;
-use ReflectionException;
 
 class ServicesFactory
 {
@@ -72,7 +70,7 @@ class ServicesFactory
         } catch (Exception $e) {
         }
 
-        foreach ($this->getServiceFactories() as $serviceFactoryClass){
+        foreach ($this->paths()->getServiceFactories() as $serviceFactoryClass){
             $this->loadService($serviceFactoryClass);
         }
     }
@@ -137,39 +135,6 @@ class ServicesFactory
             $service = new $serviceFactoryClass($this);
             $this->services[$serviceClass] = $service->create($this);
         }
-    }
-
-    /**
-     * @return array
-     */
-    private function getServiceFactories() : array
-    {
-        $plugins =  glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
-        $builtIn = glob(realpath('./vendor') . '/*/*/src/Services/*/Factories/ServiceFactory.php');
-        $internal = glob(realpath('./src') . '/Services/*/Factories/ServiceFactory.php');
-        $microservice = glob(realpath('./src') . '/Factories/ServiceFactory.php');
-
-        $files = array_unique(array_merge($plugins, $builtIn, $internal, $microservice));
-
-        $response = [];
-
-        foreach ($files as $fileName){
-            /** @noinspection PhpIncludeInspection */
-            require_once $fileName;
-        }
-
-        $classes = get_declared_classes();
-        foreach($classes as $singleClass) {
-            try {
-                $reflect = new ReflectionClass($singleClass);
-                if ($reflect->implementsInterface(ServiceFactoryInterface::class) && !$reflect->isAbstract()) {
-                    $response[] = $singleClass;
-                }
-            } catch (ReflectionException $e) {
-            }
-        }
-
-        return $response;
     }
 
     /**

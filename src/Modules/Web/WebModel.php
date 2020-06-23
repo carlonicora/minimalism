@@ -21,8 +21,11 @@ abstract class WebModel extends AbstractWebModel {
     /** @var array  */
     private array $twigExtensions = [];
 
-    /** @var Error|null  */
-    private ?Error $error=null;
+    /**
+     * @var Error|null
+     * @note protected as to allow to unit test preRender with an error
+     */
+    protected ?Error $error=null;
 
     /**
      * AbstractModel constructor.

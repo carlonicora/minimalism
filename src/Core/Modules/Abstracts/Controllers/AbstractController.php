@@ -54,8 +54,6 @@ abstract class AbstractController implements ControllerInterface
     public function __construct(ServicesFactory $services)
     {
         $this->services = $services;
-
-        $this->getPhpInputParameters();
     }
 
     /**
@@ -71,6 +69,7 @@ abstract class AbstractController implements ControllerInterface
             $this->bodyParameters = $parameterValues;
         } else {
             $this->parseUriParameters();
+            $this->getPhpInputParameters();
 
             switch ($this->getHttpType()) {
                 case 'GET':
@@ -121,14 +120,7 @@ abstract class AbstractController implements ControllerInterface
             $this->modelName = str_replace('-', '\\', $modelName);
         }
 
-        $modelClass = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $this->modelName);
-
-        if (!class_exists($modelClass)){
-            $this->services->logger()->error()->log(
-                MinimalismErrorEvents::MODEL_NOT_FOUND(strtolower($this->modelName))
-            )->throw(Exception::class, null);
-        }
-
+        $modelClass = $this->findModelClass($this->modelName);
         $this->model = new $modelClass($this->services);
 
         $this->model->setVerb($verb);
@@ -143,6 +135,33 @@ abstract class AbstractController implements ControllerInterface
         $this->services->logger()->info()->log(MinimalismInfoEvents::MODEL_INITIALISED($this->modelName));
 
         return $this;
+    }
+
+    /**
+     * @param string $modelName
+     * @return string
+     * @throws Exception
+     */
+    private function findModelClass(string $modelName): string
+    {
+        $response = $this->services->paths()->getNamespace() . 'Models\\' . str_replace('/', '\\', $modelName);
+
+        if (class_exists($response)){
+            return $response;
+        }
+
+        foreach ($this->services->paths()->getServicesNamespaces() as $namespace){
+            $response = $namespace . '\\Models\\' . str_replace('/', '\\', $modelName);
+            if (class_exists($response)){
+                return $response;
+            }
+        }
+
+        $this->services->logger()->error()->log(
+            MinimalismErrorEvents::MODEL_NOT_FOUND(strtolower($modelName))
+        )->throw(Exception::class, null);
+
+        return '';
     }
 
     /**
@@ -177,21 +196,44 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function parseModelNameFromUri(array $uriVariables): array
     {
+        $response = [];
+
         $firstArgument = current($uriVariables);
         if (false === $firstArgument || is_numeric($firstArgument)) {
             return $uriVariables;
         }
 
-        $response = [];
-        $this->modelName = ucfirst(array_shift($uriVariables));
-        foreach ($uriVariables as $uriParam) {
-            $classPath = $this->services->paths()->getModelsFolder() . $this->modelName . DIRECTORY_SEPARATOR . ucfirst($uriParam);
-            if (is_dir($classPath) || is_file($classPath . '.php')) {
-                $this->modelName .= DIRECTORY_SEPARATOR . ucfirst($uriParam);
-            } else {
-                $response[] = $uriVariables[0];
+        $bestMatchDepth = 0;
+
+        foreach ($this->services->paths()->getServicesModelsDirectories() as $modelsDirectory) {
+            $currentMatchDepth = 0;
+            $currentDepth = 0;
+            $uriVariablesForCurrentService = $uriVariables;
+            $currentResponse = [];
+            $modelNameForService = '';
+            foreach ($uriVariablesForCurrentService as $uriParam) {
+                $currentDepth++;
+                $classPath = $modelsDirectory . DIRECTORY_SEPARATOR . ucfirst($uriParam);
+
+                if (is_file($classPath . '.php')){
+                    $modelNameForService .= (!empty($modelNameForService) ? '/' : '') .ucfirst($uriParam);
+                    $currentMatchDepth = $currentDepth;
+                } elseif (is_dir($classPath)) {
+                    $modelNameForService .= DIRECTORY_SEPARATOR . ucfirst($uriParam);
+                } else {
+                    if ($currentDepth === 1){
+                        break;
+                    }
+                    $currentResponse[] = $uriVariablesForCurrentService[0];
+                }
+
+                array_shift($uriVariablesForCurrentService);
             }
-            array_shift($uriVariables);
+
+            if ($currentMatchDepth > $bestMatchDepth){
+                $this->modelName = $modelNameForService;
+                $response = $currentResponse;
+            }
         }
 
         return $response;

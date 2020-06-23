@@ -1,13 +1,16 @@
 <?php
 namespace CarloNicora\Minimalism\Services\ParameterValidator\Validators;
 
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Abstracts\AbstractParameterValidator;
 
 class BoolValidator extends AbstractParameterValidator
 {
-    public function setParameter(ModelInterface $model, $parameter): void
+    /**
+     * @param $value
+     * @return bool
+     */
+    public function transformValue($value) : bool
     {
-        $model->setParameter($this->object->parameterName, (bool)$parameter);
+        return (bool)$value;
     }
 }

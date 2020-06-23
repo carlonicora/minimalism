@@ -4,6 +4,9 @@ namespace CarloNicora\Minimalism\Core\Modules\Abstracts\Models;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Response;
+use InvalidArgumentException;
+use function in_array;
+use function strtoupper;
 
 abstract class AbstractApiModel extends AbstractModel implements ApiModelInterface
 {
@@ -25,10 +28,17 @@ abstract class AbstractApiModel extends AbstractModel implements ApiModelInterfa
     /**
      * @param $verb
      * @return mixed
+     * @throws InvalidArgumentException
      */
     public function requiresAuth($verb): bool
     {
-        $authName = 'requiresAuth' . $verb;
+        $uppercaseVerb = strtoupper($verb);
+
+        if (!in_array($verb, ['DELETE', 'GET', 'POST', 'PUT'])) {
+            throw new InvalidArgumentException('HTTP verb not supported');
+        }
+
+        $authName = 'requiresAuth' . $uppercaseVerb;
 
         return $this->$authName;
     }

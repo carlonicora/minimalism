@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Configurations\ParameterV
 use CarloNicora\Minimalism\Services\ParameterValidator\Factories\ParameterValidatorFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorFactoryInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
+use CarloNicora\Minimalism\Services\ParameterValidator\Validators\ArrayValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\BoolValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\DateTimeValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\FloatValidator;
@@ -25,8 +26,9 @@ class ParameterValidator extends AbstractService {
     public const PARAMETER_TYPE_TIMESTAMP = TimestampValidator::class;
     public const PARAMETER_TYPE_DATETIME = DateTimeValidator::class;
     public const PARAMETER_TYPE_FLOAT = FloatValidator::class;
+    public const PARAMETER_TYPE_ARRAY = ArrayValidator::class;
 
-    /** @var ParameterValidatorConfigurations  */
+    /** @var ServiceConfigurationsInterface|ParameterValidatorConfigurations  */
     private ParameterValidatorConfigurations $configData;
 
     /** @var ParameterValidatorFactoryInterface */
@@ -40,8 +42,8 @@ class ParameterValidator extends AbstractService {
     public function __construct(ServiceConfigurationsInterface $configData, ServicesFactory $services) {
         parent::__construct($configData, $services);
 
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         /** @noinspection UnusedConstructorDependenciesInspection */
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->configData = $configData;
 
         $this->factory = new ParameterValidatorFactory();
@@ -57,8 +59,8 @@ class ParameterValidator extends AbstractService {
         foreach ($model->getParameters() ?? [] as $parameterIdentifier=>$parameter){
             $parameterObject = new ParameterObject($parameterIdentifier, $parameter);
 
-            $parameterValidator = $this->factory->createParameterValidator($this->services, $parameterObject);
-            $parameterValidator->renderParameter($model, $passedParameters);
+            $parameterValidator = $this->factory->createParameterValidator($this->services, $parameterObject->validator);
+            $parameterValidator->renderParameter($parameterObject, $model, $passedParameters);
         }
 
         $this->services->logger()->info()->log(MinimalismInfoEvents::PARAMETERS_VALIDATED());

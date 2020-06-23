@@ -12,9 +12,7 @@ trait HttpHeadersTrait
      */
     public function getHeader(string $headerName): ?string
     {
-        if ($this->headers === null) {
-            $this->headers = getallheaders();
-        }
+        $this->headers = getallheaders();
 
         return $this->headers[$headerName] ?? null;
     }

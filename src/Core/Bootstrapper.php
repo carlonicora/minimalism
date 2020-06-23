@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Core;
 
+use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
@@ -10,6 +11,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use Exception;
+use function is_null;
 
 /**
  * Class Bootstrapper
@@ -95,6 +97,24 @@ class Bootstrapper
     private function startSession() : void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            if (isset($_COOKIE['PHPSESSID'])) {
+                $sessid = '';
+
+                if (ini_get('session.use_cookies')) {
+                    $sessid = $_COOKIE['PHPSESSID'];
+                } elseif (!ini_get('session.use_only_cookies')) {
+                    $sessid = $_GET['PHPSESSID'];
+                }
+
+                if (!preg_match('/^[a-z0-9]{32}$/', $sessid)) {
+                    return;
+                }
+            } else {
+                session_start();
+                return;
+            }
+
+
             session_start();
         }
     }
@@ -180,6 +200,12 @@ class Bootstrapper
             }
 
             try {
+                if (is_null($this->controllerFactory)) {
+                    $this->services->logger()->error()->log(
+                        MinimalismErrorEvents::BOOTSTRAPPER_NOT_INITIALISED()
+                    )->throw();
+                }
+
                 $this->controller = $this->controllerFactory
                     ->loadController($this->controllerClassName)
                     ->initialiseParameters($parameterValueList, $parameterValues)
@@ -199,6 +225,18 @@ class Bootstrapper
         }
 
         return $this->controller;
+    }
+
+    /**
+     * @param string $modelName
+     * @param array $parameterValueList
+     * @param array $parameterValues
+     * @return ControllerInterface
+     */
+    public function reLoadController(string $modelName, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
+    {
+        $this->controller = null;
+        return $this->loadController($modelName, $parameterValueList, $parameterValues);
     }
 
     /**

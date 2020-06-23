@@ -21,7 +21,13 @@ class AbstractErrorEvent extends AbstractEvent
             $message['error'] = $this->message;
         }
 
-        if ($this->e !== null) {
+        if ($this->e !== null)
+        {
+            /**
+             * @todo parse the trace output in a format which keeps the filepath
+             *       relative to the project root. That way a unit test based on
+             *       the output of this method can be written
+             */
             $message['Exception'] = $this->e->getTrace();
         }
 

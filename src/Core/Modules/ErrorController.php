@@ -41,7 +41,7 @@ class ErrorController implements ControllerInterface
      * @param string $verb
      * @return $this|ControllerInterface
      */
-    public function initialiseModel(string $modelName, string $verb = 'GET'): ControllerInterface
+    public function initialiseModel(string $modelName = null, string $verb = 'GET'): ControllerInterface
     {
         return $this;
     }

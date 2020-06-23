@@ -166,4 +166,23 @@ class MinimalismErrorEvents extends AbstractErrorEvent
             'Security validation failed.'
         );
     }
+
+    public static function BOOTSTRAPPER_NOT_INITIALISED() : EventInterface
+    {
+        return new self(
+            17,
+            ResponseInterface::HTTP_STATUS_500,
+            'Bootstrapper not initialised'
+        );
+    }
+
+    public static function FILE_WRITE_ERROR(string $filePath) : EventInterface
+    {
+        return new self(
+            18,
+            ResponseInterface::HTTP_STATUS_500,
+            'File write failed: %s',
+            [$filePath]
+        );
+    }
  }

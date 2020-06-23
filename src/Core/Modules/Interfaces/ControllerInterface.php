@@ -26,7 +26,7 @@ interface ControllerInterface
      * @param string $verb
      * @return ControllerInterface
      */
-    public function initialiseModel(string $modelName, string $verb='GET'): ControllerInterface;
+    public function initialiseModel(string $modelName = null, string $verb='GET'): ControllerInterface;
 
     /**
      * @return ControllerInterface

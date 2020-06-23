@@ -165,4 +165,36 @@ class Paths extends AbstractService {
             throw new RuntimeException('Cannot create log directory', 500);
         }
     }
+
+    /**
+     * @return array
+     */
+    public function getServiceFactories(): array
+    {
+        return $this->configData->getServiceFactories();
+    }
+
+    /**
+     * @return array
+     */
+    public function getServicesNamespaces(): array
+    {
+        return $this->configData->getServicesNamespaces();
+    }
+
+    /**
+     * @return array
+     */
+    public function getServicesViewsDirectories(): array
+    {
+        return $this->configData->getServicesViewsDirectories();
+    }
+
+    /**
+     * @return array
+     */
+    public function getServicesModelsDirectories(): array
+    {
+        return $this->configData->getServicesModelsDirectories();
+    }
 }
