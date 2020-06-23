@@ -44,8 +44,9 @@ class PathsConfigurations extends AbstractServiceConfigurations
 
         $files = array_unique(array_merge($plugins, $builtIn, $internal, $microservice));
 
-        if (file_exists(glob(realpath('./src') . '/Models'))){
-            $this->servicesModelsDirectories[] = glob(realpath('./src') . '/Models');
+        $modelsDir = current(glob(realpath('./src') . '/Models'));
+        if (false === empty($modelsDir) && file_exists($modelsDir)) {
+            $this->servicesModelsDirectories[] = $modelsDir;
         }
 
         foreach ($files as $fileName) {
