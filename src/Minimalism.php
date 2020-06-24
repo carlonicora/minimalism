@@ -22,6 +22,16 @@ class Minimalism
      */
     public static function executeApi() : void
     {
+        header("Access-Control-Allow-Origin: *");
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            header("Access-Control-Allow-Headers: *");
+            header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE, PUT");
+            header("Allow: OPTIONS, GET, POST, DELETE, PUT");
+            http_response_code(200);
+            echo(0);
+            exit;
+        }
+
         self::execute(ApiController::class);
     }
 
