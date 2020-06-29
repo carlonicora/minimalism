@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Core\Modules\ErrorController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Factories\ControllerFactory;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
@@ -22,8 +23,8 @@ class Bootstrapper
     /** @var ServicesFactory  */
     private ServicesFactory $services;
 
-    /** @var string|null  */
-    private ?string $modelName=null;
+    /** @var ModelInterface|string|null  */
+    private $model=null;
 
     /** @var ControllerInterface|null  */
     private ?ControllerInterface $controller=null;
@@ -187,16 +188,16 @@ class Bootstrapper
     }
 
     /**
-     * @param string|null $modelName
+     * @param ModelInterface|string|null $model
      * @param array $parameterValueList
      * @param array $parameterValues
      * @return ControllerInterface
      */
-    public function loadController(string $modelName=null, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
+    public function loadController($model=null, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
     {
         if ($this->controller === null) {
-            if ($modelName !== null) {
-                $this->setModel($modelName);
+            if ($model !== null) {
+                $this->setModel($model);
             }
 
             try {
@@ -209,7 +210,7 @@ class Bootstrapper
                 $this->controller = $this->controllerFactory
                     ->loadController($this->controllerClassName)
                     ->initialiseParameters($parameterValueList, $parameterValues)
-                    ->initialiseModel($this->modelName)
+                    ->initialiseModel($this->model)
                     ->postInitialise();
 
             } catch (ConfigurationException|Exception $e) {
@@ -228,22 +229,22 @@ class Bootstrapper
     }
 
     /**
-     * @param string $modelName
+     * @param ModelInterface|string $model
      * @param array $parameterValueList
      * @param array $parameterValues
      * @return ControllerInterface
      */
-    public function reLoadController(string $modelName, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
+    public function reLoadController($model, array $parameterValueList=[], array $parameterValues=[]): ControllerInterface
     {
         $this->controller = null;
-        return $this->loadController($modelName, $parameterValueList, $parameterValues);
+        return $this->loadController($model, $parameterValueList, $parameterValues);
     }
 
     /**
-     * @param string $modelName
+     * @param ModelInterface|string $model
      */
-    public function setModel(string $modelName) : void
+    public function setModel($model) : void
     {
-        $this->modelName = $modelName;
+        $this->model = $model;
     }
 }

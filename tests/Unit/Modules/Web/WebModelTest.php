@@ -24,6 +24,9 @@ class WebModelTest extends AbstractTestCase
             ->getMockForAbstractClass();
     }
 
+    /**
+     * @noinspection PhpUndefinedMethodInspection
+     */
     public function testTwigExtensions()
     {
         $extension_one = $this->getMockBuilder(ExtensionInterface::class)->getMock();
@@ -37,13 +40,18 @@ class WebModelTest extends AbstractTestCase
 
     public function testGenerateData()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertInstanceOf(JsonApiResponse::class, $this->instance->generateData());
     }
 
+    /**
+     * @noinspection PhpUndefinedMethodInspection
+     */
     public function testPreRender()
     {
         $this->instance->preRender(); // should do nothing
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $property = new ReflectionProperty($this->instance, 'error');
         $property->setAccessible(true);
         /**
@@ -59,6 +67,7 @@ class WebModelTest extends AbstractTestCase
 
     public function testValidateJsonapiParameter()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertInstanceOf(Document::class, $this->instance->validateJsonapiParameter(null));
     }
 }

@@ -3,8 +3,8 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractApiController;
-use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 
 class AbstractApiControllerTest extends AbstractTestCase
 {
@@ -15,6 +15,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertEquals('GET', $instance->verb);
     }
 
@@ -25,6 +26,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertEquals('POST', $instance->verb);
         unset($_SERVER['REQUEST_METHOD']);
     }
@@ -38,6 +40,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertEquals('DELETE', $instance->verb);
 
 
@@ -54,6 +57,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertEquals('PUT', $instance->verb);
 
 
@@ -68,22 +72,15 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
-        $this->markTestSkipped('We cannot use the mock TestModel as the model namespace is prefixed within the method');
-        $instance->initialiseModel('Tests\\Mocks\\TestModel');
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Model not found: index');
+        /** @noinspection PhpUndefinedMethodInspection */
+        $instance->initialiseModel();
     }
 
 
     public function testCompleteRender()
     {
-        /**
-        $sfMock = $this->getMockBuilder(ServicesFactory::class)
-            ->onlyMethods(['cleanNonPersistentVariables', 'destroyStatics'])
-            ->getMock();
-
-        $sfMock->expects($this->once())->method('cleanNonPersistentVariables');
-        $sfMock->expects($this->once())->method('destroyStatics');
-         * */
-
         $instance = $this->getMockBuilder(AbstractApiController::class)
             ->setConstructorArgs([$this->getServices()])
             ->onlyMethods(['saveCache'])
@@ -91,6 +88,7 @@ class AbstractApiControllerTest extends AbstractTestCase
 
         $instance->expects($this->once())->method('saveCache');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();
     }
 }

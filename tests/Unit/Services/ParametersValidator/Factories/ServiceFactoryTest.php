@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Tests\Unit\Services\ParametersValidator\Factories;
 
+use CarloNicora\Minimalism\Core\Services\Exceptions\ServiceNotFoundException;
 use CarloNicora\Minimalism\Services\ParameterValidator\Configurations\ParameterValidatorConfigurations;
 use CarloNicora\Minimalism\Services\ParameterValidator\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
@@ -33,5 +34,17 @@ class ServiceFactoryTest extends AbstractTestCase
         $paths = new ParameterValidator($config, $services);
 
         $this->assertEquals($paths, $service->create($services));
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    public function testServiceNotFound()
+    {
+        $instance = $this->getServices();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $instance->service('test');
     }
 }

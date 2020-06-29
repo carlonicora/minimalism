@@ -81,7 +81,7 @@ class WebController extends AbstractWebController {
 
                     $this->services->logger()->info()->log(JsonApiInfoEvents::DATA_MERGED($this->model->getViewName()));
                 } catch (Exception $e) {
-                    $response = $this->model->generateResponseFromError(new Exception(ResponseInterface::HTTP_STATUS_500, 'Failed to render the view'));
+                    $response = $this->model->generateResponseFromError(new Exception('Failed to render the view', ResponseInterface::HTTP_STATUS_500));
                 }
             }
         } catch (Exception $e) {
@@ -90,7 +90,11 @@ class WebController extends AbstractWebController {
 
         $response->setContentType('text/html');
 
-        $this->completeRender($response->getStatus(), $response->getData());
+        /**
+         * @todo ResponseInterface getStatus is of string type
+         * In other words, can we make $response->status an integer, not a string?
+         */
+        $this->completeRender((int)$response->getStatus(), $response->getData());
 
         $this->services->logger()->info()->log(JsonApiInfoEvents::RENDER_COMPLETE());
 

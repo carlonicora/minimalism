@@ -4,13 +4,15 @@ namespace CarloNicora\Minimalism\Tests\Unit\Services\ParameterValidator\Factorie
 
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Services\ParameterValidator\Factories\ParameterValidatorFactory;
-use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\StringValidator;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 
 class ParameterValidatorFactoryTest extends AbstractTestCase
 {
 
+    /**
+     * @throws \Exception
+     */
     public function testCreateParameterValidatorWithDefaults()
     {
         $instance = new ParameterValidatorFactory();
@@ -23,6 +25,9 @@ class ParameterValidatorFactoryTest extends AbstractTestCase
     }
 
 
+    /**
+     * @throws \Exception
+     */
     public function testCreateParameterValidatorWithInvalidValidatorClassname()
     {
         $instance = new ParameterValidatorFactory();
@@ -30,7 +35,7 @@ class ParameterValidatorFactoryTest extends AbstractTestCase
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessage('Parameter Validator not found');
 
-        $validator = $instance->createParameterValidator(
+        $instance->createParameterValidator(
             $this->getServices(),
             'Class_does_not_exist'
         );

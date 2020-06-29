@@ -6,6 +6,7 @@ use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Core\JsonApi\JsonApiResponse;
 use CarloNicora\Minimalism\Modules\Api\ApiModel;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 use ReflectionProperty;
 
 class ApiModelTest extends AbstractTestCase
@@ -16,6 +17,9 @@ class ApiModelTest extends AbstractTestCase
      */
     private ApiModel $instance;
 
+    /**
+     * @throws Exception
+     */
     public function setUp(): void
     {
         $this->instance = new ApiModel($this->getServices());
@@ -28,6 +32,7 @@ class ApiModelTest extends AbstractTestCase
             ->getMock();
 
         // swap default Document for our mock Document
+        /** @noinspection PhpUnhandledExceptionInspection */
         $property = new ReflectionProperty($this->instance, 'document');
         $property->setAccessible(true);
         $property->setValue($this->instance, $mock);
@@ -46,12 +51,14 @@ class ApiModelTest extends AbstractTestCase
 
     public function testInitialise()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->instance->initialise([], null);
         $this->assertInstanceOf(JsonApiResponse::class, $this->getProperty($this->instance, 'response'));
     }
 
     public function testDELETE()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->DELETE();
         $this->assertInstanceOf(JsonApiResponse::class, $response);
         $this->assertEquals(405, $response->getStatus());
@@ -59,6 +66,7 @@ class ApiModelTest extends AbstractTestCase
 
     public function testGET()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->GET();
         $this->assertInstanceOf(JsonApiResponse::class, $response);
         $this->assertEquals(405, $response->getStatus());
@@ -66,6 +74,7 @@ class ApiModelTest extends AbstractTestCase
 
     public function testPOST()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->POST();
         $this->assertInstanceOf(JsonApiResponse::class, $response);
         $this->assertEquals(405, $response->getStatus());
@@ -73,6 +82,7 @@ class ApiModelTest extends AbstractTestCase
 
     public function testPUT()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->PUT();
         $this->assertInstanceOf(JsonApiResponse::class, $response);
         $this->assertEquals(405, $response->getStatus());

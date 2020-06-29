@@ -25,7 +25,11 @@ class CliController extends AbstractCliController {
             $response->setData($e->getMessage());
         }
 
-        $this->completeRender($response->getStatus(), $response->getData());
+        /**
+         * @todo ResponseInterface->getStatus by definition returns a string type
+         * In other words, can we make $response->status an integer, not a string?
+         */
+        $this->completeRender((int)$response->getStatus(), $response->getData());
 
         $response->setNotHttpResponse();
 

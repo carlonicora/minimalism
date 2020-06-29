@@ -3,19 +3,16 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Core\JsonApi\Validators;
 
 use CarloNicora\Minimalism\Core\JsonApi\Validators\JsonApiValidator;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
 use CarloNicora\Minimalism\Tests\Mocks\TestModel;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use TypeError;
 
 class JsonApiValidatorTest extends AbstractTestCase
 {
 
-    /** @var ModelInterface */
     private MockObject $mock;
     private JsonApiValidator $instance;
 
@@ -37,6 +34,7 @@ class JsonApiValidatorTest extends AbstractTestCase
     public function testSetParameterWithUnsupportedType($mixed)
     {
         $this->expectException(TypeError::class);
+        /** @noinspection PhpParamsInspection */
         $this->instance->setParameter(new ParameterObject('test', []), $this->mock, $mixed);
     }
 
@@ -53,10 +51,12 @@ class JsonApiValidatorTest extends AbstractTestCase
     /**
      * @dataProvider validTypes
      * @param $mixed
+     * @throws Exception
      */
     public function testSetParameterWithSupportedTypes($mixed)
     {
         $this->mock->expects($this->once())->method('setParameter');
+        /** @noinspection PhpParamsInspection */
         $this->instance->setParameter(new ParameterObject('test', []), $this->mock, $mixed);
     }
 

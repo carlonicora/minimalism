@@ -9,6 +9,7 @@ use InvalidArgumentException;
 class AbstractApiModelTest extends AbstractTestCase
 {
 
+    /** @noinspection PhpUndefinedMethodInspection */
     public function testRequiresAuthVerbs()
     {
         $instance = $this->getMockBuilder(AbstractApiModel::class)
@@ -32,7 +33,22 @@ class AbstractApiModelTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEmpty($instance->getParameters());
-        // @todo further testing requires the option to pass in custom ModelInteface
+    }
+
+
+    /** @noinspection PhpUndefinedFieldInspection */
+    public function testSetVerb()
+    {
+        $instance = $this->getMockBuilder(AbstractApiModel::class)
+            ->setConstructorArgs([$this->getServices()])
+            ->getMockForAbstractClass();
+
+        $this->assertEquals('GET', $instance->verb);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $instance->setVerb('POST');
+        $this->assertEquals('POST', $instance->verb);
     }
 }

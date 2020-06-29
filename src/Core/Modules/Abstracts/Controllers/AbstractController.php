@@ -109,19 +109,23 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * @param string|null $modelName
+     * @param ModelInterface|string|null $modelName
      * @param string $verb
      * @return ControllerInterface
      * @throws Exception
      */
-    public function initialiseModel(string $modelName = null, string $verb='GET'): ControllerInterface
+    public function initialiseModel($modelName = null, string $verb='GET'): ControllerInterface
     {
-        if (isset($modelName)) {
-            $this->modelName = str_replace('-', '\\', $modelName);
-        }
+        if ($modelName instanceof ModelInterface) {
+            $this->model = $modelName;
+        } else {
+            if (isset($modelName)) {
+                $this->modelName = str_replace('-', '\\', $modelName);
+            }
 
-        $modelClass = $this->findModelClass($this->modelName);
-        $this->model = new $modelClass($this->services);
+            $modelClass = $this->findModelClass($this->modelName);
+            $this->model = new $modelClass($this->services);
+        }
 
         $this->model->setVerb($verb);
         $this->model->setEncrypter($this->encrypter);

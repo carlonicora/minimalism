@@ -18,8 +18,10 @@ trait HttpHeadersTrait
     }
 }
 
+// @codeCoverageIgnoreStart
 if (!function_exists('getallheaders'))
 {
+    // @codeCoverageIgnoreEnd
     function getallheaders()
     {
         $headers = [];
@@ -30,4 +32,6 @@ if (!function_exists('getallheaders'))
         }
         return $headers;
     }
+    // @codeCoverageIgnoreStart
 }
+// @codeCoverageIgnoreEnd

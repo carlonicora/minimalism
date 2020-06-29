@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Core\Modules;
 
 use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
+use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
@@ -37,11 +38,11 @@ class ErrorController implements ControllerInterface
     }
 
     /**
-     * @param string $modelName
+     * @param ModelInterface|string|null $modelName
      * @param string $verb
      * @return $this|ControllerInterface
      */
-    public function initialiseModel(string $modelName = null, string $verb = 'GET'): ControllerInterface
+    public function initialiseModel($modelName = null, string $verb = 'GET'): ControllerInterface
     {
         return $this;
     }
@@ -82,6 +83,7 @@ class ErrorController implements ControllerInterface
     /**
      * @param int|null $code
      * @param string|null $response
+     * @codeCoverageIgnore
      */
     public function completeRender(int $code = null, string $response = null): void
     {

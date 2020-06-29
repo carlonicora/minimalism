@@ -37,6 +37,7 @@ class AbstractErrorEventTest extends AbstractTestCase
     {
         $mock = $this->mockInstanceWith('', null);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals(
             '{"time":"2020-06-03 12:00:00","service":"","id":1,"error":""}',
             $mock->generateMessage()
@@ -46,6 +47,7 @@ class AbstractErrorEventTest extends AbstractTestCase
     public function testGenerateMessageWithMessage() {
         $mock = $this->mockInstanceWith('test message', null);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals(
             '{"time":"2020-06-03 12:00:00","service":"","id":1,"error":"test message"}',
             $mock->generateMessage()
@@ -57,6 +59,7 @@ class AbstractErrorEventTest extends AbstractTestCase
         $mock = $this->mockInstanceWith('', new Exception('some failure'));
         $this->markTestSkipped('Stack trace has absolute paths to within the filesystem.');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals(
             '',
             $mock->generateMessage()

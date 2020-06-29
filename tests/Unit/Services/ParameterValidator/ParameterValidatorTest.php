@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Tests\Unit\Services\ParameterValidator;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
-use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorFactoryInterface;
+use CarloNicora\Minimalism\Services\ParameterValidator\Configurations\ParameterValidatorConfigurations;
 use CarloNicora\Minimalism\Services\ParameterValidator\ParameterValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\BoolValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\DateTimeValidator;
@@ -13,18 +13,23 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Validators\IntValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\StringValidator;
 use CarloNicora\Minimalism\Tests\Mocks\TestModel;
 use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
 
 class ParameterValidatorTest extends AbstractTestCase
 {
 
+    /**
+     * @throws Exception
+     */
     public function testValidate()
     {
         /** @var MockObject|ServiceConfigurationsInterface $mock */
-        $mockServiceConfigurations = $this->getMockBuilder(ServiceConfigurationsInterface::class)
+        $mockServiceConfigurations = $this->getMockBuilder(ParameterValidatorConfigurations::class)
             ->getMock();
 
+        /** @noinspection PhpParamsInspection */
         $instance = new ParameterValidator($mockServiceConfigurations, $this->getServices());
 
         /** @var MockObject|ModelInterface $mockModel */

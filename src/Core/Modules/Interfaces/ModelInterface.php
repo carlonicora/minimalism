@@ -50,9 +50,9 @@ interface ModelInterface
     public function setVerb(string $verb) : void;
 
     /**
-     * @return string
+     * @return ModelInterface|string
      */
-    public function redirect(): string;
+    public function redirect();
 
     /**
      * @return DecrypterInterface

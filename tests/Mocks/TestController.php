@@ -25,7 +25,7 @@ class TestController implements ControllerInterface
         return $this;
     }
 
-    public function initialiseModel(string $modelName = null, string $verb = 'GET'): ControllerInterface
+    public function initialiseModel($modelName = null, string $verb = 'GET'): ControllerInterface
     {
         return $this;
     }
