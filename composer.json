@@ -1,11 +1,12 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "11.0.3",
+  "version": "11.0.4",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
   "type": "library",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",
