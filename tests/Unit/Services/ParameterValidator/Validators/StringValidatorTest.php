@@ -1,0 +1,37 @@
+<?php
+
+namespace CarloNicora\Minimalism\Tests\Unit\Services\ParameterValidator\Validators;
+
+use CarloNicora\Minimalism\Services\ParameterValidator\Validators\StringValidator;
+use CarloNicora\Minimalism\Tests\Unit\AbstractTestCase;
+
+class StringValidatorTest extends AbstractTestCase
+{
+
+    /**
+     * @dataProvider provider
+     * @param $output
+     * @param $input
+     */
+    public function testTransformValue($output, $input): void
+    {
+        $instance = new StringValidator($this->getServices());
+
+        $this->assertSame($output, $instance->transformValue($input));
+    }
+
+
+    public function provider()
+    {
+        return [
+            [ "", "" ],
+            [ null, null ],
+            [ "0", 0 ],
+            [ "0", "0" ],
+            [ "1",  1 ],
+            [ "-1",  -1 ],
+            [ "1",  "1" ],
+            [ "-1",  "-1" ]
+        ];
+    }
+}

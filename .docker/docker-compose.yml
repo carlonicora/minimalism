@@ -3,10 +3,23 @@ version: '3.7'
 services:
   minimalism:
     container_name: minimalism
-    image: carlonicora/php-cli-base:7.4.3.2
+    image: carlonicora/minimalism:11.0.0
+    build:
+      context: .
+      dockerfile: ./php-cli/Dockerfile
+      args:
+        - XDEBUG_HOST=${XDEBUG_HOST}
+        - XDEBUG_PORT=${XDEBUG_PORT}
     working_dir: /app
     volumes:
       - ../:/app
       - ../:/opt/project
     tty: true
     stdin_open: true
+    networks:
+      - default_network
+
+networks:
+  default_network:
+    driver: bridge
+    name: carlonicora

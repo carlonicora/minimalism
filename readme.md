@@ -1,4 +1,9 @@
 # minimalism
+[![Build Status](https://travis-ci.com/carlonicora/minimalism.svg?branch=master)](https://travis-ci.com/carlonicora/minimalism)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Coverage Status](https://coveralls.io/repos/github/carlonicora/minimalism/badge.svg?branch=master)](https://coveralls.io/github/carlonicora/minimalism?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b7565aa8862e94cadcf5/maintainability)](https://codeclimate.com/github/carlonicora/minimalism/maintainability)
+
 
 minimalism is a service-based PHP MVC framework for fast web, api and cli applications. It has been designed to offer 
 a simple approach to developing softwares. Developers can focus on writing **models** (and **views** in case of web
@@ -7,7 +12,7 @@ applications) and forget everything that goes behind the scene.
 ## Status
 
 This framework is fastly evolving and changing. As it is a personal project evolved in something more than a pet
-project, you should expect quick changes. Every time the structure of the core component of minimalism is changed, a
+project, you should expect quick changes. Every time the structure of the Core component of minimalism is changed, a
 new major version will be released.
 
 # Modules and Services
@@ -16,7 +21,7 @@ Every element inside minimalism is either a **module** or a **service**.
 
 ## Modules
 
-A module is a core element which defines the type of models and controllers used. It is the foundation of the
+A module is a Core element which defines the type of models and controllers used. It is the foundation of the
 logical structure of an application.
 
 Every application can have only one model.

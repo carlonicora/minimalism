@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "10.5.2",
+  "version": "11.0.1",
   "homepage": "https://carlonicora.com",
   "time": "2019-05-14",
   "license": "MIT",
@@ -16,21 +16,32 @@
   ],
   "autoload": {
     "psr-4": {
-      "carlonicora\\minimalism\\":"src/"
+      "CarloNicora\\Minimalism\\":"src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "CarloNicora\\Minimalism\\Tests\\":"tests/"
     }
   },
   "require": {
     "php": "^7.4",
     "ext-json": "*",
-    "vlucas/phpdotenv":"~4.0"
+    "carlonicora/jsonapi": "~2.0",
+    "vlucas/phpdotenv":"~4.0",
+    "twig/twig":"~2.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9",
+    "ext-xdebug": "*"
   },
   "scripts": {
     "minimalism-post-install": "bin/minimalism-post-install.sh"
   },
-  "bin": [
-    "bin/minimalism-post-install.sh"
-  ],
   "scripts-descriptions": {
     "minimalism-post-install": "Creates cache and logs folders, sets permissions"
-  }
+  },
+  "bin": [
+    "bin/minimalism-post-install.sh"
+  ]
 }
