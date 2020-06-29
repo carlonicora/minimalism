@@ -21,7 +21,11 @@ trait CompleteRenderTrait
     {
         if ((int)$code < 400 && $services->paths()->getCache() !== null){
             try {
-                $this->persistAtPath($services->paths()->getCache(), serialize($services));
+                if (file_exists($services->paths()->getCache())) {
+                    touch($services->paths()->getCache());
+                } else {
+                    $this->persistAtPath($services->paths()->getCache(), serialize($services));
+                }
             } catch (Exception $exception) {
                 $services->logger()->error()
                     ->log(MinimalismErrorEvents::SERVICE_CACHE_ERROR($exception));
