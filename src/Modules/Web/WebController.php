@@ -92,6 +92,7 @@ class WebController extends AbstractWebController {
 
         /**
          * @todo ResponseInterface getStatus is of string type
+         * In other words, can we make $response->status an integer, not a string?
          */
         $this->completeRender((int)$response->getStatus(), $response->getData());
 
