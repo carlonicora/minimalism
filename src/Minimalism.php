@@ -37,7 +37,8 @@ class Minimalism
     }
 
     /**
-     * @param ModelInterface|string $modelName
+     * @param ModelInterface|string $model
+     * @throws Exception
      */
     public static function executeCli($model) : void
     {
@@ -46,7 +47,8 @@ class Minimalism
 
     /**
      * @param string $controllerClassName
-     * @param ModelInterface|string|null $modelName
+     * @param ModelInterface|string|null $model
+     * @throws Exception
      */
     private static function execute(string $controllerClassName, $model=null) : void
     {
