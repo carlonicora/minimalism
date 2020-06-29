@@ -24,7 +24,7 @@ class Minimalism
     public static function executeApi() : void
     {
         header("Access-Control-Allow-Origin: *");
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        if (false === empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             header("Access-Control-Allow-Headers: *");
             header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE, PUT");
             header("Allow: OPTIONS, GET, POST, DELETE, PUT");
