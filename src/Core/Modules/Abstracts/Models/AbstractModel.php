@@ -103,6 +103,13 @@ abstract class AbstractModel implements ModelInterface
     abstract public function preRender() : void;
 
     /**
+     * @param ResponseInterface $response
+     */
+    public function postRender(ResponseInterface $response) : void
+    {
+    }
+
+    /**
      * @param string $parameterName
      */
     public function addReceivedParameters(string $parameterName): void

@@ -92,6 +92,8 @@ class ApiController extends AbstractApiController {
 
             $response = $this->model->{$this->verb}();
 
+            $this->model->postRender($response);
+
             $this->services->logger()->info()->log(MinimalismInfoEvents::MODEL_RUN($this->verb));
         } catch (Exception $e) {
             /**

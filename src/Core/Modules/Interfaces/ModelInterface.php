@@ -45,6 +45,11 @@ interface ModelInterface
     public function preRender() : void;
 
     /**
+     * @param ResponseInterface $response
+     */
+    public function postRender(ResponseInterface $response) : void;
+
+    /**
      * @param string $verb
      */
     public function setVerb(string $verb) : void;
