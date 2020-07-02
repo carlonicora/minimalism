@@ -91,9 +91,7 @@ abstract class AbstractController implements ControllerInterface
                         }
                     }
 
-                    if (isset($_FILES) && count($_FILES) === 1) {
-                        $this->file = array_values($_FILES)[0];
-                    }
+                    $this->file = $this->reArrayFiles($_FILES);
 
                     foreach ($_POST as $parameter => $value) {
                         $this->bodyParameters[$parameter] = $value;
@@ -106,6 +104,51 @@ abstract class AbstractController implements ControllerInterface
         $this->services->logger()->info()->log(MinimalismInfoEvents::PARAMETERS_INITIALISED());
 
         return $this;
+    }
+
+    /**
+     * @param array $files
+     * @return array
+     */
+    private function reArrayFiles(array $files): array
+    {
+        $result = [];
+        if (empty($files)) {
+            return $result;
+        }
+
+        foreach ($files as $key => $file) {
+            if (is_string($file['name'])) {
+                $result[$key] = $file;
+            } elseif (is_array($file['name'])) {
+                $result[$key] = [];
+                foreach ($file as $lastKey => $value1) {
+                    $result[$key] = array_replace_recursive($result[$key], $this->recursive($lastKey, $file[$lastKey]));
+                }
+            }
+
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $lastKey
+     * @param $input
+     * @return array
+     */
+    private function recursive($lastKey, $input): array
+    {
+        $result = [];
+        foreach ($input as $key => $value) {
+            if (is_array($value)) {
+                $result[$key] = $this->recursive($lastKey, $value);
+            } else {
+                $result[$key][$lastKey] = $value;
+            }
+        }
+
+        return $result;
     }
 
     /**
