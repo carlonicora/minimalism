@@ -51,7 +51,7 @@ class ParameterValidatorTest extends AbstractTestCase
         $mockModel->expects($this->at(3))->method('setParameter')->with('bool_value', true);
         $mockModel->expects($this->at(4))->method('setParameter')->with('string_value', '1');
         $mockModel->expects($this->at(5))->method('setParameter')->with('date_value', $this->callback(function($date) {
-            return $date->format('Y-m-d H:i:s') === '2020-06-06 00:00:00';
+            return $date === '2020-06-06 00:00:00';
         }));
 
         $instance->validate($mockModel, [
