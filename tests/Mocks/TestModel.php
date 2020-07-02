@@ -6,7 +6,6 @@ namespace CarloNicora\Minimalism\Tests\Mocks;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
-use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\DecrypterInterface;
@@ -40,6 +39,11 @@ class TestModel implements ModelInterface
     }
 
     public function preRender(): void
+    {
+        // TODO: Implement preRender() method.
+    }
+
+    public function postRender(ResponseInterface $response): void
     {
         // TODO: Implement preRender() method.
     }
