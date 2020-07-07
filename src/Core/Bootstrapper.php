@@ -24,7 +24,7 @@ class Bootstrapper
     private ServicesFactory $services;
 
     /** @var ModelInterface|string|null  */
-    private $model=null;
+    private $model;
 
     /** @var ControllerInterface|null  */
     private ?ControllerInterface $controller=null;

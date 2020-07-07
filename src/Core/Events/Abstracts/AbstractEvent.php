@@ -3,30 +3,33 @@ namespace CarloNicora\Minimalism\Core\Events\Abstracts;
 
 use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
+use CarloNicora\Minimalism\Core\Services\Exceptions\MinimalismHttpException;
 use Exception;
 
 abstract class AbstractEvent implements EventInterface
 {
-    /** @var string  */
-    protected string $serviceName='';
+    /** @var string */
+    protected string $serviceName = '';
 
-    /** @var int  */
+    /** @var int */
     protected int $id;
 
-    /** @var string|null  */
-    protected ?string $httpStatusCode=null;
+    /** @var string|null */
+    protected ?string $httpStatusCode = null;
 
-    /** @var string  */
-    protected ?string $message=null;
+    /** @var int|null */
+    protected ?int $errorUniqueCode = null;
 
-    /** @var Exception|null  */
-    protected ?Exception $e=null;
+    /** @var string */
+    protected ?string $message = null;
 
-    /** @var float  */
+    /** @var Exception|null */
+    protected ?Exception $e = null;
+
+    /** @var float */
     private float $time;
-
     /**
-     * LogMessageInterface constructor.
+     * AbstractEvent constructor.
      * @param int $id
      * @param string|null $httpStatusCode
      * @param string $message
@@ -110,9 +113,17 @@ abstract class AbstractEvent implements EventInterface
      */
     public function generateException(string $exceptionName=Exception::class, ?string $message = null): Exception
     {
+        if ($exceptionName === MinimalismHttpException::class) {
+            return new MinimalismHttpException(
+                $message ?? $this->message,
+                $this->getMessageCode(),
+                $this->getHttpStatusCode(),
+                $this->e);
+        }
+
         return new $exceptionName(
             $message ?? $this->message,
             $this->getHttpStatusCode(),
             $this->e);
-    }
+}
 }

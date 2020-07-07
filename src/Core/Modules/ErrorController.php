@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Response;
+use CarloNicora\Minimalism\Core\Services\Exceptions\MinimalismHttpException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
@@ -63,7 +64,11 @@ class ErrorController implements ControllerInterface
     {
         $response = new Response();
 
-        $response->setStatus($this->exception->getCode());
+        if ($this->exception instanceof MinimalismHttpException) {
+            $response->setStatus($this->exception->getHttpStatusCode());
+        } else {
+            $response->setStatus($this->exception->getCode());
+        }
         $response->setData($this->exception->getMessage());
 
         $this->services->logger()->error()->log(MinimalismErrorEvents::GENERIC_ERROR($this->exception));

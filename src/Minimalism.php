@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism;
 
 use CarloNicora\Minimalism\Core\Bootstrapper;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Core\Services\Exceptions\MinimalismHttpException;
 use CarloNicora\Minimalism\Modules\Api\ApiController;
 use CarloNicora\Minimalism\Modules\Cli\CliController;
 use CarloNicora\Minimalism\Modules\Web\WebController;
@@ -64,13 +65,17 @@ class Minimalism
                     ->loadController($model, $parameters)
                     ->render();
 
-                if (($redirect = $response->redirects()) !== null){
+                if (($redirect = $response->redirects()) !== null) {
                     $model = $redirect;
                     $parameters = $response->getRedirectionParameters();
                 }
             } while ($redirect !== null);
 
             $response->write();
+        } catch (MinimalismHttpException $e) {
+            http_response_code((int)$e->getHttpStatusCode());
+            $GLOBALS['http_response_code'] = $e->getHttpStatusCode();
+            echo $e->getMessage();
         } catch (Exception $e) {
             http_response_code((int)$e->getCode());
             $GLOBALS['http_response_code'] = $e->getCode();
