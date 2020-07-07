@@ -101,7 +101,7 @@ abstract class AbstractEvent implements EventInterface
      * @param string|null $message
      * @throws Exception
      */
-    public function throw(string $exceptionName=Exception::class, ?string $message = null): void
+    public function throw(string $exceptionName=MinimalismHttpException::class, ?string $message = null): void
     {
         throw $this->generateException($exceptionName, $message);
     }
@@ -111,7 +111,7 @@ abstract class AbstractEvent implements EventInterface
      * @param string|null $message
      * @return Exception
      */
-    public function generateException(string $exceptionName=Exception::class, ?string $message = null): Exception
+    public function generateException(string $exceptionName=MinimalismHttpException::class, ?string $message = null): Exception
     {
         if ($exceptionName === MinimalismHttpException::class) {
             return new MinimalismHttpException(

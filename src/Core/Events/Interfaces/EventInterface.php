@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Core\Events\Interfaces;
 
+use CarloNicora\Minimalism\Core\Services\Exceptions\MinimalismHttpException;
 use Exception;
 
 interface EventInterface
@@ -45,12 +46,12 @@ interface EventInterface
      * @param string|null $message
      * @throws Exception
      */
-    public function throw(string $exceptionName=Exception::class, ?string $message=null) : void;
+    public function throw(string $exceptionName=MinimalismHttpException::class, ?string $message=null) : void;
 
     /**
      * @param string $exceptionName
      * @param string|null $message
      * @return Exception
      */
-    public function generateException(string $exceptionName=Exception::class, ?string $message=null) : Exception;
+    public function generateException(string $exceptionName=MinimalismHttpException::class, ?string $message=null) : Exception;
 }

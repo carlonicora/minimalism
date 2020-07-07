@@ -63,7 +63,7 @@ class PathsTest extends AbstractTestCase
      */
     public function testFailGettingModelFolderNoNamespace() : void
     {
-        $this->expectExceptionCode(500);
+        $this->expectExceptionCode(13);
         $paths = $this->getServices()->paths();
         $this->setProperty($paths, 'root', './tests/Mocks/NoNamespaceComposerJson');
         $paths->getModelsFolder();
@@ -93,7 +93,7 @@ class PathsTest extends AbstractTestCase
      */
     public function testFailGetNamespaceNoComposer() : void
     {
-        $this->expectExceptionCode(500);
+        $this->expectExceptionCode(12);
         $paths = $this->getServices()->paths();
         $this->setProperty($paths, 'root', './tests/');
 
@@ -105,7 +105,7 @@ class PathsTest extends AbstractTestCase
      */
     public function testFailGetNamespaceInvalidJson() : void
     {
-        $this->expectExceptionCode(500);
+        $this->expectExceptionCode(12);
         $paths = $this->getServices()->paths();
         $this->setProperty($paths, 'root', './tests/Mocks/InvalidComposerJson');
 
@@ -117,7 +117,7 @@ class PathsTest extends AbstractTestCase
      */
     public function testFailGetNamespaceNoNamespace() : void
     {
-        $this->expectExceptionCode(500);
+        $this->expectExceptionCode(13);
         $paths = $this->getServices()->paths();
         $this->setProperty($paths, 'root', './tests/Mocks/NoNamespaceComposerJson');
 
