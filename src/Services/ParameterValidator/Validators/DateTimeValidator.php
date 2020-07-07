@@ -25,7 +25,7 @@ class DateTimeValidator extends AbstractParameterValidator
 
         if (is_string($value)) {
             if (strpos($value, '-') !== false) {
-                return date('Y-m-d H:i:s', $value);
+                return $value;
             }
 
             if (strpos($value, '@') !== false) {
