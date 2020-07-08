@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Services\ParameterValidator\Abstracts;
 use CarloNicora\Minimalism\Core\Events\MinimalismErrorEvents;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
 use Exception;
@@ -41,6 +42,9 @@ abstract class AbstractParameterValidator implements ParameterValidatorInterface
                     $this->setParameter($object, $model, $passedParameters[$object->parameterIdentifier]);
                 }
             }
+        } elseif ($object->parameterIdentifier === ParameterInterface::JSONAPI) {
+            $model->addReceivedParameters($object->parameterName);
+            $this->setParameter($object, $model, $passedParameters);
         } elseif ($object->isRequired){
             $this->services->logger()->error()->log(
                 MinimalismErrorEvents::REQUIRED_PARAMETER_MISSING($object->parameterIdentifier)

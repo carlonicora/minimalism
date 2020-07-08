@@ -8,4 +8,5 @@ interface ParameterInterface
     public const IS_ENCRYPTED = 'encrypted';
     public const TYPE = 'type';
     public const VALIDATOR = 'validator';
+    public const JSONAPI = 'jsonapi';
 }

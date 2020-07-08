@@ -8,6 +8,7 @@ use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Configurations\ParameterValidatorConfigurations;
 use CarloNicora\Minimalism\Services\ParameterValidator\Factories\ParameterValidatorFactory;
+use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Interfaces\ParameterValidatorFactoryInterface;
 use CarloNicora\Minimalism\Services\ParameterValidator\Objects\ParameterObject;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\ArrayValidator;
@@ -15,6 +16,7 @@ use CarloNicora\Minimalism\Services\ParameterValidator\Validators\BoolValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\DateTimeValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\FloatValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\IntValidator;
+use CarloNicora\Minimalism\Services\ParameterValidator\Validators\JsonapiValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\StringValidator;
 use CarloNicora\Minimalism\Services\ParameterValidator\Validators\TimestampValidator;
 use Exception;
@@ -27,6 +29,7 @@ class ParameterValidator extends AbstractService {
     public const PARAMETER_TYPE_DATETIME = DateTimeValidator::class;
     public const PARAMETER_TYPE_FLOAT = FloatValidator::class;
     public const PARAMETER_TYPE_ARRAY = ArrayValidator::class;
+    public const PARAMETER_TYPE_JSONAPI= JsonapiValidator::class;
 
     /** @var ServiceConfigurationsInterface|ParameterValidatorConfigurations  */
     private ParameterValidatorConfigurations $configData;
@@ -59,6 +62,11 @@ class ParameterValidator extends AbstractService {
         foreach ($model->getParameters() ?? [] as $parameterIdentifier=>$parameter){
             $parameterObject = new ParameterObject($parameterIdentifier, $parameter);
 
+            if ($parameterIdentifier === ParameterInterface::JSONAPI) {
+                $parameterObject->validator = JsonapiValidator::class;
+                $parameterObject->isRequired = true;
+                $parameterObject->isEncrypted = false;
+            }
             $parameterValidator = $this->factory->createParameterValidator($this->services, $parameterObject->validator);
             $parameterValidator->renderParameter($parameterObject, $model, $passedParameters);
         }
