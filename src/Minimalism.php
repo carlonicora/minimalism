@@ -11,17 +11,11 @@ use Exception;
 
 class Minimalism
 {
-    /**
-     * @throws Exception
-     */
     public static function executeWeb() : void
     {
         self::execute(WebController::class);
     }
 
-    /**
-     * @throws Exception
-     */
     public static function executeApi() : void
     {
         header("Access-Control-Allow-Origin: *");
@@ -39,7 +33,6 @@ class Minimalism
 
     /**
      * @param ModelInterface|string $model
-     * @throws Exception
      */
     public static function executeCli($model) : void
     {
@@ -49,13 +42,12 @@ class Minimalism
     /**
      * @param string $controllerClassName
      * @param ModelInterface|string|null $model
-     * @throws Exception
      */
     private static function execute(string $controllerClassName, $model=null) : void
     {
-        $bootstrapper = new Bootstrapper();
-
         try {
+            $bootstrapper = new Bootstrapper();
+
             $redirect = null;
             $parameters = [];
 
@@ -72,7 +64,7 @@ class Minimalism
             } while ($redirect !== null);
 
             $response->write();
-        } catch (MinimalismHttpException $e) {
+        } /** @noinspection PhpRedundantCatchClauseInspection */ catch (MinimalismHttpException $e) {
             http_response_code((int)$e->getHttpStatusCode());
             $GLOBALS['http_response_code'] = $e->getHttpStatusCode();
             echo $e->getMessage();
