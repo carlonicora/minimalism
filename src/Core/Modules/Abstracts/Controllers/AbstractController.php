@@ -261,14 +261,15 @@ abstract class AbstractController implements ControllerInterface
             $classPath = $modelsDirectory;
             foreach ($uriVariablesForCurrentService as $uriParam) {
                 $currentDepth++;
-                $candidate = $classPath . DIRECTORY_SEPARATOR . ucfirst($uriParam);
+                $camelised = str_replace('-', '', ucwords($uriParam, '-'));
+                $candidate = $classPath . DIRECTORY_SEPARATOR . $camelised;
 
                 if (is_file($candidate . '.php')){
-                    $modelNameForService .= (!empty($modelNameForService) ? '/' : '') .ucfirst($uriParam);
+                    $modelNameForService .= (!empty($modelNameForService) ? '/' : '') . $camelised;
                     $currentMatchDepth = $currentDepth;
                     $classPath = $candidate;
                 } elseif (is_dir($candidate)) {
-                    $modelNameForService .= (!empty($modelNameForService) ? DIRECTORY_SEPARATOR : '') . ucfirst($uriParam);
+                    $modelNameForService .= (!empty($modelNameForService) ? DIRECTORY_SEPARATOR : '') . $camelised;
                     $classPath = $candidate;
                 } else {
                     if ($currentDepth === 1){
