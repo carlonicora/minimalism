@@ -107,12 +107,15 @@ class InfoLogBuilder extends AbstractLogBuilder
 
             $info[0]['duration'] = $this->getDifference($previous, $start);
 
-            $infoMessage = json_encode($info, JSON_THROW_ON_ERROR) . PHP_EOL;
+            if ($info[0]['duration'] > 5) {
 
-            $infoFile = $this->logDirectory . 'system.log';
+                $infoMessage = json_encode($info, JSON_THROW_ON_ERROR) . PHP_EOL;
 
-            /** @noinspection ForgottenDebugOutputInspection */
-            error_log($infoMessage, 3, $infoFile);
+                $infoFile = $this->logDirectory . 'system.log';
+
+                /** @noinspection ForgottenDebugOutputInspection */
+                error_log($infoMessage, 3, $infoFile);
+            }
         }
     }
 
