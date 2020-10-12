@@ -20,7 +20,7 @@ class Minimalism
     {
         header("Access-Control-Allow-Origin: *");
         if (false === empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+            header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, referrer");
             header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE, PUT");
             header("Allow: OPTIONS, GET, POST, DELETE, PUT");
             http_response_code(200);
