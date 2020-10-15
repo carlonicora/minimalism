@@ -37,14 +37,16 @@ class PathsConfigurations extends AbstractServiceConfigurations
      */
     private function initialiseServiceFactories(): void
     {
-        $plugins = glob(realpath('./vendor') . '/*/*/src/Factories/ServiceFactory.php');
-        $builtIn = glob(realpath('./vendor') . '/*/*/src/Services/*/Factories/ServiceFactory.php');
-        $internal = glob(realpath('./src') . '/Services/*/Factories/ServiceFactory.php');
-        $microservice = glob(realpath('./src') . '/Factories/ServiceFactory.php');
+        $root = dirname(__DIR__, 7);
+        $plugins = glob($root . '/vendor' . '/*/*/src/Factories/ServiceFactory.php');
+        $builtIn = glob($root . '/vendor' . '/*/*/src/Services/*/Factories/ServiceFactory.php');
+        $internal = glob($root . '/src' . '/Services/*/Factories/ServiceFactory.php');
+        $microservice = glob($root . '/src' . '/Factories/ServiceFactory.php');
 
         $files = array_unique(array_merge($plugins, $builtIn, $internal, $microservice));
 
-        $modelsDir = current(glob(realpath('./src') . '/Models'));
+        $modelsDir = current(glob($root . '/src/Models'));
+
         if (false === empty($modelsDir) && file_exists($modelsDir)) {
             $this->servicesModelsDirectories[] = $modelsDir;
         }
