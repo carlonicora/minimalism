@@ -45,6 +45,9 @@ class Minimalism
      */
     private static function execute(string $controllerClassName, $model=null) : void
     {
+        /** @var Bootstrapper $bootstrapper */
+        $bootstrapper = null;
+
         try {
             $bootstrapper = new Bootstrapper();
 
@@ -68,10 +71,14 @@ class Minimalism
             http_response_code((int)$e->getHttpStatusCode());
             $GLOBALS['http_response_code'] = $e->getHttpStatusCode();
             echo $e->getMessage();
+
+            $bootstrapper->saveException($e);
         } catch (Exception $e) {
             http_response_code((int)$e->getCode());
             $GLOBALS['http_response_code'] = $e->getCode();
             echo $e->getMessage();
+
+            $bootstrapper->saveException($e);
         }
     }
 }

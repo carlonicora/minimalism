@@ -247,4 +247,19 @@ class Bootstrapper
     {
         $this->model = $model;
     }
+
+    /**
+     * @param Exception $e
+     * @noinspection ForgottenDebugOutputInspection
+     */
+    public function saveException(Exception $e): void
+    {
+        try {
+            $this->services->logger()->error()->log(
+                MinimalismErrorEvents::GENERIC_ERROR($e)
+            );
+        } catch (Exception $e) {
+            error_log($e->getTraceAsString());
+        }
+    }
 }

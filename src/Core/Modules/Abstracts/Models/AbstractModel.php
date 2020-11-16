@@ -15,7 +15,7 @@ abstract class AbstractModel implements ModelInterface
     /** @var ServicesFactory */
     protected ServicesFactory $services;
 
-    /** @var array */
+    /** @var array|null */
     protected ?array $file;
 
     /** @var ModelInterface|string|null */
@@ -30,7 +30,7 @@ abstract class AbstractModel implements ModelInterface
     /** @var array  */
     protected array $receivedParameters = [];
 
-    /** @var EncrypterInterface=null */
+    /** @var EncrypterInterface|null */
     protected ?EncrypterInterface $encrypter=null;
 
     public const PARAMETER_TYPE_INT = 'validateIntParameter';

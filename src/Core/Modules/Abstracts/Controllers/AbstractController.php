@@ -32,7 +32,7 @@ abstract class AbstractController implements ControllerInterface
     /** @var array */
     protected array $passedParameters = [];
 
-    /** @var array */
+    /** @var array|null */
     protected ?array $file=null;
 
     /** @var string */
@@ -163,6 +163,7 @@ abstract class AbstractController implements ControllerInterface
             $this->model = $modelName;
         } else {
             if (isset($modelName)) {
+                /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
                 $this->modelName = str_replace('-', '\\', $modelName);
             }
 
@@ -297,8 +298,8 @@ abstract class AbstractController implements ControllerInterface
     abstract public function render(): ResponseInterface;
 
     /**
-     * @param int $code
-     * @param string $response
+     * @param int|null $code
+     * @param string|null $response
      */
     public function completeRender(int $code=null, string $response=null): void
     {

@@ -24,7 +24,7 @@ class ControllerFactory
     }
 
     /**
-     * @param string $controllerClassName
+     * @param string|null $controllerClassName
      * @return ControllerInterface
      * @throws Exception
      */

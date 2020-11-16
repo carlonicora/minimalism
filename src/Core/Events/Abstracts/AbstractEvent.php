@@ -20,7 +20,7 @@ abstract class AbstractEvent implements EventInterface
     /** @var int|null */
     protected ?int $errorUniqueCode = null;
 
-    /** @var string */
+    /** @var string|null */
     protected ?string $message = null;
 
     /** @var Exception|null */
@@ -78,8 +78,8 @@ abstract class AbstractEvent implements EventInterface
     }
 
     /**
-     * @param string $message
-     * @param array $context
+     * @param string|null $message
+     * @param array|null $context
      * @return string
      */
     private function mergeContext(?string $message, ?array $context) : ?string
