@@ -119,7 +119,7 @@ class InfoLogBuilder extends AbstractLogBuilder
             ) {
                 $infoMessage = json_encode($info, JSON_THROW_ON_ERROR) . PHP_EOL;
 
-                $infoFile = $this->logDirectory . 'system.log';
+                $infoFile = $this->logDirectory . date('Ymd') . '.system.log';
 
                 /** @noinspection ForgottenDebugOutputInspection */
                 error_log($infoMessage, 3, $infoFile);
@@ -131,17 +131,19 @@ class InfoLogBuilder extends AbstractLogBuilder
                         . ' duration ' . $recap['duration'] . PHP_EOL;
                     foreach ($info as $infoPosition=>$infoElement){
                         $simplerInfoMessage .= '   '
-                            . $infoPosition . '. ' . $infoElement['service']
+                            . $infoPosition . '. '
+                            . ' [id:' . $infoElement['id'] . '] '
+                            . (array_key_exists('duration', $infoElement) ? ' (' . $infoElement['duration'] . ')' : '')
                             . ' - '
                             . $infoElement['details']
-                            . ' [id:' . $infoElement['id'] . ']'
-                            . (array_key_exists('duration', $infoElement) ? ' (' . $infoElement['duration'] . ')' : '')
+                            . ' - '
+                            . $infoElement['service']
                             . PHP_EOL;
                     }
 
                     $simplerInfoMessage .= PHP_EOL;
 
-                    $simplerInfoFile = $this->logDirectory . 'system.simple.log';
+                    $simplerInfoFile = $this->logDirectory . date('Ymd') . '.system.simple.log';
 
                     /** @noinspection ForgottenDebugOutputInspection */
                     error_log($simplerInfoMessage, 3, $simplerInfoFile);

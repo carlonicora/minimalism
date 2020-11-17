@@ -14,7 +14,7 @@ class ErrorLogBuilder extends AbstractLogBuilder
     {
         $errorMessage = $logMessage->generateMessage() . PHP_EOL;
 
-        $errorFile = $this->logDirectory . $logMessage->getService() . '.error.log';
+        $errorFile = $this->logDirectory . date('Ymd') . $logMessage->getService() . '.error.log';
 
         /** @noinspection ForgottenDebugOutputInspection */
         error_log($errorMessage,3,$errorFile);
