@@ -55,16 +55,6 @@ class InfoLogBuilder extends AbstractLogBuilder
     }
 
     /**
-     * @param string $title
-     */
-    public function setEventsTitle(string $title): void
-    {
-        if (count($this->events) > 0) {
-            $this->events[0]['details'] = $title;
-        }
-    }
-
-    /**
      * @param EventInterface $previous
      * @param EventInterface $next
      * @return int
@@ -99,7 +89,7 @@ class InfoLogBuilder extends AbstractLogBuilder
 
             $info = [];
 
-            $logMessage = new MinimalismInfoEvents(0, null, 'Request');
+            $logMessage = new MinimalismInfoEvents(0, null, $this->title !== '' ? $this->title : 'Request');
             $event = json_decode($logMessage->generateMessage(), true, 512, JSON_THROW_ON_ERROR);
             $info[] = $event;
 

@@ -13,6 +13,9 @@ abstract class AbstractLogBuilder implements LogBuilderInterface
     /** @var string  */
     protected string $logDirectory;
 
+    /** @var string */
+    protected string $title='';
+
     /**
      * AbstractLogBuilder constructor.
      * @param ServicesFactory $services
@@ -38,4 +41,12 @@ abstract class AbstractLogBuilder implements LogBuilderInterface
      * @return EventInterface
      */
     abstract public function log(EventInterface $logMessage): EventInterface;
+
+    /**
+     * @param string $title
+     */
+    public function setEventsTitle(string $title): void
+    {
+        $this->title = $title;
+    }
 }

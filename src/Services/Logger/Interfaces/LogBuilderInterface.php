@@ -19,6 +19,11 @@ interface LogBuilderInterface
     public function log(EventInterface $logMessage) : EventInterface;
 
     /**
+     * @param string $title
+     */
+    public function setEventsTitle(string $title): void;
+
+    /**
      *
      */
     public function __destruct();
