@@ -18,9 +18,9 @@ class InfoLogBuilder extends AbstractLogBuilder
      */
     public function log(EventInterface $logMessage): EventInterface
     {
-       $this->events[] = $logMessage;
+        $this->events[] = $logMessage;
 
-       return $logMessage;
+        return $logMessage;
     }
 
     /**
@@ -109,10 +109,10 @@ class InfoLogBuilder extends AbstractLogBuilder
             $info[0]['duration'] = $this->getDifference($previous, $start);
 
             if (
-                $this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_ALL > 0
+                ($this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_ALL) > 0
                 ||
                 (
-                    $this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_SLOW > 0
+                    ($this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_SLOW) > 0
                     &&
                     $info[0]['duration'] > 5
                 )
@@ -124,18 +124,21 @@ class InfoLogBuilder extends AbstractLogBuilder
                 /** @noinspection ForgottenDebugOutputInspection */
                 error_log($infoMessage, 3, $infoFile);
 
-                if ($this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_SIMPLE > 0){
+                if (($this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_SIMPLE) > 0){
                     $recap = array_shift($info);
                     $simplerInfoMessage = '[' . $recap['time'] . ']'
-                        . ' duration ' . $recap['duration'];
+                        . ' duration ' . $recap['duration'] ;
                     foreach ($info as $infoPosition=>$infoElement){
                         $simplerInfoMessage .= '   '
                             . $infoPosition . '. ' . $infoElement['service']
                             . ' - '
                             . $infoElement['details']
                             . ' [id:' . $infoElement['id'] . ']'
-                            . (array_key_exists('duration', $infoElement) ? ' (' . $infoElement['duration'] . ')' : '');
+                            . (array_key_exists('duration', $infoElement) ? ' (' . $infoElement['duration'] . ')' : '')
+                            . PHP_EOL;
                     }
+
+                    $simplerInfoMessage .= PHP_EOL;
 
                     $simplerInfoFile = $this->logDirectory . 'system.simple.log';
 

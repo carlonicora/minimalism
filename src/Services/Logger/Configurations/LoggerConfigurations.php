@@ -21,7 +21,15 @@ class LoggerConfigurations extends AbstractServiceConfigurations {
     /**
      * LoggerConfigurations constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
+    }
+
+    /**
+     *
+     */
+    public function setLogLevel(): void
+    {
         $logLevel = getenv('MINIMALISM_LOG_LEVEL');
 
         if ($logLevel !== null) {

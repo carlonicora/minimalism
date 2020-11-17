@@ -174,6 +174,7 @@ class Bootstrapper
     {
         try{
             $this->services->initialise();
+            $this->services->logger()->setLogLevel();
 
             if (isset($_COOKIE['minimalismServices'])){
                 $this->services->unserialiseCookies('minimalismServices');

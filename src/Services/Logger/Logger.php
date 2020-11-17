@@ -60,4 +60,12 @@ class Logger extends AbstractService{
     {
         return $this->configData->getLogLevel();
     }
+
+    /**
+     *
+     */
+    public function setLogLevel(): void
+    {
+        $this->configData->setLogLevel();
+    }
 }
