@@ -4,7 +4,8 @@ namespace CarloNicora\Minimalism\Services\Logger\LogBuilders;
 use CarloNicora\Minimalism\Core\Events\Interfaces\EventInterface;
 use CarloNicora\Minimalism\Core\Events\MinimalismInfoEvents;
 use CarloNicora\Minimalism\Services\Logger\Abstracts\AbstractLogBuilder;
-use JsonException;
+use CarloNicora\Minimalism\Services\Logger\Configurations\LoggerConfigurations;
+use Exception;
 
 class InfoLogBuilder extends AbstractLogBuilder
 {
@@ -74,7 +75,7 @@ class InfoLogBuilder extends AbstractLogBuilder
     }
 
     /**
-     * @throws JsonException
+     * @throws Exception
      */
     public function flush() : void
     {
@@ -107,20 +108,46 @@ class InfoLogBuilder extends AbstractLogBuilder
 
             $info[0]['duration'] = $this->getDifference($previous, $start);
 
-            if ($info[0]['duration'] > 5) {
-
+            if (
+                $this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_ALL > 0
+                ||
+                (
+                    $this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_SLOW > 0
+                    &&
+                    $info[0]['duration'] > 5
+                )
+            ) {
                 $infoMessage = json_encode($info, JSON_THROW_ON_ERROR) . PHP_EOL;
 
                 $infoFile = $this->logDirectory . 'system.log';
 
                 /** @noinspection ForgottenDebugOutputInspection */
                 error_log($infoMessage, 3, $infoFile);
+
+                if ($this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_SIMPLE > 0){
+                    $recap = array_shift($info);
+                    $simplerInfoMessage = '[' . $recap['time'] . ']'
+                        . ' duration ' . $recap['duration'];
+                    foreach ($info as $infoPosition=>$infoElement){
+                        $simplerInfoMessage .= '   '
+                            . $infoPosition . '. ' . $infoElement['service']
+                            . ' - '
+                            . $infoElement['details']
+                            . ' [id:' . $infoElement['id'] . ']'
+                            . (array_key_exists('duration', $infoElement) ? ' (' . $infoElement['duration'] . ')' : '');
+                    }
+
+                    $simplerInfoFile = $this->logDirectory . 'system.simple.log';
+
+                    /** @noinspection ForgottenDebugOutputInspection */
+                    error_log($simplerInfoMessage, 3, $simplerInfoFile);
+                }
             }
         }
     }
 
     /**
-     * @throws JsonException
+     * @throws Exception
      */
     public function __destruct()
     {

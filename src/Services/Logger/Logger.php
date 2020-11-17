@@ -52,4 +52,12 @@ class Logger extends AbstractService{
     {
         return $this->infoLog;
     }
+
+    /**
+     * @return int
+     */
+    public function getLogLevel(): int
+    {
+        return $this->configData->getLogLevel();
+    }
 }
