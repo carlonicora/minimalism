@@ -18,7 +18,10 @@ class ApiControllerTest extends AbstractTestCase
      */
     public function testInitialiseModelWithDefaults()
     {
-        $instance = new ApiController($this->getServices());
+        $services = $this->getServices();
+        $this->setProperty($services->paths(), 'root', './tests/Mocks/ValidComposerNamespace');
+
+        $instance = new ApiController($services);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Model not found: index');

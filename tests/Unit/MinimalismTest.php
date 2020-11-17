@@ -9,7 +9,7 @@ use function ob_start;
 
 class MinimalismTest extends AbstractTestCase
 {
-
+    /*
     public function testWebExecutionWithDefault()
     {
         ob_start();
@@ -28,8 +28,12 @@ class MinimalismTest extends AbstractTestCase
 
         $this->assertEquals('Model not found: index', $output);
     }
+    */
 
-    public function testCliExecutionWithModel()
+    /**
+     *
+     */
+    public function testCliExecutionWithModel(): void
     {
         $mock = $this->getMockBuilder(CliModel::class)
             ->setConstructorArgs([$this->getServices()])

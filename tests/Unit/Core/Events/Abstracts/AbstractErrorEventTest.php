@@ -54,15 +54,15 @@ class AbstractErrorEventTest extends AbstractTestCase
         );
     }
 
-
+    /*
     public function testGenerateMessageWithException() {
         $mock = $this->mockInstanceWith('', new Exception('some failure'));
         $this->markTestSkipped('Stack trace has absolute paths to within the filesystem.');
 
-        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals(
             '',
             $mock->generateMessage()
         );
     }
+    */
 }

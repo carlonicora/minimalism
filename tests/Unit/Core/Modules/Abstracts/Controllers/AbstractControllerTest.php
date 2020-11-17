@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Tests\Unit\Core\Modules\Abstracts\Controllers;
 
+use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractApiController;
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
@@ -18,8 +19,11 @@ class AbstractControllerTest extends AbstractTestCase
 
     public function setUp(): void
     {
+        $services = $this->getServices();
+        $this->setProperty($services->paths(), 'root', './tests/Mocks/ValidComposerNamespace');
+
         $this->instance = $this->getMockBuilder(AbstractController::class)
-            ->setConstructorArgs([$this->getServices()])
+            ->setConstructorArgs([$services])
             ->onlyMethods([
                 'parseUriParameters',
                 'getPhpInputParameters'
@@ -108,8 +112,8 @@ class AbstractControllerTest extends AbstractTestCase
         $_POST['test3'] = 'different test value';
 
         $_FILES = [
-            [ 'test1' => 'test value' ],
-            [ 'test2' => 'test value' ]
+            [ 'name' => 'test value' ],
+            [ 'name' => 'test value' ]
         ];
 
         $this->instance->initialiseParameters();
@@ -118,21 +122,23 @@ class AbstractControllerTest extends AbstractTestCase
             $this->getProperty($this->instance, 'bodyParameters')
         );
 
-        /** file is only populated if a single file is uploaded */
-        $this->assertEquals(null, $this->getProperty($this->instance, 'file'));
+        $this->assertEquals($_FILES, $this->getProperty($this->instance, 'file'));
 
-        $_FILES = [ [ 'test1' => 'test value' ] ];
+        $_FILES = [ [ 'name' => 'test value' ] ];
         $this->instance->initialiseParameters();
-        $this->assertEquals($_FILES[0], $this->getProperty($this->instance, 'file'));
+        $this->assertEquals($_FILES, $this->getProperty($this->instance, 'file'));
 
-        unset($_SERVER['REQUEST_METHOD']);
-        unset($_POST['test3']);
+        unset($_SERVER['REQUEST_METHOD'],$_POST['test3']);
         $_FILES = [];
     }
 
 
     public function testInitialiseModelWithDefaults()
     {
+        $services = $this->getServices();
+        $this->setProperty($services->paths(), 'root', './tests/Mocks/ValidComposerNamespace');
+
+
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Model not found: index');
         /** @noinspection PhpUndefinedMethodInspection */

@@ -1,4 +1,10 @@
-FROM carlonicora/php-cli-base:7.4.5.1
+FROM php:7.4-cli-alpine
+
+RUN apk update \
+    && apk add --no-cache curl g++ make autoconf bash supervisor
+
+RUN docker-php-ext-install mysqli bcmath \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 ARG XDEBUG_PORT
 ARG XDEBUG_HOST

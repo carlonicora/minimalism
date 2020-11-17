@@ -68,8 +68,11 @@ class AbstractApiControllerTest extends AbstractTestCase
 
     public function testInitialiseModelWithDefaults()
     {
+        $services = $this->getServices();
+        $this->setProperty($services->paths(), 'root', './tests/Mocks/ValidComposerNamespace');
+
         $instance = $this->getMockBuilder(AbstractApiController::class)
-            ->setConstructorArgs([$this->getServices()])
+            ->setConstructorArgs([$services])
             ->getMockForAbstractClass();
 
         $this->expectException(Exception::class);

@@ -85,7 +85,10 @@ class PathsTest extends AbstractTestCase
      */
     public function testNamespace() : void
     {
-        $this->assertEquals('CarloNicora\\Minimalism\\', $this->getServices()->paths()->getNamespace());
+        $services = $this->getServices();
+        $this->setProperty($services->paths(), 'root', './');
+
+        $this->assertEquals('CarloNicora\\Minimalism\\', $services->paths()->getNamespace());
     }
 
     /**
