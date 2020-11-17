@@ -55,6 +55,16 @@ class InfoLogBuilder extends AbstractLogBuilder
     }
 
     /**
+     * @param string $title
+     */
+    public function setEventsTitle(string $title): void
+    {
+        if (count($this->events) > 0) {
+            $this->events[0]['details'] = $title;
+        }
+    }
+
+    /**
      * @param EventInterface $previous
      * @param EventInterface $next
      * @return int
@@ -127,7 +137,8 @@ class InfoLogBuilder extends AbstractLogBuilder
                 if (($this->services->logger()->getLogLevel() & LoggerConfigurations::LOG_LEVEL_SIMPLE) > 0){
                     $recap = array_shift($info);
                     $simplerInfoMessage = '[' . $recap['time'] . ']'
-                        . ' duration ' . $recap['duration'] ;
+                        .  ' ' . $recap['details']
+                        . ' duration ' . $recap['duration'] . PHP_EOL;
                     foreach ($info as $infoPosition=>$infoElement){
                         $simplerInfoMessage .= '   '
                             . $infoPosition . '. ' . $infoElement['service']
