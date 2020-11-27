@@ -67,12 +67,12 @@ class Bootstrapper
                 $this->services = $this->createServices();
             }
 
-            if ($this->controller === null) {
-                $this->services->cleanNonPersistentVariables();
-                $this->services->initialiseStatics();
-                $this->controllerFactory = new ControllerFactory($this->services);
-            }
+            $this->services->cleanNonPersistentVariables();
+            $this->services->initialiseStatics();
+            $this->controllerFactory = new ControllerFactory($this->services);
         }
+
+        $this->controller = null;
 
         return $this;
     }
