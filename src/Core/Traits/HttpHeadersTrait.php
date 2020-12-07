@@ -22,7 +22,7 @@ trait HttpHeadersTrait
 if (!function_exists('getallheaders'))
 {
     // @codeCoverageIgnoreEnd
-    function getallheaders()
+    function getallheaders(): array
     {
         $headers = [];
         foreach ($_SERVER ?? [] as $name => $value) {

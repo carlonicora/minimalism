@@ -17,6 +17,13 @@ abstract class AbstractWebModel extends AbstractModel
     }
 
     /**
+     *
+     */
+    public function preRender(): void
+    {
+    }
+
+    /**
      * @return mixed
      */
     abstract public function generateData() : ResponseInterface;

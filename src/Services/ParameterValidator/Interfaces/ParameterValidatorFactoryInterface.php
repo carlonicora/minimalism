@@ -7,8 +7,8 @@ interface ParameterValidatorFactoryInterface
 {
     /**
      * @param ServicesFactory $services
-     * @param string $parameterVaidatorClass
+     * @param string $parameterValidatorClass
      * @return ParameterValidatorInterface
      */
-    public function createParameterValidator(ServicesFactory $services, string $parameterVaidatorClass) : ParameterValidatorInterface;
+    public function createParameterValidator(ServicesFactory $services, string $parameterValidatorClass) : ParameterValidatorInterface;
 }

@@ -182,7 +182,7 @@ class ServicesFactory
 
         $allTheCookies = array_merge([], ...$cookies);
 
-        return json_encode($allTheCookies, JSON_THROW_ON_ERROR, 512);
+        return json_encode($allTheCookies, JSON_THROW_ON_ERROR);
     }
 
     /**

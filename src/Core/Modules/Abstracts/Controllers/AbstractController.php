@@ -207,7 +207,7 @@ abstract class AbstractController implements ControllerInterface
 
         $this->services->logger()->error()->log(
             MinimalismErrorEvents::MODEL_NOT_FOUND(strtolower($modelName))
-        )->throw(Exception::class, null);
+        )->throw(Exception::class);
 
         return '';
     }

@@ -161,7 +161,7 @@ class Paths extends AbstractService {
     private function validateDirectory(string $directory) : void
     {
         try {
-            if (!file_exists($directory) && !mkdir($directory, 0777) && !is_dir($directory)) {
+            if (!file_exists($directory) && !mkdir($directory) && !is_dir($directory)) {
                 throw new RuntimeException('Cannot create log directory', 500);
             }
         } catch (Exception $e) {

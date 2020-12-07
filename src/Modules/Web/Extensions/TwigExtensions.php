@@ -30,7 +30,8 @@ class TwigExtensions extends AbstractExtension {
      * @param string $id
      * @return mixed
      */
-    public function includedTypeId(array $included, string $type, string $id){
+    public function includedTypeId(array $included, string $type, string $id): array
+    {
         foreach ($included as $element) {
             if ($element['id'] === $id && $element['type'] === $type){
                 return $element;
