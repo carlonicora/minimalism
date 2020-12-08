@@ -32,7 +32,7 @@ class ResponseTest extends AbstractTestCase
         $this->instance->write();
         $output = ob_get_clean();
 
-        $this->assertEquals($this->data, $output);
+        self::assertEquals($this->data, $output);
     }
 
     public function testWriteDoesntOutputDataOn204()
@@ -41,7 +41,7 @@ class ResponseTest extends AbstractTestCase
         ob_start();
         $this->instance->write();
         $output = ob_get_clean();
-        $this->assertEmpty($output);
+        self::assertEmpty($output);
     }
 
     public function testWriteDoesntOutputDataOn304()
@@ -50,7 +50,7 @@ class ResponseTest extends AbstractTestCase
         ob_start();
         $this->instance->write();
         $output = ob_get_clean();
-        $this->assertEmpty($output);
+        self::assertEmpty($output);
     }
 
     public function testWriteOutputForAllOtherStatusCodes()
@@ -65,7 +65,7 @@ class ResponseTest extends AbstractTestCase
             $this->instance->write();
             $output = ob_get_clean();
 
-            $this->assertEquals($this->data, $output);
+            self::assertEquals($this->data, $output);
         }
     }
 
@@ -77,7 +77,7 @@ class ResponseTest extends AbstractTestCase
 
         foreach ($this->statusCodes() as $statusCode) {
             $this->instance->setStatus($statusCode);
-            $this->assertNotEmpty($rm->invoke($this->instance));
+            self::assertNotEmpty($rm->invoke($this->instance));
         }
     }
 
@@ -98,8 +98,8 @@ class ResponseTest extends AbstractTestCase
     {
         $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();
         foreach ($this->statusCodes() as $k => $statusCode) {
-            $mock->expects($this->at($k))->method('writeRawHTTP')->with(
-                $this->callback(function($protocol) use($statusCode) {
+            $mock->expects(self::at($k))->method('writeRawHTTP')->with(
+                self::callback(function($protocol) use($statusCode) {
                     return strpos($protocol, "HTTP/1.1 $statusCode") !== false;
                 })
             );
@@ -117,8 +117,8 @@ class ResponseTest extends AbstractTestCase
     public function testWriteContentType()
     {
         $mock = $this->getMockBuilder(Response::class)->onlyMethods(['writeRawHTTP'])->getMock();
-        $mock->expects($this->at(0))->method('writeRawHTTP')->with('Content-Type: text/html');
-        $mock->expects($this->at(1))->method('writeRawHTTP')->with('Content-Type: text/plain');
+        $mock->expects(self::at(0))->method('writeRawHTTP')->with('Content-Type: text/html');
+        $mock->expects(self::at(1))->method('writeRawHTTP')->with('Content-Type: text/plain');
 
         $mock->writeContentType();
         $mock->setContentType('text/plain');
@@ -131,11 +131,11 @@ class ResponseTest extends AbstractTestCase
         $redirectionParameters = ['test1' => 'value', 'test2' => 'value'];
 
         $this->instance->setRedirectionParameters($redirectionParameters);
-        $this->assertEquals($redirectionParameters, $this->instance->getRedirectionParameters());
+        self::assertEquals($redirectionParameters, $this->instance->getRedirectionParameters());
 
-        $this->assertNull($this->instance->redirects());
+        self::assertNull($this->instance->redirects());
         $this->instance->setRedirect('Test');
-        $this->assertEquals('Test', $this->instance->redirects());
+        self::assertEquals('Test', $this->instance->redirects());
 
     }
 }

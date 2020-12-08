@@ -15,6 +15,6 @@ class AbstractWebModelTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEmpty($instance->getViewName());
+        self::assertEmpty($instance->getViewName());
     }
 }

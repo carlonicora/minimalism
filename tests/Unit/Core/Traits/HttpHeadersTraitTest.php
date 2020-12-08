@@ -17,8 +17,8 @@ class HttpHeadersTraitTest extends AbstractTestCase
         $_SERVER['HTTP_ACCEPT'] = 'text/html';
         $_SERVER['HTTP_ACCEPT_ENCODING'] = 'UTF-8';
 
-        $this->assertEquals('text/html', $instance->getHeader('Accept'));
-        $this->assertEquals('UTF-8', $instance->getHeader('Accept-Encoding'));
+        self::assertEquals('text/html', $instance->getHeader('Accept'));
+        self::assertEquals('UTF-8', $instance->getHeader('Accept-Encoding'));
 
         unset($_SERVER['HTTP_ACCEPT']);
         unset($_SERVER['HTTP_ACCEPT_ENCODING']);

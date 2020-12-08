@@ -21,13 +21,13 @@ class TimestampValidatorTest extends AbstractTestCase
 
         $instance = new TimestampValidator($this->getServices());
 
-        $this->assertNull($instance->transformValue(null));
-        $this->assertEquals(strtotime($dateValue), $instance->transformValue($dateValue));
+        self::assertNull($instance->transformValue(null));
+        self::assertEquals(strtotime($dateValue), $instance->transformValue($dateValue));
 
         $this->expectException(Exception::class);
         $instance->transformValue($dateValueHoursMinutesSeconds);
 
-        $this->assertEquals(
+        self::assertEquals(
             strtotime($dateValueHoursMinutesSeconds),
             $instance->transformValue(strtotime($dateValueHoursMinutesSeconds))
         );

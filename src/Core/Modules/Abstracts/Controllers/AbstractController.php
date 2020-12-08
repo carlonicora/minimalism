@@ -316,11 +316,6 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * @return ControllerInterface
-     */
-    abstract public function postInitialise(): ControllerInterface;
-
-    /**
      * @param SecurityInterface|null $security
      */
     public function setSecurityInterface(?SecurityInterface $security): void

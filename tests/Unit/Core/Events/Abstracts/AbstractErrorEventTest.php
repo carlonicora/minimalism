@@ -28,7 +28,7 @@ class AbstractErrorEventTest extends AbstractTestCase
             ->onlyMethods(['getTime'])
             ->getMockForAbstractClass();
 
-        $mock->expects($this->once())->method('getTime')->willReturn((float)strtotime('2020-06-03 12:00:00'));
+        $mock->expects(self::once())->method('getTime')->willReturn((float)strtotime('2020-06-03 12:00:00'));
 
         return $mock;
     }
@@ -38,7 +38,7 @@ class AbstractErrorEventTest extends AbstractTestCase
         $mock = $this->mockInstanceWith('', null);
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(
+        self::assertEquals(
             '{"time":"2020-06-03 12:00:00","service":"","id":1,"error":""}',
             $mock->generateMessage()
         );
@@ -48,7 +48,7 @@ class AbstractErrorEventTest extends AbstractTestCase
         $mock = $this->mockInstanceWith('test message', null);
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(
+        self::assertEquals(
             '{"time":"2020-06-03 12:00:00","service":"","id":1,"error":"test message"}',
             $mock->generateMessage()
         );

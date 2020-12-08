@@ -6,7 +6,6 @@ namespace CarloNicora\Minimalism\Tests\Mocks;
 
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
-use CarloNicora\Minimalism\Core\Response;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\SecurityInterface;
@@ -26,11 +25,6 @@ class TestController implements ControllerInterface
     }
 
     public function initialiseModel($modelName = null, string $verb = 'GET'): ControllerInterface
-    {
-        return $this;
-    }
-
-    public function postInitialise(): ControllerInterface
     {
         return $this;
     }

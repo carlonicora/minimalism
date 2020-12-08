@@ -28,22 +28,22 @@ class AbstractModelTest extends AbstractTestCase
     {
         $exception = new Exception('test message', 408);
 
-        $this->assertEquals('408', $this->instance->getResponseFromError($exception)->getStatus());
-        $this->assertEquals('test message', $this->instance->getResponseFromError($exception)->getData());
+        self::assertEquals('408', $this->instance->getResponseFromError($exception)->getStatus());
+        self::assertEquals('test message', $this->instance->getResponseFromError($exception)->getData());
     }
 
 
     public function testRedirectWithDefault()
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEmpty($this->instance->redirect());
+        self::assertEmpty($this->instance->redirect());
     }
 
 
     public function testGetParametersWithDefault()
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEmpty($this->instance->getParameters());
+        self::assertEmpty($this->instance->getParameters());
     }
 
 
@@ -52,32 +52,32 @@ class AbstractModelTest extends AbstractTestCase
      */
     public function testAddReceivedParameters()
     {
-        $this->assertEquals([], $this->getProperty($this->instance, 'receivedParameters'));
+        self::assertEquals([], $this->getProperty($this->instance, 'receivedParameters'));
 
         $this->instance->addReceivedParameters('test1');
-        $this->assertEquals(['test1'], $this->getProperty($this->instance, 'receivedParameters'));
+        self::assertEquals(['test1'], $this->getProperty($this->instance, 'receivedParameters'));
 
         $this->instance->addReceivedParameters('test2');
-        $this->assertEquals(['test1', 'test2'], $this->getProperty($this->instance, 'receivedParameters'));
+        self::assertEquals(['test1', 'test2'], $this->getProperty($this->instance, 'receivedParameters'));
     }
 
     public function testSetParameterCreatesPublicProperty()
     {
-        $this->assertFalse(property_exists($this->instance, 'test_data'));
+        self::assertFalse(property_exists($this->instance, 'test_data'));
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->setParameter('test_data', 2);
 
-        $this->assertTrue(property_exists($this->instance, 'test_data'));
+        self::assertTrue(property_exists($this->instance, 'test_data'));
         /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertEquals(2, $this->instance->test_data);
+        self::assertEquals(2, $this->instance->test_data);
     }
 
 
     public function testDecrypterWithDefault()
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertInstanceOf(DecrypterCommand::class, $this->instance->decrypter());
+        self::assertInstanceOf(DecrypterCommand::class, $this->instance->decrypter());
     }
 
 
@@ -87,6 +87,6 @@ class AbstractModelTest extends AbstractTestCase
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->setEncrypter($mock);
-        $this->assertSame($mock, $this->getProperty($this->instance, 'encrypter'));
+        self::assertSame($mock, $this->getProperty($this->instance, 'encrypter'));
     }
 }

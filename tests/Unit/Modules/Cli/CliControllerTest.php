@@ -25,13 +25,13 @@ class CliControllerTest extends AbstractTestCase
 
 
         $modelMock->method('redirect')->willReturn('');
-        $modelMock->expects($this->at(0))->method('run')->willReturn($responseMock);
+        $modelMock->expects(self::at(0))->method('run')->willReturn($responseMock);
 
         $instance->initialiseModel($modelMock);
         $instance->render();
 
-        $modelMock->expects($this->at(1))->method('run')->willThrowException(new Exception());
-        $this->assertInstanceOf(Response::class, $instance->render());
+        $modelMock->expects(self::at(1))->method('run')->willThrowException(new Exception());
+        self::assertInstanceOf(Response::class, $instance->render());
 
     }
 }

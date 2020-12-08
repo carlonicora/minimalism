@@ -53,8 +53,8 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         /** @var MockObject|ModelInterface $modelMock */
         $modelMock = $this->getModelMock();
 
-        $instance->expects($this->never())->method('setParameter');
-        $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
+        $instance->expects(self::never())->method('setParameter');
+        $modelMock->expects(self::once())->method('addReceivedParameters')->with(self::IDENTIFIER);
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->renderParameter(
@@ -72,8 +72,8 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         $modelMock = $this->getModelMock();
 
         $parameterObject = new ParameterObject(self::IDENTIFIER, []);
-        $instance->expects($this->once())->method('setParameter')->with($parameterObject, $modelMock, $value);
-        $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
+        $instance->expects(self::once())->method('setParameter')->with($parameterObject, $modelMock, $value);
+        $modelMock->expects(self::once())->method('addReceivedParameters')->with(self::IDENTIFIER);
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->renderParameter(
@@ -89,9 +89,9 @@ class AbstractParameterValidatorTest extends AbstractTestCase
         /** @var MockObject|ModelInterface $modelMock */
         $modelMock = $this->getModelMock();
 
-        $modelMock->expects($this->once())->method('setParameter');
-        $modelMock->expects($this->once())->method('addReceivedParameters')->with(self::IDENTIFIER);
-        $modelMock->expects($this->once())->method('decrypter');
+        $modelMock->expects(self::once())->method('setParameter');
+        $modelMock->expects(self::once())->method('addReceivedParameters')->with(self::IDENTIFIER);
+        $modelMock->expects(self::once())->method('decrypter');
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->renderParameter(

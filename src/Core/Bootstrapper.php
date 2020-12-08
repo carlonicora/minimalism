@@ -211,15 +211,13 @@ class Bootstrapper
                 $this->controller = $this->controllerFactory
                     ->loadController($this->controllerClassName)
                     ->initialiseParameters($parameterValueList, $parameterValues)
-                    ->initialiseModel($this->model)
-                    ->postInitialise();
+                    ->initialiseModel($this->model);
 
             } catch (ConfigurationException|Exception $e) {
                 $this->controller = new ErrorController($this->services);
                 $this->controller
                     ->initialiseParameters()
-                    ->initialiseModel('')
-                    ->postInitialise();
+                    ->initialiseModel('');
 
                 $code = $e->getCode() !== '' ? $e->getCode() : ResponseInterface::HTTP_STATUS_500;
                 $this->controller->setException(new Exception($e->getMessage(), $code, $e));

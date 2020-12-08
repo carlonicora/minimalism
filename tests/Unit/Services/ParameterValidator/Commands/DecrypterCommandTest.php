@@ -15,8 +15,8 @@ class DecrypterCommandTest extends AbstractTestCase
     {
         $instance = new DecrypterCommand(null);
 
-        $this->assertEquals(1, $instance->decryptParameter('1'));
-        $this->assertEquals(0, $instance->decryptParameter('text'));
+        self::assertEquals(1, $instance->decryptParameter('1'));
+        self::assertEquals(0, $instance->decryptParameter('text'));
     }
 
 
@@ -26,10 +26,10 @@ class DecrypterCommandTest extends AbstractTestCase
         /** @var MockObject|ModelInterface $mock */
         $mock = $this->getMockBuilder(EncrypterInterface::class)->getMock();
 
-        $mock->expects($this->once())->method('decryptId')->with($parameter)->willReturn(0);
+        $mock->expects(self::once())->method('decryptId')->with($parameter)->willReturn(0);
 
         /** @noinspection PhpParamsInspection */
         $instance = new DecrypterCommand($mock);
-        $this->assertEquals(0, $instance->decryptParameter($parameter));
+        self::assertEquals(0, $instance->decryptParameter($parameter));
     }
 }

@@ -14,9 +14,9 @@ class TwigExtensionsTest extends AbstractTestCase
         $instance = new TwigExtensions();
 
         $twigFunctions = $instance->getFunctions();
-        $this->assertCount(2, $twigFunctions);
-        $this->assertInstanceOf(TwigFunction::class, $twigFunctions[0]);
-        $this->assertInstanceOf(TwigFunction::class, $twigFunctions[1]);
+        self::assertCount(2, $twigFunctions);
+        self::assertInstanceOf(TwigFunction::class, $twigFunctions[0]);
+        self::assertInstanceOf(TwigFunction::class, $twigFunctions[1]);
     }
 
     public function testIncluded()
@@ -27,7 +27,7 @@ class TwigExtensionsTest extends AbstractTestCase
         $elements = [ $element1 ];
 
         $object = ['type' => 'test', 'id' => '1', 'extra-data' => 'x'];
-        $this->assertEquals($element1, $instance->included($elements, $object));
+        self::assertEquals($element1, $instance->included($elements, $object));
     }
 
     public function testIncludedTypeId()
@@ -37,10 +37,10 @@ class TwigExtensionsTest extends AbstractTestCase
         $element1 = ['id' => '1', 'type' => 'test'];
         $elements = [ $element1 ];
         // matching id
-        $this->assertEquals([], $instance->includedTypeId($elements, 'test-', '1'));
+        self::assertEquals([], $instance->includedTypeId($elements, 'test-', '1'));
         // matching type
-        $this->assertEquals([], $instance->includedTypeId($elements, 'test', '2'));
+        self::assertEquals([], $instance->includedTypeId($elements, 'test', '2'));
         // matching type and id
-        $this->assertEquals($element1, $instance->includedTypeId($elements, 'test', '1'));
+        self::assertEquals($element1, $instance->includedTypeId($elements, 'test', '1'));
     }
 }

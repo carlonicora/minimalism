@@ -16,7 +16,7 @@ class LoggerTest extends AbstractTestCase
     public function testLoggerInstance()
     {
         $logger = new Logger(new LoggerConfigurations(), $this->getServices());
-        $this->assertInstanceOf(ErrorLogBuilder::class, $logger->error());
-        $this->assertInstanceOf(InfoLogBuilder::class, $logger->info());
+        self::assertInstanceOf(ErrorLogBuilder::class, $logger->error());
+        self::assertInstanceOf(InfoLogBuilder::class, $logger->info());
     }
 }

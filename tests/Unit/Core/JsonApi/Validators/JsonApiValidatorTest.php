@@ -55,7 +55,7 @@ class JsonApiValidatorTest extends AbstractTestCase
      */
     public function testSetParameterWithSupportedTypes($mixed)
     {
-        $this->mock->expects($this->once())->method('setParameter');
+        $this->mock->expects(self::once())->method('setParameter');
         /** @noinspection PhpParamsInspection */
         $this->instance->setParameter(new ParameterObject('test', []), $this->mock, $mixed);
     }

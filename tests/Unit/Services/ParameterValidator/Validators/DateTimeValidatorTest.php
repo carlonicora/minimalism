@@ -20,9 +20,9 @@ class DateTimeValidatorTest extends AbstractTestCase
 
         $instance = new DateTimeValidator($this->getServices());
 
-        $this->assertNull($instance->transformValue(null));
-        $this->assertIsString($instance->transformValue($dateValue));
-        $this->assertEquals($dateValue, $instance->transformValue($dateValue));
+        self::assertNull($instance->transformValue(null));
+        self::assertIsString($instance->transformValue($dateValue));
+        self::assertEquals($dateValue, $instance->transformValue($dateValue));
 
 //        $this->expectException(Exception::class);
 //        $instance->transformValue($dateValueHoursMinutesSeconds);

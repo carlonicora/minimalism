@@ -28,22 +28,14 @@ class WebControllerTest extends AbstractTestCase
             ->getMock();
 
         $modelMock->method('redirect')->willReturn('');
-        $modelMock->expects($this->exactly(3))->method('getViewName')->willReturn('mock');
-        $modelMock->expects($this->once())->method('generateData')->willReturn($responseMock);
-        $modelMock->expects($this->once())->method('getTwigExtensions')->willReturn([new TwigExtensions()]);
+        $modelMock->expects(self::exactly(3))->method('getViewName')->willReturn('mock');
+        $modelMock->expects(self::once())->method('generateData')->willReturn($responseMock);
+        $modelMock->expects(self::once())->method('getTwigExtensions')->willReturn([new TwigExtensions()]);
 
 
         $instance->initialiseModel($modelMock);
         $response = $instance->render();
 
-        $this->assertEquals('', $response->getStatus());
-    }
-
-
-    public function testPostInitialise()
-    {
-        $instance = new WebController($this->getServices());
-
-        $this->assertSame($instance, $instance->postInitialise());
+        self::assertEquals('', $response->getStatus());
     }
 }

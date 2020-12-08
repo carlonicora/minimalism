@@ -16,7 +16,7 @@ class ArrayValidatorTest extends AbstractTestCase
     public function testTransformValue($input, $output): void
     {
         $instance = new ArrayValidator($this->getServices());
-        $this->assertSame($output, $instance->transformValue($input));
+        self::assertSame($output, $instance->transformValue($input));
     }
 
     public function provider()

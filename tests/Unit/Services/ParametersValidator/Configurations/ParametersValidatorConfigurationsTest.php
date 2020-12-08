@@ -9,6 +9,6 @@ class ParametersValidatorConfigurationsTest extends AbstractTestCase
     public function testDefaultConfigurations() : void
     {
         $config = new ParameterValidatorConfigurations();
-        $this->assertInstanceOf(ParameterValidatorConfigurations::class, $config);
+        self::assertInstanceOf(ParameterValidatorConfigurations::class, $config);
     }
 }

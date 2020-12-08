@@ -29,11 +29,6 @@ interface ControllerInterface
     public function initialiseModel($modelName = null, string $verb='GET'): ControllerInterface;
 
     /**
-     * @return ControllerInterface
-     */
-    public function postInitialise() : ControllerInterface;
-
-    /**
      * @return Response
      */
     public function render() : ResponseInterface;

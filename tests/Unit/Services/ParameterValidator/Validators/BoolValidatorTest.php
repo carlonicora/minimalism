@@ -17,7 +17,7 @@ class BoolValidatorTest extends AbstractTestCase
     public function testTransformValue($output, $input)
     {
         $instance = new BoolValidator($this->getServices());
-        $this->assertEquals($output, $instance->transformValue($input));
+        self::assertEquals($output, $instance->transformValue($input));
     }
 
 

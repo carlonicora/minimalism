@@ -16,7 +16,7 @@ class AbstractWebControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->onlyMethods(['initialiseView'])
             ->getMockForAbstractClass();
-        $instance->expects($this->once())->method('initialiseView')->with();
+        $instance->expects(self::once())->method('initialiseView')->with();
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->preRender();
@@ -31,8 +31,8 @@ class AbstractWebControllerTest extends AbstractTestCase
             ->onlyMethods(['setCookie'])
             ->getMockForAbstractClass();
 
-        $servicesMock->expects($this->once())->method('serialiseCookies')->willReturn('[]');
-        $instance->expects($this->once())->method('setCookie')->with(
+        $servicesMock->expects(self::once())->method('serialiseCookies')->willReturn('[]');
+        $instance->expects(self::once())->method('setCookie')->with(
             'minimalismServices',
             '[]',
             (30 * 24 * 60 * 60) // 30 days
@@ -40,7 +40,7 @@ class AbstractWebControllerTest extends AbstractTestCase
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();
-        $this->assertSame($servicesMock, $_SESSION['minimalismServices']);
+        self::assertSame($servicesMock, $_SESSION['minimalismServices']);
         unset($_SESSION['minimalismServices']);
     }
 
@@ -54,8 +54,8 @@ class AbstractWebControllerTest extends AbstractTestCase
             ->onlyMethods(['setCookie'])
             ->getMockForAbstractClass();
 
-        $servicesMock->expects($this->once())->method('serialiseCookies')->willThrowException(new JsonException());
-        $servicesMock->expects($this->exactly(2))->method('logger');
+        $servicesMock->expects(self::once())->method('serialiseCookies')->willThrowException(new JsonException());
+        $servicesMock->expects(self::exactly(2))->method('logger');
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();
         unset($_SESSION['minimalismServices']);

@@ -15,7 +15,7 @@ class CompleteRenderTraitTest extends AbstractTestCase
         $mock = $this->getMockBuilder(CompleteRenderTrait::class)
             ->onlyMethods(['persistAtPath'])
             ->getMockForTrait();
-        $mock->expects($this->exactly(300))->method('persistAtPath');
+        $mock->expects(self::exactly(300))->method('persistAtPath');
 
         foreach (range(100, 399) as $statusCode) {
             /** @noinspection PhpUndefinedMethodInspection */
@@ -28,7 +28,7 @@ class CompleteRenderTraitTest extends AbstractTestCase
         $mock = $this->getMockBuilder(CompleteRenderTrait::class)
             ->onlyMethods(['persistAtPath'])
             ->getMockForTrait();
-        $mock->expects($this->never())->method('persistAtPath');
+        $mock->expects(self::never())->method('persistAtPath');
 
         foreach (range(400, 599) as $statusCode) {
             /** @noinspection PhpUndefinedMethodInspection */
@@ -42,7 +42,7 @@ class CompleteRenderTraitTest extends AbstractTestCase
         $mock = $this->getMockBuilder(CompleteRenderTrait::class)
             ->onlyMethods(['persistAtPath'])
             ->getMockForTrait();
-        $mock->expects($this->once())->method('persistAtPath')->willThrowException(new Exception('Test exception'));
+        $mock->expects(self::once())->method('persistAtPath')->willThrowException(new Exception('Test exception'));
 
         /** @noinspection PhpUndefinedMethodInspection */
         $mock->saveCache($this->getServices(), 200);

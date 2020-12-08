@@ -17,7 +17,7 @@ class FloatValidatorTest extends AbstractTestCase
     {
         $instance = new FloatValidator($this->getServices());
 
-        $this->assertSame($output, $instance->transformValue($input));
+        self::assertSame($output, $instance->transformValue($input));
     }
 
 

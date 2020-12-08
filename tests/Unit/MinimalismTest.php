@@ -44,6 +44,6 @@ class MinimalismTest extends AbstractTestCase
         Minimalism::executeCli($mock);
         $output = ob_get_clean();
 
-        $this->assertEquals('', $output);
+        self::assertEquals('', $output);
     }
 }

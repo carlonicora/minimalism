@@ -20,17 +20,7 @@ class AbstractCliControllerTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertSame($instance, $instance->initialiseParameters());
-    }
-
-    public function testPostInitialise()
-    {
-        $instance = $this->getMockBuilder(AbstractCliController::class)
-            ->setConstructorArgs([$this->getServices()])
-            ->getMockForAbstractClass();
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertSame($instance, $instance->postInitialise());
+        self::assertSame($instance, $instance->initialiseParameters());
     }
 
     public function testCompleteRender()
@@ -40,7 +30,7 @@ class AbstractCliControllerTest extends AbstractTestCase
             ->onlyMethods(['saveCache'])
             ->getMockForAbstractClass();
 
-        $instance->expects($this->once())->method('saveCache');
+        $instance->expects(self::once())->method('saveCache');
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();

@@ -14,7 +14,7 @@ class InfoLogBuilderTest extends AbstractTestCase
     {
         $instance = new InfoLogBuilder($this->getServices());
 
-        $this->assertEquals([], $instance->getEvents());
+        self::assertEquals([], $instance->getEvents());
 
 
         $event = $this->getMockBuilder(EventInterface::class)
@@ -28,16 +28,16 @@ class InfoLogBuilderTest extends AbstractTestCase
 
         /** @noinspection PhpParamsInspection */
         $instance->log($event);
-        $this->assertEquals([$event], $instance->getEvents());
+        self::assertEquals([$event], $instance->getEvents());
         $instance->clearEvents();
-        $this->assertEquals([], $instance->getEvents());
+        self::assertEquals([], $instance->getEvents());
 
 
         $instance->resetEvents([$event, $event]);
-        $this->assertEquals([$event, $event], $instance->getEvents());
+        self::assertEquals([$event, $event], $instance->getEvents());
 
 
         $instance->setEvents([$event, $event]);
-        $this->assertEquals([$event, $event, $event, $event], $instance->getEvents());
+        self::assertEquals([$event, $event, $event, $event], $instance->getEvents());
     }
 }

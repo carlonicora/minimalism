@@ -38,7 +38,7 @@ class ParameterValidatorTest extends AbstractTestCase
             ->onlyMethods(['getParameters', 'setParameter'])
             ->getMock();
 
-        $mockModel->expects($this->once())->method('getParameters')->willReturn([
+        $mockModel->expects(self::once())->method('getParameters')->willReturn([
             'int_value' => [ 'validator' => IntValidator::class ],
             'float_value' => [ 'validator' => FloatValidator::class ],
             'bool_value' => [ 'validator' => BoolValidator::class ],
@@ -46,11 +46,11 @@ class ParameterValidatorTest extends AbstractTestCase
             'date_value' => [ 'validator' => DateTimeValidator::class ]
         ]);
 
-        $mockModel->expects($this->at(1))->method('setParameter')->with('int_value', 1);
-        $mockModel->expects($this->at(2))->method('setParameter')->with('float_value', 1.0);
-        $mockModel->expects($this->at(3))->method('setParameter')->with('bool_value', true);
-        $mockModel->expects($this->at(4))->method('setParameter')->with('string_value', '1');
-        $mockModel->expects($this->at(5))->method('setParameter')->with('date_value', $this->callback(function($date) {
+        $mockModel->expects(self::at(1))->method('setParameter')->with('int_value', 1);
+        $mockModel->expects(self::at(2))->method('setParameter')->with('float_value', 1.0);
+        $mockModel->expects(self::at(3))->method('setParameter')->with('bool_value', true);
+        $mockModel->expects(self::at(4))->method('setParameter')->with('string_value', '1');
+        $mockModel->expects(self::at(5))->method('setParameter')->with('date_value', self::callback(function($date) {
             return $date === '2020-06-06 00:00:00';
         }));
 

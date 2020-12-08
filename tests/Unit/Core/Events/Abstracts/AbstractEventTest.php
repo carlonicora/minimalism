@@ -22,9 +22,9 @@ class AbstractEventTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals('0', $mock->getMessageCode());
+        self::assertEquals('0', $mock->getMessageCode());
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $mock->getHttpStatusCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $mock->getHttpStatusCode());
     }
 
     public function testPublicMethodsWithData(): void
@@ -40,6 +40,6 @@ class AbstractEventTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals('1', $mock->getMessageCode());
+        self::assertEquals('1', $mock->getMessageCode());
     }
 }

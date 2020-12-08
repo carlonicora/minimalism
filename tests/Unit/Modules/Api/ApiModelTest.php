@@ -38,12 +38,12 @@ class ApiModelTest extends AbstractTestCase
         $property->setValue($this->instance, $mock);
 
         $includedResourceTypes = ['text'];
-        $mock->expects($this->once())->method('setIncludedResourceTypes')
-            ->with($this->identicalTo($includedResourceTypes));
+        $mock->expects(self::once())->method('setIncludedResourceTypes')
+            ->with(self::identicalTo($includedResourceTypes));
 
         $requiredFields = ['a' => [], 'b' => []];
-        $mock->expects($this->once())->method('setRequiredFields')
-            ->with($this->identicalTo($requiredFields));
+        $mock->expects(self::once())->method('setRequiredFields')
+            ->with(self::identicalTo($requiredFields));
 
         $this->instance->setIncludedResourceTypes($includedResourceTypes);
         $this->instance->setRequiredFields($requiredFields);
@@ -53,38 +53,38 @@ class ApiModelTest extends AbstractTestCase
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->instance->initialise([], null);
-        $this->assertInstanceOf(JsonApiResponse::class, $this->getProperty($this->instance, 'response'));
+        self::assertInstanceOf(JsonApiResponse::class, $this->getProperty($this->instance, 'response'));
     }
 
     public function testDELETE()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->DELETE();
-        $this->assertInstanceOf(JsonApiResponse::class, $response);
-        $this->assertEquals(405, $response->getStatus());
+        self::assertInstanceOf(JsonApiResponse::class, $response);
+        self::assertEquals(405, $response->getStatus());
     }
 
     public function testGET()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->GET();
-        $this->assertInstanceOf(JsonApiResponse::class, $response);
-        $this->assertEquals(405, $response->getStatus());
+        self::assertInstanceOf(JsonApiResponse::class, $response);
+        self::assertEquals(405, $response->getStatus());
     }
 
     public function testPOST()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->POST();
-        $this->assertInstanceOf(JsonApiResponse::class, $response);
-        $this->assertEquals(405, $response->getStatus());
+        self::assertInstanceOf(JsonApiResponse::class, $response);
+        self::assertEquals(405, $response->getStatus());
     }
 
     public function testPUT()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->instance->PUT();
-        $this->assertInstanceOf(JsonApiResponse::class, $response);
-        $this->assertEquals(405, $response->getStatus());
+        self::assertInstanceOf(JsonApiResponse::class, $response);
+        self::assertEquals(405, $response->getStatus());
     }
 }

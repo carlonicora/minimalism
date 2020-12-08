@@ -35,13 +35,13 @@ class WebModelTest extends AbstractTestCase
         $this->instance->addTwigExtension($extension_one);
         $this->instance->addTwigExtension($extension_two);
 
-        $this->assertEquals([$extension_one, $extension_two], $this->instance->getTwigExtensions());
+        self::assertEquals([$extension_one, $extension_two], $this->instance->getTwigExtensions());
     }
 
     public function testGenerateData()
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertInstanceOf(JsonApiResponse::class, $this->instance->generateData());
+        self::assertInstanceOf(JsonApiResponse::class, $this->instance->generateData());
     }
 
     /**
@@ -68,6 +68,6 @@ class WebModelTest extends AbstractTestCase
     public function testValidateJsonapiParameter()
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertInstanceOf(Document::class, $this->instance->validateJsonapiParameter(null));
+        self::assertInstanceOf(Document::class, $this->instance->validateJsonapiParameter(null));
     }
 }

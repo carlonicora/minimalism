@@ -26,6 +26,25 @@ class ApiController extends AbstractApiController {
      */
     public function initialiseModel($modelName = null, string $verb='GET'): ControllerInterface
     {
+        try {
+            $url = $_SERVER['REQUEST_URI'];
+
+            if ($this->security !== null) {
+                if ($this->security->isSignatureValid($this->verb, $url, $this->bodyParameters)) {
+                    $this->services->logger()->info()->log(MinimalismInfoEvents::SECURITY_CHECK_PASSED());
+                } else {
+                    $this->services->logger()->error()
+                        ->log(MinimalismErrorEvents::SECURITY_VALIDATION_FAILED())
+                        ->throw(Exception::class, 'Unauthorised');
+                }
+            }
+
+        } catch (Exception $e) {
+            $errorController = new ErrorController($this->services);
+            $errorController->setException($e);
+            return $errorController;
+        }
+
         $response = parent::initialiseModel($modelName, $this->verb);
 
         if ($this->model !== null){
@@ -50,35 +69,6 @@ class ApiController extends AbstractApiController {
         }
 
         return $response;
-    }
-
-    /**
-     * @return ControllerInterface
-     */
-    public function postInitialise() : ControllerInterface
-    {
-        $errorController = null;
-        try {
-            $errorController = new ErrorController($this->services);
-
-            $url = $_SERVER['REQUEST_URI'];
-
-            if ($this->security !== null) {
-                if ($this->security->isSignatureValid($this->verb, $url, $this->bodyParameters)) {
-                    $this->services->logger()->info()->log(MinimalismInfoEvents::SECURITY_CHECK_PASSED());
-                } else {
-                    $this->services->logger()->error()
-                        ->log(MinimalismErrorEvents::SECURITY_VALIDATION_FAILED())
-                        ->throw(Exception::class, 'Unauthorised');
-                }
-            }
-
-            $errorController = null;
-        } catch (Exception $e) {
-            $errorController->setException($e);
-        }
-
-        return $errorController ?? $this;
     }
 
     /**

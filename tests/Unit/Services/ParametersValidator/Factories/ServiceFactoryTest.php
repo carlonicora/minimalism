@@ -17,7 +17,7 @@ class ServiceFactoryTest extends AbstractTestCase
     {
         $response = new ServiceFactory($this->getServices());
 
-        $this->assertInstanceOf(ServiceFactory::class, $response);
+        self::assertInstanceOf(ServiceFactory::class, $response);
 
         return $response;
     }
@@ -33,7 +33,7 @@ class ServiceFactoryTest extends AbstractTestCase
         $services = $this->getServices();
         $paths = new ParameterValidator($config, $services);
 
-        $this->assertEquals($paths, $service->create($services));
+        self::assertEquals($paths, $service->create($services));
     }
 
 

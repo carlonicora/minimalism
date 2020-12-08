@@ -14,9 +14,9 @@ class MinimalismInfoEventsTest extends AbstractTestCase
     {
         $instance = MinimalismInfoEvents::SERVICES_INITIALISED();
 
-        $this->assertEquals('5', $instance->getMessageCode());
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
-        $this->assertEquals(
+        self::assertEquals('5', $instance->getMessageCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
+        self::assertEquals(
             'Services initialised from scratch',
             json_decode($instance->generateMessage(), true)['details']
         );

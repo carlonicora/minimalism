@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Modules\Web;
 
 use CarloNicora\Minimalism\Core\Modules\Abstracts\Controllers\AbstractWebController;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ApiModelInterface;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ControllerInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\JsonApi\Events\JsonApiInfoEvents;
@@ -45,14 +44,6 @@ class WebController extends AbstractWebController {
             }
         }
         $this->services->logger()->info()->log(JsonApiInfoEvents::TWIG_ENGINE_INITIALISED());
-    }
-
-    /**
-     * @return ControllerInterface
-     */
-    public function postInitialise(): ControllerInterface
-    {
-        return $this;
     }
 
     /**

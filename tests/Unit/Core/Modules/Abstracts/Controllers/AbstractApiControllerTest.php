@@ -16,7 +16,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertEquals('GET', $instance->verb);
+        self::assertEquals('GET', $instance->verb);
     }
 
     public function testConstructorVerbPost()
@@ -27,7 +27,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertEquals('POST', $instance->verb);
+        self::assertEquals('POST', $instance->verb);
         unset($_SERVER['REQUEST_METHOD']);
     }
 
@@ -41,7 +41,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertEquals('DELETE', $instance->verb);
+        self::assertEquals('DELETE', $instance->verb);
 
 
         unset($_SERVER['REQUEST_METHOD']);
@@ -58,7 +58,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertEquals('PUT', $instance->verb);
+        self::assertEquals('PUT', $instance->verb);
 
 
         unset($_SERVER['REQUEST_METHOD']);
@@ -89,7 +89,7 @@ class AbstractApiControllerTest extends AbstractTestCase
             ->onlyMethods(['saveCache'])
             ->getMockForAbstractClass();
 
-        $instance->expects($this->once())->method('saveCache');
+        $instance->expects(self::once())->method('saveCache');
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->completeRender();

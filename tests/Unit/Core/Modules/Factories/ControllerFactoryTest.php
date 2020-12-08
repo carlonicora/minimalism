@@ -47,6 +47,6 @@ class ControllerFactoryTest extends AbstractTestCase
     public function testLoadControllerWithErrorController()
     {
         $controller = $this->instance->loadController(ErrorController::class);
-        $this->assertInstanceOf(ErrorController::class, $controller);
+        self::assertInstanceOf(ErrorController::class, $controller);
     }
 }

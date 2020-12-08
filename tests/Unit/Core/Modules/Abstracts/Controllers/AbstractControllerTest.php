@@ -33,8 +33,8 @@ class AbstractControllerTest extends AbstractTestCase
 
     public function testInitialiseParametersWithDefault()
     {
-        $this->instance->expects($this->once())->method('parseUriParameters');
-        $this->instance->expects($this->once())->method('getPhpInputParameters');
+        $this->instance->expects(self::once())->method('parseUriParameters');
+        $this->instance->expects(self::once())->method('getPhpInputParameters');
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseParameters();
@@ -46,16 +46,16 @@ class AbstractControllerTest extends AbstractTestCase
      */
     public function testInitialiseParametersWithEitherValueArrays()
     {
-        $this->instance->expects($this->never())->method('parseUriParameters');
-        $this->instance->expects($this->never())->method('getPhpInputParameters');
+        $this->instance->expects(self::never())->method('parseUriParameters');
+        $this->instance->expects(self::never())->method('getPhpInputParameters');
 
         $this->instance->initialiseParameters([1]);
-        $this->assertEquals([1], $this->getProperty($this->instance, 'passedParameters'));
-        $this->assertEquals([], $this->getProperty($this->instance, 'bodyParameters'));
+        self::assertEquals([1], $this->getProperty($this->instance, 'passedParameters'));
+        self::assertEquals([], $this->getProperty($this->instance, 'bodyParameters'));
 
         $this->instance->initialiseParameters([], [1]);
-        $this->assertEquals([], $this->getProperty($this->instance, 'passedParameters'));
-        $this->assertEquals([1], $this->getProperty($this->instance, 'bodyParameters'));
+        self::assertEquals([], $this->getProperty($this->instance, 'passedParameters'));
+        self::assertEquals([1], $this->getProperty($this->instance, 'bodyParameters'));
     }
 
 
@@ -72,7 +72,7 @@ class AbstractControllerTest extends AbstractTestCase
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseParameters();
-        $this->assertEquals(['test' => 'test value'], $this->getProperty($this->instance, 'passedParameters'));
+        self::assertEquals(['test' => 'test value'], $this->getProperty($this->instance, 'passedParameters'));
 
         unset($_GET['path']);
         unset($_GET['XDEBUG_SESSION_START']);
@@ -117,16 +117,16 @@ class AbstractControllerTest extends AbstractTestCase
         ];
 
         $this->instance->initialiseParameters();
-        $this->assertEquals(
+        self::assertEquals(
             array_merge($testArrayUsedAsJSON, $_POST),
             $this->getProperty($this->instance, 'bodyParameters')
         );
 
-        $this->assertEquals($_FILES, $this->getProperty($this->instance, 'file'));
+        self::assertEquals($_FILES, $this->getProperty($this->instance, 'file'));
 
         $_FILES = [ [ 'name' => 'test value' ] ];
         $this->instance->initialiseParameters();
-        $this->assertEquals($_FILES, $this->getProperty($this->instance, 'file'));
+        self::assertEquals($_FILES, $this->getProperty($this->instance, 'file'));
 
         unset($_SERVER['REQUEST_METHOD'],$_POST['test3']);
         $_FILES = [];
@@ -152,10 +152,10 @@ class AbstractControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMock();
 
-        $mockModel->expects($this->once())->method('setVerb')->with('GET');
-        $mockModel->expects($this->once())->method('setEncrypter')->with(null);
-        $mockModel->expects($this->once())->method('initialise')->with([], null);
-        $mockModel->expects($this->once())->method('redirect')->with()->willReturn('');
+        $mockModel->expects(self::once())->method('setVerb')->with('GET');
+        $mockModel->expects(self::once())->method('setEncrypter')->with(null);
+        $mockModel->expects(self::once())->method('initialise')->with([], null);
+        $mockModel->expects(self::once())->method('redirect')->with()->willReturn('');
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseModel($mockModel);
@@ -171,11 +171,11 @@ class AbstractControllerTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMock();
 
-        $initialModel->expects($this->exactly(2))->method('redirect')->with()->willReturn($finalModel);
-        $finalModel->expects($this->once())->method('setVerb')->with('GET');
-        $finalModel->expects($this->once())->method('setEncrypter')->with(null);
-        $finalModel->expects($this->once())->method('initialise')->with([], null);
-        $finalModel->expects($this->once())->method('redirect')->with()->willReturn('');
+        $initialModel->expects(self::exactly(2))->method('redirect')->with()->willReturn($finalModel);
+        $finalModel->expects(self::once())->method('setVerb')->with('GET');
+        $finalModel->expects(self::once())->method('setEncrypter')->with(null);
+        $finalModel->expects(self::once())->method('initialise')->with([], null);
+        $finalModel->expects(self::once())->method('redirect')->with()->willReturn('');
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->initialiseModel($initialModel);
@@ -188,7 +188,7 @@ class AbstractControllerTest extends AbstractTestCase
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->setSecurityInterface($mock);
-        $this->assertSame($mock, $this->getProperty($this->instance, 'security'));
+        self::assertSame($mock, $this->getProperty($this->instance, 'security'));
     }
 
 
@@ -198,7 +198,7 @@ class AbstractControllerTest extends AbstractTestCase
 
         /** @noinspection PhpUndefinedMethodInspection */
         $this->instance->setEncrypterInterface($mock);
-        $this->assertSame($mock, $this->getProperty($this->instance, 'encrypter'));
+        self::assertSame($mock, $this->getProperty($this->instance, 'encrypter'));
     }
 }
 

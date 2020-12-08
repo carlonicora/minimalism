@@ -21,7 +21,7 @@ class ParameterValidatorFactoryTest extends AbstractTestCase
             StringValidator::class
         );
 
-        $this->assertInstanceOf(StringValidator::class, $validator);
+        self::assertInstanceOf(StringValidator::class, $validator);
     }
 
 

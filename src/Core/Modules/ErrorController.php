@@ -49,14 +49,6 @@ class ErrorController implements ControllerInterface
     }
 
     /**
-     * @return $this|ControllerInterface
-     */
-    public function postInitialise(): ControllerInterface
-    {
-        return $this;
-    }
-
-    /**
      * @return Response
      * @throws Exception
      */

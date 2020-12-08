@@ -13,11 +13,11 @@ class JsonApiInfoEventsTest extends AbstractTestCase
     public function testTwigEngineInitialised()
     {
         $infoEvents = JsonApiInfoEvents::TWIG_ENGINE_INITIALISED();
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
 
         $message = json_decode($infoEvents->generateMessage(), true);
         unset($message['time']);
-        $this->assertEquals(
+        self::assertEquals(
             [ 'service' => 'module-jsonapi', 'id' => 1, 'details' => 'Twig engine initialised'],
             $message
         );
@@ -26,11 +26,11 @@ class JsonApiInfoEventsTest extends AbstractTestCase
     public function testPreRenderCompleted()
     {
         $infoEvents = JsonApiInfoEvents::PRE_RENDER_COMPLETED();
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
 
         $message = json_decode($infoEvents->generateMessage(), true);
         unset($message['time']);
-        $this->assertEquals(
+        self::assertEquals(
             [ 'service' => 'module-jsonapi', 'id' => 2, 'details' => 'Pre render completed successfully'],
             $message
         );
@@ -39,11 +39,11 @@ class JsonApiInfoEventsTest extends AbstractTestCase
     public function testDataGenerated()
     {
         $infoEvents = JsonApiInfoEvents::DATA_GENERATED();
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
 
         $message = json_decode($infoEvents->generateMessage(), true);
         unset($message['time']);
-        $this->assertEquals(
+        self::assertEquals(
             [ 'service' => 'module-jsonapi', 'id' => 3, 'details' => 'Data generated successfully'],
             $message
         );
@@ -52,11 +52,11 @@ class JsonApiInfoEventsTest extends AbstractTestCase
     public function testDataMerged()
     {
         $infoEvents = JsonApiInfoEvents::DATA_MERGED('test_view');
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
 
         $message = json_decode($infoEvents->generateMessage(), true);
         unset($message['time']);
-        $this->assertEquals(
+        self::assertEquals(
             [ 'service' => 'module-jsonapi', 'id' => 4, 'details' => 'Data merged with view test_view'],
             $message
         );
@@ -65,11 +65,11 @@ class JsonApiInfoEventsTest extends AbstractTestCase
     public function testRenderComplete()
     {
         $infoEvents = JsonApiInfoEvents::RENDER_COMPLETE();
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $infoEvents->getHttpStatusCode());
 
         $message = json_decode($infoEvents->generateMessage(), true);
         unset($message['time']);
-        $this->assertEquals(
+        self::assertEquals(
             [ 'service' => 'module-jsonapi', 'id' => 5, 'details' => 'Render complete'],
             $message
         );

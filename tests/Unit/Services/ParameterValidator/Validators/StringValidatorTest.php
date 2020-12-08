@@ -17,7 +17,7 @@ class StringValidatorTest extends AbstractTestCase
     {
         $instance = new StringValidator($this->getServices());
 
-        $this->assertSame($output, $instance->transformValue($input));
+        self::assertSame($output, $instance->transformValue($input));
     }
 
 

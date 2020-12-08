@@ -26,9 +26,9 @@ class BootstrapperTest extends AbstractTestCase
 
             /** @var ErrorController $controller */
             $controller = $instance->loadController();
-            $this->assertInstanceOf(ErrorController::class, $controller);
-            $this->assertEquals('Filetype not supported', $controller->render()->getData());
-            $this->assertEquals('404', $controller->render()->getStatus());
+            self::assertInstanceOf(ErrorController::class, $controller);
+            self::assertEquals('Filetype not supported', $controller->render()->getData());
+            self::assertEquals('404', $controller->render()->getStatus());
         }
 
         unset($_SERVER['REQUEST_URI']);
@@ -40,7 +40,7 @@ class BootstrapperTest extends AbstractTestCase
         $instance = new Bootstrapper();
         $controller = $instance->loadController();
 
-        $this->assertInstanceOf(ErrorController::class, $controller);
+        self::assertInstanceOf(ErrorController::class, $controller);
     }
 
 
@@ -53,6 +53,6 @@ class BootstrapperTest extends AbstractTestCase
         $instance->initialise(TestController::class);
         $controller = $instance->loadController('test model');
 
-        $this->assertInstanceOf(TestController::class, $controller);
+        self::assertInstanceOf(TestController::class, $controller);
     }
 }

@@ -17,7 +17,7 @@ class IntValidatorTest extends AbstractTestCase
     {
         $instance = new IntValidator($this->getServices());
 
-        $this->assertSame($output, $instance->transformValue($input));
+        self::assertSame($output, $instance->transformValue($input));
     }
 
 

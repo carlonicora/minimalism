@@ -18,6 +18,6 @@ class ParameterObjectTest extends AbstractTestCase
     {
         $instance = new ParameterObject('test1', ['name' => 'test2']);
 
-        $this->assertEquals('test2', $instance->parameterName);
+        self::assertEquals('test2', $instance->parameterName);
     }
 }

@@ -13,31 +13,31 @@ class JsonApiResponseTest extends AbstractTestCase
     public function testGetDocumentWithDefaultAndProvidedEmptyDocument()
     {
         $instance = new JsonApiResponse();
-        $this->assertInstanceOf(Document::class, $instance->getDocument());
+        self::assertInstanceOf(Document::class, $instance->getDocument());
 
         $document = new Document();
         $instance->setDocument($document);
-        $this->assertSame($document, $instance->getDocument());
+        self::assertSame($document, $instance->getDocument());
     }
 
 
     public function testGetDataWithDefaultAndProvidedEmptyDocument()
     {
         $instance = new JsonApiResponse();
-        $this->assertEmpty($instance->getData());
+        self::assertEmpty($instance->getData());
 
         $document = new Document();
         $instance->setDocument($document);
-        $this->assertEquals('{"meta":[]}', $instance->getData());
+        self::assertEquals('{"meta":[]}', $instance->getData());
 
 
         $mock = $this->getMockBuilder(Document::class)
             ->getMock();
 
-        $mock->expects($this->once())->method('export')->willThrowException(new JsonException());
+        $mock->expects(self::once())->method('export')->willThrowException(new JsonException());
 
         /** @noinspection PhpParamsInspection */
         $instance->setDocument($mock);
-        $this->assertEquals('', $instance->getData());
+        self::assertEquals('', $instance->getData());
     }
 }

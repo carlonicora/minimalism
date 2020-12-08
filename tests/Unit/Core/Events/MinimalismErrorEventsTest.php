@@ -21,9 +21,9 @@ class MinimalismErrorEventsTest extends AbstractTestCase
     {
         $instance = MinimalismErrorEvents::COOKIE_SETTING_ERROR(new Exception());
 
-        $this->assertEquals('3', $instance->getMessageCode());
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
-        $this->assertEquals(
+        self::assertEquals('3', $instance->getMessageCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
+        self::assertEquals(
             'Services could not be saved in the cookies',
             json_decode($instance->generateMessage(), true)['error']
         );
@@ -33,9 +33,9 @@ class MinimalismErrorEventsTest extends AbstractTestCase
     {
         $instance = MinimalismErrorEvents::CONFIGURATION_ERROR('test');
 
-        $this->assertEquals('4', $instance->getMessageCode());
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
-        $this->assertEquals(
+        self::assertEquals('4', $instance->getMessageCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
+        self::assertEquals(
             'Error in the environment configuration: test',
             json_decode($instance->generateMessage(), true)['error']
         );
@@ -45,9 +45,9 @@ class MinimalismErrorEventsTest extends AbstractTestCase
     {
         $instance = MinimalismErrorEvents::MODULE_NOT_LOADED();
 
-        $this->assertEquals('7', $instance->getMessageCode());
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
-        $this->assertEquals(
+        self::assertEquals('7', $instance->getMessageCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
+        self::assertEquals(
             'No module configured',
             json_decode($instance->generateMessage(), true)['error']
         );
@@ -57,9 +57,9 @@ class MinimalismErrorEventsTest extends AbstractTestCase
     {
         $instance = MinimalismErrorEvents::MULTIPLE_MODULES_LOADED();
 
-        $this->assertEquals('8', $instance->getMessageCode());
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
-        $this->assertEquals(
+        self::assertEquals('8', $instance->getMessageCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
+        self::assertEquals(
             'Multiple modules configured',
             json_decode($instance->generateMessage(), true)['error']
         );
@@ -69,9 +69,9 @@ class MinimalismErrorEventsTest extends AbstractTestCase
     {
         $instance = MinimalismErrorEvents::FILE_WRITE_ERROR('/tmp/test');
 
-        $this->assertEquals('18', $instance->getMessageCode());
-        $this->assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
-        $this->assertEquals(
+        self::assertEquals('18', $instance->getMessageCode());
+        self::assertEquals(ResponseInterface::HTTP_STATUS_500, $instance->getHttpStatusCode());
+        self::assertEquals(
             'File write failed: /tmp/test',
             json_decode($instance->generateMessage(), true)['error']
         );

@@ -40,14 +40,6 @@ abstract class AbstractCliController extends AbstractController
     }
 
     /**
-     * @return ControllerInterface
-     */
-    public function postInitialise(): ControllerInterface
-    {
-        return $this;
-    }
-
-    /**
      * @param int|null $code
      * @param string|null $response
      * @throws Exception

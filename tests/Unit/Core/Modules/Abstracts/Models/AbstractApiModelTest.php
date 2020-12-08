@@ -16,14 +16,14 @@ class AbstractApiModelTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
-        $this->assertFalse($instance->requiresAuth('DELETE'));
-        $this->assertFalse($instance->requiresAuth('GET'));
-        $this->assertFalse($instance->requiresAuth('POST'));
-        $this->assertFalse($instance->requiresAuth('PUT'));
+        self::assertFalse($instance->requiresAuth('DELETE'));
+        self::assertFalse($instance->requiresAuth('GET'));
+        self::assertFalse($instance->requiresAuth('POST'));
+        self::assertFalse($instance->requiresAuth('PUT'));
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('HTTP verb not supported');
-        $this->assertFalse($instance->requiresAuth('PATCH'));
+        self::assertFalse($instance->requiresAuth('PATCH'));
     }
 
 
@@ -34,7 +34,7 @@ class AbstractApiModelTest extends AbstractTestCase
             ->getMockForAbstractClass();
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEmpty($instance->getParameters());
+        self::assertEmpty($instance->getParameters());
     }
 
 
@@ -45,10 +45,10 @@ class AbstractApiModelTest extends AbstractTestCase
             ->setConstructorArgs([$this->getServices()])
             ->getMockForAbstractClass();
 
-        $this->assertEquals('GET', $instance->verb);
+        self::assertEquals('GET', $instance->verb);
 
         /** @noinspection PhpUndefinedMethodInspection */
         $instance->setVerb('POST');
-        $this->assertEquals('POST', $instance->verb);
+        self::assertEquals('POST', $instance->verb);
     }
 }

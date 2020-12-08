@@ -19,7 +19,7 @@ class PathsTest extends AbstractTestCase
         $services = $this->getServices();
         $paths = new Paths($config, $services);
 
-        $this->assertEquals($paths, $service->create($services));
+        self::assertEquals($paths, $service->create($services));
 
         return $paths;
     }
@@ -32,7 +32,7 @@ class PathsTest extends AbstractTestCase
     public function testGetCorrectModelFolder(Paths $paths) : void
     {
         $this->setProperty($paths, 'root', './tests/Mocks/ValidComposerNamespace');
-        $this->assertEquals('./tests/Mocks/ValidComposerNamespace/src/Models/', $paths->getModelsFolder());
+        self::assertEquals('./tests/Mocks/ValidComposerNamespace/src/Models/', $paths->getModelsFolder());
     }
 
     /**
@@ -71,13 +71,13 @@ class PathsTest extends AbstractTestCase
 
     public function testRoot() : void
     {
-        $this->assertEquals('http:///', $this->getServices()->paths()->getUrl());
+        self::assertEquals('http:///', $this->getServices()->paths()->getUrl());
     }
 
     public function testLog() : void
     {
         $log = $this->getServices()->paths()->getLog();
-        $this->assertEquals('/data/logs/minimalism/', substr($log, -22));
+        self::assertEquals('/data/logs/minimalism/', substr($log, -22));
     }
 
     /**
@@ -88,7 +88,7 @@ class PathsTest extends AbstractTestCase
         $services = $this->getServices();
         $this->setProperty($services->paths(), 'root', './');
 
-        $this->assertEquals('CarloNicora\\Minimalism\\', $services->paths()->getNamespace());
+        self::assertEquals('CarloNicora\\Minimalism\\', $services->paths()->getNamespace());
     }
 
     /**
@@ -142,20 +142,20 @@ class PathsTest extends AbstractTestCase
     {
         $paths = $this->getServices()->paths();
         $paths->setUrlVersion('v1.0');
-        $this->assertEquals('http:///v1.0/', $paths->getUrl());
+        self::assertEquals('http:///v1.0/', $paths->getUrl());
     }
 
     public function testGetCache() : void
     {
         $paths = $this->getServices()->paths();
         $this->setProperty($paths, 'root', './tests');
-        $this->assertEquals('./tests/data/cache/services.cache', $paths->getCache());
+        self::assertEquals('./tests/data/cache/services.cache', $paths->getCache());
     }
 
     public function testGetRoot() : void
     {
         $paths = $this->getServices()->paths();
         $this->setProperty($paths, 'root', './tests');
-        $this->assertEquals('./tests', $paths->getRoot());
+        self::assertEquals('./tests', $paths->getRoot());
     }
 }
