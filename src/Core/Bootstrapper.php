@@ -12,6 +12,7 @@ use CarloNicora\Minimalism\Core\Modules\Interfaces\ResponseInterface;
 use CarloNicora\Minimalism\Core\Services\Exceptions\ConfigurationException;
 use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
 use Exception;
+use RuntimeException;
 use function is_null;
 
 /**
@@ -59,11 +60,15 @@ class Bootstrapper
         if ($this->controller === null) {
             $this->startSession();
 
-            if (isset($_SESSION['minimalismServices'])) {
-                $this->services = $this->loadServicesFromSession();
-            } elseif ($this->areServicesCached()) {
-                $this->services = $this->loadServicesFromCache();
-            } else {
+            try {
+                if (isset($_SESSION['minimalismServices'])) {
+                    $this->services = $this->loadServicesFromSession();
+                } elseif ($this->areServicesCached()) {
+                    $this->services = $this->loadServicesFromCache();
+                } else {
+                    $this->services = $this->createServices();
+                }
+            } catch (Exception $e) {
                 $this->services = $this->createServices();
             }
 
@@ -159,7 +164,14 @@ class Bootstrapper
     {
         $events = $this->services->logger()->info()->getEvents();
         $this->services->logger()->info()->clearEvents();
-        $this->services = unserialize(file_get_contents($this->services->paths()->getCache()));
+
+        $serviceFile = file_get_contents($this->services->paths()->getCache());
+
+        if ($serviceFile === false){
+            throw new RuntimeException('');
+        }
+
+        $this->services = unserialize($serviceFile);
         $this->services->logger()->info()->resetEvents($events);
         $this->services->logger()->info()->log(MinimalismInfoEvents::SERVICES_LOADED_FROM_CACHE());
 
