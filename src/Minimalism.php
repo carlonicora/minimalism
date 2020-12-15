@@ -8,7 +8,6 @@ use CarloNicora\Minimalism\Modules\Api\ApiController;
 use CarloNicora\Minimalism\Modules\Cli\CliController;
 use CarloNicora\Minimalism\Modules\Web\WebController;
 use Exception;
-use Throwable;
 
 class Minimalism
 {
@@ -74,7 +73,7 @@ class Minimalism
             echo $e->getMessage();
 
             $bootstrapper->saveException($e);
-        } catch (Exception|Throwable $e) {
+        } catch (Exception $e) {
             http_response_code((int)$e->getCode());
             $GLOBALS['http_response_code'] = $e->getCode();
             echo $e->getMessage();
