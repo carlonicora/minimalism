@@ -26,7 +26,7 @@ abstract class AbstractPool
      * @return mixed
      * @throws Exception
      */
-    public function loadPoolElement(string $className)
+    protected function loadPoolElement(string $className)
     {
         if (!array_key_exists($className, $this->pool)) {
             $this->pool[$className] = new $className($this->services);
