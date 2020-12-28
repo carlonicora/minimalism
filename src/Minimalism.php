@@ -1,84 +1,110 @@
 <?php
 namespace CarloNicora\Minimalism;
 
-use CarloNicora\Minimalism\Core\Bootstrapper;
-use CarloNicora\Minimalism\Core\Modules\Interfaces\ModelInterface;
-use CarloNicora\Minimalism\Core\Services\Exceptions\MinimalismHttpException;
-use CarloNicora\Minimalism\Modules\Api\ApiController;
-use CarloNicora\Minimalism\Modules\Cli\CliController;
-use CarloNicora\Minimalism\Modules\Web\WebController;
+use CarloNicora\Minimalism\Factories\ModelFactory;
+use CarloNicora\Minimalism\Factories\ServiceFactory;
 use Exception;
 
 class Minimalism
 {
-    public static function executeWeb() : void
+    /** @var ServiceFactory  */
+    private ServiceFactory $services;
+
+    public function __construct()
     {
-        self::execute(WebController::class);
+        $this->services = new ServiceFactory();
+
+        //$this->services->create(TestServiceTwo::class);
     }
 
-    public static function executeApi() : void
+    /**
+     * @param string|null $modelName
+     * @return string
+     */
+    public function render(?string $modelName=null): string
     {
-        header("Access-Control-Allow-Origin: *");
-        if (false === empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, referrer, utm-campaign, utm-medium, utm-source, utm-term");
-            header("Access-Control-Allow-Methods: OPTIONS, GET, POST, DELETE, PUT");
-            header("Allow: OPTIONS, GET, POST, DELETE, PUT");
-            http_response_code(200);
-            echo(0);
+        $modelFactory = new ModelFactory($this->services);
+
+        try {
+            $model = $modelFactory->create($modelName);
+            $response = $model->run();
+        } catch (Exception $e) {
+            $response = $e->getCode() ?? 500;
+        }
+
+        header($this->getProtocol() . ' ' . $response . ' ' . $this->generateStatusText($response));
+
+        if ($response !== 200){
             exit;
         }
 
-        self::execute(ApiController::class);
+        //TODO: merge view
+
+        return '';
     }
 
     /**
-     * @param ModelInterface|string $model
+     * @return string
      */
-    public static function executeCli($model) : void
+    private function getProtocol() : string
     {
-        self::execute(CliController::class, $model);
+        return ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
     }
 
     /**
-     * @param string $controllerClassName
-     * @param ModelInterface|string|null $model
+     * @param int $status
+     * @return string
      */
-    private static function execute(string $controllerClassName, $model=null) : void
+    private function generateStatusText(int $status) : string
     {
-        /** @var Bootstrapper $bootstrapper */
-        $bootstrapper = null;
-
-        try {
-            $bootstrapper = new Bootstrapper();
-
-            $redirect = null;
-            $parameters = [];
-
-            do {
-                $response = $bootstrapper
-                    ->initialise($controllerClassName)
-                    ->loadController($model, $parameters)
-                    ->render();
-
-                if (($redirect = $response->redirects()) !== null) {
-                    $model = $redirect;
-                    $parameters = $response->getRedirectionParameters();
-                }
-            } while ($redirect !== null);
-
-            $response->write();
-        } /** @noinspection PhpRedundantCatchClauseInspection */ catch (MinimalismHttpException $e) {
-            http_response_code((int)$e->getHttpStatusCode());
-            $GLOBALS['http_response_code'] = $e->getHttpStatusCode();
-            echo $e->getMessage();
-
-            $bootstrapper->saveException($e);
-        } catch (Exception $e) {
-            http_response_code((int)$e->getCode());
-            $GLOBALS['http_response_code'] = $e->getCode();
-            echo $e->getMessage();
-
-            $bootstrapper->saveException($e);
+        switch ($status) {
+            case 201:
+                return 'Created';
+            case 204:
+                return 'No Content';
+            case 304:
+                return 'Not Modified';
+            case 400:
+                return 'Bad Request';
+            case 401:
+                return 'Unauthorized';
+            case 403:
+                return 'Forbidden';
+            case 404:
+                return 'Not Found';
+            case 405:
+                return 'Method Not Allowed';
+            case 406:
+                return 'Not Acceptable';
+            case 409:
+                return 'Conflict';
+            case 410:
+                return 'Gone';
+            case 411:
+                return 'Length Required';
+            case 412:
+                return 'Precondition Failed';
+            case 415:
+                return 'Unsupported Media Type';
+            case 422:
+                return 'Unprocessable Entity';
+            case 428:
+                return 'Precondition Required';
+            case 429:
+                return 'Too Many Requests';
+            case 500:
+                return 'Internal Server Error';
+            case 501:
+                return 'Not Implemented';
+            case 502:
+                return 'Bad Gateway';
+            case 503:
+                return 'Service Unavailable';
+            case 504:
+                return 'Gateway Timeout';
+            case 200:
+            default:
+                return 'OK';
         }
     }
 }

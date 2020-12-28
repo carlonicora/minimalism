@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit bootstrap="vendor/autoload.php"
-         colors="true"
-         verbose="true"
-         stopOnFailure="false"
-         stderr="true">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" colors="true" verbose="true" stopOnFailure="false" stderr="false">
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
     <testsuites>
-        <testsuite name="Minimalism test">
+        <testsuite name="Minimalism Unit TEsts">
             <directory>tests</directory>
-            <exclude>tests/Factories/MockFactory.php</exclude>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
+    <logging/>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="SESSION_DRIVER" value="array"/>
