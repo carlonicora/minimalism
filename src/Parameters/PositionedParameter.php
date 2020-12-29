@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Objects;
+namespace CarloNicora\Minimalism\Parameters;
 
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
@@ -10,7 +10,7 @@ class PositionedParameter implements ParameterInterface, PositionedParameterInte
      * PositionedParameter constructor.
      * @param mixed $value
      */
-    public function __construct(private mixed $value)
+    public function __construct(protected mixed $value)
     {
     }
 

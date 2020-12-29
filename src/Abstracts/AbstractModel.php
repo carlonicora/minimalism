@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
-use CarloNicora\Minimalism\Objects\PositionedParameter;
+use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
