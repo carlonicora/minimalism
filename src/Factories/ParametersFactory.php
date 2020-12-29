@@ -74,12 +74,14 @@ class ParametersFactory
     private function getWebParameters(): array
     {
         $response = [];
-        [$uriString, $namedParametersString] = explode('?', $_SERVER['REQUEST_URI'] ?? '');
+        [$uri, $namedParametersString] = explode('?', $_SERVER['REQUEST_URI'] ?? '');
 
-        if ($uriString === '/'){
+        $this->services->getPath()->sanitiseUriVersion($uri);
+
+        if ($uri === '/'){
             $this->modelName = $this->models['*'];
         } else {
-            $response['positioned'] = $this->getPositionedParameters($uriString);
+            $response['positioned'] = $this->loadPositionedParameters($uri);
         }
 
         $response['named'] = $this->getNamedParameters($namedParametersString);
@@ -88,100 +90,79 @@ class ParametersFactory
     }
 
     /**
-     * @param string|null $uri
+     * @param string $uri
+     * @param array|null $models
      * @return array
-     * @throws Exception
      */
-    private function getPositionedParameters(?string $uri): array
+    private function loadPositionedParameters(string $uri, array $models=null): array
     {
-        $response = [];
-
-        if ($uri === null || $uri === ''){
-            return $response;
+        if ($models === null){
+            $models = $this->models;
         }
+
+        $response = [];
 
         $uriParts = explode('/', substr($uri, 1));
 
-        if ($uriParts === []){
-            return [];
+        $nestingLevel = intdiv(count($uriParts), 2);
+
+        while ($nestingLevel >= 0){
+            if (($modelName = $this->doesModelExists($uriParts, $nestingLevel, $models)) !== null){
+                $this->modelName = $modelName;
+
+                foreach ($uriParts as $position=>$parameter){
+                    if ($position>=$nestingLevel*2 || ($position<$nestingLevel*2 && $position % 2 !== 0)){
+                        $response[] = $parameter;
+                    }
+                }
+
+                return $response;
+            }
+
+            $nestingLevel--;
         }
 
-        $parameterValue = current($uriParts);
+        foreach ($this->services->getPath()->getServicesModels() ?? [] as $additionalModels){
+            $response = $this->loadPositionedParameters($uri, $additionalModels);
 
-        if (stripos($parameterValue, 'v') === 0 && is_numeric($parameterValue[1]) && !str_starts_with($parameterValue, '.')){
-            array_shift($parameterValue);
+            if ($this->modelName !== null){
+                return $response;
+            }
         }
 
-        $rollbackUriParts = $uriParts;
-        if (array_key_exists($uriParts[0] . '-folder', $this->models)) {
-            $response = $this->getPositionedParametersInModelFolder($this->models[$uriParts[0] . '-folder'], $uriParts);
-        }
-
-        if ($this->modelName === null) {
-            $uriParts = $rollbackUriParts;
-            $response = $this->getPositionedParametersInModel($this->models, $uriParts);
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param array $modelFolder
-     * @param array $parameters
-     * @return array
-     * @throws Exception
-     */
-    private function getPositionedParametersInModelFolder(array $modelFolder, array &$parameters): array
-    {
-        $rollbackParameters = $parameters;
-
-        $response = [];
-        $modelName = array_shift($parameters);
-        if (!array_key_exists(strtolower($modelName . '-folder'), $modelFolder)){
+        if (array_key_exists('*', $models)){
+            $this->modelName = $models['*'];
+            foreach ($uriParts as $parameter){
+                $response[] = $parameter;
+            }
             return $response;
         }
 
-        $response[] = array_shift($parameters);
-
-        $additionalResponses = $this->getPositionedParametersInModelFolder($modelFolder[$parameters[0] . '-folder'], $parameters);
-
-        if ($this->modelName === null){
-            $parameters = $rollbackParameters;
-            $additionalResponses = $this->getPositionedParametersInModel($modelFolder, $parameters);
-        }
-
-        $response = array_merge($response, $additionalResponses);
-
-        return $response;
+        throw new RuntimeException('Model not found', 404);
     }
 
     /**
-     * @param array $modelFolder
-     * @param array $parameters
-     * @return array
-     * @throws Exception
+     * @param array $uriParts
+     * @param int $nestingLevel
+     * @param array $models
+     * @return string|null
      */
-    private function getPositionedParametersInModel(array $modelFolder, array &$parameters): array
+    private function doesModelExists(array $uriParts, int $nestingLevel, array $models): ?string
     {
-        $response = [];
-        $modelName = array_shift($parameters);
-
-        if (!array_key_exists(strtolower($modelName), $modelFolder)){
-            if (array_key_exists('*', $this->models)){
-                $this->modelName = $this->models['*'];
-                array_unshift($parameters, $modelName);
-            } else {
-                throw new RuntimeException('Model not found', 404);
+        $currentModelPosition = $models;
+        for ($position=0; $position<=$nestingLevel * 2; $position += 2){
+            if ($position + 2 >= $nestingLevel * 2){
+                return $currentModelPosition[strtolower($uriParts[$position])] ?? null;
             }
-        } else {
-            $this->modelName = $modelFolder[$modelName];
+
+            if (array_key_exists(strtolower($uriParts[$position]) . '-folder', $currentModelPosition)){
+                $currentModelPosition = $currentModelPosition[strtolower($uriParts[$position]) . '-folder'];
+            } else {
+                return null;
+            }
         }
 
-        while ($parameters !== []){
-            $response[] = array_shift($parameters);
-        }
-
-        return $response;
+        return null;
     }
 
     /**

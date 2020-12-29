@@ -58,8 +58,27 @@ class ModelFactory
                 . DIRECTORY_SEPARATOR . 'src'
                 . DIRECTORY_SEPARATOR . 'Models'
             );
-
             file_put_contents($modelCache, serialize($this->models));
+        }
+
+        $modelCache = $this->services->getPath()->getRoot()
+            . DIRECTORY_SEPARATOR . 'data'
+            . DIRECTORY_SEPARATOR . 'cache'
+            . DIRECTORY_SEPARATOR . 'servicesModels.cache';
+        if (file_exists($modelCache) && ($modelsFile = file_get_contents($modelCache)) !== false){
+            $this->services->getPath()->setServicesModels(
+                unserialize($modelsFile, [true])
+            );
+        } elseif ($this->services->getPath()->getServicesModelsDirectories() !== []) {
+            $additionalModels = [];
+
+            foreach ($this->services->getPath()->getServicesModelsDirectories() ?? [] as $additionalDirectory) {
+                $additionalModels[] = $this->loadFolderModels($additionalDirectory);
+            }
+
+            $this->services->getPath()->setServicesModels($additionalModels);
+
+            file_put_contents($modelCache, serialize($additionalModels));
         }
     }
 
