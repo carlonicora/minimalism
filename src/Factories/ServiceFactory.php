@@ -1,7 +1,9 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use Dotenv\Dotenv;
 use Exception;
 use ReflectionClass;
@@ -26,12 +28,18 @@ class ServiceFactory
     /** @var string  */
     private string $servicesCacheFile;
 
+    /** @var EncrypterInterface|null  */
+    private ?EncrypterInterface $encrypter=null;
+
+    /** @var TransformerInterface|null  */
+    private ?TransformerInterface $transformer=null;
+
     /**
      * ServiceFactory constructor.
      */
     public function __construct()
     {
-        $this->root = dirname(__DIR__, 2);
+        $this->root = dirname(__DIR__, 5);
         $this->servicesCacheFile = $this->root
             . DIRECTORY_SEPARATOR . 'data'
             . DIRECTORY_SEPARATOR . 'cache'
@@ -74,6 +82,22 @@ class ServiceFactory
     }
 
     /**
+     * @return EncrypterInterface|null
+     */
+    public function getEncrypter(): ?EncrypterInterface
+    {
+        return $this->encrypter;
+    }
+
+    /**
+     * @return TransformerInterface|null
+     */
+    public function getTransformer(): ?TransformerInterface
+    {
+        return $this->transformer;
+    }
+
+    /**
      *
      */
     private function loadServicesFromCache(): void
@@ -102,6 +126,14 @@ class ServiceFactory
             $parameters = $this->loadDependencies($serviceName);
 
             $this->services[$serviceName] = new $serviceName(...$parameters);
+
+            $serviceReflection = new ReflectionClass($this->services[$serviceName]);
+            if ($serviceReflection->implementsInterface(TransformerInterface::class)){
+                $this->transformer = $this->services[$serviceName];
+            } elseif ($serviceReflection->implementsInterface(EncrypterInterface::class)){
+                $this->encrypter = $this->services[$serviceName];
+            }
+            $serviceReflection = null;
         }
 
         return $this->services[$serviceName];

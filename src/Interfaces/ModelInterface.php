@@ -23,6 +23,11 @@ interface ModelInterface
     public function getDocument(): Document;
 
     /**
+     * @return string|null
+     */
+    public function getView(): ?string;
+
+    /**
      * @return int
      */
     public function run(): int;

@@ -76,7 +76,12 @@ class ParametersFactory
         $response = [];
         [$uriString, $namedParametersString] = explode('?', $_SERVER['REQUEST_URI'] ?? '');
 
-        $response['positioned'] = $this->getPositionedParameters($uriString);
+        if ($uriString === '/'){
+            $this->modelName = $this->models['*'];
+        } else {
+            $response['positioned'] = $this->getPositionedParameters($uriString);
+        }
+
         $response['named'] = $this->getNamedParameters($namedParametersString);
 
         return $response;
@@ -95,7 +100,7 @@ class ParametersFactory
             return $response;
         }
 
-        $uriParts = explode('/', $uri);
+        $uriParts = explode('/', substr($uri, 1));
 
         if ($uriParts === []){
             return [];
@@ -108,7 +113,9 @@ class ParametersFactory
         }
 
         $rollbackUriParts = $uriParts;
-        $response = $this->getPositionedParametersInModelFolder($this->models[$uriParts[0] . '-folder'], $uriParts);
+        if (array_key_exists($uriParts[0] . '-folder', $this->models)) {
+            $response = $this->getPositionedParametersInModelFolder($this->models[$uriParts[0] . '-folder'], $uriParts);
+        }
 
         if ($this->modelName === null) {
             $uriParts = $rollbackUriParts;
@@ -158,11 +165,16 @@ class ParametersFactory
     {
         $response = [];
         $modelName = array_shift($parameters);
-        if (!array_key_exists(strtolower($modelName), $modelFolder)){
-            throw new RuntimeException('Model not found', 404);
-        }
 
-        $this->modelName = $modelFolder[$modelName];
+        if (!array_key_exists(strtolower($modelName), $modelFolder)){
+            if (array_key_exists('*', $this->models)){
+                $this->modelName = $this->models['*'];
+            } else {
+                throw new RuntimeException('Model not found', 404);
+            }
+        } else {
+            $this->modelName = $modelFolder[$modelName];
+        }
 
         while ($parameters !== []){
             $response[] = array_shift($parameters);

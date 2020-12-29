@@ -13,8 +13,6 @@ class Minimalism
     public function __construct()
     {
         $this->services = new ServiceFactory();
-
-        //$this->services->create(TestServiceTwo::class);
     }
 
     /**
@@ -24,21 +22,29 @@ class Minimalism
     public function render(?string $modelName=null): string
     {
         $modelFactory = new ModelFactory($this->services);
+        $model = null;
 
         try {
             $model = $modelFactory->create($modelName);
             $response = $model->run();
+            $data = $model->getDocument();
         } catch (Exception $e) {
             $response = $e->getCode() ?? 500;
+            $data = $e->getMessage();
         }
 
         header($this->getProtocol() . ' ' . $response . ' ' . $this->generateStatusText($response));
 
         if ($response !== 200){
+            if ($response >= 400){
+                echo $data;
+            }
             exit;
         }
 
-        //TODO: merge view
+        if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
+            return $transformer->transform($data, $view);
+        }
 
         return '';
     }

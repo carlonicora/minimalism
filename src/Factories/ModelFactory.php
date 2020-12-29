@@ -3,9 +3,6 @@ namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use Exception;
-use ReflectionClass;
-use ReflectionException;
-use RuntimeException;
 
 class ModelFactory
 {
@@ -33,16 +30,13 @@ class ModelFactory
         /** @var ModelInterface $response */
         $response = null;
 
-        try {
-            $modelLoader = new ReflectionClass($modelName ?? $parametersFactory->getModelName());
-            $response = $modelLoader->newInstance([$this->services]);
-        } catch (ReflectionException) {
-            throw new RuntimeException('Cannot create model', 500);
-        }
+        $parameters = $parametersFactory->createParameters();
 
-        $response->setParameters(
-            $parametersFactory->createParameters()
-        );
+        $model = $modelName ?? $parametersFactory->getModelName();
+
+        $response = new $model($this->services);
+
+        $response->setParameters($parameters);
 
         return $response;
     }
@@ -82,11 +76,16 @@ class ModelFactory
             if (!array_key_exists('extension', $modelInfo)){
                 $response[strtolower(basename($model)) . '-folder'] = $this->loadFolderModels($model);
             } elseif ($modelInfo['extension'] === 'php'){
+                $modelClass = null;
                 $modelName = basename(substr($model, 0, -4));
 
                 if (preg_match('#^namespace\s+(.+?);$#sm', file_get_contents($model), $m)) {
                     $modelClass = $m[1] . '\\' . $modelName;
                     $response[strtolower($modelName)] = $modelClass;
+                }
+
+                if ($modelClass !== null && strtolower($modelName) === 'index'){
+                    $response['*'] = $modelClass;
                 }
             }
         }

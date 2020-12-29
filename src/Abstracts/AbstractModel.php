@@ -4,11 +4,24 @@ namespace CarloNicora\Minimalism\Abstracts;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Interfaces\ParameterInterface;
+use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
+use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Objects\PositionedParameter;
+use Exception;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionNamedType;
+use RuntimeException;
 
 class AbstractModel implements ModelInterface
 {
     /** @var string  */
     private string $function;
+
+    /** @var string|null  */
+    private ?string $view=null;
 
     /** @var array  */
     private array $parameters=[];
@@ -55,11 +68,61 @@ class AbstractModel implements ModelInterface
     }
 
     /**
+     * @return string|null
+     */
+    final public function getView(): ?string
+    {
+        return $this->view;
+    }
+
+    /**
      * @return int
+     * @throws Exception
      */
     final public function run(): int
     {
-        //TODO: BUILD THE CORRECT PARAMETERS WITH SERVICES, POSITIONED PARAMETERS AND NAMED PARAMETERS
-        return $this->{$this->function}(...$this->parameters);
+        $parameters = [];
+        $a = new ReflectionMethod(get_class($this), $this->function);
+        $b = $a->getParameters();
+
+        foreach ($b ?? [] as $c) {
+            $newParameter = null;
+            $newParameterClass = null;
+
+            /** @var ReflectionNamedType $parameter */
+            $parameter = $c->getType();
+            try {
+                $reflect = new ReflectionClass($parameter->getName());
+                if ($reflect->implementsInterface(ServiceInterface::class)) {
+                    $response[] = $this->services->create($parameter->getName());
+                } elseif ($reflect->implementsInterface(ParameterInterface::class)){
+                    if ($reflect->implementsInterface(PositionedParameterInterface::class)){
+                        $newParameterClass = PositionedParameter::class;
+                        if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])){
+                            $newParameter = array_shift($this->parameters['positioned']);
+                        }
+                    } else {
+                        $newParameterClass = $reflect->getName();
+                        if (array_key_exists('named', $this->parameters) && array_key_exists($parameter->getName(), $this->parameters['named'])){
+                            $newParameter = $this->parameters['named'][$parameter->getName()];
+                        }
+                    }
+
+                    if ($newParameter === null && !$parameter->allowsNull()){
+                        throw new RuntimeException('Required parameter missing: ' . $c->getName(), 412);
+                    }
+
+                    $parameters[] = new $newParameterClass($newParameter);
+                }
+            } catch (ReflectionException) {
+                if (!array_key_exists($parameter->getName(), $this->parameters['named']) && !$parameter->allowsNull()){
+                    throw new RuntimeException('Required parameter missing: ' . $c->getName(), 412);
+                }
+
+                $parameters[] = $this->parameters['named'][$parameter->getName()];
+            }
+        }
+
+        return $this->{$this->function}(...$parameters);
     }
 }
