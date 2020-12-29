@@ -22,7 +22,10 @@ class Minimalism
     public function render(?string $modelName=null): string
     {
         $modelFactory = new ModelFactory($this->services);
+
         $model = null;
+        $errorMessage = null;
+        $data = null;
 
         try {
             $model = $modelFactory->create($modelName);
@@ -30,20 +33,24 @@ class Minimalism
             $data = $model->getDocument();
         } catch (Exception $e) {
             $response = $e->getCode() ?? 500;
-            $data = $e->getMessage();
+            $errorMessage = $e->getMessage();
         }
 
         header($this->getProtocol() . ' ' . $response . ' ' . $this->generateStatusText($response));
 
-        if ($response !== 200){
-            if ($response >= 400){
-                echo $data;
-            }
+        if ($errorMessage !== null || $response !== 200){
+            echo $errorMessage ?? '';
             exit;
         }
 
-        if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
-            return $transformer->transform($data, $view);
+        if ($data !== null){
+            if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
+                header('Content-Type: ' . $transformer->getContentType());
+                return $transformer->transform($data, $view);
+            }
+
+            header('Content-Type: application/vnd.api+json');
+            return $data->export();
         }
 
         return '';
