@@ -21,7 +21,7 @@ class AbstractModel implements ModelInterface
     private string $function;
 
     /** @var string|null  */
-    private ?string $view=null;
+    protected ?string $view=null;
 
     /** @var array  */
     private array $parameters=[];
@@ -35,7 +35,7 @@ class AbstractModel implements ModelInterface
      */
     public function __construct(private ServiceFactory $services)
     {
-        if ($this->services->getUrl() === null) {
+        if ($this->services->getPath()->getUrl() === null) {
             $this->function = 'cli';
         } else {
             $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');

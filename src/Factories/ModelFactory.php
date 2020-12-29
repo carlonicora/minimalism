@@ -46,7 +46,7 @@ class ModelFactory
      */
     private function loadModels(): void
     {
-        $modelCache = $this->services->getRoot()
+        $modelCache = $this->services->getPath()->getRoot()
             . DIRECTORY_SEPARATOR . 'data'
             . DIRECTORY_SEPARATOR . 'cache'
             . DIRECTORY_SEPARATOR . 'models.cache';
@@ -54,7 +54,7 @@ class ModelFactory
         if (file_exists($modelCache) && ($modelsFile = file_get_contents($modelCache)) !== false){
             $this->models = unserialize($modelsFile, [true]);
         } else {
-            $this->models = $this->loadFolderModels($this->services->getRoot()
+            $this->models = $this->loadFolderModels($this->services->getPath()->getRoot()
                 . DIRECTORY_SEPARATOR . 'src'
                 . DIRECTORY_SEPARATOR . 'Models'
             );

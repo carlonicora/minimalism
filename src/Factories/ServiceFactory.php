@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Factories;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
+use CarloNicora\Minimalism\Services\Path;
 use Dotenv\Dotenv;
 use Exception;
 use ReflectionClass;
@@ -16,40 +17,27 @@ class ServiceFactory
     /** @var array|ServiceInterface[]  */
     private array $services = [];
 
-    /** @var string */
-    private string $root;
-
-    /** @var string|null */
-    private ?string $url=null;
-
     /** @var Dotenv|null  */
     private ?Dotenv $env=null;
 
     /** @var string  */
     private string $servicesCacheFile;
 
-    /** @var EncrypterInterface|null  */
-    private ?EncrypterInterface $encrypter=null;
-
-    /** @var TransformerInterface|null  */
-    private ?TransformerInterface $transformer=null;
-
     /**
      * ServiceFactory constructor.
      */
     public function __construct()
     {
-        $this->root = dirname(__DIR__, 5);
-        $this->servicesCacheFile = $this->root
+        $this->servicesCacheFile = dirname(__DIR__, 5)
             . DIRECTORY_SEPARATOR . 'data'
             . DIRECTORY_SEPARATOR . 'cache'
             . DIRECTORY_SEPARATOR . 'services.cache';
 
-        if (PHP_SAPI !== 'cli') {
-            $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
-        }
-
         $this->loadServicesFromCache();
+
+        if (!array_key_exists(Path::class, $this->services)){
+            $this->services[Path::class] = new Path();
+        }
     }
 
     /**
@@ -66,19 +54,11 @@ class ServiceFactory
     }
 
     /**
-     * @return string
+     * @return Path
      */
-    public function getRoot(): string
+    public function getPath(): Path
     {
-        return $this->root;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getUrl(): ?string
-    {
-        return $this->url;
+        return $this->services[Path::class];
     }
 
     /**
@@ -86,7 +66,7 @@ class ServiceFactory
      */
     public function getEncrypter(): ?EncrypterInterface
     {
-        return $this->encrypter;
+        return $this->services['encrypter'] ?? null;
     }
 
     /**
@@ -94,7 +74,7 @@ class ServiceFactory
      */
     public function getTransformer(): ?TransformerInterface
     {
-        return $this->transformer;
+        return $this->services['transformer'] ?? null;
     }
 
     /**
@@ -129,9 +109,9 @@ class ServiceFactory
 
             $serviceReflection = new ReflectionClass($this->services[$serviceName]);
             if ($serviceReflection->implementsInterface(TransformerInterface::class)){
-                $this->transformer = $this->services[$serviceName];
+                $this->services['transformer'] = $this->services[$serviceName];
             } elseif ($serviceReflection->implementsInterface(EncrypterInterface::class)){
-                $this->encrypter = $this->services[$serviceName];
+                $this->services['encrypter'] = $this->services[$serviceName];
             }
             $serviceReflection = null;
         }
@@ -187,7 +167,7 @@ class ServiceFactory
     private function loadDotEnv(): void
     {
         if ($this->env === null) {
-            $this->env = Dotenv::createImmutable($this->root);
+            $this->env = Dotenv::createImmutable($this->getPath()->getRoot());
             $this->env->load();
         }
     }

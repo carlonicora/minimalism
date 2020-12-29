@@ -36,32 +36,28 @@ class Minimalism
             $response = $e->getMessage();
         }
 
-        header($this->getProtocol() . ' ' . $httpResponse . ' ' . $this->generateStatusText($httpResponse));
+        if ($response === '{"meta":[]}'){
+            $response = '';
+        }
+
         header('Content-Type: application/vnd.api+json');
 
-        if ($httpResponse !== 200){
-            echo $response ?? '';
-            exit;
-        }
-
-        if ($data !== null){
-            if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
-                header('Content-Type: ' . $transformer->getContentType());
-                return $transformer->transform(
+        if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
+            header('Content-Type: ' . $transformer->getContentType());
+            try {
+                $response = $transformer->transform(
                     $data,
-                    $this->services->getRoot()
-                        . 'src'
-                        . DIRECTORY_SEPARATOR
-                        . 'Views'
-                        . DIRECTORY_SEPARATOR
-                        . $view
+                    $view
                 );
+            } catch (Exception) {
+                $httpResponse = 500;
+                $response = 'Error transforming the view';
             }
-
-            return $response;
         }
 
-        return '';
+        header($this->getProtocol() . ' ' . $httpResponse . ' ' . $this->httpCodes[$httpResponse]);
+
+        return $response ?? '';
     }
 
     /**
@@ -72,60 +68,65 @@ class Minimalism
         return ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
     }
 
-    /**
-     * @param int $status
-     * @return string
-     */
-    private function generateStatusText(int $status) : string
-    {
-        switch ($status) {
-            case 201:
-                return 'Created';
-            case 204:
-                return 'No Content';
-            case 304:
-                return 'Not Modified';
-            case 400:
-                return 'Bad Request';
-            case 401:
-                return 'Unauthorized';
-            case 403:
-                return 'Forbidden';
-            case 404:
-                return 'Not Found';
-            case 405:
-                return 'Method Not Allowed';
-            case 406:
-                return 'Not Acceptable';
-            case 409:
-                return 'Conflict';
-            case 410:
-                return 'Gone';
-            case 411:
-                return 'Length Required';
-            case 412:
-                return 'Precondition Failed';
-            case 415:
-                return 'Unsupported Media Type';
-            case 422:
-                return 'Unprocessable Entity';
-            case 428:
-                return 'Precondition Required';
-            case 429:
-                return 'Too Many Requests';
-            case 500:
-                return 'Internal Server Error';
-            case 501:
-                return 'Not Implemented';
-            case 502:
-                return 'Bad Gateway';
-            case 503:
-                return 'Service Unavailable';
-            case 504:
-                return 'Gateway Timeout';
-            case 200:
-            default:
-                return 'OK';
-        }
-    }
+    /** @var string[]  */
+    private array $httpCodes = [
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+        102 => 'Processing',
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+        207 => 'Multi-status',
+        208 => 'Already Reported',
+        300 => 'Multiple Choices',
+        301 => 'Moved Permanently',
+        302 => 'Found',
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        306 => 'Switch Proxy',
+        307 => 'Temporary Redirect',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Time-out',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Large',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested range not satisfiable',
+        417 => 'Expectation Failed',
+        418 => 'I\'m a teapot',
+        422 => 'Unprocessable Entity',
+        423 => 'Locked',
+        424 => 'Failed Dependency',
+        425 => 'Unordered Collection',
+        426 => 'Upgrade Required',
+        428 => 'Precondition Required',
+        429 => 'Too Many Requests',
+        431 => 'Request Header Fields Too Large',
+        451 => 'Unavailable For Legal Reasons',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Time-out',
+        505 => 'HTTP Version not supported',
+        506 => 'Variant Also Negotiates',
+        507 => 'Insufficient Storage',
+        508 => 'Loop Detected',
+        511 => 'Network Authentication Required',
+    ];
 }

@@ -32,7 +32,7 @@ class ParametersFactory
      */
     public function createParameters(): array
     {
-        if ($this->services->getUrl() === null){
+        if ($this->services->getPath()->getUrl() === null){
             return $this->getCliParameters();
         }
 
