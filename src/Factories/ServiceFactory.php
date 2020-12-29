@@ -146,7 +146,7 @@ class ServiceFactory
                             $this->env->required($serviceParameter->getName())->notEmpty();
                         }
 
-                        if (($param = $_ENV($serviceParameter->getName())) !== false) {
+                        if (($param = $_ENV[$serviceParameter->getName()]) !== false) {
                             $response[] = $param;
                         } else {
                             $response[] = null;
