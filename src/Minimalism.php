@@ -46,7 +46,15 @@ class Minimalism
         if ($data !== null){
             if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
                 header('Content-Type: ' . $transformer->getContentType());
-                return $transformer->transform($data, $view);
+                return $transformer->transform(
+                    $data,
+                    $this->services->getRoot()
+                        . 'src'
+                        . DIRECTORY_SEPARATOR
+                        . 'Views'
+                        . DIRECTORY_SEPARATOR
+                        . $view
+                );
             }
 
             header('Content-Type: application/vnd.api+json');

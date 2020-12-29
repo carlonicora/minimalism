@@ -169,6 +169,7 @@ class ParametersFactory
         if (!array_key_exists(strtolower($modelName), $modelFolder)){
             if (array_key_exists('*', $this->models)){
                 $this->modelName = $this->models['*'];
+                array_unshift($parameters, $modelName);
             } else {
                 throw new RuntimeException('Model not found', 404);
             }

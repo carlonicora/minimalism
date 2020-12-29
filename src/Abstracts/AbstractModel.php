@@ -94,7 +94,7 @@ class AbstractModel implements ModelInterface
             try {
                 $reflect = new ReflectionClass($parameter->getName());
                 if ($reflect->implementsInterface(ServiceInterface::class)) {
-                    $response[] = $this->services->create($parameter->getName());
+                    $parameters[] = $this->services->create($parameter->getName());
                 } elseif ($reflect->implementsInterface(ParameterInterface::class)){
                     if ($reflect->implementsInterface(PositionedParameterInterface::class)){
                         $newParameterClass = PositionedParameter::class;
@@ -115,11 +115,15 @@ class AbstractModel implements ModelInterface
                     $parameters[] = new $newParameterClass($newParameter);
                 }
             } catch (ReflectionException) {
-                if (!array_key_exists($parameter->getName(), $this->parameters['named']) && !$parameter->allowsNull()){
+                if (!array_key_exists($c->getName(), $this->parameters['named']) && !$parameter->allowsNull()){
                     throw new RuntimeException('Required parameter missing: ' . $c->getName(), 412);
                 }
 
-                $parameters[] = $this->parameters['named'][$parameter->getName()];
+                if (array_key_exists('named', $this->parameters) && array_key_exists($c->getName(), $this->parameters['named'])){
+                    $parameters[] = $this->parameters['named'][$c->getName()];
+                } else {
+                    $parameters[] = null;
+                }
             }
         }
 
