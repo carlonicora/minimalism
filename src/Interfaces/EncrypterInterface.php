@@ -7,11 +7,11 @@ interface EncrypterInterface
      * @param int $id
      * @return string
      */
-    public function encrypt(int $id): string;
+    public function encryptId(int $id): string;
 
     /**
      * @param string $encryptedId
      * @return int
      */
-    public function decrypt(string $encryptedId): int;
+    public function decryptId(string $encryptedId): int;
 }
