@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
@@ -112,7 +113,18 @@ class AbstractModel implements ModelInterface
                         throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
                     }
 
-                    $parameters[] = new $newParameterClass($newParameter);
+                    $parameterClass = new $newParameterClass($newParameter);
+
+                    if ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)){
+                        if ($this->services->getEncrypter() !== null){
+                            /** @var EncryptedParameterInterface $parameterClass */
+                            $parameterClass->setEncrypter($this->services->getEncrypter());
+                        } else {
+                            throw new RuntimeException('No encrypter has been specified', 500);
+                        }
+                    }
+
+                    $parameters[] = $parameterClass;
                 }
             } catch (ReflectionException) {
                 if (!array_key_exists($methodParameter->getName(), $this->parameters['named']) && !$parameter->allowsNull()){

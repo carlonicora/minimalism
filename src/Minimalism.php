@@ -11,6 +11,9 @@ class Minimalism
     /** @var ServiceFactory  */
     private ServiceFactory $services;
 
+    /**
+     * Minimalism constructor.
+     */
     public function __construct()
     {
         $this->services = new ServiceFactory();
