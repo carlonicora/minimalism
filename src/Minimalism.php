@@ -24,22 +24,23 @@ class Minimalism
         $modelFactory = new ModelFactory($this->services);
 
         $model = null;
-        $errorMessage = null;
         $data = null;
 
         try {
             $model = $modelFactory->create($modelName);
-            $response = $model->run();
+            $httpResponse = $model->run();
             $data = $model->getDocument();
+            $response = $data->export();
         } catch (Exception $e) {
-            $response = $e->getCode() ?? 500;
-            $errorMessage = $e->getMessage();
+            $httpResponse = $e->getCode() ?? 500;
+            $response = $e->getMessage();
         }
 
-        header($this->getProtocol() . ' ' . $response . ' ' . $this->generateStatusText($response));
+        header($this->getProtocol() . ' ' . $httpResponse . ' ' . $this->generateStatusText($httpResponse));
+        header('Content-Type: application/vnd.api+json');
 
-        if ($errorMessage !== null || $response !== 200){
-            echo $errorMessage ?? '';
+        if ($httpResponse !== 200){
+            echo $response ?? '';
             exit;
         }
 
@@ -57,8 +58,7 @@ class Minimalism
                 );
             }
 
-            header('Content-Type: application/vnd.api+json');
-            return $data->export();
+            return $response;
         }
 
         return '';

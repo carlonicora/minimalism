@@ -82,45 +82,45 @@ class AbstractModel implements ModelInterface
     final public function run(): int
     {
         $parameters = [];
-        $a = new ReflectionMethod(get_class($this), $this->function);
-        $b = $a->getParameters();
+        $method = new ReflectionMethod(get_class($this), $this->function);
+        $methodParameters = $method->getParameters();
 
-        foreach ($b ?? [] as $c) {
+        foreach ($methodParameters ?? [] as $methodParameter) {
             $newParameter = null;
             $newParameterClass = null;
 
             /** @var ReflectionNamedType $parameter */
-            $parameter = $c->getType();
+            $parameter = $methodParameter->getType();
             try {
-                $reflect = new ReflectionClass($parameter->getName());
-                if ($reflect->implementsInterface(ServiceInterface::class)) {
+                $methodParameterType = new ReflectionClass($parameter->getName());
+                if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
                     $parameters[] = $this->services->create($parameter->getName());
-                } elseif ($reflect->implementsInterface(ParameterInterface::class)){
-                    if ($reflect->implementsInterface(PositionedParameterInterface::class)){
+                } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
+                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)){
                         $newParameterClass = PositionedParameter::class;
                         if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])){
                             $newParameter = array_shift($this->parameters['positioned']);
                         }
                     } else {
-                        $newParameterClass = $reflect->getName();
+                        $newParameterClass = $methodParameterType->getName();
                         if (array_key_exists('named', $this->parameters) && array_key_exists($parameter->getName(), $this->parameters['named'])){
                             $newParameter = $this->parameters['named'][$parameter->getName()];
                         }
                     }
 
                     if ($newParameter === null && !$parameter->allowsNull()){
-                        throw new RuntimeException('Required parameter missing: ' . $c->getName(), 412);
+                        throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
                     }
 
                     $parameters[] = new $newParameterClass($newParameter);
                 }
             } catch (ReflectionException) {
-                if (!array_key_exists($c->getName(), $this->parameters['named']) && !$parameter->allowsNull()){
-                    throw new RuntimeException('Required parameter missing: ' . $c->getName(), 412);
+                if (!array_key_exists($methodParameter->getName(), $this->parameters['named']) && !$parameter->allowsNull()){
+                    throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
                 }
 
-                if (array_key_exists('named', $this->parameters) && array_key_exists($c->getName(), $this->parameters['named'])){
-                    $parameters[] = $this->parameters['named'][$c->getName()];
+                if (array_key_exists('named', $this->parameters) && array_key_exists($methodParameter->getName(), $this->parameters['named'])){
+                    $parameters[] = $this->parameters['named'][$methodParameter->getName()];
                 } else {
                     $parameters[] = null;
                 }
