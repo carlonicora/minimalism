@@ -25,6 +25,7 @@ class ServiceFactory
 
     /**
      * ServiceFactory constructor.
+     * @throws Exception
      */
     public function __construct()
     {
@@ -37,6 +38,10 @@ class ServiceFactory
 
         if (!array_key_exists(Path::class, $this->services)){
             $this->services[Path::class] = new Path();
+        }
+
+        if ($this->services['encrypter'] === null || $this->services['transformer'] === null){
+            $this->searchCoreServices();
         }
     }
 
@@ -75,6 +80,40 @@ class ServiceFactory
     public function getTransformer(): ?TransformerInterface
     {
         return $this->services['transformer'] ?? null;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function searchCoreServices(): void
+    {
+        $servicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php');
+
+        foreach ($servicesFiles ?? []as $serviceFile){
+            $potentialServiceName = strtolower(substr($serviceFile, strpos($serviceFile, 'minimalism-service-') + 19, strpos($serviceFile, '/src/')-strlen($serviceFile)));
+            if ($potentialServiceName === strtolower(substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4))){
+                $src = file_get_contents($serviceFile);
+                $namespace = null;
+                if (preg_match('#^namespace\s+(.+?);$#sm', $src, $m)) {
+                    $namespace = $m[1];
+                }
+
+                try {
+                    $service = new ReflectionClass($namespace . '\\' . substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4));
+                    if ($this->getEncrypter() === null && $service->implementsInterface(EncrypterInterface::class)) {
+                        $this->services['encrypter'] = $this->create($service->getName());
+                    }
+                    if ($this->getTransformer() === null && $service->implementsInterface(TransformerInterface::class)) {
+                        $this->services['transformer'] = $this->create($service->getName());
+                    }
+                } catch (ReflectionException) {
+                }
+            }
+
+            if ($this->services['encrypter'] === null || $this->services['transformer'] === null){
+                return;
+            }
+        }
     }
 
     /**

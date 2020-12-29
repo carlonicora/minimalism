@@ -25,6 +25,6 @@ class PositionedEncryptedParameter extends PositionedParameter implements Encryp
      */
     public function getValue(): int
     {
-        return $this->encrypter->decrypt($this->value);
+        return $this->encrypter->decryptId($this->value);
     }
 }

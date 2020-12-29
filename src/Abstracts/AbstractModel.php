@@ -8,6 +8,7 @@ use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
 use ReflectionClass;
@@ -98,7 +99,11 @@ class AbstractModel implements ModelInterface
                     $parameters[] = $this->services->create($parameter->getName());
                 } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
                     if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)){
-                        $newParameterClass = PositionedParameter::class;
+                        if ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
+                            $newParameterClass = PositionedEncryptedParameter::class;
+                        } else {
+                            $newParameterClass = PositionedParameter::class;
+                        }
                         if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])){
                             $newParameter = array_shift($this->parameters['positioned']);
                         }
@@ -117,7 +122,7 @@ class AbstractModel implements ModelInterface
 
                     if ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)){
                         if ($this->services->getEncrypter() !== null){
-                            /** @var EncryptedParameterInterface $parameterClass */
+                            /** @var PositionedEncryptedParameter $parameterClass */
                             $parameterClass->setEncrypter($this->services->getEncrypter());
                         } else {
                             throw new RuntimeException('No encrypter has been specified', 500);
