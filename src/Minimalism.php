@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism;
 use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
 use Exception;
+use Throwable;
 
 class Minimalism
 {
@@ -49,7 +50,7 @@ class Minimalism
                     $data,
                     $view
                 );
-            } catch (Exception) {
+            } catch (Exception| Throwable) {
                 $httpResponse = 500;
                 $response = 'Error transforming the view';
             }

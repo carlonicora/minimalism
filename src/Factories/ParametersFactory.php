@@ -96,8 +96,10 @@ class ParametersFactory
      */
     private function loadPositionedParameters(string $uri, array $models=null): array
     {
+        $searchServicesModels = false;
         if ($models === null){
             $models = $this->models;
+            $searchServicesModels = true;
         }
 
         $response = [];
@@ -122,11 +124,16 @@ class ParametersFactory
             $nestingLevel--;
         }
 
-        foreach ($this->services->getPath()->getServicesModels() ?? [] as $additionalModels){
-            $response = $this->loadPositionedParameters($uri, $additionalModels);
+        if ($searchServicesModels) {
+            try {
+                foreach ($this->services->getPath()->getServicesModels() ?? [] as $additionalModels) {
+                    $response = $this->loadPositionedParameters($uri, $additionalModels);
 
-            if ($this->modelName !== null){
-                return $response;
+                    if ($this->modelName !== null) {
+                        return $response;
+                    }
+                }
+            } catch (Exception) {
             }
         }
 
