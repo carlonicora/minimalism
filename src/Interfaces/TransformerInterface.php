@@ -11,4 +11,9 @@ interface TransformerInterface
      * @return string
      */
     public function transform(Document $document, string $viewFile): string;
+
+    /**
+     * @return string
+     */
+    public function getContentType(): string;
 }

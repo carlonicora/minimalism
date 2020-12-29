@@ -27,8 +27,7 @@
   "require": {
     "ext-json": "*",
     "carlonicora/jsonapi": "~2.0",
-    "vlucas/phpdotenv":"~4.0",
-    "twig/twig":"~2.0"
+    "vlucas/phpdotenv":"~4.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",
