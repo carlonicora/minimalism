@@ -13,9 +13,9 @@ interface CacheBuilderInterface
     public function setType(int $type): void;
 
     /**
-     * @return int|string
+     * @return int|string|null
      */
-    public function getCacheIdentifier(): int|string;
+    public function getCacheIdentifier(): int|string|null;
 
     /**
      * @param int|string $identifier
