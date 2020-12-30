@@ -4,6 +4,16 @@ namespace CarloNicora\Minimalism\Interfaces;
 interface CacheInterface
 {
     /**
+     * @return CacheBuilderFactoryInterface
+     */
+    public function getCacheBuilderFactory(): CacheBuilderFactoryInterface;
+
+    /**
+     * @return bool
+     */
+    public function useCaching(): bool;
+
+    /**
      * @param CacheBuilderInterface $builder
      * @param string $data
      * @param int $cacheBuilderType
