@@ -27,7 +27,16 @@ class Minimalism
      */
     public function render(?string $modelName=null): string
     {
-        header('X-Powered-By: minimalism/' . InstalledVersions::getPrettyVersion(Versions::rootPackageName()));
+        header(
+            'X-Minimalism-App: '
+            . explode('/', Versions::rootPackageName())[1] . '/'
+            . InstalledVersions::getPrettyVersion(Versions::rootPackageName())
+        );
+        header(
+            'X-Minimalism: '
+            . InstalledVersions::getPrettyVersion('carlonicora/minimalism')
+        );
+
         $modelFactory = new ModelFactory($this->services);
 
         $model = null;
