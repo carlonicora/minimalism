@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Factories;
 
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use JsonException;
 use RuntimeException;
 
@@ -42,6 +43,7 @@ class ParametersFactory
     /**
      * @return array
      */
+    #[ArrayShape(['named' => "array"])]
     private function getCliParameters(): array
     {
         $response = [

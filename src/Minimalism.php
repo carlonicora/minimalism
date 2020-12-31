@@ -3,7 +3,9 @@ namespace CarloNicora\Minimalism;
 
 use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
+use Composer\InstalledVersions;
 use Exception;
+use PackageVersions\Versions;
 use Throwable;
 
 class Minimalism
@@ -25,6 +27,7 @@ class Minimalism
      */
     public function render(?string $modelName=null): string
     {
+        header('X-Powered-By: minimalism/' . InstalledVersions::getPrettyVersion(Versions::rootPackageName()));
         $modelFactory = new ModelFactory($this->services);
 
         $model = null;

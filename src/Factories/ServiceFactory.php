@@ -63,7 +63,7 @@ class ServiceFactory
     {
         /** @var ServiceInterface $service */
         foreach ($this->services ?? [] as $serviceName=>$service){
-            if ($service !== null && strpos($serviceName, '\\') !== false) {
+            if ($service !== null && str_contains($serviceName, '\\')) {
                 $service->destroy();
             }
         }
