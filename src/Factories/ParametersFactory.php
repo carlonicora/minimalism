@@ -78,7 +78,11 @@ class ParametersFactory
     private function getWebParameters(): array
     {
         $response = [];
-        [$uri, $namedParametersString] = explode('?', $_SERVER['REQUEST_URI'] ?? '');
+        [$uri, $namedParametersString] = array_pad(
+            explode('?', $_SERVER['REQUEST_URI'] ?? ''),
+            2,
+            ''
+        );
 
         $this->services->getPath()->sanitiseUriVersion($uri);
 
