@@ -44,7 +44,9 @@ class ParametersFactory
      */
     private function getCliParameters(): array
     {
-        $response = [];
+        $response = [
+            'named' => []
+        ];
 
         $typeName = null;
         foreach ($_SERVER['argv'] ?? [] as $item) {
@@ -54,11 +56,11 @@ class ParametersFactory
                 }
                 $typeName = $item;
             } elseif ($typeName !== null) {
-                $response[$typeName] = $item;
+                $response['named'][$typeName] = $item;
                 $typeName = null;
             } else {
                 try {
-                    $response = json_decode($item, true, 512, JSON_THROW_ON_ERROR);
+                    $response['named']['payload'] = json_decode($item, true, 512, JSON_THROW_ON_ERROR);
                 } catch (JsonException) {
                 }
             }
