@@ -60,8 +60,10 @@ class ServiceFactory
     public function __destruct()
     {
         /** @var ServiceInterface $service */
-        foreach ($this->services ?? [] as $service){
-            $service->destroy();
+        foreach ($this->services ?? [] as $serviceName=>$service){
+            if ($service !== null && strpos($serviceName, '\\') !== false) {
+                $service->destroy();
+            }
         }
 
         file_put_contents($this->servicesCacheFile, serialize($this->services));
