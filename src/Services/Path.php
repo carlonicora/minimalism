@@ -27,14 +27,7 @@ class Path implements ServiceInterface
     {
         $this->root = dirname(__DIR__, 5);
 
-        if (PHP_SAPI !== 'cli') {
-            $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
-
-            $uri = $_SERVER['REQUEST_URI'] ?? '';
-            if (($versioning = $this->sanitiseUriVersion($uri)) !== ''){
-                $this->url .= $versioning . '/';
-            }
-        }
+        $this->initialise();
 
         $this->loadServicesViewsAndModelsDirectories();
     }
@@ -42,7 +35,18 @@ class Path implements ServiceInterface
     /**
      *
      */
-    public function initialise(): void {}
+    public function initialise(): void {
+        if (PHP_SAPI === 'cli') {
+            $this->url = null;
+        } else {
+            $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
+
+            $uri = $_SERVER['REQUEST_URI'] ?? '';
+            if (($versioning = $this->sanitiseUriVersion($uri)) !== ''){
+                $this->url .= $versioning . '/';
+            }
+        }
+    }
 
     /**
      *

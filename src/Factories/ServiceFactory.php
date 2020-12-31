@@ -38,7 +38,9 @@ class ServiceFactory
 
         $this->loadServicesFromCache();
 
-        if (!array_key_exists(Path::class, $this->services)){
+        if (array_key_exists(Path::class, $this->services)) {
+            $this->services[Path::class]->initialise();
+        } else {
             $this->services[Path::class] = new Path();
         }
 

@@ -181,14 +181,12 @@ class ParametersFactory
     private function getNamedParameters(?string $namedParametersString): array
     {
         $response = [];
-        if ($namedParametersString === null || $namedParametersString === ''){
-            return $response;
-        }
-
-        $namedParameters = explode('&', $namedParametersString);
-        foreach ($namedParameters ?? [] as $namedParameter) {
-            [$parameterName, $parameterValue] = explode('=', $namedParameter);
-            $response[$parameterName] = $parameterValue;
+        if ($namedParametersString !== null && $namedParametersString !== '') {
+            $namedParameters = explode('&', $namedParametersString);
+            foreach ($namedParameters ?? [] as $namedParameter) {
+                [$parameterName, $parameterValue] = explode('=', $namedParameter);
+                $response[$parameterName] = $parameterValue;
+            }
         }
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET'){
