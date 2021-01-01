@@ -26,6 +26,12 @@ class AbstractModel implements ModelInterface
     /** @var string|null  */
     protected ?string $view=null;
 
+    /** @var array|null  */
+    protected ?array $redirectionParameters=null;
+
+    /** @var string|null  */
+    protected ?string $redirection=null;
+
     /** @var array  */
     private array $parameters=[];
 
@@ -76,6 +82,22 @@ class AbstractModel implements ModelInterface
     final public function getView(): ?string
     {
         return $this->view;
+    }
+
+    /**
+     * @return string|null
+     */
+    final public function getRedirection(): ?string
+    {
+        return $this->redirection;
+    }
+
+    /**
+     * @return array|null
+     */
+    final public function getRedirectionParameters(): ?array
+    {
+        return $this->redirectionParameters;
     }
 
     /**

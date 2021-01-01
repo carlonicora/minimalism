@@ -31,4 +31,16 @@ interface ModelInterface
      * @return int
      */
     public function run(): int;
+
+
+
+    /**
+     * @return string|null
+     */
+    public function getRedirection(): ?string;
+
+    /**
+     * @return array|null
+     */
+    public function getRedirectionParameters(): ?array;
 }

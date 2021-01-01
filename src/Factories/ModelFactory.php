@@ -20,17 +20,20 @@ class ModelFactory
 
     /**
      * @param string|null $modelName
+     * @param array|null $parameters
      * @return ModelInterface
      * @throws Exception
      */
-    public function create(?string $modelName=null): ModelInterface
+    public function create(?string $modelName=null, ?array $parameters=null): ModelInterface
     {
         $parametersFactory = new ParametersFactory($this->services, $this->models);
 
         /** @var ModelInterface $response */
         $response = null;
 
-        $parameters = $parametersFactory->createParameters();
+        if ($parameters === null) {
+            $parameters = $parametersFactory->createParameters();
+        }
 
         $model = $modelName ?? $parametersFactory->getModelName();
 
