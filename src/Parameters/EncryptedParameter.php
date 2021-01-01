@@ -37,4 +37,12 @@ class EncryptedParameter implements EncryptedParameterInterface
     {
         return $this->encrypter->decryptId($this->value);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getUnencryptedValue(): mixed
+    {
+        return $this->value;
+    }
 }

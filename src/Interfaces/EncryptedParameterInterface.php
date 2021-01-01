@@ -8,4 +8,9 @@ interface EncryptedParameterInterface extends ParameterInterface
      * @return mixed
      */
     public function setEncrypter(EncrypterInterface $encrypter): void;
+
+    /**
+     * @return mixed
+     */
+    public function getUnencryptedValue(): mixed;
 }
