@@ -5,7 +5,7 @@ namespace CarloNicora\Minimalism\Parameters;
 use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 
-class EnctyptedParameter implements EncryptedParameterInterface
+class EncryptedParameter implements EncryptedParameterInterface
 {
     /**
      * @var EncrypterInterface

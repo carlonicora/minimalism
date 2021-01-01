@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
-use CarloNicora\Minimalism\Parameters\EnctyptedParameter;
+use CarloNicora\Minimalism\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
@@ -105,7 +105,7 @@ class AbstractModel implements ModelInterface
                             $newParameter = array_shift($this->parameters['positioned']);
                         }
                     } else {
-                        $newParameterClass = EnctyptedParameter::class;
+                        $newParameterClass = EncryptedParameter::class;
                         $newParameter = $this->parameters['named'][$parameter->getName()];
                     }
 
