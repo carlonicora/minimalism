@@ -8,6 +8,7 @@ use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Parameters\EnctyptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
@@ -97,14 +98,31 @@ class AbstractModel implements ModelInterface
                 $methodParameterType = new ReflectionClass($parameter->getName());
                 if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
                     $parameters[] = $this->services->create($parameter->getName());
-                } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
-                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)){
-                        if ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
-                            $newParameterClass = PositionedEncryptedParameter::class;
-                        } else {
-                            $newParameterClass = PositionedParameter::class;
+                } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
+                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                        $newParameterClass = PositionedEncryptedParameter::class;
+                        if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])) {
+                            $newParameter = array_shift($this->parameters['positioned']);
                         }
-                        if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])){
+                    } else {
+                        $newParameterClass = EnctyptedParameter::class;
+                        $newParameter = $this->parameters['named'][$parameter->getName()];
+                    }
+
+                    $parameterClass = new $newParameterClass($newParameter);
+
+                    if ($this->services->getEncrypter() !== null){
+                        /** @var PositionedEncryptedParameter $parameterClass */
+                        $parameterClass->setEncrypter($this->services->getEncrypter());
+                    } else {
+                        throw new RuntimeException('No encrypter has been specified', 500);
+                    }
+
+                    $parameters[] = $parameterClass;
+                } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
+                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                        $newParameterClass = PositionedParameter::class;
+                        if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])) {
                             $newParameter = array_shift($this->parameters['positioned']);
                         }
                     } else {
@@ -119,16 +137,6 @@ class AbstractModel implements ModelInterface
                     }
 
                     $parameterClass = new $newParameterClass($newParameter);
-
-                    if ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)){
-                        if ($this->services->getEncrypter() !== null){
-                            /** @var PositionedEncryptedParameter $parameterClass */
-                            $parameterClass->setEncrypter($this->services->getEncrypter());
-                        } else {
-                            throw new RuntimeException('No encrypter has been specified', 500);
-                        }
-                    }
-
                     $parameters[] = $parameterClass;
                 }
             } catch (ReflectionException) {
