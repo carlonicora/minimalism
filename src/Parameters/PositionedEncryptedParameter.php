@@ -31,7 +31,7 @@ class PositionedEncryptedParameter extends PositionedParameter implements Encryp
     /**
      * @return mixed
      */
-    public function getUnencryptedValue(): mixed
+    public function getEncryptedValue(): mixed
     {
         return $this->value;
     }

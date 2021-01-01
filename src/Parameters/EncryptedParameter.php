@@ -41,7 +41,7 @@ class EncryptedParameter implements EncryptedParameterInterface
     /**
      * @return mixed
      */
-    public function getUnencryptedValue(): mixed
+    public function getEncryptedValue(): mixed
     {
         return $this->value;
     }

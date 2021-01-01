@@ -12,5 +12,5 @@ interface EncryptedParameterInterface extends ParameterInterface
     /**
      * @return mixed
      */
-    public function getUnencryptedValue(): mixed;
+    public function getEncryptedValue(): mixed;
 }
