@@ -10,6 +10,11 @@ interface DataInterface
     public function create(string $dbReader): TableInterface;
 
     /**
+     * @param CacheInterface $cache
+     */
+    public function setCacheInterface(CacheInterface $cache): void;
+
+    /**
      * @param string $tableInterfaceClassName
      * @param string $functionName
      * @param array $parameters
@@ -27,14 +32,12 @@ interface DataInterface
      * @param string $tableInterfaceClassName
      * @param string $functionName
      * @param array $parameters
-     * @param CacheBuilderInterface|null $cacheBuilder
      * @return int
      */
     public function count(
         string $tableInterfaceClassName,
         string $functionName,
         array $parameters,
-        ?CacheBuilderInterface $cacheBuilder=null,
     ): int;
 
     /**
