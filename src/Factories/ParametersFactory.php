@@ -1,9 +1,21 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
+use CarloNicora\Minimalism\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Interfaces\ParameterInterface;
+use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
+use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Parameters\EncryptedParameter;
+use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
+use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use JsonException;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionNamedType;
 use RuntimeException;
 
 class ParametersFactory
@@ -14,9 +26,12 @@ class ParametersFactory
     /**
      * ParametersFactory constructor.
      * @param ServiceFactory $services
-     * @param array $models
+     * @param array|null $models
      */
-    public function __construct(private ServiceFactory $services, private array $models)
+    public function __construct(
+        private ServiceFactory $services,
+        private ?array $models=null,
+    )
     {}
 
     /**
@@ -25,6 +40,93 @@ class ParametersFactory
     public function getModelName(): string
     {
         return $this->modelName;
+    }
+
+    /**
+     * @param ModelInterface $model
+     * @param string $function
+     * @param array $parameters
+     * @return array
+     * @throws Exception
+     */
+    public function getModelFunctionParameters(
+        ModelInterface $model,
+        string $function,
+        array $parameters,
+    ): array
+    {
+        $response = [];
+        $method = new ReflectionMethod(
+            get_class($model),
+            $function
+        );
+        $methodParameters = $method->getParameters();
+
+        foreach ($methodParameters ?? [] as $methodParameter) {
+            $newParameter = null;
+            $newParameterClass = null;
+
+            /** @var ReflectionNamedType $parameter */
+            $parameter = $methodParameter->getType();
+            try {
+                $methodParameterType = new ReflectionClass($parameter->getName());
+                if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
+                    $response[] = $this->services->create($parameter->getName());
+                } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
+                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                        $newParameterClass = PositionedEncryptedParameter::class;
+                        if (array_key_exists('positioned', $parameters) && array_key_exists(0, $parameters['positioned'])) {
+                            $newParameter = array_shift($parameters['positioned']);
+                        }
+                    } else {
+                        $newParameterClass = EncryptedParameter::class;
+                        $newParameter = $parameters['named'][$parameter->getName()];
+                    }
+
+                    $parameterClass = new $newParameterClass($newParameter);
+
+                    if ($this->services->getEncrypter() !== null){
+                        /** @var PositionedEncryptedParameter $parameterClass */
+                        $parameterClass->setEncrypter($this->services->getEncrypter());
+                    } else {
+                        throw new RuntimeException('No encrypter has been specified', 500);
+                    }
+
+                    $response[] = $parameterClass;
+                } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
+                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                        $newParameterClass = PositionedParameter::class;
+                        if (array_key_exists('positioned', $parameters) && array_key_exists(0, $parameters['positioned'])) {
+                            $newParameter = array_shift($parameters['positioned']);
+                        }
+                    } else {
+                        $newParameterClass = $methodParameterType->getName();
+                        if (array_key_exists('named', $parameters) && array_key_exists($parameter->getName(), $parameters['named'])){
+                            $newParameter = $parameters['named'][$parameter->getName()];
+                        }
+                    }
+
+                    if ($newParameter === null && !$parameter->allowsNull()){
+                        throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
+                    }
+
+                    $parameterClass = new $newParameterClass($newParameter);
+                    $response[] = $parameterClass;
+                }
+            } catch (ReflectionException) {
+                if (!array_key_exists($methodParameter->getName(), $parameters['named']) && !$parameter->allowsNull()){
+                    throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
+                }
+
+                if (array_key_exists('named', $parameters) && array_key_exists($methodParameter->getName(), $parameters['named'])){
+                    $response[] = $parameters['named'][$methodParameter->getName()];
+                } else {
+                    $response[] = $methodParameter->getDefaultValue();
+                }
+            }
+        }
+
+        return $response;
     }
 
     /**

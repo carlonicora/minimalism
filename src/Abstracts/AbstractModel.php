@@ -2,21 +2,10 @@
 namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
+use CarloNicora\Minimalism\Factories\ParametersFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
-use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
-use CarloNicora\Minimalism\Interfaces\ParameterInterface;
-use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
-use CarloNicora\Minimalism\Interfaces\ServiceInterface;
-use CarloNicora\Minimalism\Parameters\EncryptedParameter;
-use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
-use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionMethod;
-use ReflectionNamedType;
-use RuntimeException;
 
 class AbstractModel implements ModelInterface
 {
@@ -106,73 +95,15 @@ class AbstractModel implements ModelInterface
      */
     final public function run(): int
     {
-        $parameters = [];
-        $method = new ReflectionMethod(get_class($this), $this->function);
-        $methodParameters = $method->getParameters();
+        $parametersFactory = new ParametersFactory(
+            services: $this->services,
+        );
 
-        foreach ($methodParameters ?? [] as $methodParameter) {
-            $newParameter = null;
-            $newParameterClass = null;
-
-            /** @var ReflectionNamedType $parameter */
-            $parameter = $methodParameter->getType();
-            try {
-                $methodParameterType = new ReflectionClass($parameter->getName());
-                if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
-                    $parameters[] = $this->services->create($parameter->getName());
-                } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
-                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
-                        $newParameterClass = PositionedEncryptedParameter::class;
-                        if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])) {
-                            $newParameter = array_shift($this->parameters['positioned']);
-                        }
-                    } else {
-                        $newParameterClass = EncryptedParameter::class;
-                        $newParameter = $this->parameters['named'][$parameter->getName()];
-                    }
-
-                    $parameterClass = new $newParameterClass($newParameter);
-
-                    if ($this->services->getEncrypter() !== null){
-                        /** @var PositionedEncryptedParameter $parameterClass */
-                        $parameterClass->setEncrypter($this->services->getEncrypter());
-                    } else {
-                        throw new RuntimeException('No encrypter has been specified', 500);
-                    }
-
-                    $parameters[] = $parameterClass;
-                } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
-                    if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
-                        $newParameterClass = PositionedParameter::class;
-                        if (array_key_exists('positioned', $this->parameters) && array_key_exists(0, $this->parameters['positioned'])) {
-                            $newParameter = array_shift($this->parameters['positioned']);
-                        }
-                    } else {
-                        $newParameterClass = $methodParameterType->getName();
-                        if (array_key_exists('named', $this->parameters) && array_key_exists($parameter->getName(), $this->parameters['named'])){
-                            $newParameter = $this->parameters['named'][$parameter->getName()];
-                        }
-                    }
-
-                    if ($newParameter === null && !$parameter->allowsNull()){
-                        throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
-                    }
-
-                    $parameterClass = new $newParameterClass($newParameter);
-                    $parameters[] = $parameterClass;
-                }
-            } catch (ReflectionException) {
-                if (!array_key_exists($methodParameter->getName(), $this->parameters['named']) && !$parameter->allowsNull()){
-                    throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
-                }
-
-                if (array_key_exists('named', $this->parameters) && array_key_exists($methodParameter->getName(), $this->parameters['named'])){
-                    $parameters[] = $this->parameters['named'][$methodParameter->getName()];
-                } else {
-                    $parameters[] = null;
-                }
-            }
-        }
+        $parameters = $parametersFactory->getModelFunctionParameters(
+            $this,
+            $this->function,
+            $this->parameters
+        );
 
         return $this->{$this->function}(...$parameters);
     }
