@@ -28,38 +28,46 @@ interface DataInterface
      * @param string $functionName
      * @param array $parameters
      * @param CacheBuilderInterface|null $cacheBuilder
+     * @return int
      */
-    public function update(
+    public function count(
         string $tableInterfaceClassName,
         string $functionName,
         array $parameters,
+        ?CacheBuilderInterface $cacheBuilder=null,
+    ): int;
+
+    /**
+     * @param string $tableInterfaceClassName
+     * @param array $records
+     * @param CacheBuilderInterface|null $cacheBuilder
+     */
+    public function update(
+        string $tableInterfaceClassName,
+        array $records,
         ?CacheBuilderInterface $cacheBuilder=null,
     ): void;
 
     /**
      * @param string $tableInterfaceClassName
-     * @param string $functionName
-     * @param array $parameters
+     * @param array $records
      * @param CacheBuilderInterface|null $cacheBuilder
      */
     public function delete(
         string $tableInterfaceClassName,
-        string $functionName,
-        array $parameters,
+        array $records,
         ?CacheBuilderInterface $cacheBuilder=null,
     ): void;
 
     /**
      * @param string $tableInterfaceClassName
-     * @param string $functionName
-     * @param array $parameters
+     * @param array $records
      * @param CacheBuilderInterface|null $cacheBuilder
      * @return array
      */
     public function insert(
         string $tableInterfaceClassName,
-        string $functionName,
-        array $parameters,
+        array $records,
         ?CacheBuilderInterface $cacheBuilder=null,
     ): array;
 }
