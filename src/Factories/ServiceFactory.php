@@ -96,26 +96,15 @@ class ServiceFactory
     }
 
     /**
-     * @return DataInterface|null
-     */
-    public function getDataProvider(): ?DataInterface
-    {
-        return $this->services[DataInterface::class] ?? null;
-    }
-
-    public function getCacheProvider(): ?CacheInterface
-    {
-        return $this->services[CacheInterface::class] ?? null;
-    }
-
-    /**
      * @throws Exception
      */
     private function searchCoreServices(): void
     {
         $servicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php');
 
-        foreach ($servicesFiles ?? []as $serviceFile){
+        $services = [];
+
+        foreach ($servicesFiles ?? [] as $serviceFile){
             $potentialServiceName = strtolower(substr($serviceFile, strpos($serviceFile, 'minimalism-service-') + 19, strpos($serviceFile, '/src/')-strlen($serviceFile)));
             if ($potentialServiceName === strtolower(substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4))){
                 $src = file_get_contents($serviceFile);
@@ -125,48 +114,91 @@ class ServiceFactory
                 }
 
                 try {
-                    $service = new ReflectionClass($namespace . '\\' . substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4));
-                    if (!array_key_exists(EncrypterInterface::class, $this->services) && $service->implementsInterface(EncrypterInterface::class)) {
-                        $this->services[EncrypterInterface::class] = $this->create($service->getName());
-                    }
-                    if (!array_key_exists(TransformerInterface::class, $this->services)  && $service->implementsInterface(TransformerInterface::class)) {
-                        $this->services[TransformerInterface::class] = $this->create($service->getName());
-                    }
-                    if (!array_key_exists(DataInterface::class, $this->services)  && $service->implementsInterface(DataInterface::class)) {
-                        $this->services[DataInterface::class] = $this->create($service->getName());
-                    }
-                    if (!array_key_exists(CacheInterface::class, $this->services)  && $service->implementsInterface(CacheInterface::class)) {
-                        $this->services[CacheInterface::class] = $this->create($service->getName());
-                    }
-                } catch (ReflectionException) {
+                    $services[] = new ReflectionClass($namespace . '\\' . substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4));
+                } catch (ReflectionException) {}
+            }
+        }
+
+        $this->searchCacheInterface($services);
+        $this->searchEncrypterInterface($services);
+        $this->searchTransformerInterface($services);
+        $this->searchDataInterface($services);
+    }
+
+    /**
+     * @param array $services
+     * @throws Exception
+     */
+    private function searchCacheInterface(array $services): void
+    {
+        foreach ($services ?? [] as $service){
+            try {
+                if (!array_key_exists(CacheInterface::class, $this->services)  && $service->implementsInterface(CacheInterface::class)) {
+                    $this->services[CacheInterface::class] = $this->create($service->getName());
+                    return;
                 }
-            }
-
-            if (
-                array_key_exists(EncrypterInterface::class, $this->services)
-                &&
-                array_key_exists(TransformerInterface::class, $this->services)
-                &&
-                array_key_exists(DataInterface::class, $this->services)
-                &&
-                array_key_exists(CacheInterface::class, $this->services)
-            ){
-                return;
+            } catch (ReflectionException) {
             }
         }
 
-        if (!array_key_exists(EncrypterInterface::class, $this->services)){
-            $this->services[EncrypterInterface::class] = null;
+        $this->services[CacheInterface::class] = null;
+    }
+
+    /**
+     * @param array $services
+     * @throws Exception
+     */
+    private function searchEncrypterInterface(array $services): void
+    {
+        foreach ($services ?? [] as $service){
+            try {
+                if (!array_key_exists(EncrypterInterface::class, $this->services) && $service->implementsInterface(EncrypterInterface::class)) {
+                    $this->services[EncrypterInterface::class] = $this->create($service->getName());
+                    return;
+                }
+            } catch (ReflectionException) {
+            }
         }
-        if (!array_key_exists(TransformerInterface::class, $this->services)){
-            $this->services[TransformerInterface::class] = null;
+
+        $this->services[EncrypterInterface::class] = null;
+    }
+
+    /**
+     * @param array $services
+     * @throws Exception
+     */
+    private function searchTransformerInterface(array $services): void
+    {
+        foreach ($services ?? [] as $service){
+            try {
+                if (!array_key_exists(TransformerInterface::class, $this->services)  && $service->implementsInterface(TransformerInterface::class)) {
+                    $this->services[TransformerInterface::class] = $this->create($service->getName());
+                    return;
+                }
+            } catch (ReflectionException) {
+            }
         }
-        if (!array_key_exists(DataInterface::class, $this->services)){
-            $this->services[DataInterface::class] = null;
+
+        $this->services[TransformerInterface::class] = null;
+    }
+
+    /**
+     * @param array $services
+     * @throws Exception
+     */
+    private function searchDataInterface(array $services): void
+    {
+        foreach ($services ?? [] as $service){
+            try {
+                if (!array_key_exists(DataInterface::class, $this->services)  && $service->implementsInterface(DataInterface::class)) {
+                    $this->services[DataInterface::class] = $this->create($service->getName());
+                    return;
+                }
+            } catch (ReflectionException) {
+            }
         }
-        if (!array_key_exists(CacheInterface::class, $this->services)){
-            $this->services[CacheInterface::class] = null;
-        }
+
+        $this->services[DataInterface::class] = null;
     }
 
     /**

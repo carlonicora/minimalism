@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
-interface DataInterface
+interface DataInterface extends ServiceInterface
 {
     /**
      * @param string $dbReader

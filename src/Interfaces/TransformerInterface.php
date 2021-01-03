@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Interfaces;
 
 use CarloNicora\JsonApi\Document;
 
-interface TransformerInterface
+interface TransformerInterface extends ServiceInterface
 {
     /**
      * @param Document $document

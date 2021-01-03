@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
-interface EncrypterInterface
+interface EncrypterInterface extends ServiceInterface
 {
     /**
      * @param int $id

@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
-interface CacheInterface
+interface CacheInterface extends ServiceInterface
 {
     /**
      * @return CacheBuilderFactoryInterface
