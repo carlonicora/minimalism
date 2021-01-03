@@ -22,4 +22,19 @@ interface CacheBuilderInterface
      * @return void
      */
     public function setCacheIdentifier(int|string $identifier): void;
+
+    /**
+     * @return string
+     */
+    public function getCacheName(): string;
+
+    /**
+     * @return bool
+     */
+    public function getShouldInvalidateAllChildren(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isSaveGranular(): bool;
 }
