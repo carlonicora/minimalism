@@ -49,14 +49,12 @@ class Minimalism
             do {
                 $model = $modelFactory->create($modelName, $parameters);
                 $httpResponse = $model->run();
-                $data = $model->getDocument();
                 if ($httpResponse === 302){
                     $parameters = $model->getRedirectionParameters();
                     $modelName = $model->getRedirection();
                 }
             } while ($httpResponse === 302);
-
-
+            $data = $model->getDocument();
             $response = $data->export();
         } catch (Exception $e) {
             $httpResponse = $e->getCode() ?? 500;

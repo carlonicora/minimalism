@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\Minimalism\Builders\ModelBuilder;
 use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
@@ -83,16 +84,20 @@ class ParametersFactory
                         $newParameter = $parameters['named'][$parameter->getName()];
                     }
 
-                    $parameterClass = new $newParameterClass($newParameter);
+                    if ($newParameter !== null) {
+                        $parameterClass = new $newParameterClass($newParameter);
+                        if ($this->services->getEncrypter() !== null){
+                            /** @var PositionedEncryptedParameter $parameterClass */
+                            $parameterClass->setEncrypter($this->services->getEncrypter());
+                        } else {
+                            throw new RuntimeException('No encrypter has been specified', 500);
+                        }
 
-                    if ($this->services->getEncrypter() !== null){
-                        /** @var PositionedEncryptedParameter $parameterClass */
-                        $parameterClass->setEncrypter($this->services->getEncrypter());
+                        $response[] = $parameterClass;
                     } else {
-                        throw new RuntimeException('No encrypter has been specified', 500);
+                        $response[] = null;
                     }
 
-                    $response[] = $parameterClass;
                 } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
                     if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
                         $newParameterClass = PositionedParameter::class;
@@ -121,7 +126,7 @@ class ParametersFactory
                 if (array_key_exists('named', $parameters) && array_key_exists($methodParameter->getName(), $parameters['named'])){
                     $response[] = $parameters['named'][$methodParameter->getName()];
                 } else {
-                    $response[] = $methodParameter->getDefaultValue();
+                    $response[] = $methodParameter->isDefaultValueAvailable() ? $methodParameter->getDefaultValue() : null;
                 }
             }
         }
@@ -191,95 +196,19 @@ class ParametersFactory
         if ($uri === '/'){
             $this->modelName = $this->models['*'];
         } else {
-            $response['positioned'] = $this->loadPositionedParameters($uri);
+            $uriParts = explode('/', substr($uri, 1));
+            $modelBuilder = new ModelBuilder($uriParts, $this->models, $this->services->getPath()->getServicesModels());
+
+            $this->modelName = $modelBuilder->getModel();
+            $response['positioned'] = $modelBuilder->getParameters();
+
+            unset($modelBuilder);
+            //$response['positioned'] = $this->loadPositionedParameters($uri);
         }
 
         $response['named'] = $this->getNamedParameters($namedParametersString);
 
         return $response;
-    }
-
-    /**
-     * @param string $uri
-     * @param array|null $models
-     * @return array
-     */
-    private function loadPositionedParameters(string $uri, array $models=null): array
-    {
-        $searchServicesModels = false;
-        if ($models === null){
-            $models = $this->models;
-            $searchServicesModels = true;
-        }
-
-        $response = [];
-
-        $uriParts = explode('/', substr($uri, 1));
-
-        $nestingLevel = intdiv(count($uriParts), 2);
-
-        while ($nestingLevel >= 0){
-            if (($modelName = $this->doesModelExists($uriParts, $nestingLevel, $models)) !== null){
-                $this->modelName = $modelName;
-
-                foreach ($uriParts as $position=>$parameter){
-                    if ($position>=$nestingLevel*2 || ($position<$nestingLevel*2 && $position % 2 !== 0)){
-                        $response[] = $parameter;
-                    }
-                }
-
-                return $response;
-            }
-
-            $nestingLevel--;
-        }
-
-        if ($searchServicesModels) {
-            try {
-                foreach ($this->services->getPath()->getServicesModels() ?? [] as $additionalModels) {
-                    $response = $this->loadPositionedParameters($uri, $additionalModels);
-
-                    if ($this->modelName !== null) {
-                        return $response;
-                    }
-                }
-            } catch (Exception) {
-            }
-        }
-
-        if (array_key_exists('*', $models)){
-            $this->modelName = $models['*'];
-            foreach ($uriParts as $parameter){
-                $response[] = $parameter;
-            }
-            return $response;
-        }
-
-        throw new RuntimeException('Model not found', 404);
-    }
-
-    /**
-     * @param array $uriParts
-     * @param int $nestingLevel
-     * @param array $models
-     * @return string|null
-     */
-    private function doesModelExists(array $uriParts, int $nestingLevel, array $models): ?string
-    {
-        $currentModelPosition = $models;
-        for ($position=0; $position<=$nestingLevel * 2; $position += 2){
-            if ($position + 2 >= $nestingLevel * 2){
-                return $currentModelPosition[strtolower($uriParts[$position])] ?? null;
-            }
-
-            if (array_key_exists(strtolower($uriParts[$position]) . '-folder', $currentModelPosition)){
-                $currentModelPosition = $currentModelPosition[strtolower($uriParts[$position]) . '-folder'];
-            } else {
-                return null;
-            }
-        }
-
-        return null;
     }
 
     /**

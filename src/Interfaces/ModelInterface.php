@@ -32,8 +32,6 @@ interface ModelInterface
      */
     public function run(): int;
 
-
-
     /**
      * @return string|null
      */

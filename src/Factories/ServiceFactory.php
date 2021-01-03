@@ -44,16 +44,8 @@ class ServiceFactory
             $this->services[Path::class] = new Path();
         }
 
-        if (!array_key_exists(EncrypterInterface::class, $this->services)
-            ||
-            !array_key_exists(TransformerInterface::class, $this->services)
-            ||
-            !array_key_exists(DataInterface::class, $this->services)
-            ||
-            !array_key_exists(CacheInterface::class, $this->services)
-        ){
-            $this->searchCoreServices();
-        }
+        $this->initialiseCoreServices();
+        $this->initialiseBaseService();
     }
 
     /**
@@ -98,8 +90,46 @@ class ServiceFactory
     /**
      * @throws Exception
      */
-    private function searchCoreServices(): void
+    private function initialiseBaseService(): void
     {
+        if (array_key_exists('default', $this->services)){
+            return;
+        }
+
+        $foundNamespace = null;
+        $file = json_decode(file_get_contents($this->getPath()->getRoot() . DIRECTORY_SEPARATOR . 'composer.json'), true, 512, JSON_THROW_ON_ERROR);
+        if (array_key_exists('autoload', $file) && array_key_exists('psr-4', $file['autoload'])) {
+            foreach ($file['autoload']['psr-4'] as $namespace => $folder) {
+                if ($folder === 'src/') {
+                    $foundNamespace = $namespace;
+                }
+            }
+        }
+
+        if ($foundNamespace !== null){
+            $servicePath = explode('\\', $foundNamespace);
+            $serviceName = '\\' . $foundNamespace . $servicePath[count($servicePath)-2];
+
+            $this->services[$serviceName] = $this->create($serviceName);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function initialiseCoreServices(): void
+    {
+        if (array_key_exists(EncrypterInterface::class, $this->services)
+            &&
+            array_key_exists(TransformerInterface::class, $this->services)
+            &&
+            array_key_exists(DataInterface::class, $this->services)
+            &&
+            array_key_exists(CacheInterface::class, $this->services)
+        ) {
+            return;
+        }
+
         $servicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php');
 
         $services = [];
@@ -268,12 +298,9 @@ class ServiceFactory
                         $this->loadDotEnv();
                         if (!$serviceParameter->isOptional()) {
                             $this->env->required($serviceParameter->getName())->notEmpty();
-                        }
-
-                        if (($param = $_ENV[$serviceParameter->getName()]) !== false) {
-                            $response[] = $param;
+                            $response[] = $_ENV[$serviceParameter->getName()];
                         } else {
-                            $response[] = null;
+                            $response[] = $_ENV[$serviceParameter->getName()] ?? $serviceParameter->isDefaultValueAvailable() ? $serviceParameter->getDefaultValue() : null;
                         }
                     }
                 }
