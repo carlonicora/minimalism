@@ -299,8 +299,10 @@ class ServiceFactory
                         if (!$serviceParameter->isOptional()) {
                             $this->env->required($serviceParameter->getName())->notEmpty();
                             $response[] = $_ENV[$serviceParameter->getName()];
+                        } elseif (array_key_exists($serviceParameter->getName(), $_ENV)){
+                            $response[] = $_ENV[$serviceParameter->getName()];
                         } else {
-                            $response[] = $_ENV[$serviceParameter->getName()] ?? $serviceParameter->isDefaultValueAvailable() ? $serviceParameter->getDefaultValue() : null;
+                            $response[] = $serviceParameter->isDefaultValueAvailable() ? $serviceParameter->getDefaultValue() : null;
                         }
                     }
                 }

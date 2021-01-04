@@ -1,10 +1,13 @@
 <?php
 namespace CarloNicora\Minimalism;
 
+use CarloNicora\JsonApi\Document;
+use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
 use Composer\InstalledVersions;
 use Exception;
+use JsonException;
 use PackageVersions\Versions;
 use Throwable;
 
@@ -27,6 +30,8 @@ class Minimalism
      */
     public function render(?string $modelName=null): string
     {
+        header('Content-Type: application/vnd.api+json');
+
         if ($this->services->getPath()->getUrl() !== null) {
             header(
                 'X-Minimalism-App: '
@@ -58,14 +63,24 @@ class Minimalism
             $response = $data->export();
         } catch (Exception $e) {
             $httpResponse = $e->getCode() ?? 500;
-            $response = $e->getMessage();
+            $document = new Document();
+            $document->addError(
+                new Error(
+                    e: $e,
+                    httpStatusCode: $httpResponse,
+                    detail: $e->getMessage(),
+                )
+            );
+            try {
+                $response = $document->export();
+            } catch (JsonException) {
+                $response = 'Error';
+            }
         }
 
         if ($response === '{"meta":[]}'){
             $response = '';
         }
-
-        header('Content-Type: application/vnd.api+json');
 
         if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
             header('Content-Type: ' . $transformer->getContentType());

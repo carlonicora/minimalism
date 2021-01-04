@@ -81,7 +81,7 @@ class ParametersFactory
                         }
                     } else {
                         $newParameterClass = EncryptedParameter::class;
-                        $newParameter = $parameters['named'][$parameter->getName()];
+                        $newParameter = $parameters['named'][$methodParameter->getName()];
                     }
 
                     if ($newParameter !== null) {
