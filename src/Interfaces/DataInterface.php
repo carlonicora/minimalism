@@ -1,6 +1,8 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
+
 interface DataInterface extends ServiceInterface
 {
     /**
@@ -19,6 +21,7 @@ interface DataInterface extends ServiceInterface
      * @param string $functionName
      * @param array $parameters
      * @param CacheBuilderInterface|null $cacheBuilder
+     * @throws RecordNotFoundException
      * @return array
      */
     public function read(
@@ -44,6 +47,7 @@ interface DataInterface extends ServiceInterface
      * @param string $tableInterfaceClassName
      * @param array $records
      * @param CacheBuilderInterface|null $cacheBuilder
+     * @throws RecordNotFoundException
      */
     public function update(
         string $tableInterfaceClassName,
@@ -55,6 +59,7 @@ interface DataInterface extends ServiceInterface
      * @param string $tableInterfaceClassName
      * @param array $records
      * @param CacheBuilderInterface|null $cacheBuilder
+     * @throws RecordNotFoundException
      */
     public function delete(
         string $tableInterfaceClassName,
@@ -66,11 +71,12 @@ interface DataInterface extends ServiceInterface
      * @param string $tableInterfaceClassName
      * @param array $records
      * @param CacheBuilderInterface|null $cacheBuilder
+     * @throws RecordNotFoundException
      * @return array
      */
     public function insert(
         string $tableInterfaceClassName,
-        array $records,
+        array &$records,
         ?CacheBuilderInterface $cacheBuilder=null,
     ): array;
 }
