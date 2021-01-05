@@ -76,7 +76,7 @@ interface DataInterface extends ServiceInterface
      */
     public function insert(
         string $tableInterfaceClassName,
-        array &$records,
+        array $records,
         ?CacheBuilderInterface $cacheBuilder=null,
     ): array;
 }
