@@ -78,13 +78,15 @@ class ModelBuilder
                     $response = array_merge($response, $additionalParameters);
                     return $response;
                 }
-            } elseif ($this->doesModelExist($parameter, $models)) {
+            }
+
+            if ($this->doesModelExist($parameter, $models)) {
                 $this->model = $models[$this->getProperModelName($parameter)];
                 $response = array_merge($response, $this->getRemainingParameters($parameters, $parameterKey));
                 return $response;
-            } else {
-                $response[] = $parameter;
             }
+            
+            $response[] = $parameter;
         }
         
         if ($this->model === null && !$inSubfolder){
@@ -95,7 +97,9 @@ class ModelBuilder
                         return $response;
                     }
                 }
-            } elseif (array_key_exists('*', $models)){
+            }
+
+            if (array_key_exists('*', $models)){
                 $this->model = $models['*'];
                 $response = $this->getRemainingParameters($parameters);
                 return $response;
