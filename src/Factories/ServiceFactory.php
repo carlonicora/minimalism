@@ -244,6 +244,12 @@ class ServiceFactory
 
                 if ($serviceFile !== false){
                     $this->services = unserialize($serviceFile, [true]);
+
+                    foreach ($this->services ?? [] as $service){
+                        if ($service !== null) {
+                            $service->initialise();
+                        }
+                    }
                 }
             }
         }

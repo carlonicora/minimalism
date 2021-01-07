@@ -1,16 +1,16 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
-interface DataLoaderInterface
+interface ResourceLoaderInterface
 {
     /**
      * UsersLoader constructor.
-     * @param DataInterface $data
+     * @param ServiceInterface $jsonApi
      * @param CacheInterface|null $cache
      * @param ServiceInterface|null $service
      */
     public function __construct(
-        DataInterface $data,
+        ServiceInterface $jsonApi,
         ?CacheInterface $cache,
         ?ServiceInterface $service,
     );
