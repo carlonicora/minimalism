@@ -115,8 +115,12 @@ class ParametersFactory
                         throw new RuntimeException('Required parameter missing: ' . $methodParameter->getName(), 412);
                     }
 
-                    $parameterClass = new $newParameterClass($newParameter);
-                    $response[] = $parameterClass;
+                    if ($newParameter !== null) {
+                        $parameterClass = new $newParameterClass($newParameter);
+                        $response[] = $parameterClass;
+                    } else {
+                        $response[] = $methodParameter->isDefaultValueAvailable() ? $methodParameter->getDefaultValue() : null;
+                    }
                 }
             } catch (ReflectionException) {
                 if (!array_key_exists($methodParameter->getName(), $parameters['named']) && !$parameter->allowsNull()){
