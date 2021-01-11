@@ -57,6 +57,13 @@ class ParametersFactory
     ): array
     {
         $response = [];
+
+        $class = new ReflectionClass($model);
+
+        if (!$class->hasMethod($function)){
+            throw new RuntimeException('Method not found', 404);
+        }
+
         $method = new ReflectionMethod(
             get_class($model),
             $function
