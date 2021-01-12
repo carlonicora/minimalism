@@ -161,6 +161,7 @@ class ModelBuilder
      */
     private function getProperModelName(string $modelName): string
     {
+        $modelName = str_replace('-', '', $modelName);
         return strtolower($modelName);
     }
 }
