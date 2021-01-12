@@ -182,7 +182,11 @@ class ServiceFactory
      */
     private function loadServicesFromCache(): void
     {
-        if (is_file($this->servicesCacheFile)){
+        $this->startSession();
+
+        if (array_key_exists('minimalismServices', $_SESSION)) {
+            $this->services = $_SESSION['minimalismServices'];
+        } elseif (is_file($this->servicesCacheFile)){
             if (filemtime($this->servicesCacheFile) < (time() - 5 * 60)) {
                 unlink($this->servicesCacheFile);
             } else {
@@ -198,6 +202,34 @@ class ServiceFactory
                     }
                 }
             }
+        }
+    }
+
+    /**
+     *
+     */
+    private function startSession() : void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            if (isset($_COOKIE['PHPSESSID'])) {
+                $sessid = '';
+
+                if (ini_get('session.use_cookies')) {
+                    $sessid = $_COOKIE['PHPSESSID'];
+                } elseif (!ini_get('session.use_only_cookies')) {
+                    $sessid = $_GET['PHPSESSID'];
+                }
+
+                if (!preg_match('/^[a-z0-9]{32}$/', $sessid)) {
+                    return;
+                }
+            } else {
+                session_start();
+                return;
+            }
+
+
+            session_start();
         }
     }
 

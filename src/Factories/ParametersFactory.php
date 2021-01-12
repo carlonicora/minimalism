@@ -88,7 +88,9 @@ class ParametersFactory
                         }
                     } else {
                         $newParameterClass = EncryptedParameter::class;
-                        $newParameter = $parameters['named'][$methodParameter->getName()];
+                        if (array_key_exists($methodParameter->getName(), $parameters['named'])){
+                            $newParameter = $parameters['named'][$methodParameter->getName()];
+                        }
                     }
 
                     if ($newParameter !== null) {
@@ -246,6 +248,15 @@ class ParametersFactory
                 try {
                     $response['payload'] = json_decode($phpInput, true, 512, JSON_THROW_ON_ERROR);
                 } catch (Exception) {
+                    try {
+                        $additionalResponse = [];
+                        parse_str($phpInput, $additionalResponse);
+
+                        if ($additionalResponse !== []) {
+                            $response = array_merge($response, $additionalResponse);
+                        }
+                    } catch (Exception) {
+                    }
                 }
             }
 
