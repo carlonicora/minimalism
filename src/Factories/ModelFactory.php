@@ -102,7 +102,7 @@ class ModelFactory
                 $modelName = basename(substr($model, 0, -4));
 
                 if (preg_match('#^namespace\s+(.+?);$#sm', file_get_contents($model), $m)
-                    || preg_match('#^namespace\s+(.+?);\n\r#sm', file_get_contents($model), $m)
+                    || preg_match('#^namespace\s+(.+?);\r\n#sm', file_get_contents($model), $m)
                 ) {
                     $modelClass = $m[1] . '\\' . $modelName;
                     $response[strtolower($modelName)] = $modelClass;
