@@ -21,7 +21,12 @@ class Minimalism
      */
     public function __construct()
     {
-        $this->services = new ServiceFactory();
+        try {
+            $this->services = new ServiceFactory();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            exit;
+        }
     }
 
     /**
@@ -48,15 +53,17 @@ class Minimalism
 
         $model = null;
         $data = null;
+        $function = null;
 
         try {
             $parameters = null;
             do {
-                $model = $modelFactory->create($modelName, $parameters);
+                $model = $modelFactory->create($modelName, $parameters, $function);
                 $httpResponse = $model->run();
                 if ($httpResponse === 302){
                     $parameters = $model->getRedirectionParameters();
                     $modelName = $model->getRedirection();
+                    $function = $model->getRedirectionFunction();
                 }
             } while ($httpResponse === 302);
             $data = $model->getDocument();
@@ -82,7 +89,7 @@ class Minimalism
             $response = '';
         }
 
-        if ($model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
+        if ($httpResponse < 400 && $model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
             header('Content-Type: ' . $transformer->getContentType());
             try {
                 $response = $transformer->transform(

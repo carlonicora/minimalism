@@ -9,9 +9,6 @@ use Exception;
 
 class AbstractModel implements ModelInterface
 {
-    /** @var string  */
-    private string $function;
-
     /** @var string|null  */
     protected ?string $view=null;
 
@@ -30,18 +27,24 @@ class AbstractModel implements ModelInterface
     /**
      * AbstractModel constructor.
      * @param ServiceFactory $services
+     * @param string|null $function
      */
-    public function __construct(private ServiceFactory $services)
+    public function __construct(
+        private ServiceFactory $services,
+        private ?string $function=null,
+    )
     {
-        if ($this->services->getPath()->getUrl() === null) {
-            $this->function = 'cli';
-        } else {
-            $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');
-            if ($this->function === 'post' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
-                if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
-                    $this->function = 'delete';
-                } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
-                    $this->function = 'put';
+        if ($this->function === null) {
+            if ($this->services->getPath()->getUrl() === null) {
+                $this->function = 'cli';
+            } else {
+                $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');
+                if ($this->function === 'post' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+                    if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
+                        $this->function = 'delete';
+                    } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
+                        $this->function = 'put';
+                    }
                 }
             }
         }
@@ -87,6 +90,42 @@ class AbstractModel implements ModelInterface
     final public function getRedirectionParameters(): ?array
     {
         return $this->redirectionParameters;
+    }
+
+    /**
+     * @return string|null
+     */
+    final public function getRedirectionFunction(): ?string
+    {
+        return $this->function;
+    }
+
+    /**
+     * @param string $modelClass
+     * @param string|null $function
+     * @param array|null $namedParameters
+     * @param array|null $positionedParameters
+     * @return int
+     */
+    final protected function redirect(
+        string $modelClass,
+        ?string $function=null,
+        ?array $namedParameters=[],
+        ?array $positionedParameters=[]
+    ): int
+    {
+        $this->redirection = $modelClass;
+
+        if ($function !== null){
+            $this->function = $function;
+        }
+
+        $this->redirectionParameters = [
+            'named' => $namedParameters,
+            'positioned' => $positionedParameters
+        ];
+
+        return 302;
     }
 
     /**

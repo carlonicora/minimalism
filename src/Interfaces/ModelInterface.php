@@ -9,8 +9,9 @@ interface ModelInterface
     /**
      * ModelInterface constructor.
      * @param ServiceFactory $services
+     * @param string|null $function
      */
-    public function __construct(ServiceFactory $services);
+    public function __construct(ServiceFactory $services, ?string $function=null);
 
     /**
      * @param array $parameters
@@ -36,6 +37,11 @@ interface ModelInterface
      * @return string|null
      */
     public function getRedirection(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getRedirectionFunction(): ?string;
 
     /**
      * @return array|null

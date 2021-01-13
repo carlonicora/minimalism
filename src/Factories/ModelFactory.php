@@ -21,10 +21,15 @@ class ModelFactory
     /**
      * @param string|null $modelName
      * @param array|null $parameters
+     * @param string|null $function
      * @return ModelInterface
      * @throws Exception
      */
-    public function create(?string $modelName=null, ?array $parameters=null): ModelInterface
+    public function create(
+        ?string $modelName=null,
+        ?array $parameters=null,
+        ?string $function=null
+    ): ModelInterface
     {
         $parametersFactory = new ParametersFactory($this->services, $this->models);
 
@@ -37,7 +42,7 @@ class ModelFactory
 
         $model = $modelName ?? $parametersFactory->getModelName();
 
-        $response = new $model($this->services);
+        $response = new $model($this->services, $function);
 
         $response->setParameters($parameters);
 

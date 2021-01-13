@@ -216,7 +216,6 @@ class ParametersFactory
             $response['positioned'] = $modelBuilder->getParameters();
 
             unset($modelBuilder);
-            //$response['positioned'] = $this->loadPositionedParameters($uri);
         }
 
         $response['named'] = $this->getNamedParameters($namedParametersString);
