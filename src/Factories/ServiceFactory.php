@@ -44,6 +44,10 @@ class ServiceFactory
             $this->services[Path::class] = new Path();
         }
 
+        if ($this->getPath()->getUrl() !== null) {
+            $this->startSession();
+        }
+
         $this->initialiseCoreServices();
         $this->initialiseBaseService();
     }
@@ -182,23 +186,17 @@ class ServiceFactory
      */
     private function loadServicesFromCache(): void
     {
-        $this->startSession();
+        if (filemtime($this->servicesCacheFile) < (time() - 5 * 60)) {
+            unlink($this->servicesCacheFile);
+        } else {
+            $serviceFile = file_get_contents($this->servicesCacheFile);
 
-        if (array_key_exists('minimalismServices', $_SESSION)) {
-            $this->services = $_SESSION['minimalismServices'];
-        } elseif (is_file($this->servicesCacheFile)){
-            if (filemtime($this->servicesCacheFile) < (time() - 5 * 60)) {
-                unlink($this->servicesCacheFile);
-            } else {
-                $serviceFile = file_get_contents($this->servicesCacheFile);
+            if ($serviceFile !== false){
+                $this->services = unserialize($serviceFile, [true]);
 
-                if ($serviceFile !== false){
-                    $this->services = unserialize($serviceFile, [true]);
-
-                    foreach ($this->services ?? [] as $service){
-                        if ($service !== null && !is_string($service)) {
-                            $service->initialise();
-                        }
+                foreach ($this->services ?? [] as $service){
+                    if ($service !== null && !is_string($service)) {
+                        $service->initialise();
                     }
                 }
             }
@@ -223,11 +221,7 @@ class ServiceFactory
                 if (!preg_match('/^[a-z0-9]{32}$/', $sessid)) {
                     return;
                 }
-            } else {
-                session_start();
-                return;
             }
-
 
             session_start();
         }
