@@ -79,4 +79,17 @@ interface DataInterface extends ServiceInterface
         array $records,
         ?CacheBuilderInterface $cacheBuilder=null,
     ): array;
+
+    /**
+     * @param string $tableInterfaceClassName
+     * @param string $functionName
+     * @param array $parameters
+     * @throws RecordNotFoundException
+     * @return array|null
+     */
+    public function run(
+        string $tableInterfaceClassName,
+        string $functionName,
+        array $parameters,
+    ): ?array;
 }
