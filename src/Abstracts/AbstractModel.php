@@ -44,6 +44,8 @@ class AbstractModel implements ModelInterface
                         $this->function = 'delete';
                     } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
                         $this->function = 'put';
+                    } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PATCH') {
+                        $this->function = 'patch';
                     }
                 }
             }
