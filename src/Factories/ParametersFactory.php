@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Builders\ModelBuilder;
 use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
@@ -88,6 +89,7 @@ class ParametersFactory
                         }
                     } else {
                         $newParameterClass = EncryptedParameter::class;
+                        /** @noinspection NotOptimalIfConditionsInspection */
                         if (array_key_exists($methodParameter->getName(), $parameters['named'])){
                             $newParameter = $parameters['named'][$methodParameter->getName()];
                         }
@@ -130,6 +132,14 @@ class ParametersFactory
                     } else {
                         $response[] = $methodParameter->isDefaultValueAvailable() ? $methodParameter->getDefaultValue() : null;
                     }
+                } elseif (
+                    $parameter->getName() === Document::class
+                    && array_key_exists($methodParameter->getName(), $parameters['named'])
+                    && is_array($parameters['named'][$methodParameter->getName()])
+                ) {
+                    $response[] = new Document(
+                        $parameters['named'][$parameter->getName()]
+                    );
                 }
             } catch (ReflectionException) {
                 if (!array_key_exists($methodParameter->getName(), $parameters['named']) && !$parameter->allowsNull()){
