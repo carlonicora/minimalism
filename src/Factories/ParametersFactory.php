@@ -138,7 +138,7 @@ class ParametersFactory
                     && is_array($parameters['named'][$methodParameter->getName()])
                 ) {
                     $response[] = new Document(
-                        $parameters['named'][$parameter->getName()]
+                        $parameters['named'][$methodParameter->getName()]
                     );
                 }
             } catch (ReflectionException) {
