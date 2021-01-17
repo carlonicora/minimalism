@@ -80,7 +80,11 @@ class ParametersFactory
             try {
                 $methodParameterType = new ReflectionClass($parameter->getName());
                 if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
-                    $response[] = $this->services->create($parameter->getName());
+                    $classResponse = $this->services->create($parameter->getName());
+                    if ($classResponse === null && !$parameter->allowsNull()){
+                        throw new RuntimeException($parameter->getName() . ' missing', 500);
+                    }
+                    $response[] = $classResponse;
                 } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
                     if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
                         $newParameterClass = PositionedEncryptedParameter::class;
