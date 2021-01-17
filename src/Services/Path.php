@@ -119,6 +119,14 @@ class Path implements ServiceInterface
     {
         return $this->servicesViewsDirectories;
     }
+    
+    /**
+     * @param string $directory
+     */
+    public function addServiceViewDirectory(string $directory): void
+    {
+        $this->servicesViewsDirectories[] = $directory;
+    }
 
     /**
      *
