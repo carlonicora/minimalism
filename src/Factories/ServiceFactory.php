@@ -186,17 +186,19 @@ class ServiceFactory
      */
     private function loadServicesFromCache(): void
     {
-        if (filemtime($this->servicesCacheFile) < (time() - 5 * 60)) {
-            unlink($this->servicesCacheFile);
-        } else {
-            $serviceFile = file_get_contents($this->servicesCacheFile);
+        if (file_exists($this->servicesCacheFile)) {
+            if (filemtime($this->servicesCacheFile) < (time() - 5 * 60)) {
+                unlink($this->servicesCacheFile);
+            } else {
+                $serviceFile = file_get_contents($this->servicesCacheFile);
 
-            if ($serviceFile !== false){
-                $this->services = unserialize($serviceFile, [true]);
+                if ($serviceFile !== false) {
+                    $this->services = unserialize($serviceFile, [true]);
 
-                foreach ($this->services ?? [] as $service){
-                    if ($service !== null && !is_string($service)) {
-                        $service->initialise();
+                    foreach ($this->services ?? [] as $service) {
+                        if ($service !== null && !is_string($service)) {
+                            $service->initialise();
+                        }
                     }
                 }
             }
@@ -229,10 +231,10 @@ class ServiceFactory
 
     /**
      * @param string $serviceName
-     * @return ServiceInterface
+     * @return ServiceInterface|null
      * @throws Exception
      */
-    public function create(string $serviceName): ServiceInterface
+    public function create(string $serviceName): ?ServiceInterface
     {
         if (!array_key_exists($serviceName, $this->services)) {
             $parameters = $this->loadDependencies($serviceName);
@@ -242,7 +244,7 @@ class ServiceFactory
             $serviceName = $this->services[$serviceName];
         }
 
-        return $this->services[$serviceName];
+        return $this->services[$serviceName] ?? null;
     }
 
     /**
@@ -301,7 +303,10 @@ class ServiceFactory
     {
         if ($this->env === null) {
             $this->env = Dotenv::createImmutable($this->getPath()->getRoot());
-            $this->env->load();
+            try {
+                $this->env->load();
+            } catch (Exception) {
+            }
         }
     }
 }
