@@ -26,10 +26,9 @@ class ServiceFactory
     private string $servicesCacheFile;
 
     /**
-     * ServiceFactory constructor.
      * @throws Exception
      */
-    public function __construct()
+    public function initialise(): void
     {
         $this->servicesCacheFile = dirname(__DIR__, 5)
             . DIRECTORY_SEPARATOR . 'data'
