@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Interfaces\CacheInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
+use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
@@ -95,7 +96,7 @@ class ServiceFactory
      */
     private function initialiseBaseService(): void
     {
-        if (array_key_exists('default', $this->services)){
+        if (array_key_exists(DefaultServiceInterface::class, $this->services)){
             return;
         }
 
@@ -113,8 +114,13 @@ class ServiceFactory
             $servicePath = explode('\\', $foundNamespace);
             $serviceName = '\\' . $foundNamespace . $servicePath[count($servicePath)-2];
 
+            $reflectedClass = new ReflectionClass($serviceName);
+            if (!$reflectedClass->implementsInterface(DefaultServiceInterface::class)){
+                throw new RuntimeException('The main service is not defined as Default Service', 500);
+            }
+
             $this->services[$serviceName] = $this->create($serviceName);
-            $this->services['default'] = $serviceName;
+            $this->services[DefaultServiceInterface::class] = $serviceName;
         }
     }
 
@@ -264,7 +270,9 @@ class ServiceFactory
                     $parameter = $serviceParameter->getType();
                     try {
                         $reflect = new ReflectionClass($parameter->getName());
-                        if ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(EncrypterInterface::class)) {
+                        if ($reflect->implementsInterface(DefaultServiceInterface::class)){
+                            $response[] = $this->services[$this->services[DefaultServiceInterface::class]];
+                        } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(EncrypterInterface::class)) {
                             $response[] = $this->services[$this->services[EncrypterInterface::class]];
                         } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(DataInterface::class)) {
                             $response[] = $this->services[$this->services[DataInterface::class]];
