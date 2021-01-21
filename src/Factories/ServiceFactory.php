@@ -13,6 +13,7 @@ use Exception;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
+use ReflectionUnionType;
 use RuntimeException;
 
 class ServiceFactory
@@ -112,7 +113,7 @@ class ServiceFactory
 
         if ($foundNamespace !== null){
             $servicePath = explode('\\', $foundNamespace);
-            $serviceName = '\\' . $foundNamespace . $servicePath[count($servicePath)-2];
+            $serviceName = $foundNamespace . $servicePath[count($servicePath)-2];
 
             $reflectedClass = new ReflectionClass($serviceName);
             if (!$reflectedClass->implementsInterface(DefaultServiceInterface::class)){
@@ -266,22 +267,33 @@ class ServiceFactory
             if ($serviceReflection->hasMethod('__construct')) {
                 $serviceParameters = $serviceReflection->getMethod('__construct')->getParameters();
                 foreach ($serviceParameters ?? [] as $serviceParameter) {
-                    /** @var ReflectionNamedType $parameter */
+                    /** @var ReflectionNamedType|ReflectionUnionType $parameter */
                     $parameter = $serviceParameter->getType();
                     try {
-                        $reflect = new ReflectionClass($parameter->getName());
-                        if ($reflect->implementsInterface(DefaultServiceInterface::class)){
-                            $response[] = $this->services[$this->services[DefaultServiceInterface::class]];
-                        } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(EncrypterInterface::class)) {
-                            $response[] = $this->services[$this->services[EncrypterInterface::class]];
-                        } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(DataInterface::class)) {
-                            $response[] = $this->services[$this->services[DataInterface::class]];
-                        } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(TransformerInterface::class)) {
-                            $response[] = $this->services[$this->services[TransformerInterface::class]];
-                        } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(CacheInterface::class)) {
-                            $response[] = $this->services[$this->services[CacheInterface::class]];
-                        } elseif ($reflect->implementsInterface(ServiceInterface::class)) {
-                            $response[] = $this->create($parameter->getName());
+                        if (get_class($parameter) === ReflectionUnionType::class){
+                            $subResponse = null;
+                            /** @var ReflectionNamedType $subParameter */
+                            foreach ($parameter->getTypes() ?? [] as $subParameter) {
+                                $reflect = new ReflectionClass($subParameter->getName());
+                                if ($reflect->implementsInterface(DefaultServiceInterface::class)) {
+                                    $subResponse = $this->services[$this->services[DefaultServiceInterface::class]];
+                                    break;
+                                }
+                            }
+                            $response[] = $subResponse;
+                        } else {
+                            $reflect = new ReflectionClass($parameter->getName());
+                            if ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(EncrypterInterface::class)) {
+                                $response[] = $this->services[$this->services[EncrypterInterface::class]];
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(DataInterface::class)) {
+                                $response[] = $this->services[$this->services[DataInterface::class]];
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(TransformerInterface::class)) {
+                                $response[] = $this->services[$this->services[TransformerInterface::class]];
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(CacheInterface::class)) {
+                                $response[] = $this->services[$this->services[CacheInterface::class]];
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class)) {
+                                $response[] = $this->create($parameter->getName());
+                            }
                         }
                     } catch (ReflectionException) {
                         $this->loadDotEnv();

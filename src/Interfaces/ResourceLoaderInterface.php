@@ -5,13 +5,11 @@ interface ResourceLoaderInterface
 {
     /**
      * UsersLoader constructor.
-     * @param ServiceInterface $jsonApi
-     * @param CacheInterface|null $cache
-     * @param ServiceInterface|null $service
+     * @param LoaderInterface $loader
+     * @param ServiceInterface $data
      */
     public function __construct(
-        ServiceInterface $jsonApi,
-        ?CacheInterface $cache,
-        ?ServiceInterface $service,
+        LoaderInterface $loader,
+        ServiceInterface $data,
     );
 }

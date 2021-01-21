@@ -3,9 +3,11 @@ namespace CarloNicora\Minimalism\Commands;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
+use CarloNicora\Minimalism\Interfaces\ResourceLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
@@ -67,13 +69,20 @@ class FunctionParametersCommand
                         $methodParameter,
                         $parameters,
                     );
-                } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)){
+                } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)) {
                     $response[] = $this->getParameter(
                         methodParameterType: $methodParameterType,
                         methodParameter: $methodParameter,
                         parameter: $parameter,
                         parameters: $parameters
                     );
+                } elseif ($methodParameterType->implementsInterface(DataLoaderInterface::class) || $methodParameterType->implementsInterface(ResourceLoaderInterface::class)){
+                    if (($pools = $this->services->create('CarloNicora\\Minimalism\\Services\\Pools\\Pools')) === null){
+                        throw new RuntimeException('The system has not required minimalism-service-pools', 500);
+                    }
+
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $response[] = $pools->get($parameter->getName());
                 } elseif (
                     $parameter->getName() === Document::class
                     && array_key_exists($methodParameter->getName(), $parameters['named'])
@@ -163,7 +172,7 @@ class FunctionParametersCommand
     private function getEncryptedParameter(
         ReflectionClass $methodParameterType,
         ReflectionParameter $methodParameter,
-        array $parameters,
+        array &$parameters,
     ): PositionedParameterInterface|ParameterInterface|null
     {
         $newParameter = null;
@@ -208,7 +217,7 @@ class FunctionParametersCommand
         ReflectionClass $methodParameterType,
         ReflectionParameter $methodParameter,
         ReflectionNamedType $parameter,
-        array $parameters,
+        array &$parameters,
     ): ParameterInterface|null
     {
         $newParameter = null;

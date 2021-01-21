@@ -5,13 +5,11 @@ interface DataLoaderInterface
 {
     /**
      * UsersLoader constructor.
+     * @param LoaderInterface $loader
      * @param DataInterface $data
-     * @param CacheInterface|null $cache
-     * @param ServiceInterface|null $service
      */
     public function __construct(
+        LoaderInterface $loader,
         DataInterface $data,
-        ?CacheInterface $cache,
-        ?ServiceInterface $service,
     );
 }
