@@ -325,6 +325,11 @@ class ServiceFactory
                                     $subResponse = $this->services[$this->services[DefaultServiceInterface::class]];
                                     break;
                                 }
+
+                                if ($reflect->implementsInterface(LoggerInterface::class)) {
+                                    $subResponse = $this->services[LoggerInterface::class];
+                                    break;
+                                }
                             }
                             $response[] = $subResponse;
                         } else {
