@@ -5,8 +5,10 @@ use CarloNicora\Minimalism\Interfaces\CacheInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
+use CarloNicora\Minimalism\Services\Logger;
 use CarloNicora\Minimalism\Services\Path;
 use Dotenv\Dotenv;
 use Exception;
@@ -45,6 +47,12 @@ class ServiceFactory
             $this->services[Path::class] = new Path();
         }
 
+        if (array_key_exists(LoggerInterface::class, $this->services)) {
+            $this->services[LoggerInterface::class]->initialise();
+        } else {
+            $this->initialiseLogger();
+        }
+
         if ($this->getPath()->getUrl() !== null) {
             $this->startSession();
         }
@@ -77,6 +85,37 @@ class ServiceFactory
     }
 
     /**
+     * @return LoggerInterface
+     */
+    public function getLogger(): LoggerInterface
+    {
+        return $this->services[LoggerInterface::class];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function initialiseLogger(): void
+    {
+        $namespace = $this->getDefaultNamespace();
+
+        $loggerClass = $namespace . 'Services\\Logger\\Logger';
+
+        if (!class_exists($loggerClass)){
+            $loggerClass = Logger::class;
+        }
+
+        $logger = $this->create($loggerClass);
+
+        if ($logger === null){
+            throw new RuntimeException('Cannot initialise the logger', 500);
+        }
+
+        unset($this->services[$loggerClass]);
+        $this->services[LoggerInterface::class] = $logger;
+    }
+
+    /**
      * @return EncrypterInterface|null
      */
     public function getEncrypter(): ?EncrypterInterface
@@ -101,28 +140,35 @@ class ServiceFactory
             return;
         }
 
-        $foundNamespace = null;
+        $namespace = $this->getDefaultNamespace();
+        $servicePath = explode('\\', $namespace);
+        $serviceName = $namespace . $servicePath[count($servicePath)-2];
+
+        $reflectedClass = new ReflectionClass($serviceName);
+        if (!$reflectedClass->implementsInterface(DefaultServiceInterface::class)){
+            throw new RuntimeException('The main service is not defined as Default Service', 500);
+        }
+
+        $this->services[$serviceName] = $this->create($serviceName);
+        $this->services[DefaultServiceInterface::class] = $serviceName;
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private function getDefaultNamespace(): string
+    {
         $file = json_decode(file_get_contents($this->getPath()->getRoot() . DIRECTORY_SEPARATOR . 'composer.json'), true, 512, JSON_THROW_ON_ERROR);
         if (array_key_exists('autoload', $file) && array_key_exists('psr-4', $file['autoload'])) {
             foreach ($file['autoload']['psr-4'] as $namespace => $folder) {
                 if ($folder === 'src/') {
-                    $foundNamespace = $namespace;
+                    return $namespace;
                 }
             }
         }
 
-        if ($foundNamespace !== null){
-            $servicePath = explode('\\', $foundNamespace);
-            $serviceName = $foundNamespace . $servicePath[count($servicePath)-2];
-
-            $reflectedClass = new ReflectionClass($serviceName);
-            if (!$reflectedClass->implementsInterface(DefaultServiceInterface::class)){
-                throw new RuntimeException('The main service is not defined as Default Service', 500);
-            }
-
-            $this->services[$serviceName] = $this->create($serviceName);
-            $this->services[DefaultServiceInterface::class] = $serviceName;
-        }
+        throw new RuntimeException('Default namespace not found in composer.json', 500);
     }
 
     /**

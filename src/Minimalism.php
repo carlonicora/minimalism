@@ -103,6 +103,7 @@ class Minimalism
         try {
             $this->services->initialise();
         } catch (Exception $e) {
+            $this->services->getLogger()->error('Failed to initialise services');
             echo $e->getMessage();
             exit;
         }
@@ -142,6 +143,11 @@ class Minimalism
             $response = $data->export();
         } catch (Exception $e) {
             $httpResponse = $e->getCode() ?? 500;
+
+            if ($httpResponse === 500){
+                $this->services->getLogger()->error($e->getMessage());
+            }
+
             $document = new Document();
             $document->addError(
                 new Error(
@@ -168,7 +174,10 @@ class Minimalism
                     $data,
                     $view
                 );
-            } catch (Exception| Throwable) {
+            } catch (Exception| Throwable $e) {
+                if ($httpResponse === 500){
+                    $this->services->getLogger()->error($e->getMessage());
+                }
                 $httpResponse = 500;
                 $response = 'Error transforming the view';
             }
