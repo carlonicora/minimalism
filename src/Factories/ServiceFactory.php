@@ -342,7 +342,9 @@ class ServiceFactory
                                 $response[] = $this->services[$this->services[TransformerInterface::class]];
                             } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(CacheInterface::class)) {
                                 $response[] = $this->services[$this->services[CacheInterface::class]];
-                            } elseif ($reflect->implementsInterface(ServiceInterface::class)) {
+                            } elseif ($reflect->implementsInterface(LoggerInterface::class)) {
+                                $response[] = $this->services[LoggerInterface::class];
+                            }elseif ($reflect->implementsInterface(ServiceInterface::class)) {
                                 $response[] = $this->create($parameter->getName());
                             }
                         }
