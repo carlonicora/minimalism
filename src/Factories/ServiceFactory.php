@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
-use CarloNicora\Minimalism\Services\Logger;
+use CarloNicora\Minimalism\Services\MinimalismLogger;
 use CarloNicora\Minimalism\Services\Path;
 use Dotenv\Dotenv;
 use Exception;
@@ -102,7 +102,7 @@ class ServiceFactory
         $loggerClass = $namespace . 'Services\\Logger\\Logger';
 
         if (!class_exists($loggerClass)){
-            $loggerClass = Logger::class;
+            $loggerClass = MinimalismLogger::class;
         }
 
         $logger = $this->create($loggerClass);

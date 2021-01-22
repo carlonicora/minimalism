@@ -103,8 +103,8 @@ class Minimalism
         try {
             $this->services->initialise();
         } catch (Exception $e) {
-            $this->services->getLogger()->error('Failed to initialise services');
             echo $e->getMessage();
+            $this->services->getLogger()->emergency('Failed to initialise services');
             exit;
         }
 
@@ -145,7 +145,7 @@ class Minimalism
             $httpResponse = $e->getCode() ?? 500;
 
             if ($httpResponse === 500){
-                $this->services->getLogger()->error($e->getMessage());
+                $this->services->getLogger()->emergency($e->getMessage());
             }
 
             $document = new Document();
