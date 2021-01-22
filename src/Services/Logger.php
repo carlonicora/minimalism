@@ -7,9 +7,6 @@ use Monolog\Handler\StreamHandler;
 
 class Logger implements ServiceInterface, LoggerInterface
 {
-    /** @var \Monolog\Logger */
-    protected \Monolog\Logger $log;
-
     /**
      * Logger constructor.
      * @param Path $path
@@ -23,37 +20,40 @@ class Logger implements ServiceInterface, LoggerInterface
 
     /**
      * @param string $message
+     * @param string|null $domain
      * @param array $context
      */
     public function error(
         string $message,
+        ?string $domain=null,
         array $context = []
     ): void
     {
-        $this->log->error($message, $context);
+        $this->getLogger($domain)->error($message, $context);
     }
 
     /**
      * @param string $message
+     * @param string|null $domain
      * @param array $context
      */
     public function warning(
         string $message,
+        ?string $domain=null,
         array $context = []
     ): void
     {
-        $this->log->error($message, $context);
+        $this->getLogger($domain)->warning($message, $context);
     }
 
     /**
-     *
+     * @param string|null $domain
+     * @return \Monolog\Logger
      */
-    public function initialise(
-
-    ): void
+    protected function getLogger(?string $domain=null): \Monolog\Logger
     {
-        $this->log = new \Monolog\Logger('minimalism');
-        $this->log->pushHandler(
+        $response = new \Monolog\Logger($domain??'minimalism');
+        $response->pushHandler(
             new StreamHandler(
                 $this->path->getRoot() . DIRECTORY_SEPARATOR
                 . 'data' . DIRECTORY_SEPARATOR
@@ -63,6 +63,17 @@ class Logger implements ServiceInterface, LoggerInterface
                 \Monolog\Logger::WARNING
             )
         );
+
+        return $response;
+    }
+
+    /**
+     *
+     */
+    public function initialise(
+
+    ): void
+    {
     }
 
     /**
