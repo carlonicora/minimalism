@@ -161,6 +161,10 @@ class Minimalism
             } catch (JsonException) {
                 $response = 'Error';
             }
+        } catch (Throwable $e){
+            $this->services->getLogger()->emergency($e->getMessage());
+            echo $e;
+            exit;
         }
 
         if ($response === '{"meta":[]}'){
