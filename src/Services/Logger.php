@@ -55,16 +55,24 @@ class Logger implements ServiceInterface, LoggerInterface
         $response = new \Monolog\Logger($domain??'minimalism');
         $response->pushHandler(
             new StreamHandler(
-                $this->path->getRoot() . DIRECTORY_SEPARATOR
-                . 'data' . DIRECTORY_SEPARATOR
-                . 'logs' . DIRECTORY_SEPARATOR
-                . 'minimalism' . DIRECTORY_SEPARATOR
+                $this->getLogsFolder()
                 . date('Ymd') . '.log',
                 \Monolog\Logger::WARNING
             )
         );
 
         return $response;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getLogsFolder(): string
+    {
+        return $this->path->getRoot() . DIRECTORY_SEPARATOR
+            . 'data' . DIRECTORY_SEPARATOR
+            . 'logs' . DIRECTORY_SEPARATOR
+            . 'minimalism' . DIRECTORY_SEPARATOR;
     }
 
     /**
