@@ -27,10 +27,12 @@ class AbstractModel implements ModelInterface
     /**
      * AbstractModel constructor.
      * @param ServiceFactory $services
+     * @param array $modelDefinition
      * @param string|null $function
      */
     public function __construct(
         private ServiceFactory $services,
+        private array $modelDefinition,
         private ?string $function=null,
     )
     {
@@ -141,9 +143,9 @@ class AbstractModel implements ModelInterface
         );
 
         $parameters = $parametersFactory->getModelFunctionParameters(
-            $this,
-            $this->function,
-            $this->parameters
+            modelDefinition: $this->modelDefinition,
+            function: $this->function,
+            parameters: $this->parameters
         );
 
         return $this->{$this->function}(...$parameters);

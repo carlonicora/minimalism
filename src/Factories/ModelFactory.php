@@ -1,20 +1,46 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\JsonApi\Document;
+use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
+use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Interfaces\ParameterInterface;
+use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
+use CarloNicora\Minimalism\Interfaces\ResourceLoaderInterface;
+use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Exception;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionParameter;
 
 class ModelFactory
 {
+    public const PARAMETER_TYPE_SERVICE=1;
+    public const PARAMETER_TYPE_DOCUMENT=2;
+    public const PARAMETER_TYPE_SIMPLE=3;
+    public const PARAMETER_TYPE_LOADER=4;
+    public const PARAMETER_TYPE_PARAMETER=5;
+    public const PARAMETER_TYPE_ENCRYPTER_PARAMETER=6;
+
+    /** @var ServiceFactory|null  */
+    private ?ServiceFactory $services=null;
+
     /** @var array  */
     private array $models;
 
+    /** @var array  */
+    private array $modelsDefinitions;
+
     /**
-     * ModelFactory constructor.
      * @param ServiceFactory $services
+     * @throws Exception
      */
-    public function __construct(private ServiceFactory $services)
+    public function initialise(ServiceFactory $services): void
     {
+        $this->services = $services;
         $this->loadModels();
     }
 
@@ -31,18 +57,30 @@ class ModelFactory
         ?string $function=null
     ): ModelInterface
     {
-        $parametersFactory = new ParametersFactory($this->services, $this->models);
+        $parametersFactory = new ParametersFactory(
+            $this->services,
+            $this->models,
+            $this->modelsDefinitions
+        );
 
-        /** @var ModelInterface $response */
         $response = null;
 
         if ($parameters === null) {
             $parameters = $parametersFactory->createParameters();
         }
 
-        $model = $modelName ?? $parametersFactory->getModelName();
+        if ($modelName === null){
+            $modelName = $parametersFactory->getModelClass();
+        }
 
-        $response = new $model($this->services, $function);
+        $modelDefinition = $this->modelsDefinitions[$modelName];
+
+        /** @var ModelInterface $response */
+        $response = new $modelName(
+            services: $this->services,
+            modelDefinition: $modelDefinition,
+            function: $function
+        );
 
         $response->setParameters($parameters);
 
@@ -51,57 +89,62 @@ class ModelFactory
 
     /**
      *
+     * @throws Exception
      */
     private function loadModels(): void
     {
-        $modelCache = $this->services->getPath()->getRoot()
+        $modelDirectoryCache = $this->services->getPath()->getRoot()
             . DIRECTORY_SEPARATOR . 'data'
             . DIRECTORY_SEPARATOR . 'cache'
-            . DIRECTORY_SEPARATOR . 'models.cache';
+            . DIRECTORY_SEPARATOR;
 
-        if (file_exists($modelCache) && ($modelsFile = file_get_contents($modelCache)) !== false){
+        $modelCache = $modelDirectoryCache . 'models.cache';
+        $serviceModelCache = $modelDirectoryCache . 'servicesModels.cache';
+        $modelDefinitionsCache = $modelDirectoryCache . 'modelsDefinitions.cache';
+
+        if (file_exists($modelCache)
+            && ($modelsFile = file_get_contents($modelCache)) !== false
+            && ($serviceModelFile = file_get_contents($serviceModelCache)) !== false
+            && ($modelDefinitionsFile = file_get_contents($modelDefinitionsCache)) !== false
+        ){
             $this->models = unserialize($modelsFile, [true]);
+            $serviceModels = unserialize($serviceModelFile, [true]);
+            $this->services->getPath()->setServicesModels($serviceModels);
+            $this->modelsDefinitions = unserialize($modelDefinitionsFile, [true]);
         } else {
+            $this->modelsDefinitions = [];
+            $serviceModels = [];
+
             $this->models = $this->loadFolderModels($this->services->getPath()->getRoot()
                 . DIRECTORY_SEPARATOR . 'src'
                 . DIRECTORY_SEPARATOR . 'Models'
             );
-            file_put_contents($modelCache, serialize($this->models));
-        }
-
-        $modelCache = $this->services->getPath()->getRoot()
-            . DIRECTORY_SEPARATOR . 'data'
-            . DIRECTORY_SEPARATOR . 'cache'
-            . DIRECTORY_SEPARATOR . 'servicesModels.cache';
-        if (file_exists($modelCache) && ($modelsFile = file_get_contents($modelCache)) !== false){
-            $this->services->getPath()->setServicesModels(
-                unserialize($modelsFile, [true])
-            );
-        } elseif ($this->services->getPath()->getServicesModelsDirectories() !== []) {
-            $additionalModels = [];
 
             foreach ($this->services->getPath()->getServicesModelsDirectories() ?? [] as $additionalDirectory) {
-                $additionalModels[] = $this->loadFolderModels($additionalDirectory);
+                $serviceModels[] = $this->loadFolderModels($additionalDirectory);
             }
+            $this->services->getPath()->setServicesModels($serviceModels);
 
-            $this->services->getPath()->setServicesModels($additionalModels);
-
-            file_put_contents($modelCache, serialize($additionalModels));
+            file_put_contents($modelCache, serialize($this->models));
+            file_put_contents($serviceModelCache, serialize($serviceModels));
+            file_put_contents($modelDefinitionsCache, serialize($this->modelsDefinitions));
         }
     }
 
     /**
      * @param string $folder
+     * @param bool $isRoot
      * @return array
+     * @throws Exception
      */
-    private function loadFolderModels(string $folder): array
+    private function loadFolderModels(string $folder, bool $isRoot=true): array
     {
         $response = [];
         $models = glob($folder . DIRECTORY_SEPARATOR . '*');
         foreach ($models ?? [] as $model) {
             $modelInfo = pathinfo($model);
             if (!array_key_exists('extension', $modelInfo)){
-                $response[strtolower(basename($model)) . '-folder'] = $this->loadFolderModels($model);
+                $response[strtolower(basename($model)) . '-folder'] = $this->loadFolderModels($model, false);
             } elseif ($modelInfo['extension'] === 'php'){
                 $modelClass = null;
                 $modelName = basename(substr($model, 0, -4));
@@ -111,14 +154,88 @@ class ModelFactory
                 ) {
                     $modelClass = $m[1] . '\\' . $modelName;
                     $response[strtolower($modelName)] = $modelClass;
-                }
-
-                if ($modelClass !== null && strtolower($modelName) === 'index'){
-                    $response['*'] = $modelClass;
+                    $this->initialiseModel($modelClass);
                 }
             }
         }
 
+        if ($isRoot && array_key_exists('index', $response)){
+            $response['*'] = $response['index'];
+        }
+
         return $response;
+    }
+
+    /**
+     * @param string $modelClassName
+     * @throws Exception
+     */
+    private function initialiseModel(string $modelClassName): void
+    {
+        $response = [];
+
+        $model = new ReflectionClass($modelClassName);
+
+        foreach ($model->getMethods(ReflectionMethod::IS_PUBLIC) as $method){
+            if ($method->class === $modelClassName) {
+                $methodResponse = [];
+                $methodParameters = $method->getParameters();
+
+                /** @var ReflectionParameter $methodParameter */
+                foreach ($methodParameters ?? [] as $methodParameter) {
+                    /** @var ReflectionNamedType $parameter */
+                    $parameter = $methodParameter->getType();
+
+                    $parameterResponse = [
+                        'name' => $methodParameter->getName(),
+                        'allowsNull' => $methodParameter->allowsNull(),
+                        'defaultValue' => $methodParameter->isDefaultValueAvailable()
+                            ? $methodParameter->getDefaultValue()
+                            : null
+                    ];
+
+                    try {
+                        $methodParameterType = new ReflectionClass($parameter->getName());
+                        if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_SERVICE;
+                            $parameterResponse['identifier'] = $methodParameterType->getName();
+                        } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_ENCRYPTER_PARAMETER;
+                            if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                                $parameterResponse['isPositionedParameter'] = true;
+                            } else {
+                                $parameterResponse['isPositionedParameter'] = false;
+                            }
+                            $parameterResponse['identifier'] = EncryptedParameterInterface::class;
+                        } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)) {
+                            if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                                $parameterResponse['isPositionedParameter'] = true;
+                            } else {
+                                $parameterResponse['isPositionedParameter'] = false;
+                            }
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_PARAMETER;
+                            $parameterResponse['identifier'] = ParameterInterface::class;
+                        } elseif ($methodParameterType->implementsInterface(DataLoaderInterface::class)
+                            || $methodParameterType->implementsInterface(ResourceLoaderInterface::class)
+                        ) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_LOADER;
+                            $parameterResponse['identifier'] = $methodParameterType->getName();
+                        } elseif ($parameter->getName() === Document::class) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_DOCUMENT;
+                            $parameterResponse['identifier'] = Document::class;
+                        }
+                    } catch (ReflectionException) {
+                        $parameterResponse['type'] = self::PARAMETER_TYPE_SIMPLE;
+                        $parameterResponse['identifier'] = $parameter->getName();
+                    }
+
+                    $methodResponse[] = $parameterResponse;
+                }
+
+                $response[$method->getName()] = $methodResponse;
+            }
+        }
+
+        $this->modelsDefinitions[$modelClassName] = $response;
     }
 }

@@ -29,6 +29,9 @@ class ServiceFactory
     /** @var string  */
     private string $servicesCacheFile;
 
+    /** @var bool  */
+    private bool $hasBeenUpdated=false;
+
     /**
      * @throws Exception
      */
@@ -66,14 +69,31 @@ class ServiceFactory
      */
     public function __destruct()
     {
+        /** @var DefaultServiceInterface $defaultService */
+        $defaultService = $this->services[$this->services[DefaultServiceInterface::class]];
+
+        foreach ($defaultService->getDelayedServices() ?? [] as $delayedServices) {
+            if (array_key_exists($delayedServices, $this->services)){
+                $this->services[$delayedServices]->destroy();
+            }
+        }
+
+        $this->services[LoggerInterface::class]->destroy();
+
         /** @var ServiceInterface $service */
         foreach ($this->services ?? [] as $serviceName=>$service){
-            if ($service !== null && !is_string($service)) {
+            if ($service !== null
+                && !is_string($service)
+            ) {
                 $service->destroy();
             }
         }
 
-        file_put_contents($this->servicesCacheFile, serialize($this->services));
+        if ($this->hasBeenUpdated) {
+            file_put_contents($this->servicesCacheFile, serialize($this->services));
+        }
+
+        session_write_close();
     }
 
     /**
@@ -239,18 +259,14 @@ class ServiceFactory
     private function loadServicesFromCache(): void
     {
         if (file_exists($this->servicesCacheFile)) {
-            if (filemtime($this->servicesCacheFile) < (time() - 5 * 60)) {
-                unlink($this->servicesCacheFile);
-            } else {
-                $serviceFile = file_get_contents($this->servicesCacheFile);
+            $serviceFile = file_get_contents($this->servicesCacheFile);
 
-                if ($serviceFile !== false) {
-                    $this->services = unserialize($serviceFile, [true]);
+            if ($serviceFile !== false) {
+                $this->services = unserialize($serviceFile, [true]);
 
-                    foreach ($this->services ?? [] as $service) {
-                        if ($service !== null && !is_string($service)) {
-                            $service->initialise();
-                        }
+                foreach ($this->services ?? [] as $service) {
+                    if ($service !== null && !is_string($service)) {
+                        $service->initialise();
                     }
                 }
             }
@@ -289,6 +305,7 @@ class ServiceFactory
     public function create(string $serviceName): ?ServiceInterface
     {
         if (!array_key_exists($serviceName, $this->services)) {
+            $this->hasBeenUpdated = true;
             $parameters = $this->loadDependencies($serviceName);
 
             $this->services[$serviceName] = new $serviceName(...$parameters);

@@ -3,60 +3,62 @@ namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Commands\FunctionParametersCommand;
 use CarloNicora\Minimalism\Commands\ParametersReaderCommand;
-use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use Exception;
-use ReflectionClass;
 use RuntimeException;
 
 class ParametersFactory
 {
     /** @var string|null  */
-    private ?string $modelName=null;
+    private ?string $modelClass=null;
 
     /**
      * ParametersFactory constructor.
      * @param ServiceFactory $services
      * @param array|null $models
+     * @param array|null $modelsDefinitions
      */
     public function __construct(
         private ServiceFactory $services,
         private ?array $models=null,
+        private ?array $modelsDefinitions=null
     )
-    {}
+    {
+
+    }
 
     /**
      * @return string
      */
-    public function getModelName(): string
+    public function getModelClass(
+
+    ): string
     {
-        return $this->modelName;
+        return $this->modelClass;
     }
 
     /**
-     * @param ModelInterface $model
+     * @param array $modelDefinition
      * @param string $function
      * @param array $parameters
      * @return array
      * @throws Exception
      */
     public function getModelFunctionParameters(
-        ModelInterface $model,
+        array $modelDefinition,
         string $function,
         array $parameters,
     ): array
     {
-        $class = new ReflectionClass($model);
-
-        if (!$class->hasMethod($function)){
+        if (!array_key_exists($function, $modelDefinition)){
             throw new RuntimeException('Method not found', 404);
         }
 
         $functionParametersCommand = new FunctionParametersCommand(
             $this->services
         );
+        
         return $functionParametersCommand->generateFunctionParameters(
-            modelClass: get_class($model),
-            functionName: $function,
+            functionDefinition: $modelDefinition[$function],
             parameters: $parameters,
         );
     }
@@ -78,7 +80,7 @@ class ParametersFactory
             $response = $parametersReader->getWebParameters();
         }
 
-        $this->modelName = $parametersReader->getModelName();
+        $this->modelClass = $parametersReader->getModelClass();
 
         return $response;
     }

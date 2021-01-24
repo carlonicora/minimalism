@@ -9,7 +9,7 @@ use JsonException;
 class ParametersReaderCommand
 {
     /** @var string|null  */
-    private ?string $modelName=null;
+    private ?string $modelClass=null;
 
     /**
      * ParametersReaderCommand constructor.
@@ -24,9 +24,9 @@ class ParametersReaderCommand
     /**
      * @return string|null
      */
-    public function getModelName(): ?string
+    public function getModelClass(): ?string
     {
-        return $this->modelName;
+        return $this->modelClass;
     }
 
     /**
@@ -75,12 +75,12 @@ class ParametersReaderCommand
         $this->path->sanitiseUriVersion($uri);
 
         if ($uri === '/'){
-            $this->modelName = $this->models['*'];
+            $this->modelClass = $this->models['*'];
         } else {
             $uriParts = explode('/', substr($uri, 1));
             $modelBuilder = new ModelBuilder($uriParts, $this->models, $this->path->getServicesModels());
 
-            $this->modelName = $modelBuilder->getModel();
+            $this->modelClass = $modelBuilder->getModelClass();
             $response['positioned'] = $modelBuilder->getParameters();
 
             unset($modelBuilder);

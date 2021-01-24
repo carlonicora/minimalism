@@ -13,8 +13,23 @@ use Throwable;
 
 class Minimalism
 {
+    private const INITIALISE_SERVICES=1;
+    private const INITIALISE_MODELS=2;
+
     /** @var ServiceFactory  */
     private ServiceFactory $services;
+
+    /** @var ModelFactory  */
+    private ModelFactory $modelFactory;
+
+    /** @var string|null  */
+    private ?string $viewName=null;
+
+    /** @var string  */
+    private string $contentType='text/plain';
+
+    /** @var int  */
+    private int $httpResponseCode=200;
 
     /** @var string[]  */
     private array $httpCodes = [
@@ -84,33 +99,154 @@ class Minimalism
     public function __construct()
     {
         $this->services = new ServiceFactory();
+        $this->modelFactory = new ModelFactory();
     }
 
     /**
-     * @return string
+     * @param int $type
      */
-    private function getProtocol() : string
+    private function initialise(int $type): void
     {
-        return ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
+        try {
+            if ($type === self::INITIALISE_SERVICES) {
+                $this->services->initialise();
+            } else {
+                $this->modelFactory->initialise($this->services);
+                $this->contentType = 'application/vnd.api+json';
+            }
+        } catch (Exception $e) {
+            $this->httpResponseCode = 500;
+            $this->sendException($e);
+
+            $this->services->getLogger()->emergency(
+                'Failed to initialise '
+                . $type === self::INITIALISE_SERVICES
+                    ? 'services'
+                    : 'models'
+            );
+            exit;
+        }
     }
 
     /**
      * @param string|null $modelName
-     * @return string
      */
-    public function render(?string $modelName=null): string
+    public function render(?string $modelName=null): void
     {
-        try {
-            $this->services->initialise();
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            $this->services->getLogger()->emergency('Failed to initialise services');
-            exit;
+        $this->initialise(self::INITIALISE_SERVICES);
+        $this->initialise(self::INITIALISE_MODELS);
+
+        $data = $this->generateData($modelName);
+
+        if ($this->viewName !== null
+            && ($transformer = $this->services->getTransformer()) !== null
+        ){
+            $this->contentType = $transformer->getContentType();
+
+            try {
+                $response = $transformer->transform(
+                    $data,
+                    $this->viewName
+                );
+            } catch (Exception| Throwable $e) {
+                $this->httpResponseCode = 500;
+                $this->sendException($e);
+                exit;
+            }
+        } else {
+            try {
+                $response = $data->export();
+            } catch (JsonException) {
+                $response = '';
+            }
         }
 
-        header('Content-Type: application/vnd.api+json');
+        $this->send($response);
+    }
+
+    /**
+     * @param string|null $modelName
+     * @return Document
+     */
+    private function generateData(
+        ?string $modelName, 
+    ): Document
+    {
+        $data = null;
+        $function = null;
+
+        try {
+            $parameters = null;
+            do {
+                $model = $this->modelFactory->create($modelName, $parameters, $function);
+                $this->httpResponseCode = $model->run();
+
+                if ($this->httpResponseCode === 302){
+                    $parameters = $model->getRedirectionParameters();
+                    $modelName = $model->getRedirection();
+                    $function = $model->getRedirectionFunction();
+                }
+            } while ($this->httpResponseCode === 302);
+
+            $this->viewName = $model->getView();
+            return $model->getDocument();
+        } catch (Exception $e) {
+            $this->httpResponseCode = $e->getCode() ?? 500;
+            $this->sendException($e);
+            exit;
+        } catch (Throwable $e){
+            $this->httpResponseCode = 500;
+            $this->sendException($e);
+            exit;
+        }
+    }
+
+    /**
+     * @param Exception|Throwable $exception
+     */
+    private function sendException(Exception|Throwable $exception): void
+    {
+        $data = new Document();
+        $data->addError(
+            new Error(
+                e: $exception,
+                httpStatusCode: $this->httpResponseCode,
+                detail: $exception->getMessage(),
+            )
+        );
+
+        try {
+            $response = $data->export();
+        } catch (JsonException) {
+            $response = 'Error';
+        }
+
+        $this->send($response);
+
+        if ($this->httpResponseCode === 500){
+            $this->services->getLogger()->emergency($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param string $response
+     */
+    private function send(
+        string $response,
+    ): void
+    {
+        if ($response === '{"meta":[]}'){
+            $response = '';
+        }
+
+        header('Content-Type: ' . $this->contentType);
 
         if ($this->services->getPath()->getUrl() !== null) {
+            header(
+                ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1')
+                . ' ' . $this->httpResponseCode
+                . ' ' . $this->httpCodes[$this->httpResponseCode]
+            );
             header(
                 'X-Minimalism-App: '
                 . explode('/', Versions::rootPackageName())[1] . '/'
@@ -122,73 +258,8 @@ class Minimalism
             );
         }
 
-        $modelFactory = new ModelFactory($this->services);
+        echo $response;
 
-        $model = null;
-        $data = null;
-        $function = null;
-
-        try {
-            $parameters = null;
-            do {
-                $model = $modelFactory->create($modelName, $parameters, $function);
-                $httpResponse = $model->run();
-                if ($httpResponse === 302){
-                    $parameters = $model->getRedirectionParameters();
-                    $modelName = $model->getRedirection();
-                    $function = $model->getRedirectionFunction();
-                }
-            } while ($httpResponse === 302);
-            $data = $model->getDocument();
-            $response = $data->export();
-        } catch (Exception $e) {
-            $httpResponse = $e->getCode() ?? 500;
-
-            if ($httpResponse === 500){
-                $this->services->getLogger()->emergency($e->getMessage());
-            }
-
-            $document = new Document();
-            $document->addError(
-                new Error(
-                    e: $e,
-                    httpStatusCode: $httpResponse,
-                    detail: $e->getMessage(),
-                )
-            );
-            try {
-                $response = $document->export();
-            } catch (JsonException) {
-                $response = 'Error';
-            }
-        } catch (Throwable $e){
-            $this->services->getLogger()->emergency($e->getMessage());
-            echo $e;
-            exit;
-        }
-
-        if ($response === '{"meta":[]}'){
-            $response = '';
-        }
-
-        if ($httpResponse < 400 && $model !== null && ($transformer = $this->services->getTransformer()) !== null && ($view = $model->getView()) !== null){
-            header('Content-Type: ' . $transformer->getContentType());
-            try {
-                $response = $transformer->transform(
-                    $data,
-                    $view
-                );
-            } catch (Exception| Throwable $e) {
-                if ($httpResponse === 500){
-                    $this->services->getLogger()->error($e->getMessage());
-                }
-                $httpResponse = 500;
-                $response = 'Error transforming the view';
-            }
-        }
-
-        header($this->getProtocol() . ' ' . $httpResponse . ' ' . $this->httpCodes[$httpResponse]);
-
-        return $response ?? '';
+        fastcgi_finish_request();
     }
 }

@@ -9,9 +9,14 @@ interface ModelInterface
     /**
      * ModelInterface constructor.
      * @param ServiceFactory $services
+     * @param array $modelDefinition
      * @param string|null $function
      */
-    public function __construct(ServiceFactory $services, ?string $function=null);
+    public function __construct(
+        ServiceFactory $services,
+        array $modelDefinition,
+        ?string $function=null
+    );
 
     /**
      * @param array $parameters

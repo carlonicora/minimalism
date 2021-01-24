@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services;
 
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Objects\MinimalismLog;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\Handler;
 use Monolog\Handler\StreamHandler;
@@ -19,6 +20,9 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @var array
      */
     private array $handlers=[];
+
+    /** @var array|MinimalismLog[]  */
+    private array $logs=[];
 
     /**
      * Logger constructor.
@@ -62,7 +66,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->debug($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::DEBUG,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -76,7 +85,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->info($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::INFO,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -90,7 +104,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->notice($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::NOTICE,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -104,7 +123,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->warning($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::WARNING,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -118,7 +142,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->error($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::ERROR,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -132,7 +161,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->critical($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::CRITICAL,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -146,7 +180,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->alert($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::ALERT,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -160,7 +199,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         array $context = []
     ): void
     {
-        $this->getLogger($domain)->emergency($message, $context);
+        $this->logs[] = new MinimalismLog(
+            Logger::EMERGENCY,
+            $domain,
+            $message,
+            $context
+        );
     }
 
     /**
@@ -234,5 +278,32 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      */
     public function destroy(): void
     {
+        foreach ($this->logs ?? [] as $log){
+            switch ($log->getLevel()){
+                case Logger::INFO:
+                    $this->getLogger($log->getDomain())->info($log->getMessage(), $log->getContext());
+                    break;
+                case Logger::NOTICE:
+                    $this->getLogger($log->getDomain())->notice($log->getMessage(), $log->getContext());
+                    break;
+                case Logger::WARNING:
+                    $this->getLogger($log->getDomain())->warning($log->getMessage(), $log->getContext());
+                    break;
+                case Logger::ERROR:
+                    $this->getLogger($log->getDomain())->error($log->getMessage(), $log->getContext());
+                    break;
+                case Logger::CRITICAL:
+                    $this->getLogger($log->getDomain())->critical($log->getMessage(), $log->getContext());
+                    break;
+                case Logger::ALERT:
+                    $this->getLogger($log->getDomain())->alert($log->getMessage(), $log->getContext());
+                    break;
+                case Logger::EMERGENCY:
+                    $this->getLogger($log->getDomain())->emergency($log->getMessage(), $log->getContext());
+                    break;
+            }
+        }
+
+        $this->logs = [];
     }
 }
