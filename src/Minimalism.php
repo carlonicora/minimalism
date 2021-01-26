@@ -112,7 +112,6 @@ class Minimalism
                 $this->services->initialise();
             } else {
                 $this->modelFactory->initialise($this->services);
-                $this->contentType = 'application/vnd.api+json';
             }
         } catch (Exception $e) {
             $this->httpResponseCode = 500;
@@ -189,7 +188,9 @@ class Minimalism
             } while ($this->httpResponseCode === 302);
 
             $this->viewName = $model->getView();
-            return $model->getDocument();
+            $data = $model->getDocument();
+            $this->contentType = $data->getContentType();
+            return $data;
         } catch (Exception $e) {
             $this->httpResponseCode = $e->getCode() ?? 500;
             $this->sendException($e);
