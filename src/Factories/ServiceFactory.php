@@ -37,6 +37,10 @@ class ServiceFactory
      */
     public function initialise(): void
     {
+        if (PHP_SAPI !== 'cli') {
+            $this->startSession();
+        }
+
         $this->servicesCacheFile = dirname(__DIR__, 5)
             . DIRECTORY_SEPARATOR . 'data'
             . DIRECTORY_SEPARATOR . 'cache'
@@ -54,10 +58,6 @@ class ServiceFactory
             $this->services[LoggerInterface::class]->initialise();
         } else {
             $this->initialiseLogger();
-        }
-
-        if ($this->getPath()->getUrl() !== null) {
-            $this->startSession();
         }
 
         $this->initialiseCoreServices();
