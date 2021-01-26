@@ -109,4 +109,9 @@ interface LoggerInterface
         ?string $domain=null,
         array $context = []
     ): void;
+
+    /**
+     *
+     */
+    public function flush(): void;
 }

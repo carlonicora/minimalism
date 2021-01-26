@@ -267,16 +267,7 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
     /**
      *
      */
-    public function initialise(
-
-    ): void
-    {
-    }
-
-    /**
-     *
-     */
-    public function destroy(): void
+    public function flush(): void
     {
         foreach ($this->logs ?? [] as $log){
             switch ($log->getLevel()){
@@ -305,5 +296,22 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
         }
 
         $this->logs = [];
+    }
+
+    /**
+     *
+     */
+    public function initialise(
+
+    ): void
+    {
+    }
+
+    /**
+     *
+     */
+    public function destroy(): void
+    {
+        $this->flush();
     }
 }
