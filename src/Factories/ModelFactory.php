@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Factories;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
+use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
@@ -197,6 +198,9 @@ class ModelFactory
                     try {
                         $methodParameterType = new ReflectionClass($parameter->getName());
                         if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_SERVICE;
+                            $parameterResponse['identifier'] = $methodParameterType->getName();
+                        } elseif ($methodParameterType->implementsInterface(LoggerInterface::class)){
                             $parameterResponse['type'] = self::PARAMETER_TYPE_SERVICE;
                             $parameterResponse['identifier'] = $methodParameterType->getName();
                         } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
