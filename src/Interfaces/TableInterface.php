@@ -11,8 +11,13 @@ interface TableInterface
     /**
      * @param array $records
      * @param bool $delete
+     * @param bool $avoidSingleInsert
      */
-    public function update(array &$records, bool $delete = false): void;
+    public function update(
+        array &$records,
+        bool $delete = false,
+        bool $avoidSingleInsert=false
+    ): void;
 
     /**
      * @param array $records
