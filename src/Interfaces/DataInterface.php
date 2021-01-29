@@ -44,11 +44,13 @@ interface DataInterface extends ServiceInterface
      * @param string $tableInterfaceClassName
      * @param array $records
      * @param CacheBuilderInterface|null $cacheBuilder
+     * @param bool $avoidSingleInsert
      */
     public function update(
         string $tableInterfaceClassName,
         array $records,
         ?CacheBuilderInterface $cacheBuilder=null,
+        bool $avoidSingleInsert=false
     ): void;
 
     /**
@@ -66,12 +68,14 @@ interface DataInterface extends ServiceInterface
      * @param string $tableInterfaceClassName
      * @param array $records
      * @param CacheBuilderInterface|null $cacheBuilder
+     * @param bool $avoidSingleInsert
      * @return array
      */
     public function insert(
         string $tableInterfaceClassName,
         array $records,
         ?CacheBuilderInterface $cacheBuilder=null,
+        bool $avoidSingleInsert=false
     ): array;
 
     /**
