@@ -259,7 +259,6 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
     protected function getLogsFolder(): string
     {
         return $this->path->getRoot() . DIRECTORY_SEPARATOR
-            . 'data' . DIRECTORY_SEPARATOR
             . 'logs' . DIRECTORY_SEPARATOR
             . 'minimalism' . DIRECTORY_SEPARATOR;
     }
