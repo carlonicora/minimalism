@@ -95,7 +95,6 @@ class ModelFactory
     private function loadModels(): void
     {
         $modelDirectoryCache = $this->services->getPath()->getRoot()
-            . DIRECTORY_SEPARATOR . 'data'
             . DIRECTORY_SEPARATOR . 'cache'
             . DIRECTORY_SEPARATOR;
 

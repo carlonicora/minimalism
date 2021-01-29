@@ -42,7 +42,6 @@ class ServiceFactory
         }
 
         $this->servicesCacheFile = dirname(__DIR__, 5)
-            . DIRECTORY_SEPARATOR . 'data'
             . DIRECTORY_SEPARATOR . 'cache'
             . DIRECTORY_SEPARATOR . 'services.cache';
 
