@@ -232,9 +232,12 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
     protected function setHandlers(Logger $logger): void
     {
         foreach ($this->handlers ?? [] as $handler){
-            $logger->pushHandler(
-                $handler()
-            );
+            $loggerHandler = $handler();
+            if ($loggerHandler !== null) {
+                $logger->pushHandler(
+                    $loggerHandler
+                );
+            }
         }
     }
 
