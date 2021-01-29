@@ -24,7 +24,23 @@ interface TableInterface
      * @param $fieldValue
      * @return array
      */
-    public function loadByField(string $fieldName, $fieldValue): array;
+    public function byField(string $fieldName, $fieldValue): array;
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function byId($id): array;
+
+    /**
+     * @return array
+     */
+    public function all(): array;
+
+    /**
+     * @return int
+     */
+    public function count(): int;
 
     /**
      * @param string $joinedTableName
