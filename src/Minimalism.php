@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
+use CarloNicora\Minimalism\Exceptions\ForbiddenException;
 use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
 use Composer\InstalledVersions;
@@ -113,6 +114,17 @@ class Minimalism
             } else {
                 $this->modelFactory->initialise($this->services);
             }
+        } catch (ForbiddenException $forbiddenException) {
+            $this->httpResponseCode = 401;
+            $this->sendException($forbiddenException);
+
+            $this->services->getLogger()->debug(
+                'Access forbidden '
+                . $type === self::INITIALISE_SERVICES
+                    ? 'services'
+                    : 'models'
+            );
+            exit;
         } catch (Exception $e) {
             $this->httpResponseCode = 500;
             $this->sendException($e);
