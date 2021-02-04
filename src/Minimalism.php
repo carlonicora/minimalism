@@ -113,7 +113,7 @@ class Minimalism
             } else {
                 $this->modelFactory->initialise($this->services);
             }
-        } catch (Exception $e) {
+        } catch (Exception|Throwable $e) {
             $this->httpResponseCode = 500;
             $this->sendException($e);
 
@@ -168,7 +168,7 @@ class Minimalism
      * @return Document
      */
     private function generateData(
-        ?string $modelName, 
+        ?string $modelName,
     ): Document
     {
         $data = null;
@@ -208,13 +208,22 @@ class Minimalism
     private function sendException(Exception|Throwable $exception): void
     {
         $data = new Document();
-        $data->addError(
-            new Error(
-                e: $exception,
-                httpStatusCode: $this->httpResponseCode,
-                detail: $exception->getMessage(),
-            )
-        );
+        if (is_a($exception, Exception::class)){
+            $data->addError(
+                new Error(
+                    e: $exception,
+                    httpStatusCode: $this->httpResponseCode,
+                    detail: $exception->getMessage(),
+                )
+            );
+        } else {
+            $data->addError(
+                new Error(
+                    httpStatusCode: $this->httpResponseCode,
+                    detail: $exception->getMessage(),
+                )
+            );
+        }
 
         try {
             $response = $data->export();
