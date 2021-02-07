@@ -68,16 +68,20 @@ class ServiceFactory
      */
     public function __destruct()
     {
-        /** @var DefaultServiceInterface $defaultService */
-        $defaultService = $this->services[$this->services[DefaultServiceInterface::class]];
+        if (array_key_exists(DefaultServiceInterface::class, $this->services)) {
+            /** @var DefaultServiceInterface $defaultService */
+            $defaultService = $this->services[$this->services[DefaultServiceInterface::class]];
 
-        foreach ($defaultService->getDelayedServices() ?? [] as $delayedServices) {
-            if (array_key_exists($delayedServices, $this->services)){
-                $this->services[$delayedServices]->destroy();
+            foreach ($defaultService->getDelayedServices() ?? [] as $delayedServices) {
+                if (array_key_exists($delayedServices, $this->services)) {
+                    $this->services[$delayedServices]->destroy();
+                }
             }
         }
 
-        $this->services[LoggerInterface::class]->destroy();
+        if (array_key_exists(LoggerInterface::class, $this->services)) {
+            $this->services[LoggerInterface::class]->destroy();
+        }
 
         /** @var ServiceInterface $service */
         foreach ($this->services ?? [] as $serviceName=>$service){

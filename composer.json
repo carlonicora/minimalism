@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "12.1.23",
+  "version": "12.1.24",
   "homepage": "https://carlonicora.com",
   "time": "2020-12-28",
   "license": "MIT",
@@ -26,6 +26,7 @@
     }
   },
   "require": {
+    "php": ">=8.0",
     "ext-json": "*",
     "carlonicora/jsonapi": "~3.0",
     "vlucas/phpdotenv":"~4.0",
