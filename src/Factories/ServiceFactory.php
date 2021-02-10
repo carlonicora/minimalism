@@ -213,7 +213,10 @@ class ServiceFactory
             return;
         }
 
-        $servicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php');
+        $externalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php');
+        $internalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/carlonicora/minimalism/src/Services/*.php');
+
+        $servicesFiles = array_merge($internalServicesFiles, $externalServicesFiles);
 
         $services = [];
 
