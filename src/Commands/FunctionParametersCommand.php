@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Parameters\EncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
+use CarloNicora\Minimalism\Services\Pools;
 use Exception;
 use RuntimeException;
 
@@ -60,11 +61,8 @@ class FunctionParametersCommand
                     );
                     break;
                 case ModelFactory::PARAMETER_TYPE_LOADER:
-                    if (($pools = $this->services->create('CarloNicora\\Minimalism\\Services\\Pools\\Pools')) === null){
-                        throw new RuntimeException('The system has not required minimalism-service-pools', 500);
-                    }
-
-                    /** @noinspection PhpUndefinedMethodInspection */
+                    /** @var Pools $pools */
+                    $pools = $this->getServiceInterfaceParameter(Pools::class);
                     $parameterValue = $pools->get($parameterDefinition['identifier']);
                     break;
                 case ModelFactory::PARAMETER_TYPE_DOCUMENT:
@@ -90,7 +88,7 @@ class FunctionParametersCommand
 
             if ($parameterValue === null && $parameterDefinition['allowsNull'] === false){
                 throw new RuntimeException(
-                    'Required paramerer ' . $parameterDefinition['name'] . ' missing',
+                    'Required parameter ' . $parameterDefinition['name'] . ' missing',
                     412
                 );
             }

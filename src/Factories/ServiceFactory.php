@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\Minimalism\Interfaces\BuilderInterface;
 use CarloNicora\Minimalism\Interfaces\CacheInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
@@ -206,6 +207,8 @@ class ServiceFactory
             array_key_exists(DataInterface::class, $this->services)
             &&
             array_key_exists(CacheInterface::class, $this->services)
+            &&
+            array_key_exists(BuilderInterface::class, $this->services)
         ) {
             return;
         }
@@ -225,7 +228,8 @@ class ServiceFactory
 
                 try {
                     $services[] = new ReflectionClass($namespace . '\\' . substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4));
-                } catch (ReflectionException) {}
+                } catch (ReflectionException) {
+                }
             }
         }
 
@@ -233,6 +237,7 @@ class ServiceFactory
         $this->searchInterface($services, EncrypterInterface::class);
         $this->searchInterface($services, TransformerInterface::class);
         $this->searchInterface($services, DataInterface::class);
+        $this->searchInterface($services, BuilderInterface::class);
     }
 
     /**
@@ -362,6 +367,8 @@ class ServiceFactory
                                 $response[] = $this->services[$this->services[TransformerInterface::class]];
                             } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(CacheInterface::class)) {
                                 $response[] = $this->services[$this->services[CacheInterface::class]];
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(BuilderInterface::class)) {
+                                $response[] = $this->services[$this->services[BuilderInterface::class]];
                             } elseif ($reflect->implementsInterface(LoggerInterface::class)) {
                                 $response[] = $this->services[LoggerInterface::class];
                             }elseif ($reflect->implementsInterface(ServiceInterface::class)) {

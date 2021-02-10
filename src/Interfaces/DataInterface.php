@@ -15,6 +15,14 @@ interface DataInterface extends ServiceInterface
     public function setCacheInterface(CacheInterface $cache): void;
 
     /**
+     * @param DataFunctionInterface $dataFunction
+     * @return array
+     */
+    public function readByDataFunction(
+        DataFunctionInterface $dataFunction,
+    ): array;
+
+    /**
      * @param string $tableInterfaceClassName
      * @param string $functionName
      * @param array $parameters

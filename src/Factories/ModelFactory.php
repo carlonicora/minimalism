@@ -8,7 +8,6 @@ use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
-use CarloNicora\Minimalism\Interfaces\ResourceLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Exception;
 use ReflectionClass;
@@ -218,9 +217,7 @@ class ModelFactory
                             }
                             $parameterResponse['type'] = self::PARAMETER_TYPE_PARAMETER;
                             $parameterResponse['identifier'] = ParameterInterface::class;
-                        } elseif ($methodParameterType->implementsInterface(DataLoaderInterface::class)
-                            || $methodParameterType->implementsInterface(ResourceLoaderInterface::class)
-                        ) {
+                        } elseif ($methodParameterType->implementsInterface(DataLoaderInterface::class)) {
                             $parameterResponse['type'] = self::PARAMETER_TYPE_LOADER;
                             $parameterResponse['identifier'] = $methodParameterType->getName();
                         } elseif ($parameter->getName() === Document::class) {
