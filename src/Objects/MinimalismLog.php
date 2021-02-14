@@ -49,4 +49,16 @@ class MinimalismLog
     {
         return $this->context;
     }
+
+    /**
+     * @param string $request
+     */
+    public function addUriToContext(string $request): void
+    {
+        if ($this->context === null){
+            $this->context = [];
+        }
+
+        $this->context['uri'] = $request;
+    }
 }

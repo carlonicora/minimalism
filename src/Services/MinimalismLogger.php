@@ -271,6 +271,13 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
     public function flush(): void
     {
         foreach ($this->logs ?? [] as $log){
+
+            if ($this->path->getUrl() !== null){
+                $log->addUriToContext(
+                    $this->path->getUri()
+                );
+            }
+
             switch ($log->getLevel()){
                 case Logger::INFO:
                     $this->getLogger($log->getDomain())->info($log->getMessage(), $log->getContext());

@@ -11,6 +11,9 @@ class Path implements ServiceInterface
     /** @var string|null */
     private ?string $url=null;
 
+    /** @var string|null  */
+    private ?string $uri=null;
+
     /** @var array  */
     private array $servicesModels=[];
 
@@ -41,8 +44,8 @@ class Path implements ServiceInterface
         } else {
             $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
 
-            $uri = $_SERVER['REQUEST_URI'] ?? '';
-            if (($versioning = $this->sanitiseUriVersion($uri)) !== ''){
+            $this->uri = $_SERVER['REQUEST_URI'] ?? '';
+            if (($versioning = $this->sanitiseUriVersion($this->uri)) !== ''){
                 $this->url .= $versioning . '/';
             }
         }
@@ -86,6 +89,14 @@ class Path implements ServiceInterface
     public function getUrl(): ?string
     {
         return $this->url;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUri(): ?string
+    {
+        return $this->uri;
     }
 
     /**
