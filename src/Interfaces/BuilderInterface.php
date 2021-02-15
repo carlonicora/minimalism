@@ -33,4 +33,16 @@ interface BuilderInterface
         DataFunctionInterface $function,
         int $relationshipLevel=1
     ): array;
+
+    /**
+     * @param string $resourceTransformerClass
+     * @param array $data
+     * @param int $relationshipLevel
+     * @return array
+     */
+    public function buildByData(
+        string $resourceTransformerClass,
+        array $data,
+        int $relationshipLevel=1
+    ): array;
 }
