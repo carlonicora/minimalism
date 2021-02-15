@@ -24,6 +24,12 @@ class AbstractModel implements ModelInterface
     /** @var Document  */
     protected Document $document;
 
+    /** @var string|null  */
+    protected ?string $preRenderFunctionName=null;
+
+    /** @var string|null  */
+    protected ?string $postRenderFunctionName=null;
+
     /**
      * AbstractModel constructor.
      * @param ServiceFactory $services
@@ -102,6 +108,30 @@ class AbstractModel implements ModelInterface
     final public function getRedirectionFunction(): ?string
     {
         return $this->function;
+    }
+
+    /**
+     * @return callable|null
+     */
+    final public function getPreRenderFunction(): ?callable
+    {
+        if ($this->preRenderFunctionName !== null){
+            return [$this, $this->preRenderFunctionName];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return callable|null
+     */
+    final public function getPostRenderFunction(): ?callable
+    {
+        if ($this->postRenderFunctionName !== null){
+            return [$this, $this->postRenderFunctionName];
+        }
+
+        return null;
     }
 
     /**

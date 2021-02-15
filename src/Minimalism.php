@@ -178,6 +178,11 @@ class Minimalism
             $parameters = null;
             do {
                 $model = $this->modelFactory->create($modelName, $parameters, $function);
+
+                if (($preRenderFunction = $model->getPreRenderFunction()) !== null){
+                    $preRenderFunction();
+                }
+
                 $this->httpResponseCode = $model->run();
 
                 if ($this->httpResponseCode === 302){
@@ -186,6 +191,10 @@ class Minimalism
                     $function = $model->getRedirectionFunction();
                 }
             } while ($this->httpResponseCode === 302);
+
+            if (($postRenderFunction = $model->getPostRenderFunction()) !== null){
+                $postRenderFunction();
+            }
 
             $this->viewName = $model->getView();
             $data = $model->getDocument();

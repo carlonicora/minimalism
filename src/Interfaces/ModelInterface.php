@@ -52,4 +52,14 @@ interface ModelInterface
      * @return array|null
      */
     public function getRedirectionParameters(): ?array;
+
+    /**
+     * @return callable|null
+     */
+    public function getPreRenderFunction(): ?callable;
+
+    /**
+     * @return callable|null
+     */
+    public function getPostRenderFunction(): ?callable;
 }
