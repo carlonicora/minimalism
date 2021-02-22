@@ -5,7 +5,7 @@ interface DataFunctionInterface
 {
     public const TYPE_TABLE=1;
     public const TYPE_LOADER=2;
-    
+
     /**
      * DataFunctionInterface constructor.
      * @param int $type
@@ -50,6 +50,12 @@ interface DataFunctionInterface
     /**
      * @param int $parameterKey
      * @param string $parameterValue
+     * @deprecated use replaceParameters to replace all parameters at once
      */
     public function replaceParameter(int $parameterKey, string $parameterValue): void;
+
+    /**
+     * @param array $parameters
+     */
+    public function replaceParameters(array $parameters): void;
 }

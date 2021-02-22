@@ -67,9 +67,18 @@ class DataFunction implements DataFunctionInterface
     /**
      * @param int $parameterKey
      * @param string $parameterValue
+     * @deprecated use replaceParameters to replace all parameters at once
      */
     public function replaceParameter(int $parameterKey, string $parameterValue): void
     {
         $this->parameters[$parameterKey] = $parameterValue;
+    }
+
+    /**
+     * @param array $parameters
+     */
+    public function replaceParameters(array $parameters): void
+    {
+        $this->parameters = $parameters;
     }
 }
