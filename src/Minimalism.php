@@ -154,6 +154,19 @@ class Minimalism
             }
         } else {
             try {
+                if (array_key_exists('include', $_GET)) {
+                    $included = explode(',',$_GET['include']);
+                    $data->setIncludedResourceTypes($included);
+                }
+
+                if (array_key_exists('fields', $_GET)) {
+                    $fields = [];
+                    foreach ($_GET['fields'] as $resourceType=>$fieldList){
+                        $fields[$resourceType] = explode(',', $fieldList);
+                    }
+                    $data->setRequiredFields($fields);
+                }
+
                 $response = $data->export();
             } catch (JsonException) {
                 $response = '';
