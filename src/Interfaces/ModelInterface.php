@@ -62,4 +62,10 @@ interface ModelInterface
      * @return callable|null
      */
     public function getPostRenderFunction(): ?callable;
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function getParameterValue(string $name): mixed;
 }

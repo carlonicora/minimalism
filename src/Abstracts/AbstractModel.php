@@ -180,4 +180,14 @@ class AbstractModel implements ModelInterface
 
         return $this->{$this->function}(...$parameters);
     }
+
+    /**
+     * @param string $name
+     * @return mixed
+     * @noinspection PhpMixedReturnTypeCanBeReducedInspection
+     */
+    public function getParameterValue(string $name): mixed
+    {
+        return $this->parameters??['named']??[$name]??null;
+    }
 }
