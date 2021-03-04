@@ -188,6 +188,6 @@ class AbstractModel implements ModelInterface
      */
     public function getParameterValue(string $name): mixed
     {
-        return $this->parameters??['named']??[$name]??null;
+        return $this->parameters['named'][$name]??null;
     }
 }
