@@ -40,11 +40,13 @@ interface BuilderInterface
      * @param string $resourceTransformerClass
      * @param array $data
      * @param int $relationshipLevel
+     * @param array $additionalRelationshipData
      * @return array
      */
     public function buildByData(
         string $resourceTransformerClass,
         array $data,
-        int $relationshipLevel=1
+        int $relationshipLevel=1,
+        array $additionalRelationshipData=[]
     ): array;
 }
