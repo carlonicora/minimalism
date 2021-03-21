@@ -382,11 +382,21 @@ class ServiceFactory
                         $this->loadDotEnv();
                         if (!$serviceParameter->isOptional()) {
                             $this->env->required($serviceParameter->getName())->notEmpty();
-                            $response[] = $_ENV[$serviceParameter->getName()];
+                            $environment = $_ENV[$serviceParameter->getName()];
                         } elseif (array_key_exists($serviceParameter->getName(), $_ENV)){
-                            $response[] = $_ENV[$serviceParameter->getName()];
+                            $environment = $_ENV[$serviceParameter->getName()];
                         } else {
-                            $response[] = $serviceParameter->isDefaultValueAvailable() ? $serviceParameter->getDefaultValue() : null;
+                            $environment = $serviceParameter->isDefaultValueAvailable() ? $serviceParameter->getDefaultValue() : null;
+                        }
+
+                        if ($serviceParameter->hasType()){
+                            $response[] = match ($serviceParameter->getType()->getName()){
+                                'int' => (int)$environment,
+                                'bool' => filter_var($environment, FILTER_VALIDATE_BOOLEAN),
+                                default => $environment,
+                            };
+                        } else {
+                            $response[] = $environment;
                         }
                     }
                 }
