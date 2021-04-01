@@ -144,12 +144,10 @@ class Path implements ServiceInterface
      */
     private function loadServicesViewsAndModelsDirectories(): void
     {
-        $plugins = glob($this->root . '/vendor/*/minimalism-service-*/src');
-        $internal = glob($this->root . '/src/Services/*');
+        $plugins = glob($this->root . '/vendor/*/minimalism-service-*/src', GLOB_NOSORT);
+        $internal = glob($this->root . '/src/Services/*', GLOB_NOSORT);
 
-        $files = array_unique(array_merge($plugins, $internal));
-
-        foreach ($files as $fileName) {
+        foreach (array_unique(array_merge($plugins, $internal)) as $fileName) {
             $possibleModelDirectory = $fileName . DIRECTORY_SEPARATOR . 'Models';
             if (file_exists($possibleModelDirectory) && is_dir($possibleModelDirectory)){
                 $this->servicesModelsDirectories[] = $possibleModelDirectory;

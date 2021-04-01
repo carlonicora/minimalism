@@ -61,9 +61,7 @@ class FunctionParametersCommand
                     );
                     break;
                 case ModelFactory::PARAMETER_TYPE_LOADER:
-                    /** @var Pools $pools */
-                    $pools = $this->getServiceInterfaceParameter(Pools::class);
-                    $parameterValue = $pools->get($parameterDefinition['identifier']);
+                    $parameterValue = $this->getServiceInterfaceParameter(Pools::class)->get($parameterDefinition['identifier']);
                     break;
                 case ModelFactory::PARAMETER_TYPE_DOCUMENT:
                     if (array_key_exists($parameterDefinition['name'], $parameters['named'])
@@ -168,7 +166,6 @@ class FunctionParametersCommand
             }
         } else {
             $newParameterClass = EncryptedParameter::class;
-            /** @noinspection NotOptimalIfConditionsInspection */
             if (array_key_exists($parameterName, $parameters['named'])){
                 $newParameter = $parameters['named'][$parameterName];
             }

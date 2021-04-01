@@ -184,7 +184,6 @@ class AbstractModel implements ModelInterface
     /**
      * @param string $name
      * @return mixed
-     * @noinspection PhpMixedReturnTypeCanBeReducedInspection
      */
     public function getParameterValue(string $name): mixed
     {

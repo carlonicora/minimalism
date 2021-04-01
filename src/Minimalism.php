@@ -5,6 +5,7 @@ use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Composer\InstalledVersions;
 use Exception;
 use JsonException;
@@ -103,13 +104,43 @@ class Minimalism
     }
 
     /**
-     * @param int $type
+     * @param string $serviceName
+     * @param bool $requiresBaseService
+     * @return ServiceInterface
+     * @throws Exception
      */
-    private function initialise(int $type): void
+    public function getService(
+        string $serviceName,
+        bool $requiresBaseService=true
+    ): ServiceInterface
+    {
+        $this->initialise(
+            self::INITIALISE_SERVICES,
+            ['requiresBaseService' => $requiresBaseService]
+        );
+
+        return $this->services->create(
+            serviceName: $serviceName
+        );
+    }
+
+    /**
+     * @param int $type
+     * @param array|null $parameters
+     */
+    private function initialise(
+        int $type,
+        ?array $parameters=null,
+    ): void
     {
         try {
             if ($type === self::INITIALISE_SERVICES) {
-                $this->services->initialise();
+                $requiresBaseService = true;
+
+                if ($parameters !== null && array_key_exists('requiresBaseService', $parameters)){
+                    $requiresBaseService = $parameters['requiresBaseService'];
+                }
+                $this->services->initialise($requiresBaseService);
             } else {
                 $this->modelFactory->initialise($this->services);
             }

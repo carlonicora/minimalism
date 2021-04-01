@@ -36,7 +36,9 @@ class ServiceFactory
     /**
      * @throws Exception
      */
-    public function initialise(): void
+    public function initialise(
+        bool $requiresBaseService=true
+    ): void
     {
         if (PHP_SAPI !== 'cli') {
             $this->startSession();
@@ -61,7 +63,10 @@ class ServiceFactory
         }
 
         $this->initialiseCoreServices();
-        $this->initialiseBaseService();
+
+        if ($requiresBaseService) {
+            $this->initialiseBaseService();
+        }
     }
 
     /**
@@ -213,8 +218,8 @@ class ServiceFactory
             return;
         }
 
-        $externalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php');
-        $internalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/carlonicora/minimalism/src/Services/*.php');
+        $externalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', GLOB_NOSORT);
+        $internalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/carlonicora/minimalism/src/Services/*.php', GLOB_NOSORT);
 
         $servicesFiles = array_merge($internalServicesFiles, $externalServicesFiles);
 

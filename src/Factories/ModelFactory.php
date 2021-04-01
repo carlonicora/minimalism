@@ -101,7 +101,7 @@ class ModelFactory
         $serviceModelCache = $modelDirectoryCache . 'servicesModels.cache';
         $modelDefinitionsCache = $modelDirectoryCache . 'modelsDefinitions.cache';
 
-        if (file_exists($modelCache)
+        if (is_file($modelCache)
             && ($modelsFile = file_get_contents($modelCache)) !== false
             && ($serviceModelFile = file_get_contents($serviceModelCache)) !== false
             && ($modelDefinitionsFile = file_get_contents($modelDefinitionsCache)) !== false
@@ -139,7 +139,7 @@ class ModelFactory
     private function loadFolderModels(string $folder, bool $isRoot=true): array
     {
         $response = [];
-        $models = glob($folder . DIRECTORY_SEPARATOR . '*');
+        $models = glob($folder . DIRECTORY_SEPARATOR . '*', GLOB_NOSORT);
         foreach ($models ?? [] as $model) {
             $modelInfo = pathinfo($model);
             if (!array_key_exists('extension', $modelInfo)){
@@ -173,9 +173,7 @@ class ModelFactory
     {
         $response = [];
 
-        $model = new ReflectionClass($modelClassName);
-
-        foreach ($model->getMethods(ReflectionMethod::IS_PUBLIC) as $method){
+        foreach ((new ReflectionClass($modelClassName))->getMethods(ReflectionMethod::IS_PUBLIC) as $method){
             if ($method->class === $modelClassName) {
                 $methodResponse = [];
                 $methodParameters = $method->getParameters();
