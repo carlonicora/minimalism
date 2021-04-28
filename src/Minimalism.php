@@ -150,9 +150,9 @@ class Minimalism
 
             $this->services->getLogger()->emergency(
                 'Failed to initialise '
-                . $type === self::INITIALISE_SERVICES
+                . ($type === self::INITIALISE_SERVICES
                     ? 'services'
-                    : 'models'
+                    : 'models')
             );
             exit;
         }
@@ -324,6 +324,8 @@ class Minimalism
 
         echo $response;
 
-        fastcgi_finish_request();
+        if ($this->services->getPath()->getUri() !== null) {
+            fastcgi_finish_request();
+        }
     }
 }

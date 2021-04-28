@@ -154,7 +154,7 @@ class ParametersReaderCommand
             } elseif (is_array($file['name'])) {
                 $result[$key] = [];
                 foreach ($file as $lastKey => $value1) {
-                    $result[$key] = array_replace_recursive($result[$key], $this->recursive($lastKey, $file[$lastKey]));
+                    $result[$key] = array_replace_recursive($result[$key], $this->recursive($lastKey, $value1));
                 }
             }
 

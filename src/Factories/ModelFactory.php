@@ -60,7 +60,6 @@ class ModelFactory
         $parametersFactory = new ParametersFactory(
             $this->services,
             $this->models,
-            $this->modelsDefinitions
         );
 
         $response = null;
@@ -169,7 +168,9 @@ class ModelFactory
      * @param string $modelClassName
      * @throws Exception
      */
-    private function initialiseModel(string $modelClassName): void
+    private function initialiseModel(
+        string $modelClassName
+    ): void
     {
         $response = [];
 

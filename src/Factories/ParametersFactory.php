@@ -15,12 +15,10 @@ class ParametersFactory
      * ParametersFactory constructor.
      * @param ServiceFactory $services
      * @param array|null $models
-     * @param array|null $modelsDefinitions
      */
     public function __construct(
         private ServiceFactory $services,
         private ?array $models=null,
-        private ?array $modelsDefinitions=null
     )
     {
 

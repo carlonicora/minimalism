@@ -15,8 +15,8 @@ abstract class AbstractLoader implements DataLoaderInterface
     /** @var DataInterface  */
     protected DataInterface $data;
 
-    /** @var BuilderInterface  */
-    protected BuilderInterface $builder;
+    /** @var BuilderInterface|null  */
+    protected ?BuilderInterface $builder=null;
 
     /** @var CacheInterface|null  */
     protected ?CacheInterface $cache=null;

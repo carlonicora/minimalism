@@ -60,9 +60,9 @@ class Pools implements ServiceInterface
     }
 
     /**
-     * @return BuilderInterface
+     * @return BuilderInterface|null
      */
-    public function getBuilder(): BuilderInterface
+    public function getBuilder(): ?BuilderInterface
     {
         return $this->builder;
     }

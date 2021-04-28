@@ -4,13 +4,16 @@ namespace CarloNicora\Minimalism\Factories;
 use CarloNicora\Minimalism\Interfaces\BuilderInterface;
 use CarloNicora\Minimalism\Interfaces\CacheInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
+use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Interfaces\LoaderInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use CarloNicora\Minimalism\Services\MinimalismLogger;
 use CarloNicora\Minimalism\Services\Path;
+use CarloNicora\Minimalism\Services\Pools;
 use Dotenv\Dotenv;
 use Exception;
 use ReflectionClass;
@@ -62,6 +65,10 @@ class ServiceFactory
             $this->initialiseLogger();
         }
 
+        MinimalismObjectsFactory::initialise(
+            serviceFactory: $this
+        );
+
         $this->initialiseCoreServices();
 
         if ($requiresBaseService) {
@@ -101,6 +108,8 @@ class ServiceFactory
         if ($this->hasBeenUpdated) {
             file_put_contents($this->servicesCacheFile, serialize($this->services));
         }
+
+        MinimalismObjectsFactory::terminate();
 
         session_write_close();
     }
@@ -368,17 +377,45 @@ class ServiceFactory
                         } else {
                             $reflect = new ReflectionClass($parameter->getName());
                             if ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(EncrypterInterface::class)) {
-                                $response[] = $this->services[$this->services[EncrypterInterface::class]];
+                                if (array_key_exists(EncrypterInterface::class, $this->services)){
+                                    $response[] = $this->services[$this->services[EncrypterInterface::class]];
+                                } else {
+                                    $response[] = null;
+                                }
                             } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(DataInterface::class)) {
-                                $response[] = $this->services[$this->services[DataInterface::class]];
+                                if (array_key_exists(DataInterface::class, $this->services)) {
+                                    $response[] = $this->services[$this->services[DataInterface::class]];
+                                } else {
+                                    $response[] = null;
+                                }
                             } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(TransformerInterface::class)) {
-                                $response[] = $this->services[$this->services[TransformerInterface::class]];
-                            } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(CacheInterface::class)) {
-                                $response[] = $this->services[$this->services[CacheInterface::class]];
+                                if (array_key_exists(TransformerInterface::class, $this->services)){
+                                    $response[] = $this->services[$this->services[TransformerInterface::class]];
+                                } else {
+                                    $response[] = null;
+                                }
+                            } elseif ($reflect->implementsInterface(CacheInterface::class) && $reflect->implementsInterface(CacheInterface::class)) {
+                                if (array_key_exists(TransformerInterface::class, $this->services)) {
+                                    $response[] = $this->services[$this->services[CacheInterface::class]];
+                                } else {
+                                    $response[] = null;
+                                }
                             } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(BuilderInterface::class)) {
-                                $response[] = $this->services[$this->services[BuilderInterface::class]];
+                                if (array_key_exists(BuilderInterface::class, $this->services)){
+                                    $response[] = $this->services[$this->services[BuilderInterface::class]];
+                                } else {
+                                    $response[] = null;
+                                }
                             } elseif ($reflect->implementsInterface(LoggerInterface::class)) {
-                                $response[] = $this->services[LoggerInterface::class];
+                                if (array_key_exists(LoggerInterface::class, $this->services)) {
+                                    $response[] = $this->services[LoggerInterface::class];
+                                } else {
+                                    $response[] = null;
+                                }
+                            } elseif ($reflect->implementsInterface(DataLoaderInterface::class)){
+                                /** @var Pools $pools */
+                                $pools = $this->create(Pools::class);
+                                $response[] = $pools->get($parameter->getName());
                             }elseif ($reflect->implementsInterface(ServiceInterface::class)) {
                                 $response[] = $this->create($parameter->getName());
                             }
@@ -394,8 +431,11 @@ class ServiceFactory
                             $environment = $serviceParameter->isDefaultValueAvailable() ? $serviceParameter->getDefaultValue() : null;
                         }
 
-                        if ($serviceParameter->hasType()){
-                            $response[] = match ($serviceParameter->getType()->getName()){
+                        if ($serviceParameter->hasType() && get_class($parameter) !== ReflectionUnionType::class) {
+                            /** @var ReflectionNamedType $namedType */
+                            $namedType = $serviceParameter->getType();
+
+                            $response[] = match ($namedType->getName()) {
                                 'int' => (int)$environment,
                                 'bool' => filter_var($environment, FILTER_VALIDATE_BOOLEAN),
                                 default => $environment,

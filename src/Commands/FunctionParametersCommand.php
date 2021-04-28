@@ -61,6 +61,7 @@ class FunctionParametersCommand
                     );
                     break;
                 case ModelFactory::PARAMETER_TYPE_LOADER:
+                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
                     $parameterValue = $this->getServiceInterfaceParameter(Pools::class)->get($parameterDefinition['identifier']);
                     break;
                 case ModelFactory::PARAMETER_TYPE_DOCUMENT:
@@ -110,6 +111,7 @@ class FunctionParametersCommand
         array $parameters,
     ): mixed
     {
+        //TODO add casting to bool/string/whatever or throw an error if the value does not match the type
         if (!array_key_exists($parameterName, $parameters['named'])){
             return $defaultParameterValue;
         }

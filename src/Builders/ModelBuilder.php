@@ -48,18 +48,16 @@ class ModelBuilder
 
     /**
      * @param array|null $models
-     * @param bool $inSubfolder
      * @param array|null $parameters
      * @return array
      */
     private function findModel(
         ?array $models=null, 
-        bool $inSubfolder=true,
         array $parameters=null,
     ): array
     {
-        $searchInAdditionalModels = !$inSubfolder;
-        
+        $searchInAdditionalModels = false;
+
         if ($models === null){
             $models = $this->models;
             $searchInAdditionalModels = true;
@@ -73,39 +71,37 @@ class ModelBuilder
         $response = [];
         foreach ($parameters as $parameterKey=>$parameter){
             if ($this->doesFolderExist($parameter, $models)) {
-                $additionalParameters = $this->findModel($models[$this->getProperFolderName($parameter)], true, $this->getRemainingParameters($parameters, $parameterKey));
+                $additionalParameters = $this->findModel(
+                    models: $models[$this->getProperFolderName($parameter)],
+                    parameters: $this->getRemainingParameters($parameters, $parameterKey)
+                );
                 if ($this->modelClass !== null){
-                    $response = array_merge($response, $additionalParameters);
-                    return $response;
+                    return array_merge($response, $additionalParameters);
                 }
             }
 
             if ($this->doesModelExist($parameter, $models)) {
                 $this->modelClass = $models[$this->getProperModelName($parameter)];
-                $response = array_merge($response, $this->getRemainingParameters($parameters, $parameterKey));
-                return $response;
+                return array_merge($response, $this->getRemainingParameters($parameters, $parameterKey));
             }
             
             $response[] = $parameter;
         }
         
-        if ($this->modelClass === null && !$inSubfolder){
-            if ($searchInAdditionalModels) {
-                foreach ($this->additionalModels as $serviceModels) {
-                    $response = $this->findModel($serviceModels);
-                    if ($this->modelClass !== null) {
-                        return $response;
-                    }
+        if ($this->modelClass === null && $searchInAdditionalModels) {
+            foreach ($this->additionalModels as $serviceModels) {
+                $response = $this->findModel($serviceModels);
+                if ($this->modelClass !== null) {
+                    return $response;
                 }
             }
 
             if (array_key_exists('*', $models)){
                 $this->modelClass = $models['*'];
-                $response = $this->getRemainingParameters($parameters);
-                return $response;
+                return $this->getRemainingParameters($parameters);
             }
         }
-        
+
         return $response;
     }
 
