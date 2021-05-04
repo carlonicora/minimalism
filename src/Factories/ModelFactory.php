@@ -62,8 +62,6 @@ class ModelFactory
             $this->models,
         );
 
-        $response = null;
-
         if ($parameters === null) {
             $parameters = $parametersFactory->createParameters();
         }
@@ -144,7 +142,6 @@ class ModelFactory
             if (!array_key_exists('extension', $modelInfo)){
                 $response[strtolower(basename($model)) . '-folder'] = $this->loadFolderModels($model, false);
             } elseif ($modelInfo['extension'] === 'php'){
-                $modelClass = null;
                 $modelName = basename(substr($model, 0, -4));
 
                 if (preg_match('#^namespace\s+(.+?);$#sm', file_get_contents($model), $m)

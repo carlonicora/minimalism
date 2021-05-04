@@ -61,7 +61,6 @@ class ModelBuilder
         if ($models === null){
             $models = $this->models;
             $searchInAdditionalModels = true;
-            $inSubfolder = false;
         }
 
         if ($parameters === null){

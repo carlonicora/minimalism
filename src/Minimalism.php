@@ -202,7 +202,6 @@ class Minimalism
         ?string $modelName,
     ): Document
     {
-        $data = null;
         $function = null;
 
         try {
