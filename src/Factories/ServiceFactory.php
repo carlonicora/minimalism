@@ -7,7 +7,6 @@ use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
-use CarloNicora\Minimalism\Interfaces\LoaderInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
@@ -15,6 +14,7 @@ use CarloNicora\Minimalism\Services\MinimalismLogger;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\Pools;
 use Dotenv\Dotenv;
+use Dotenv\Exception\ValidationException;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
@@ -97,7 +97,7 @@ class ServiceFactory
         }
 
         /** @var ServiceInterface $service */
-        foreach ($this->services ?? [] as $serviceName=>$service){
+        foreach ($this->services ?? [] as $service){
             if ($service !== null
                 && !is_string($service)
             ) {
@@ -423,7 +423,15 @@ class ServiceFactory
                     } catch (ReflectionException) {
                         $this->loadDotEnv();
                         if (!$serviceParameter->isOptional()) {
-                            $this->env->required($serviceParameter->getName())->notEmpty();
+                            try {
+                                $this->env->required($serviceParameter->getName())->notEmpty();
+                            } catch (ValidationException $e) {
+                                throw new RuntimeException(
+                                    message: 'An environment variable is missing. ' . $e->getMessage(),
+                                    code: 500,
+                                    previous: $e
+                                );
+                            }
                             $environment = $_ENV[$serviceParameter->getName()];
                         } elseif (array_key_exists($serviceParameter->getName(), $_ENV)){
                             $environment = $_ENV[$serviceParameter->getName()];
