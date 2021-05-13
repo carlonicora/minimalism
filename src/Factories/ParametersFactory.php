@@ -31,7 +31,7 @@ class ParametersFactory
 
     ): string
     {
-        return $this->modelClass;
+        return $this->modelClass ?? throw new RuntimeException('Model not found', 404);
     }
 
     /**
