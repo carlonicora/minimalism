@@ -302,9 +302,9 @@ class Minimalism
             $response = '';
         }
 
-        header('Content-Type: ' . $this->contentType);
-
         if ($this->services->getPath()->getUrl() !== null) {
+            header('Content-Type: ' . $this->contentType);
+
             header(
                 ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1')
                 . ' ' . $this->httpResponseCode
