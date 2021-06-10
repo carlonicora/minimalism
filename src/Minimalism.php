@@ -287,7 +287,13 @@ class Minimalism
         $this->send($response);
 
         if ($this->httpResponseCode === 500){
-            $this->services->getLogger()->emergency($exception->getMessage());
+            $this->services->getLogger()->emergency(
+                message: $exception->getMessage(),
+                context: [
+                    'file' => $exception->getFile() ?? '',
+                    'line' => $exception->getLine() ?? '',
+                ]
+            );
         }
     }
 
