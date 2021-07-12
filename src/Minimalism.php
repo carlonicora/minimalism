@@ -260,6 +260,10 @@ class Minimalism
      */
     private function sendException(Exception|Throwable $exception): void
     {
+        if ($this->httpResponseCode === 0){
+            $this->httpResponseCode = 500;
+        }
+
         $data = new Document();
         if (is_a($exception, Exception::class)){
             $data->addError(
