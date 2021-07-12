@@ -294,6 +294,7 @@ class Minimalism
                     'line' => $exception->getLine() ?? '',
                     'url' => $this->services->getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
+                    'responseCode' => $this->httpResponseCode,
                 ]
             );
         } else {
@@ -304,6 +305,7 @@ class Minimalism
                     'line' => $exception->getLine() ?? '',
                     'url' => $this->services->getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
+                    'responseCode' => $this->httpResponseCode,
                 ]
             );
         }
