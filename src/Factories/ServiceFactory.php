@@ -395,7 +395,7 @@ class ServiceFactory
                                     $response[] = null;
                                 }
                             } elseif ($reflect->implementsInterface(CacheInterface::class)) {
-                                if (array_key_exists(TransformerInterface::class, $this->services)) {
+                                if (array_key_exists(CacheInterface::class, $this->services) && array_key_exists($this->services[CacheInterface::class], $this->services)) {
                                     $response[] = $this->services[$this->services[CacheInterface::class]];
                                 } else {
                                     $response[] = null;
