@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Interfaces\CacheBuilderFactoryInterface;
 use CarloNicora\Minimalism\Interfaces\CacheInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
+use CarloNicora\Minimalism\Interfaces\DataObjectInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Pools;
 
@@ -63,5 +64,20 @@ abstract class AbstractLoader implements DataLoaderInterface
         }
 
         return $response[0];
+    }
+
+    /**
+     * @throws RecordNotFoundException
+     */
+    protected function returnSingleObject(
+        array $recordset,
+        string $objectType,
+    ): DataObjectInterface
+    {
+        if ($recordset === [] || $recordset === [[]]){
+            throw new RecordNotFoundException('Record Not found');
+        }
+
+        return new $objectType($recordset[0]);
     }
 }

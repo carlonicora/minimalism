@@ -49,7 +49,7 @@ class MinimalismObjectsFactory
             . DIRECTORY_SEPARATOR . 'cache'
             . DIRECTORY_SEPARATOR . 'minimalismObjectsDefinitions.cache';
 
-        if (file_exists(self::$cacheFile)) {
+        if (is_file(self::$cacheFile)) {
             $cache = file_get_contents(self::$cacheFile);
 
             if ($cache !== false) {
@@ -269,8 +269,8 @@ class MinimalismObjectsFactory
                     break;
                 case ParameterDefinition::PARAMETER_TYPE_LOADER:
                     /** @var Pools $pools */
-                    $pools = self::$serviceFactory->create(Pools::class);
-                    $parameterValue = $pools->get(
+                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                    $parameterValue = self::$serviceFactory->create(Pools::class)->get(
                         className: $methodParameter->getIdentifier()
                     );
                     break;

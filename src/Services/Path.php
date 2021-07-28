@@ -149,12 +149,12 @@ class Path implements ServiceInterface
 
         foreach (array_unique(array_merge($plugins, $internal)) as $fileName) {
             $possibleModelDirectory = $fileName . DIRECTORY_SEPARATOR . 'Models';
-            if (file_exists($possibleModelDirectory) && is_dir($possibleModelDirectory)){
+            if (is_dir($possibleModelDirectory) && is_dir($possibleModelDirectory)){
                 $this->servicesModelsDirectories[] = $possibleModelDirectory;
             }
 
             $possibleViewDirectory = $fileName . DIRECTORY_SEPARATOR . 'Views';
-            if (file_exists($possibleViewDirectory) && is_dir($possibleViewDirectory)){
+            if (is_dir($possibleViewDirectory) && is_dir($possibleViewDirectory)){
                 $this->servicesViewsDirectories[] = $possibleViewDirectory;
             }
         }

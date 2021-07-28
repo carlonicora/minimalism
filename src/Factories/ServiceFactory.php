@@ -283,7 +283,7 @@ class ServiceFactory
      */
     private function loadServicesFromCache(): void
     {
-        if (file_exists($this->servicesCacheFile)) {
+        if (is_file($this->servicesCacheFile)) {
             $serviceFile = file_get_contents($this->servicesCacheFile);
 
             if ($serviceFile !== false) {
@@ -394,7 +394,7 @@ class ServiceFactory
                                 } else {
                                     $response[] = null;
                                 }
-                            } elseif ($reflect->implementsInterface(CacheInterface::class) && $reflect->implementsInterface(CacheInterface::class)) {
+                            } elseif ($reflect->implementsInterface(CacheInterface::class)) {
                                 if (array_key_exists(TransformerInterface::class, $this->services)) {
                                     $response[] = $this->services[$this->services[CacheInterface::class]];
                                 } else {
