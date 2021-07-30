@@ -80,4 +80,21 @@ abstract class AbstractLoader implements DataLoaderInterface
 
         return new $objectType($recordset[0]);
     }
+
+    /**
+     * @return DataObjectInterface[]
+     */
+    protected function returnObjectArray(
+        array $recordset,
+        string $objectType,
+    ): array
+    {
+        $response = [];
+
+        foreach ($recordset ?? [] as $record){
+            $response = new $objectType($record);
+        }
+
+        return $response;
+    }
 }
