@@ -1,20 +1,24 @@
 <?php
 namespace CarloNicora\Minimalism\Objects;
 
+use Throwable;
+
 class MinimalismLog
 {
     /**
      * MinimalismLog constructor.
      * @param int $level
-     * @param string $message
      * @param string|null $domain
+     * @param string $message
      * @param array|null $context
+     * @param Throwable|null $exception
      */
     public function __construct(
         private int $level,
         private ?string $domain,
         private string $message,
-        private ?array $context=null
+        private ?array $context=null,
+        private ?Throwable $exception = null
     ) {
     }
 
@@ -47,7 +51,19 @@ class MinimalismLog
      */
     public function getContext(): ?array
     {
+        if (isset($this->exception)) {
+            $this->context['exception'] = $this->exception;
+        }
+
         return $this->context;
+    }
+
+    /**
+     * @return Throwable|null
+     */
+    public function getException(): ?Throwable
+    {
+        return $this->exception;
     }
 
     /**

@@ -4,10 +4,11 @@ namespace CarloNicora\Minimalism\Services;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Objects\MinimalismLog;
-use Monolog\Formatter\JsonFormatter;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\Handler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Throwable;
 
 class MinimalismLogger implements ServiceInterface, LoggerInterface
 {
@@ -59,18 +60,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function debug(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::DEBUG,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -78,18 +82,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function info(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::INFO,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -97,18 +104,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function notice(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::NOTICE,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -116,18 +126,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function warning(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::WARNING,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -135,18 +148,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function error(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::ERROR,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -154,18 +170,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function critical(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::CRITICAL,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -173,18 +192,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function alert(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::ALERT,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -192,18 +214,21 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
      * @param string $message
      * @param string|null $domain
      * @param array $context
+     * @param Throwable|null $exception
      */
     public function emergency(
         string $message,
         ?string $domain=null,
-        array $context = []
+        array $context = [],
+        Throwable $exception = null
     ): void
     {
         $this->logs[] = new MinimalismLog(
             Logger::EMERGENCY,
             $domain,
             $message,
-            $context
+            $context,
+            $exception
         );
     }
 
@@ -251,7 +276,7 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
             . date('Ymd') . '.log',
             $this->MINIMALISM_LOG_LEVEL
         );
-        $response->setFormatter(new JsonFormatter());
+        $response->setFormatter(new LineFormatter());
 
         return $response;
     }

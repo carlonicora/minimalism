@@ -147,13 +147,6 @@ class Minimalism
         } catch (Exception|Throwable $e) {
             $this->httpResponseCode = 500;
             $this->sendException($e);
-
-            $this->services->getLogger()->emergency(
-                'Failed to initialise '
-                . ($type === self::INITIALISE_SERVICES
-                    ? 'services'
-                    : 'models')
-            );
             exit;
         }
     }
@@ -292,25 +285,19 @@ class Minimalism
 
         if ($this->httpResponseCode > 500){
             $this->services->getLogger()->emergency(
-                message: $exception->getMessage(),
+                message: $exception->getMessage() . PHP_EOL . $exception->getFile() . ':' . $exception->getLine(),
                 context: [
-                    'file' => $exception->getFile() ?? '',
-                    'line' => $exception->getLine() ?? '',
-                    'url' => $this->services->getPath()->getUri()??'',
-                    'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,
-                ]
+                ],
+                exception: $exception
             );
         } else {
             $this->services->getLogger()->error(
-                message: $exception->getMessage(),
+                message: $exception->getMessage() . PHP_EOL . $exception->getFile() . ':' . $exception->getLine(),
                 context: [
-                    'file' => $exception->getFile() ?? '',
-                    'line' => $exception->getLine() ?? '',
-                    'url' => $this->services->getPath()->getUri()??'',
-                    'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,
-                ]
+                ],
+                exception: $exception
             );
         }
     }
