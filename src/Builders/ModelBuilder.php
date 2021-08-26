@@ -52,21 +52,29 @@ class ModelBuilder
      * @return array
      */
     private function findModel(
-        ?array $models=null, 
+        ?array $models=null,
         array $parameters=null,
     ): array
     {
-        $searchInAdditionalModels = false;
+        $isFirstLevelCall = ($models === null);
 
-        if ($models === null){
-            $models = $this->models;
-            $searchInAdditionalModels = true;
+        if ($isFirstLevelCall) {
+            $mergedAdditionalModels = array_reduce(
+                array: $this->additionalModels ?? [],
+                callback: static function(array $carry, array $item)
+                    {
+                        return array_merge_recursive($carry, $item);
+                    },
+                initial: []
+            );
+
+            $models = array_merge_recursive($mergedAdditionalModels, $this->models);
         }
 
         if ($parameters === null){
             $parameters = $this->parameters;
         }
-        
+
         $response = [];
         foreach ($parameters as $parameterKey=>$parameter){
             if ($this->doesFolderExist($parameter, $models)) {
@@ -74,6 +82,7 @@ class ModelBuilder
                     models: $models[$this->getProperFolderName($parameter)],
                     parameters: $this->getRemainingParameters($parameters, $parameterKey)
                 );
+
                 if ($this->modelClass !== null){
                     return array_merge($response, $additionalParameters);
                 }
@@ -83,22 +92,14 @@ class ModelBuilder
                 $this->modelClass = $models[$this->getProperModelName($parameter)];
                 return array_merge($response, $this->getRemainingParameters($parameters, $parameterKey));
             }
-            
+
             $response[] = $parameter;
         }
-        
-        if ($this->modelClass === null && $searchInAdditionalModels) {
-            foreach ($this->additionalModels as $serviceModels) {
-                $response = $this->findModel($serviceModels);
-                if ($this->modelClass !== null) {
-                    return $response;
-                }
-            }
 
-            if (array_key_exists('*', $models)){
-                $this->modelClass = $models['*'];
-                return $this->getRemainingParameters($parameters);
-            }
+        if ($this->modelClass === null && $isFirstLevelCall && array_key_exists('*', $models)) {
+            // A model not found, but the default model exists
+            $this->modelClass = $models['*'];
+            return $this->getRemainingParameters($parameters);
         }
 
         return $response;
