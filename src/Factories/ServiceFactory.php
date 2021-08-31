@@ -467,7 +467,9 @@ class ServiceFactory
     private function loadDotEnv(): void
     {
         if ($this->env === null) {
-            $this->env = Dotenv::createImmutable($this->getPath()->getRoot());
+            $names = empty($_SERVER['HTTP_TEST_ENVIRONMENT']) ? ['.env'] : ['.env.testing'];
+
+            $this->env = Dotenv::createImmutable($this->getPath()->getRoot(), $names);
             try {
                 $this->env->load();
             } catch (Exception) {
