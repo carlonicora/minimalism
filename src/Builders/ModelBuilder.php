@@ -148,6 +148,7 @@ class ModelBuilder
      */
     private function getProperFolderName(string $folderName): string
     {
+        $folderName = str_replace('-', '', $folderName);
         return strtolower($folderName) . '-folder';
     }
 
