@@ -8,10 +8,11 @@ use CarloNicora\Minimalism\Interfaces\CacheInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\DataObjectInterface;
+use CarloNicora\Minimalism\Interfaces\MinimalismObjectInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Pools;
 
-abstract class AbstractLoader implements DataLoaderInterface
+abstract class AbstractLoader implements DataLoaderInterface, MinimalismObjectInterface
 {
     /** @var DataInterface  */
     protected DataInterface $data;
