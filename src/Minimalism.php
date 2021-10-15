@@ -295,7 +295,7 @@ class Minimalism
                 message: $exception->getMessage(),
                 context: [
                     'file' => $exception->getFile() ?? '',
-                    'line' => $exception->getLine() ?? '',
+                    'line' => $exception->getLine(),
                     'url' => $this->services->getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,
@@ -306,7 +306,7 @@ class Minimalism
                 message: $exception->getMessage(),
                 context: [
                     'file' => $exception->getFile() ?? '',
-                    'line' => $exception->getLine() ?? '',
+                    'line' => $exception->getLine(),
                     'url' => $this->services->getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,

@@ -2,8 +2,10 @@
 namespace CarloNicora\Minimalism\Commands;
 
 use CarloNicora\JsonApi\Document;
+use CarloNicora\Minimalism\Factories\MinimalismObjectsFactory;
 use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Interfaces\DataValidatorInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
@@ -63,6 +65,23 @@ class FunctionParametersCommand
                 case ModelFactory::PARAMETER_TYPE_LOADER:
                     /** @noinspection PhpPossiblePolymorphicInvocationInspection */
                     $parameterValue = $this->getServiceInterfaceParameter(Pools::class)->get($parameterDefinition['identifier']);
+                    break;
+                case ModelFactory::PARAMETER_TYPE_DATA_VALIDATOR:
+                    if (array_key_exists($parameterDefinition['name'], $parameters['named'])
+                        && is_array($parameters['named'][$parameterDefinition['name']])
+                    ){
+                        /** @var DataValidatorInterface $dataValidator */
+                        $dataValidator = MinimalismObjectsFactory::create($parameterDefinition['identifier']);
+                        $dataValidator->setDocument($parameters['named'][$parameterDefinition['name']]);
+
+                        if ($dataValidator->validate()) {
+                            $parameterValue = $dataValidator->getDocument();
+                        } else {
+                            $parameterValue = null;
+                        }
+                    } else {
+                        $parameterValue = null;
+                    }
                     break;
                 case ModelFactory::PARAMETER_TYPE_DOCUMENT:
                     if (array_key_exists($parameterDefinition['name'], $parameters['named'])
