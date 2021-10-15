@@ -55,7 +55,7 @@ class AttributeValidator extends AbstractValidator
                 $this->setValidationError(
                     new ValidationError(
                         error: ValidationErrors::typeMismatch,
-                        description: $this->name . ' expected: ' . $type->value . ' actual: ' . $this->type->value,
+                        description: $this->name . ' (expected: ' . $type->value . ' actual: ' . $this->type->value . ')',
                         validatorType: ValidatorTypes::attribute,
                     )
                 );

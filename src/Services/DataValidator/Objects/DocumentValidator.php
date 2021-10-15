@@ -43,7 +43,7 @@ class DocumentValidator extends AbstractValidator
             $this->setValidationError(
                 new ValidationError(
                     error: ValidationErrors::numberOfResourcesMismatch,
-                    description: 'actual ' . count($resource->resources) . 'expected 1',
+                    description: '(expected: 1 actual: ' . count($resource->resources) . ')',
                     validatorType: ValidatorTypes::document,
                 )
             );
