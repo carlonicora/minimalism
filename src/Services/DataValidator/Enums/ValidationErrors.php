@@ -6,4 +6,5 @@ enum ValidationErrors
     case typeMismatch;
     case idMissing;
     case attributeMissing;
+    case numberOfResourcesMismatch;
 }

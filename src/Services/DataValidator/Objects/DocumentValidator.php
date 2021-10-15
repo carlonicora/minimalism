@@ -42,9 +42,9 @@ class DocumentValidator extends AbstractValidator
         if ($this->isSingleResource && count($resource->resources) !== 1) {
             $this->setValidationError(
                 new ValidationError(
-                    error: ValidationErrors::attributeMissing,
-                    description: $this->name,
-                    validatorType: ValidatorTypes::attribute,
+                    error: ValidationErrors::numberOfResourcesMismatch,
+                    description: 'actual ' . count($resource->resources) . 'expected 1',
+                    validatorType: ValidatorTypes::document,
                 )
             );
 

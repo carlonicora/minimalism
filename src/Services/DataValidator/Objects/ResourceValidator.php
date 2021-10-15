@@ -47,7 +47,7 @@ class ResourceValidator extends AbstractValidator
             $this->setValidationError(
                 new ValidationError(
                     error: ValidationErrors::typeMismatch,
-                    description: $resource->id??'',
+                    description: $resource->type??'',
                     validatorType: ValidatorTypes::resource,
                 )
             );
