@@ -5,6 +5,7 @@ use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Services\DataValidator\Interfaces\DataValidatorInterface;
 use CarloNicora\Minimalism\Interfaces\MinimalismObjectInterface;
 use CarloNicora\Minimalism\Services\DataValidator\Objects\DocumentValidator;
+use CarloNicora\Minimalism\Services\DataValidator\Objects\ValidationError;
 use Exception;
 
 abstract class AbstractDataValidator implements DataValidatorInterface, MinimalismObjectInterface
@@ -36,6 +37,15 @@ abstract class AbstractDataValidator implements DataValidatorInterface, Minimali
     ): array
     {
         return $this->data;
+    }
+
+    /**
+     * @return ValidationError|null
+     */
+    public function getValidationError(
+    ): ?ValidationError
+    {
+        return $this->documentValidator?->getValidationError();
     }
 
     /**

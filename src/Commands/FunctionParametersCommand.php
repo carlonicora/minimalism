@@ -77,7 +77,14 @@ class FunctionParametersCommand
                         if ($dataValidator->validate()) {
                             $parameterValue = $dataValidator->getDocument();
                         } else {
-                            $parameterValue = null;
+                            throw new RuntimeException(
+                                message: $dataValidator->getValidationError()->getValidatorType()->name
+                                    . ' '
+                                    . $dataValidator->getValidationError()->getError()->name
+                                    . ' '
+                                    . $dataValidator->getValidationError()->getDescription(),
+                                code: 412,
+                            );
                         }
                     } else {
                         $parameterValue = null;

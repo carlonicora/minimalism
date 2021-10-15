@@ -16,7 +16,6 @@ use ReflectionException;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
-use ReflectionUnionType;
 
 class ModelFactory
 {
@@ -190,61 +189,49 @@ class ModelFactory
                             : null
                     ];
 
-                    if (get_class($methodParameter) === ReflectionUnionType::class){
-                        $subResponse = null;
-                        /** @var ReflectionNamedType $subParameter */
-                        foreach ($methodParameter->getTypes() ?? [] as $subParameter) {
-                            $reflect = new ReflectionClass($subParameter->getName());
+                    /** @var ReflectionNamedType $parameter */
+                    $parameter = $methodParameter->getType();
 
-                            if ($reflect->implementsInterface(DataValidatorInterface::class)) {
-                                $parameterResponse['type'] = self::PARAMETER_TYPE_DATA_VALIDATOR;
-                                $parameterResponse['identifier'] = $reflect->name;
-                                $methodResponse[] = $subResponse;
-                                break;
+                    try {
+                        $methodParameterType = new ReflectionClass($parameter->getName());
+                        if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_SERVICE;
+                            $parameterResponse['identifier'] = $methodParameterType->getName();
+                        } elseif ($methodParameterType->implementsInterface(LoggerInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_SERVICE;
+                            $parameterResponse['identifier'] = $methodParameterType->getName();
+                        } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_ENCRYPTER_PARAMETER;
+                            if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                                $parameterResponse['isPositionedParameter'] = true;
+                            } else {
+                                $parameterResponse['isPositionedParameter'] = false;
                             }
-                        }
-                    } else {
-                        /** @var ReflectionNamedType $parameter */
-                        $parameter = $methodParameter->getType();
-
-                        try {
-                            $methodParameterType = new ReflectionClass($parameter->getName());
-                            if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
-                                $parameterResponse['type'] = self::PARAMETER_TYPE_SERVICE;
-                                $parameterResponse['identifier'] = $methodParameterType->getName();
-                            } elseif ($methodParameterType->implementsInterface(LoggerInterface::class)) {
-                                $parameterResponse['type'] = self::PARAMETER_TYPE_SERVICE;
-                                $parameterResponse['identifier'] = $methodParameterType->getName();
-                            } elseif ($methodParameterType->implementsInterface(EncryptedParameterInterface::class)) {
-                                $parameterResponse['type'] = self::PARAMETER_TYPE_ENCRYPTER_PARAMETER;
-                                if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
-                                    $parameterResponse['isPositionedParameter'] = true;
-                                } else {
-                                    $parameterResponse['isPositionedParameter'] = false;
-                                }
-                                $parameterResponse['identifier'] = EncryptedParameterInterface::class;
-                            } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)) {
-                                if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
-                                    $parameterResponse['isPositionedParameter'] = true;
-                                } else {
-                                    $parameterResponse['isPositionedParameter'] = false;
-                                }
-                                $parameterResponse['type'] = self::PARAMETER_TYPE_PARAMETER;
-                                $parameterResponse['identifier'] = ParameterInterface::class;
-                            } elseif ($methodParameterType->implementsInterface(DataLoaderInterface::class)) {
-                                $parameterResponse['type'] = self::PARAMETER_TYPE_LOADER;
-                                $parameterResponse['identifier'] = $methodParameterType->getName();
-                            } elseif ($parameter->getName() === Document::class) {
-                                $parameterResponse['type'] = self::PARAMETER_TYPE_DOCUMENT;
-                                $parameterResponse['identifier'] = Document::class;
+                            $parameterResponse['identifier'] = EncryptedParameterInterface::class;
+                        } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)) {
+                            if ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
+                                $parameterResponse['isPositionedParameter'] = true;
+                            } else {
+                                $parameterResponse['isPositionedParameter'] = false;
                             }
-                        } catch (ReflectionException) {
-                            $parameterResponse['type'] = self::PARAMETER_TYPE_SIMPLE;
-                            $parameterResponse['identifier'] = $parameter->getName();
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_PARAMETER;
+                            $parameterResponse['identifier'] = ParameterInterface::class;
+                        } elseif ($methodParameterType->implementsInterface(DataLoaderInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_LOADER;
+                            $parameterResponse['identifier'] = $methodParameterType->getName();
+                        } elseif ($parameter->getName() === Document::class) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_DOCUMENT;
+                            $parameterResponse['identifier'] = Document::class;
+                        } elseif ($methodParameterType->implementsInterface(DataValidatorInterface::class)) {
+                            $parameterResponse['type'] = self::PARAMETER_TYPE_DATA_VALIDATOR;
+                            $parameterResponse['identifier'] = $methodParameterType->name;
                         }
-
-                        $methodResponse[] = $parameterResponse;
+                    } catch (ReflectionException) {
+                        $parameterResponse['type'] = self::PARAMETER_TYPE_SIMPLE;
+                        $parameterResponse['identifier'] = $parameter->getName();
                     }
+
+                    $methodResponse[] = $parameterResponse;
                 }
 
                 $response[$method->getName()] = $methodResponse;
