@@ -1,5 +1,5 @@
 <?php
-namespace CarloNicora\Minimalism\Interfaces;
+namespace CarloNicora\Minimalism\Services\DataValidator\Interfaces;
 
 use CarloNicora\JsonApi\Document;
 

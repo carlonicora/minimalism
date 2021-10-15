@@ -5,7 +5,7 @@ use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\MinimalismObjectsFactory;
 use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
-use CarloNicora\Minimalism\Interfaces\DataValidatorInterface;
+use CarloNicora\Minimalism\Services\DataValidator\Interfaces\DataValidatorInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;

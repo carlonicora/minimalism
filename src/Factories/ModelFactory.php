@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
-use CarloNicora\Minimalism\Interfaces\DataValidatorInterface;
+use CarloNicora\Minimalism\Services\DataValidator\Interfaces\DataValidatorInterface;
 use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
