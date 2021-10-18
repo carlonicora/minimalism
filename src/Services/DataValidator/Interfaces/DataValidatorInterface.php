@@ -37,7 +37,12 @@ interface DataValidatorInterface
     public function validateData(): bool;
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getData(): array;
+    public function getExistingData(): ?array;
+
+    /**
+     * @return Document|null
+     */
+    public function getExistingDocument(): ?Document;
 }

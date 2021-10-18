@@ -14,11 +14,12 @@ abstract class AbstractDataValidator implements DataValidatorInterface, Minimali
     private ?Document $document=null;
 
     /** @var array|null  */
-    private ?array $data=null;
+    protected ?array $existingData=null;
 
-    /**
-     * @var DocumentValidator
-     */
+    /** @var Document|null  */
+    protected ?Document $existingDocument=null;
+
+    /** @var DocumentValidator */
     protected DocumentValidator $documentValidator;
 
     /**
@@ -31,12 +32,20 @@ abstract class AbstractDataValidator implements DataValidatorInterface, Minimali
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    final public function getData(
-    ): array
+    final public function getExistingData(
+    ): ?array
     {
-        return $this->data;
+        return $this->existingData;
+    }
+
+    /**
+     * @return Document|null
+     */
+    final public function getExistingDocument(): ?Document
+    {
+        return $this->existingDocument;
     }
 
     /**
