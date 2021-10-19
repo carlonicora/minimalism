@@ -6,7 +6,12 @@ interface TableInterface
     /**
      * @return string
      */
-    public function getTableName(): string;
+    public static function getTableName(): string;
+
+    /**
+     * @return array
+     */
+    public static function getTableFields(): array;
 
     /**
      * @param array $records

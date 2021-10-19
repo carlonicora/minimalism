@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "13.0.0-beta6",
+  "version": "13.0.0-beta7",
   "homepage": "https://carlonicora.com",
   "time": "2020-12-28",
   "license": "MIT",
@@ -10,7 +10,7 @@
     {
       "name": "Carlo Nicora",
       "email": "carlo@carlonicora.com",
-      "homepage": "http://carlonicora.com",
+      "homepage": "https://carlonicora.com",
       "role": "Developer"
     }
   ],
