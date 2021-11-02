@@ -3,7 +3,6 @@ namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Interfaces\BuilderInterface;
 use CarloNicora\Minimalism\Interfaces\CacheInterface;
-use CarloNicora\Minimalism\Interfaces\CurrentUserInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
@@ -11,6 +10,7 @@ use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
+use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\MinimalismLogger;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\Pools;
@@ -22,6 +22,7 @@ use ReflectionException;
 use ReflectionNamedType;
 use ReflectionUnionType;
 use RuntimeException;
+use Throwable;
 
 class ServiceFactory
 {
@@ -215,47 +216,63 @@ class ServiceFactory
      */
     private function initialiseCoreServices(): void
     {
-        if (array_key_exists(EncrypterInterface::class, $this->services)
-            &&
-            array_key_exists(TransformerInterface::class, $this->services)
-            &&
-            array_key_exists(DataInterface::class, $this->services)
-            &&
-            array_key_exists(CacheInterface::class, $this->services)
-            &&
-            array_key_exists(BuilderInterface::class, $this->services)
+        if (! array_diff(
+            [
+                EncrypterInterface::class,
+                TransformerInterface::class,
+                DataInterface::class,
+                CacheInterface::class,
+                BuilderInterface::class,
+                UserServiceInterface::class
+            ],
+            array_keys($this->services))
         ) {
             return;
         }
 
-        $externalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', GLOB_NOSORT);
-        $internalServicesFiles = glob($this->getPath()->getRoot() . '/vendor/carlonicora/minimalism/src/Services/*.php', GLOB_NOSORT);
+        $vendorServicesFiles     = glob(pattern: $this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', flags: GLOB_NOSORT);
+        $minimalismServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/vendor/carlonicora/minimalism/src/Services/*.php', flags: GLOB_NOSORT);
+        $internalServicesFiles   = glob(pattern: $this->getPath()->getRoot() . '/src/Services/*/*.php', flags: GLOB_NOSORT);
 
-        $servicesFiles = array_merge($internalServicesFiles, $externalServicesFiles);
+        $allServicesFiles = array_merge($minimalismServicesFiles, $vendorServicesFiles, $internalServicesFiles);
 
         $services = [];
 
-        foreach ($servicesFiles ?? [] as $serviceFile){
-            $potentialServiceName = strtolower(substr($serviceFile, strpos($serviceFile, 'minimalism-service-') + 19, strpos($serviceFile, '/src/')-strlen($serviceFile)));
-            if ($potentialServiceName === strtolower(substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4))){
-                $src = file_get_contents($serviceFile);
-                $namespace = null;
-                if (preg_match('#^namespace\s+(.+?);$#sm', $src, $m)) {
-                    $namespace = $m[1];
-                }
+        foreach ($allServicesFiles ?? [] as $serviceFile) {
+            $serviceName = pathinfo($serviceFile, flags: PATHINFO_FILENAME);
 
-                try {
-                    $services[] = new ReflectionClass($namespace . '\\' . substr($serviceFile, strpos($serviceFile, '/src/') + 5, -4));
-                } catch (ReflectionException) {
-                }
+            $code = file_get_contents($serviceFile);
+
+            $pattern = '#^namespace\s+(.+?);$#sm';
+            if (! preg_match($pattern, $code, matches: $m)) {
+                $normalisedCode = preg_replace(pattern: '#(*BSR_ANYCRLF)\R#', replacement: "\n", subject: $code);
+                preg_match($pattern, $normalisedCode, matches: $m);
+            }
+
+            $namespace = $m[1] ?? '';
+
+            try {
+                $serviceClass = $namespace . '\\' . $serviceName;
+                $services[] = new ReflectionClass($serviceClass);
+            } catch (Throwable $exception) {
+                $this->getLogger()->error(
+                    message: 'Minimalism failed to proccess a service "' . $serviceClass . '"',
+                    context: [
+                        'message' => $exception->getMessage(),
+                        'file' => $exception->getFile() ?? '',
+                        'line' => $exception->getLine(),
+                        'exception' => $exception->getTrace(),
+                    ]
+                );
             }
         }
 
-        $this->searchInterface($services, CacheInterface::class);
-        $this->searchInterface($services, EncrypterInterface::class);
-        $this->searchInterface($services, TransformerInterface::class);
-        $this->searchInterface($services, DataInterface::class);
-        $this->searchInterface($services, BuilderInterface::class);
+        $this->searchInterface($services, interfaceName: CacheInterface::class);
+        $this->searchInterface($services, interfaceName: EncrypterInterface::class);
+        $this->searchInterface($services, interfaceName: TransformerInterface::class);
+        $this->searchInterface($services, interfaceName: DataInterface::class);
+        $this->searchInterface($services, interfaceName: BuilderInterface::class);
+        $this->searchInterface($services, interfaceName: UserServiceInterface::class);
     }
 
     /**
@@ -373,20 +390,6 @@ class ServiceFactory
                                     $subResponse = $this->services[LoggerInterface::class];
                                     break;
                                 }
-
-                                if ($reflect->implementsInterface(CurrentUserInterface::class)) {
-                                    if (array_key_exists(CurrentUserInterface::class, $this->services)) {
-                                        $subResponse = $this->services[CurrentUserInterface::class];
-                                        break;
-                                    }
-
-                                    if (!$reflect->isInterface()) {
-                                        $currentUserService                          = $this->create($subParameter->getName());
-                                        $this->services[CurrentUserInterface::class] = $currentUserService;
-                                        $subResponse                                 = $currentUserService;
-                                        break;
-                                    }
-                                }
                             }
                             $response[] = $subResponse;
                         } else {
@@ -416,8 +419,14 @@ class ServiceFactory
                                     $response[] = null;
                                 }
                             } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(BuilderInterface::class)) {
-                                if (array_key_exists(BuilderInterface::class, $this->services)){
+                                if (array_key_exists(BuilderInterface::class, $this->services)) {
                                     $response[] = $this->services[$this->services[BuilderInterface::class]];
+                                } else {
+                                    $response[] = null;
+                                }
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class) && $reflect->implementsInterface(UserServiceInterface::class)) {
+                                if (array_key_exists(UserServiceInterface::class, $this->services)){
+                                    $response[] = $this->services[$this->services[UserServiceInterface::class]];
                                 } else {
                                     $response[] = null;
                                 }
@@ -431,7 +440,7 @@ class ServiceFactory
                                 /** @var Pools $pools */
                                 $pools = $this->create(Pools::class);
                                 $response[] = $pools->get($parameter->getName());
-                            }elseif ($reflect->implementsInterface(ServiceInterface::class)) {
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class)) {
                                 $response[] = $this->create($parameter->getName());
                             }
                         }
