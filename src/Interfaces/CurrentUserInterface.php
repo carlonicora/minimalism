@@ -2,7 +2,7 @@
 
 namespace CarloNicora\Minimalism\Interfaces;
 
-interface CurrentUserInterface
+interface CurrentUserInterface extends ServiceInterface
 {
     /**
      * @return int
