@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Interfaces\BuilderInterface;
 use CarloNicora\Minimalism\Interfaces\CacheInterface;
+use CarloNicora\Minimalism\Interfaces\CurrentUserInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
@@ -371,6 +372,20 @@ class ServiceFactory
                                 if ($reflect->implementsInterface(LoggerInterface::class)) {
                                     $subResponse = $this->services[LoggerInterface::class];
                                     break;
+                                }
+
+                                if ($reflect->implementsInterface(CurrentUserInterface::class)) {
+                                    if (array_key_exists(CurrentUserInterface::class, $this->services)) {
+                                        $subResponse = $this->services[CurrentUserInterface::class];
+                                        break;
+                                    }
+
+                                    if (!$reflect->isInterface()) {
+                                        $currentUserService                          = $this->create($subParameter->getName());
+                                        $this->services[CurrentUserInterface::class] = $currentUserService;
+                                        $subResponse                                 = $currentUserService;
+                                        break;
+                                    }
                                 }
                             }
                             $response[] = $subResponse;
