@@ -10,11 +10,6 @@ interface CurrentUserInterface
     public function getId(): int;
 
     /**
-     * @return int
-     */
-    public function getEmail(): int;
-
-    /**
      * @return array
      */
     public function getSettings(): array;
