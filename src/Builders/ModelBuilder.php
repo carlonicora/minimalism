@@ -89,7 +89,11 @@ class ModelBuilder
             }
 
             if ($this->doesModelExist($parameter, $models)) {
-                $this->modelClass = $models[$this->getProperModelName($parameter)];
+                $modelClass = $models[$this->getProperModelName($parameter)];
+                if (is_array($modelClass)){
+                    $modelClass = end($modelClass);
+                }
+                $this->modelClass = $modelClass;
                 return array_merge($response, $this->getRemainingParameters($parameters, $parameterKey));
             }
 
