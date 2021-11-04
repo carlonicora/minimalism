@@ -1,7 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
-interface DefaultServiceInterface
+interface DefaultServiceInterface extends ServiceInterface
 {
     /**
      * @return array
