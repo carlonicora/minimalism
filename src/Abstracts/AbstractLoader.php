@@ -93,7 +93,7 @@ abstract class AbstractLoader implements DataLoaderInterface, MinimalismObjectIn
         $response = [];
 
         foreach ($recordset ?? [] as $record){
-            $response = new $objectType($record);
+            $response[] = new $objectType($record);
         }
 
         return $response;
