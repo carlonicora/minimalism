@@ -75,14 +75,14 @@ class FunctionParametersCommand
                         $dataValidator->setDocument($parameters['named'][$parameterDefinition['name']]);
 
                         if ($dataValidator->validate()) {
-                            $parameterValue = $dataValidator->getDocument();
+                            $parameterValue = $dataValidator;
                         } else {
                             throw new RuntimeException(
-                                message: $dataValidator->getValidationError()->getValidatorType()->name
+                                message: $dataValidator->getValidationError()?->getValidatorType()->name
                                     . ' '
-                                    . $dataValidator->getValidationError()->getError()->name
+                                    . $dataValidator->getValidationError()?->getError()->name
                                     . ' '
-                                    . $dataValidator->getValidationError()->getDescription(),
+                                    . $dataValidator->getValidationError()?->getDescription(),
                                 code: 412,
                             );
                         }
