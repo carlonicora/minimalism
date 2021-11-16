@@ -6,9 +6,11 @@ interface DataObjectInterface
     /**
      * DataObjectInterface constructor.
      * @param array|null $data
+     * @param int|null $levelOfChildrenToLoad
      */
     public function __construct(
         ?array $data=null,
+        ?int $levelOfChildrenToLoad=0,
     );
 
     /**

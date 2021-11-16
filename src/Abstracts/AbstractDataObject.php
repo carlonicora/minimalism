@@ -15,9 +15,11 @@ abstract class AbstractDataObject implements DataObjectInterface
     /**
      * Context constructor.
      * @param array|null $data
+     * @param int|null $levelOfChildrenToLoad
      */
     public function __construct(
-        ?array $data=null
+        ?array $data=null,
+        protected ?int $levelOfChildrenToLoad=0,
     )
     {
         if ($data !== null){

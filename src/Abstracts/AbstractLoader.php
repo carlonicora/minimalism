@@ -11,6 +11,7 @@ use CarloNicora\Minimalism\Interfaces\DataObjectInterface;
 use CarloNicora\Minimalism\Interfaces\MinimalismObjectInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Services\Pools;
+use Exception;
 
 abstract class AbstractLoader implements DataLoaderInterface, MinimalismObjectInterface
 {
@@ -68,32 +69,47 @@ abstract class AbstractLoader implements DataLoaderInterface, MinimalismObjectIn
     }
 
     /**
-     * @throws RecordNotFoundException
+     * @param array $recordset
+     * @param string $objectType
+     * @param int|null $levelOfChildrenToLoad
+     * @return DataObjectInterface
+     * @throws Exception
      */
     protected function returnSingleObject(
         array $recordset,
         string $objectType,
+        ?int $levelOfChildrenToLoad=0,
     ): DataObjectInterface
     {
         if ($recordset === [] || $recordset === [[]]){
             throw new RecordNotFoundException('Record Not found');
         }
 
-        return new $objectType($recordset[0]);
+        return new $objectType(
+            data: $recordset[0],
+            levelOfChildrenToLoad: $levelOfChildrenToLoad,
+        );
     }
 
     /**
+     * @param array $recordset
+     * @param string $objectType
+     * @param int|null $levelOfChildrenToLoad
      * @return DataObjectInterface[]
      */
     protected function returnObjectArray(
         array $recordset,
         string $objectType,
+        ?int $levelOfChildrenToLoad=0,
     ): array
     {
         $response = [];
 
         foreach ($recordset ?? [] as $record){
-            $response[] = new $objectType($record);
+            $response[] = new $objectType(
+                data: $record,
+                levelOfChildrenToLoad: $levelOfChildrenToLoad,
+            );
         }
 
         return $response;
