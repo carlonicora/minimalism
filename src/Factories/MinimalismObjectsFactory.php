@@ -45,7 +45,7 @@ class MinimalismObjectsFactory
     {
         self::$serviceFactory = $serviceFactory;
 
-        self::$cacheFile = self::$serviceFactory->getPath()->getRoot()
+        self::$cacheFile = self::$serviceFactory::getPath()->getRoot()
             . DIRECTORY_SEPARATOR . 'cache'
             . DIRECTORY_SEPARATOR . 'minimalismObjectsDefinitions.cache';
 
@@ -270,7 +270,7 @@ class MinimalismObjectsFactory
                 case ParameterDefinition::PARAMETER_TYPE_LOADER:
                     /** @var Pools $pools */
                     /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-                    $parameterValue = self::$serviceFactory->create(Pools::class)->get(
+                    $parameterValue = self::$serviceFactory->create(serviceName: Pools::class)->get(
                         className: $methodParameter->getIdentifier()
                     );
                     break;

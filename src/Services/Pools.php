@@ -6,16 +6,18 @@ use CarloNicora\Minimalism\Interfaces\CacheBuilderFactoryInterface;
 use CarloNicora\Minimalism\Interfaces\CacheInterface;
 use CarloNicora\Minimalism\Interfaces\DataInterface;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
+use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
+use CarloNicora\Minimalism\Interfaces\InitialisableInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Exception;
 
-class Pools implements ServiceInterface
+class Pools implements ServiceInterface, InitialisableInterface
 {
     /** @var array  */
     private array $loaders=[];
 
-    /** @var ServiceInterface|null  */
-    private ?ServiceInterface $defaultService=null;
+    /** @var DefaultServiceInterface|null  */
+    private ?DefaultServiceInterface $defaultService=null;
 
     /** @var CacheBuilderFactoryInterface|null  */
     private ?CacheBuilderFactoryInterface $cacheFactory=null;
@@ -44,9 +46,9 @@ class Pools implements ServiceInterface
     }
 
     /**
-     * @param ServiceInterface $defaultService
+     * @param DefaultServiceInterface $defaultService
      */
-    public function setDefaultService(ServiceInterface $defaultService): void
+    public function setDefaultService(DefaultServiceInterface $defaultService): void
     {
         $this->defaultService = $defaultService;
     }
@@ -92,9 +94,9 @@ class Pools implements ServiceInterface
     }
 
     /**
-     * @return ServiceInterface|null
+     * @return DefaultServiceInterface|null
      */
-    public function getDefaultService(): ?ServiceInterface
+    public function getDefaultService(): ?DefaultServiceInterface
     {
         return $this->defaultService;
     }
@@ -129,5 +131,10 @@ class Pools implements ServiceInterface
     public function destroy(): void
     {
         $this->loaders = [];
+    }
+
+    public static function isRequired(): bool
+    {
+        return true;
     }
 }

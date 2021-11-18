@@ -93,7 +93,7 @@ class ModelFactory
      */
     private function loadModels(): void
     {
-        $modelDirectoryCache = $this->services->getPath()->getRoot()
+        $modelDirectoryCache = $this->services::getPath()->getRoot()
             . DIRECTORY_SEPARATOR . 'cache'
             . DIRECTORY_SEPARATOR;
 
@@ -108,21 +108,21 @@ class ModelFactory
         ){
             $this->models = unserialize($modelsFile, [true]);
             $serviceModels = unserialize($serviceModelFile, [true]);
-            $this->services->getPath()->setServicesModels($serviceModels);
+            $this->services::getPath()->setServicesModels($serviceModels);
             $this->modelsDefinitions = unserialize($modelDefinitionsFile, [true]);
         } else {
             $this->modelsDefinitions = [];
             $serviceModels = [];
 
-            $this->models = $this->loadFolderModels($this->services->getPath()->getRoot()
+            $this->models = $this->loadFolderModels($this->services::getPath()->getRoot()
                 . DIRECTORY_SEPARATOR . 'src'
                 . DIRECTORY_SEPARATOR . 'Models'
             );
 
-            foreach ($this->services->getPath()->getServicesModelsDirectories() ?? [] as $additionalDirectory) {
+            foreach ($this->services::getPath()->getServicesModelsDirectories() ?? [] as $additionalDirectory) {
                 $serviceModels[] = $this->loadFolderModels($additionalDirectory);
             }
-            $this->services->getPath()->setServicesModels($serviceModels);
+            $this->services::getPath()->setServicesModels($serviceModels);
 
             file_put_contents($modelCache, serialize($this->models));
             file_put_contents($serviceModelCache, serialize($serviceModels));

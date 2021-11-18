@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Interfaces;
 use CarloNicora\Minimalism\Services\Path;
 use Monolog\Logger;
 
-interface LoggerInterface
+interface LoggerInterface extends InitialisableInterface
 {
     /**
      * LoggerInterface constructor.

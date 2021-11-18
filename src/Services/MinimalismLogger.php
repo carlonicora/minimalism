@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Services;
 
+use CarloNicora\Minimalism\Interfaces\InitialisableInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Objects\MinimalismLog;
@@ -9,7 +10,7 @@ use Monolog\Handler\Handler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-class MinimalismLogger implements ServiceInterface, LoggerInterface
+class MinimalismLogger implements ServiceInterface, InitialisableInterface, LoggerInterface
 {
     /**
      * @var array
@@ -321,5 +322,10 @@ class MinimalismLogger implements ServiceInterface, LoggerInterface
     public function destroy(): void
     {
         $this->flush();
+    }
+
+    public static function isRequired(): bool
+    {
+        return true;
     }
 }

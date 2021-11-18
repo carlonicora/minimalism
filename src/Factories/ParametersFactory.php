@@ -68,11 +68,11 @@ class ParametersFactory
     public function createParameters(): array
     {
         $parametersReader = new ParametersReaderCommand(
-            path: $this->services->getPath(),
+            path: $this->services::getPath(),
             models: $this->models,
         );
 
-        if ($this->services->getPath()->getUrl() === null){
+        if ($this->services::getPath()->getUrl() === null){
             $response = $parametersReader->getCliParameters();
         } else {
             $response = $parametersReader->getWebParameters();

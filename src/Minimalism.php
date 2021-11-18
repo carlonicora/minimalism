@@ -296,7 +296,7 @@ class Minimalism
                 context: [
                     'file' => $exception->getFile() ?? '',
                     'line' => $exception->getLine(),
-                    'url' => $this->services->getPath()->getUri()??'',
+                    'url' => $this->services::getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,
                 ]
@@ -307,7 +307,7 @@ class Minimalism
                 context: [
                     'file' => $exception->getFile() ?? '',
                     'line' => $exception->getLine(),
-                    'url' => $this->services->getPath()->getUri()??'',
+                    'url' => $this->services::getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,
                 ]
@@ -326,7 +326,7 @@ class Minimalism
             $response = '';
         }
 
-        if ($this->services->getPath()->getUrl() !== null) {
+        if ($this->services::getPath()->getUrl() !== null) {
             header('Content-Type: ' . $this->contentType);
 
             header(
@@ -347,7 +347,7 @@ class Minimalism
 
         echo $response;
 
-        if ($this->services->getPath()->getUri() !== null) {
+        if ($this->services::getPath()->getUri() !== null) {
             fastcgi_finish_request();
         }
     }

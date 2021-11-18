@@ -43,7 +43,7 @@ class AbstractModel implements ModelInterface
     )
     {
         if ($this->function === null) {
-            if ($this->services->getPath()->getUrl() === null) {
+            if ($this->services::getPath()->getUrl() === null) {
                 $this->function = 'cli';
             } else {
                 $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');

@@ -1,9 +1,10 @@
 <?php
 namespace CarloNicora\Minimalism\Services;
 
+use CarloNicora\Minimalism\Interfaces\InitialisableInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 
-class Path implements ServiceInterface
+class Path implements ServiceInterface, InitialisableInterface
 {
     /** @var string */
     private string $root;
@@ -158,5 +159,10 @@ class Path implements ServiceInterface
                 $this->servicesViewsDirectories[] = $possibleViewDirectory;
             }
         }
+    }
+
+    public static function isRequired(): bool
+    {
+        return true;
     }
 }
