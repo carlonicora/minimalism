@@ -21,14 +21,12 @@ class ParametersFactory
         private ?array $models=null,
     )
     {
-
     }
 
     /**
      * @return string
      */
     public function getModelClass(
-
     ): string
     {
         return $this->modelClass ?? throw new RuntimeException('Model not found', 404);

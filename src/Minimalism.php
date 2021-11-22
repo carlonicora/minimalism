@@ -3,9 +3,9 @@ namespace CarloNicora\Minimalism;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
-use CarloNicora\Minimalism\Factories\ModelFactory;
-use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use Composer\InstalledVersions;
 use Exception;
 use JsonException;
@@ -14,14 +14,8 @@ use Throwable;
 
 class Minimalism
 {
-    private const INITIALISE_SERVICES=1;
-    private const INITIALISE_MODELS=2;
-
-    /** @var ServiceFactory  */
-    private ServiceFactory $services;
-
-    /** @var ModelFactory  */
-    private ModelFactory $modelFactory;
+    /** @var MinimalismFactories  */
+    private MinimalismFactories $factories;
 
     /** @var string|null  */
     private ?string $viewName=null;
@@ -97,86 +91,71 @@ class Minimalism
     /**
      * Minimalism constructor.
      */
-    public function __construct()
+    public function __construct(
+    )
     {
-        $this->services = new ServiceFactory();
-        $this->modelFactory = new ModelFactory();
+        if (PHP_SAPI !== 'cli') {
+            $this->startSession();
+        }
+
+        $this->factories = new MinimalismFactories();
     }
 
     /**
      * @param string $serviceName
-     * @param bool $requiresBaseService
      * @return ServiceInterface
      * @throws Exception
      */
     public function getService(
         string $serviceName,
-        bool $requiresBaseService=true
     ): ServiceInterface
     {
-        $this->initialise(
-            self::INITIALISE_SERVICES,
-            ['requiresBaseService' => $requiresBaseService]
-        );
-
-        return $this->services->create(
-            serviceName: $serviceName
+        return $this->factories->getServiceFactory()->create(
+            className: $serviceName
         );
     }
 
     /**
-     * @param int $type
-     * @param array|null $parameters
+     *
      */
-    private function initialise(
-        int $type,
-        ?array $parameters=null,
-    ): void
+    private function startSession() : void
     {
-        try {
-            if ($type === self::INITIALISE_SERVICES) {
-                $requiresBaseService = true;
+        if (session_status() === PHP_SESSION_NONE) {
+            if (isset($_COOKIE['PHPSESSID'])) {
+                $sessid = '';
 
-                if ($parameters !== null && array_key_exists('requiresBaseService', $parameters)){
-                    $requiresBaseService = $parameters['requiresBaseService'];
+                if (ini_get('session.use_cookies')) {
+                    $sessid = $_COOKIE['PHPSESSID'];
+                } elseif (!ini_get('session.use_only_cookies')) {
+                    $sessid = $_GET['PHPSESSID'];
                 }
-                $this->services->initialise($requiresBaseService);
-            } else {
-                $this->modelFactory->initialise($this->services);
-            }
-        } catch (Exception|Throwable $e) {
-            $this->httpResponseCode = 500;
-            $this->sendException($e);
 
-            $this->services->getLogger()->emergency(
-                'Failed to initialise '
-                . ($type === self::INITIALISE_SERVICES
-                    ? 'services'
-                    : 'models')
-            );
-            exit;
+                if (!preg_match('/^[a-z0-9]{32}$/', $sessid)) {
+                    return;
+                }
+            }
+
+            session_start();
         }
     }
 
     /**
      * @param string|null $modelName
      */
-    public function render(?string $modelName=null): void
+    public function render(
+        ?string $modelName=null,
+    ): void
     {
-        $this->initialise(self::INITIALISE_SERVICES);
-        $this->initialise(self::INITIALISE_MODELS);
-
         $data = $this->generateData($modelName);
 
-        if ($this->viewName !== null
-            && ($transformer = $this->services->getTransformer()) !== null
-        ){
+        /** @var TransformerInterface $transformer */
+        if ($this->viewName !== null && ($transformer = $this->factories->getServiceFactory()->getTranformerService()) !== null){
             $this->contentType = $transformer->getContentType();
 
             try {
                 $response = $transformer->transform(
-                    $data,
-                    $this->viewName
+                    document: $data,
+                    viewFile: $this->viewName,
                 );
             } catch (Exception| Throwable $e) {
                 $this->httpResponseCode = 500;
@@ -207,7 +186,11 @@ class Minimalism
         try {
             $parameters = null;
             do {
-                $model = $this->modelFactory->create($modelName, $parameters, $function);
+                $model = $this->factories->getModelFactory()->create(
+                    modelName: $modelName,
+                    parameters: $parameters,
+                    function: $function,
+                );
 
                 if (($preRenderFunction = $model->getPreRenderFunction()) !== null){
                     $preRenderFunction();
@@ -290,29 +273,31 @@ class Minimalism
 
         $this->send($response);
 
+        /*
         if ($this->httpResponseCode > 500){
-            $this->services->getLogger()->emergency(
+            $this->factories->getServiceFactory()->getLogger()->emergency(
                 message: $exception->getMessage(),
                 context: [
                     'file' => $exception->getFile() ?? '',
                     'line' => $exception->getLine(),
-                    'url' => $this->services->getPath()->getUri()??'',
+                    'url' => $this->factories->getServiceFactory()->getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,
                 ]
             );
         } else {
-            $this->services->getLogger()->error(
+            $this->factories->getServiceFactory()->getLogger()->error(
                 message: $exception->getMessage(),
                 context: [
                     'file' => $exception->getFile() ?? '',
                     'line' => $exception->getLine(),
-                    'url' => $this->services->getPath()->getUri()??'',
+                    'url' => $this->factories->getServiceFactory()->getPath()->getUri()??'',
                     'exception' => $exception->getTrace(),
                     'responseCode' => $this->httpResponseCode,
                 ]
             );
         }
+        */
     }
 
     /**
@@ -326,7 +311,7 @@ class Minimalism
             $response = '';
         }
 
-        if ($this->services->getPath()->getUrl() !== null) {
+        if ($this->factories->getServiceFactory()->getPath()->getUrl() !== null) {
             header('Content-Type: ' . $this->contentType);
 
             header(
@@ -347,7 +332,7 @@ class Minimalism
 
         echo $response;
 
-        if ($this->services->getPath()->getUri() !== null) {
+        if ($this->factories->getServiceFactory()->getPath()->getUri() !== null) {
             fastcgi_finish_request();
         }
     }

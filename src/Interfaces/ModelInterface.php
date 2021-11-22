@@ -2,19 +2,17 @@
 namespace CarloNicora\Minimalism\Interfaces;
 
 use CarloNicora\JsonApi\Document;
-use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Factories\MinimalismFactories;
 
 interface ModelInterface
 {
     /**
      * ModelInterface constructor.
-     * @param ServiceFactory $services
-     * @param array $modelDefinition
+     * @param MinimalismFactories $factories
      * @param string|null $function
      */
     public function __construct(
-        ServiceFactory $services,
-        array $modelDefinition,
+        MinimalismFactories $factories,
         ?string $function=null
     );
 

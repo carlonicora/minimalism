@@ -2,8 +2,7 @@
 namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
-use CarloNicora\Minimalism\Factories\ParametersFactory;
-use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use Exception;
 
@@ -32,18 +31,16 @@ class AbstractModel implements ModelInterface
 
     /**
      * AbstractModel constructor.
-     * @param ServiceFactory $services
-     * @param array $modelDefinition
+     * @param MinimalismFactories $factories
      * @param string|null $function
      */
     public function __construct(
-        private ServiceFactory $services,
-        private array $modelDefinition,
+        protected MinimalismFactories $factories,
         private ?string $function=null,
     )
     {
         if ($this->function === null) {
-            if ($this->services->getPath()->getUrl() === null) {
+            if ($this->factories->getServiceFactory()->getPath()->getUrl() === null) {
                 $this->function = 'cli';
             } else {
                 $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');
@@ -166,26 +163,29 @@ class AbstractModel implements ModelInterface
      * @return int
      * @throws Exception
      */
-    final public function run(): int
+    final public function run(
+    ): int
     {
-        $parametersFactory = new ParametersFactory(
-            services: $this->services,
+        $parametersDefinitions = $this->factories->getModelFactory()->getModelMethodParametersDefinition(
+            modelName: static::class,
+            functionName: $this->function,
         );
 
-        $parameters = $parametersFactory->getModelFunctionParameters(
-            modelDefinition: $this->modelDefinition,
-            function: $this->function,
-            parameters: $this->parameters
+        $parametersValues = $this->factories->getModelFactory()->generateMethodParametersValues(
+            methodParametersDefinition: $parametersDefinitions,
+            parameters: $this->parameters,
         );
 
-        return $this->{$this->function}(...$parameters);
+        return $this->{$this->function}(...$parametersValues);
     }
 
     /**
      * @param string $name
      * @return mixed
      */
-    public function getParameterValue(string $name): mixed
+    public function getParameterValue(
+        string $name,
+    ): mixed
     {
         return $this->parameters['named'][$name]??null;
     }

@@ -5,7 +5,7 @@ use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Interfaces\EncryptedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
-use CarloNicora\Minimalism\Interfaces\MinimalismObjectInterface;
+use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
@@ -172,13 +172,13 @@ class MinimalismObjectsFactory
     /**
      * @param string $minimalismObjectClassName
      * @param array $parameters
-     * @return MinimalismObjectInterface
+     * @return ObjectInterface
      * @throws Exception
      */
     public static function create(
         string $minimalismObjectClassName,
         array $parameters=[],
-    ): MinimalismObjectInterface
+    ): ObjectInterface
     {
         $methodParametersDefinitions = self::getMinimalismObjectMethodDefinitions(
             minimalismObjectClassName: $minimalismObjectClassName,
@@ -194,16 +194,16 @@ class MinimalismObjectsFactory
     }
 
     /**
-     * @param MinimalismObjectInterface|string $minimalismObject
+     * @param ObjectInterface|string $minimalismObject
      * @param string $functionName
      * @param array $parameters
      * @return mixed
      * @throws Exception
      */
     public static function call(
-        MinimalismObjectInterface|string $minimalismObject,
-        string $functionName,
-        array $parameters=[]
+        ObjectInterface|string $minimalismObject,
+        string                 $functionName,
+        array                  $parameters=[]
     ): mixed
     {
         if (is_string($minimalismObject)){

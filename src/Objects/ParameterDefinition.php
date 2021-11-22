@@ -1,18 +1,12 @@
 <?php
 namespace CarloNicora\Minimalism\Objects;
 
+use CarloNicora\Minimalism\Enums\ParameterType;
+
 class ParameterDefinition
 {
-    public const PARAMETER_TYPE_NULL=0;
-    public const PARAMETER_TYPE_SERVICE=1;
-    public const PARAMETER_TYPE_DOCUMENT=2;
-    public const PARAMETER_TYPE_SIMPLE=3;
-    public const PARAMETER_TYPE_LOADER=4;
-    public const PARAMETER_TYPE_PARAMETER=5;
-    public const PARAMETER_TYPE_ENCRYPTER_PARAMETER=6;
-
-    /** @var int  */
-    private int $type = self::PARAMETER_TYPE_NULL;
+    /** @var ParameterType  */
+    private ParameterType $type = ParameterType::Null;
 
     /** @var string|null  */
     private ?string $identifier=null;
@@ -55,9 +49,9 @@ class ParameterDefinition
     }
 
     /**
-     * @param int $type
+     * @param ParameterType $type
      */
-    public function setType(int $type): void
+    public function setType(ParameterType $type): void
     {
         $this->type = $type;
     }
@@ -87,9 +81,9 @@ class ParameterDefinition
     }
 
     /**
-     * @return int
+     * @return ParameterType
      */
-    public function getType(): int
+    public function getType(): ParameterType
     {
         return $this->type;
     }

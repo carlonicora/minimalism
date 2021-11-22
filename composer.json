@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism",
   "description": "Minimal MVC framework",
-  "version": "13.0.0-beta18",
+  "version": "13.0.0-alpha1",
   "homepage": "https://carlonicora.com",
   "time": "2020-12-28",
   "license": "MIT",
@@ -16,8 +16,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "CarloNicora\\Minimalism\\":"src/",
-      "CarloNicora\\Minimalism\\Minimise\\":"Minimise/"
+      "CarloNicora\\Minimalism\\":"src/"
     }
   },
   "autoload-dev": {

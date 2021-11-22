@@ -28,7 +28,8 @@ class Path implements ServiceInterface
      */
     public function __construct()
     {
-        $this->root = dirname(__DIR__, 5);
+        //$this->root = dirname(path: __DIR__, levels: 5);
+        $this->root = dirname(path: __DIR__, levels: 2);
 
         $this->initialise();
 
@@ -60,7 +61,9 @@ class Path implements ServiceInterface
      * @param string $uri
      * @return string
      */
-    public function sanitiseUriVersion(string &$uri): string
+    public function sanitiseUriVersion(
+        string &$uri,
+    ): string
     {
         $response = '';
         $uriParts = explode('/', $uri);
@@ -97,6 +100,17 @@ class Path implements ServiceInterface
     public function getUri(): ?string
     {
         return $this->uri;
+    }
+
+    /**
+     * @param string $cacheName
+     * @return string
+     */
+    public function getCacheFile(
+        string $cacheName
+    ): string
+    {
+        return $this->root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . $cacheName;
     }
 
     /**

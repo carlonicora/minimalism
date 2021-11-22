@@ -10,7 +10,10 @@ interface TransformerInterface extends ServiceInterface
      * @param string $viewFile
      * @return string
      */
-    public function transform(Document $document, string $viewFile): string;
+    public function transform(
+        Document $document,
+        string $viewFile,
+    ): string;
 
     /**
      * @return string
