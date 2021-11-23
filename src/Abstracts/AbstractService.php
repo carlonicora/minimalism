@@ -8,6 +8,13 @@ abstract class AbstractService implements ServiceInterface
     /**
      *
      */
+    public function __construct()
+    {
+    }
+
+    /**
+     *
+     */
     public function initialise(
     ): void
     {
