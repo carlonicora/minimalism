@@ -2,30 +2,34 @@
 namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Abstracts\AbstractFactory;
+use CarloNicora\Minimalism\Interfaces\ObjectFactoryInterface;
 use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use Exception;
 use ReflectionClass;
+use ReflectionException;
+use ReflectionUnionType;
+use RuntimeException;
 
 class ObjectFactory extends AbstractFactory
 {
     /** @var array  */
-    private array $objectsDefinitions=[];
+    private array $objectsFactoriesDefinitions=[];
 
     /** @var bool  */
-    private bool $objectsDefinitionsUpdated=false;
+    private bool $objectsFactoriesDefinitionsUpdated=false;
 
     /**
-     * @param ServiceFactory $serviceFactory
+     * @param MinimalismFactories $minimalismFactories
      * @throws Exception
      */
     public function __construct(
-        ServiceFactory $serviceFactory,
+        MinimalismFactories $minimalismFactories,
     )
     {
-        parent::__construct(serviceFactory: $serviceFactory);
+        parent::__construct(minimalismFactories: $minimalismFactories);
 
-        if (is_file($this->serviceFactory->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'))  && ($cache = file_get_contents($this->serviceFactory->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'))) !== false) {
-            $this->objectsDefinitions = unserialize($cache, [true]);
+        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'))) !== false) {
+            $this->objectsFactoriesDefinitions = unserialize($cache, [true]);
         }
     }
 
@@ -35,8 +39,8 @@ class ObjectFactory extends AbstractFactory
     public function __destruct(
     )
     {
-        if ($this->objectsDefinitionsUpdated) {
-            file_put_contents($this->serviceFactory->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'), serialize($this->objectsDefinitions));
+        if ($this->objectsFactoriesDefinitionsUpdated) {
+            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'), serialize($this->objectsFactoriesDefinitions));
         }
     }
 
@@ -49,36 +53,50 @@ class ObjectFactory extends AbstractFactory
     public function create(
         string $className,
         array $parameters=[],
-    ): mixed
+    ): ObjectInterface
     {
-        $methodParametersDefinitions = $this->getMethodDefinitions(
-            className: $className,
-        );
+        if (array_key_exists($className, $this->objectsFactoriesDefinitions) && array_key_exists($this->objectsFactoriesDefinitions[$className], $this->objectsFactoriesDefinitions)) {
+            $factoryName = $this->objectsFactoriesDefinitions[$className];
+            $factoryConstructMethodParametersDefinitions = $this->objectsFactoriesDefinitions[$factoryName];
+        } else {
+            $factoryName = null;
 
-        return $this->generateObject(
-            className: $className,
-            methodParametersDefinition: $methodParametersDefinitions,
-            parameters: $parameters,
-        );
-    }
+            try {
+                /** @var ReflectionUnionType $types */
+                $types = (new ReflectionClass($className))->getMethod('getObjectFactoryClass')->getReturnType();
 
-    /**
-     * @param string $className
-     * @return array
-     * @throws Exception
-     */
-    private function getMethodDefinitions(
-        string $className,
-    ): array
-    {
-        if (!array_key_exists($className, $this->objectsDefinitions)) {
-            $this->objectsDefinitionsUpdated = true;
+                foreach ($types->getTypes() as $type){
+                    if ($type->getName() !== 'string'){
+                        $factoryName = $type->getName();
+                        break;
+                    }
+                }
+            } catch (ReflectionException) {
+                $factoryName = null;
+            }
 
-            $this->objectsDefinitions[$className] = $this->getMethodParametersDefinition(
-                (new ReflectionClass($className))->getMethod('__construct')
-            );
+            if ($factoryName === null){
+                throw new RuntimeException('nope', 500);
+            }
+
+            $reflectionMethod = (new ReflectionClass($factoryName))->getMethod('__construct');
+            $factoryConstructMethodParametersDefinitions = $this->getMethodParametersDefinition($reflectionMethod);
+
+            $this->objectsFactoriesDefinitions[$className] = $factoryName;
+            $this->objectsFactoriesDefinitions[$factoryName] = $factoryConstructMethodParametersDefinitions;
+
+            $this->objectsFactoriesDefinitionsUpdated = true;
         }
 
-        return $this->objectsDefinitions[$className];
+        /** @var ObjectFactoryInterface $factory */
+        $factoryConstructorParameters = $this->generateMethodParametersValues(
+            methodParametersDefinition: $factoryConstructMethodParametersDefinitions,
+            parameters: $parameters,
+        );
+
+        return (new $factoryName(...$factoryConstructorParameters))->create(
+            name: $className,
+            parameters: $parameters,
+        );
     }
 }

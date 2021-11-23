@@ -2,13 +2,9 @@
 namespace CarloNicora\Minimalism\Enums;
 
 use CarloNicora\JsonApi\Document;
-use CarloNicora\Minimalism\Factories\ServiceFactory;
-use CarloNicora\Minimalism\Interfaces\ObjectFactoryInterface;
+use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
 use Exception;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionUnionType;
 use RuntimeException;
 
 enum ParameterType
@@ -23,14 +19,14 @@ enum ParameterType
 
     /**
      * @param ParameterDefinition $parameterDefinition
-     * @param ServiceFactory $serviceFactory
+     * @param MinimalismFactories $minimalismFactories
      * @param array $parameters
      * @return mixed
      * @throws Exception
      */
     public function getParameterValue(
         ParameterDefinition $parameterDefinition,
-        ServiceFactory $serviceFactory,
+        MinimalismFactories $minimalismFactories,
         array $parameters,
     ): mixed
     {
@@ -40,12 +36,12 @@ enum ParameterType
             case self::Null:
                 throw new RuntimeException('', 500);
             case self::Service:
-                $response = $serviceFactory->create(
+                $response = $minimalismFactories->getServiceFactory()->create(
                     className: $parameterDefinition->getIdentifier(),
                 );
 
                 if (is_string($response)){
-                    $response = $serviceFactory->create(
+                    $response = $minimalismFactories->getServiceFactory()->create(
                         className: $response,
                     );
                 }
@@ -80,38 +76,10 @@ enum ParameterType
                 }
                 break;
             case self::Object:
-                $factoryName = null;
-
-                try {
-                    /** @var ReflectionUnionType $types */
-                    $types = (new ReflectionClass($parameterDefinition->getIdentifier()))->getMethod('getObjectFactoryClass')->getReturnType();
-
-                    foreach ($types->getTypes() as $type){
-                        if ($type->getName() !== 'string'){
-                            $factoryName = $type->getName();
-                            break;
-                        }
-                    }
-                } catch (ReflectionException) {
-                    $factoryName = null;
-                }
-
-                if ($factoryName === null){
-                    throw new RuntimeException('nope', 500);
-                }
-
-                try {
-                    /** @var ObjectFactoryInterface $factory */
-                    $factory = new $factoryName();
-
-                    $response = $factory->create(
-                        $parameterDefinition->getIdentifier(),
-                        $parameters,
-                    );
-                } catch (Exception) {
-                    throw new RuntimeException('nope', 500);
-                }
-
+                $response = $minimalismFactories->getObjectFactory()->create(
+                    className: $parameterDefinition->getIdentifier(),
+                    parameters: $parameters,
+                );
                 break;
         }
 

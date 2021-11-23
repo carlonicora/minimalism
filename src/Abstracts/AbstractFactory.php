@@ -3,7 +3,7 @@ namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Enums\ParameterType;
-use CarloNicora\Minimalism\Factories\ServiceFactory;
+use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
@@ -18,10 +18,10 @@ use ReflectionParameter;
 abstract class AbstractFactory
 {
     /**
-     * @param ServiceFactory $serviceFactory
+     * @param MinimalismFactories $minimalismFactories
      */
     public function __construct(
-        protected ServiceFactory $serviceFactory,
+        protected MinimalismFactories $minimalismFactories,
     )
     {
     }
@@ -74,9 +74,10 @@ abstract class AbstractFactory
     }
 
     /**
-     * @param array $methodParametersDefinition
+     * @param ParameterDefinition[] $methodParametersDefinition
      * @param array|null $parameters
      * @return array
+     * @throws Exception
      */
     public function generateMethodParametersValues(
         array $methodParametersDefinition,
@@ -88,28 +89,11 @@ abstract class AbstractFactory
         foreach ($methodParametersDefinition ?? [] as $methodParameterDefinition) {
             $response[] = $methodParameterDefinition->getType()->getParameterValue(
                 parameterDefinition: $methodParameterDefinition,
-                serviceFactory: $this->serviceFactory,
+                minimalismFactories: $this->minimalismFactories,
                 parameters: $parameters,
             );
         }
 
         return $response;
-    }
-
-    /**
-     * @param string $className
-     * @param ParameterDefinition[] $methodParametersDefinition
-     * @param array|null $parameters
-     * @return array
-     * @throws Exception
-     */
-    public function generateObject(
-        string $className,
-        array $methodParametersDefinition,
-        ?array $parameters=[],
-    ): mixed
-    {
-        $parametersValues = $this->generateMethodParametersValues($methodParametersDefinition, $parameters);
-        return new $className(...$parametersValues);
     }
 }

@@ -17,4 +17,12 @@ interface ServiceInterface
      * from the service and add them to the session
      */
     public function destroy(): void;
+
+    /**
+     * Returns the base interface (if any) the service interface extends.
+     * When a service extends a base interface, an appliation can contain
+     * only one service that extends that interface.
+     * @return string|null
+     */
+    public static function getBaseInterface(): ?string;
 }

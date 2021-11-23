@@ -116,6 +116,15 @@ class Minimalism
     }
 
     /**
+     * @return MinimalismFactories
+     */
+    public function getMinimalismFactories(
+    ): MinimalismFactories
+    {
+        return $this->factories;
+    }
+
+    /**
      *
      */
     private function startSession() : void

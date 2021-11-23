@@ -22,10 +22,10 @@ class MinimalismFactories
     {
         $this->serviceFactory = new ServiceFactory();
         $this->modelFactory = new ModelFactory(
-            serviceFactory: $this->serviceFactory,
+            minimalismFactories: $this,
         );
         $this->objectFactory = new ObjectFactory(
-            serviceFactory: $this->serviceFactory,
+            minimalismFactories: $this,
         );
     }
 

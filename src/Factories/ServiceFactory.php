@@ -23,9 +23,6 @@ class ServiceFactory
     /** @var string|null  */
     private ?string $transformerService=null;
 
-    /** @var bool  */
-    private bool $hasServiceListBeenUpdated=false;
-
     /** @var array  */
     private array $env;
 
@@ -59,6 +56,8 @@ class ServiceFactory
                     className: MinimalismFactories::getNamespace($serviceFile)
                 );
             }
+
+            file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
         }
     }
 
@@ -78,6 +77,15 @@ class ServiceFactory
             );
             $this->services[$className] = $response;
 
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (($baseInterface = $className::getBaseInterface()) !== null){
+                if (array_key_exists($baseInterface, $this->services)){
+                    throw new RuntimeException('A base interface can only be extend by one service', 500);
+                }
+
+                $this->services[$baseInterface] = $className;
+            }
+
             try {
                 $reflectionClass = new ReflectionClass($className);
                 if ($reflectionClass->implementsInterface(TransformerInterface::class)) {
@@ -91,6 +99,10 @@ class ServiceFactory
             }
         } else {
             $response = $this->services[$className];
+
+            if (is_string($response)){
+                $response = $this->services[$response];
+            }
         }
 
         return $response;
@@ -163,16 +175,6 @@ class ServiceFactory
         }
 
         return new $className(...$objectParameters);
-    }
-
-    /**
-     *
-     */
-    public function __destruct()
-    {
-        if ($this->hasServiceListBeenUpdated) {
-            file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
-        }
     }
 
     /**

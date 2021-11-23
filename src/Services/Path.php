@@ -173,4 +173,12 @@ class Path implements ServiceInterface
             }
         }
     }
+
+    /**
+     * @return string|null
+     */
+    public static function getBaseInterface(): ?string
+    {
+        return  null;
+    }
 }
