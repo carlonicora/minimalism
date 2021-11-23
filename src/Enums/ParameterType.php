@@ -83,7 +83,10 @@ enum ParameterType
                 );
                 break;
             case self::SimpleObject:
-                
+                $response = $minimalismFactories->getObjectFactory()->createSimple(
+                    className: $parameterDefinition->getIdentifier(),
+                    parameters: $parameters,
+                );
                 break;
         }
 
