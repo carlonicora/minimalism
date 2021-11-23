@@ -48,10 +48,36 @@ class ObjectFactory extends AbstractFactory
     /**
      * @param string $className
      * @param array $parameters
-     * @return ObjectInterface
+     * @return ObjectInterface|SimpleObjectInterface
      * @throws Exception
      */
     public function create(
+        string $className,
+        array $parameters=[],
+    ): ObjectInterface|SimpleObjectInterface
+    {
+        if (array_key_exists($className, $this->objectsFactoriesDefinitions)){
+            $isSimpleObject = !is_string($this->objectsFactoriesDefinitions[$className]);
+        } else {
+            $isSimpleObject = (new ReflectionClass($className))->implementsInterface(SimpleObjectInterface::class);
+        }
+
+        if ($isSimpleObject){
+            $response = $this->createSimpleObject(className: $className,parameters: $parameters);
+        } else {
+            $response = $this->createComplexObject(className: $className,parameters: $parameters);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string $className
+     * @param array $parameters
+     * @return ObjectInterface
+     * @throws Exception
+     */
+    private function createComplexObject(
         string $className,
         array $parameters=[],
     ): ObjectInterface
@@ -107,7 +133,7 @@ class ObjectFactory extends AbstractFactory
      * @return SimpleObjectInterface
      * @throws Exception
      */
-    public function createSimple(
+    private function createSimpleObject(
         string $className,
         array $parameters=[],
     ): SimpleObjectInterface

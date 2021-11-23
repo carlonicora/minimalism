@@ -77,13 +77,8 @@ enum ParameterType
                 }
                 break;
             case self::Object:
-                $response = $minimalismFactories->getObjectFactory()->create(
-                    className: $parameterDefinition->getIdentifier(),
-                    parameters: $parameters,
-                );
-                break;
             case self::SimpleObject:
-                $response = $minimalismFactories->getObjectFactory()->createSimple(
+                $response = $minimalismFactories->getObjectFactory()->create(
                     className: $parameterDefinition->getIdentifier(),
                     parameters: $parameters,
                 );
