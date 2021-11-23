@@ -4,9 +4,11 @@ namespace CarloNicora\Minimalism\Abstracts;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Enums\ParameterType;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
 use Exception;
 use ReflectionClass;
@@ -14,6 +16,7 @@ use ReflectionException;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
+use RuntimeException;
 
 abstract class AbstractFactory
 {
@@ -52,6 +55,12 @@ abstract class AbstractFactory
                 if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
                     $parameterDefinition->setType(ParameterType::Service);
                     $parameterDefinition->setIdentifier($methodParameterType->getName());
+                } elseif ($methodParameterType->implementsInterface(SimpleObjectInterface::class)) {
+                    $parameterDefinition->setType(ParameterType::SimpleObject);
+                    $parameterDefinition->setIdentifier($methodParameterType->getName());
+                } elseif ($methodParameterType->implementsInterface(ObjectInterface::class)) {
+                    $parameterDefinition->setType(ParameterType::Object);
+                    $parameterDefinition->setIdentifier($methodParameterType->getName());
                 } elseif ($methodParameterType->implementsInterface(PositionedParameterInterface::class)) {
                     $parameterDefinition->setType(ParameterType::PositionedParameter);
                 } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)) {
@@ -59,8 +68,7 @@ abstract class AbstractFactory
                 } elseif ($parameter->getName() === Document::class) {
                     $parameterDefinition->setType(ParameterType::Document);
                 } else {
-                    $parameterDefinition->setType(ParameterType::Object);
-                    $parameterDefinition->setIdentifier($methodParameterType->getName());
+                    throw new RuntimeException('Parameter type not supported', 500);
                 }
             } catch (ReflectionException) {
                 $parameterDefinition->setType(ParameterType::Simple);

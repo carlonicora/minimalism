@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use CarloNicora\Minimalism\Services\Path;
 use Dotenv\Dotenv;
+use Exception;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
@@ -34,7 +35,11 @@ class ServiceFactory
     {
         $this->services[Path::class] = new Path();
 
-        $this->env = Dotenv::createImmutable($this->getPath()->getRoot(), (empty($_SERVER['HTTP_TEST_ENVIRONMENT']) ? ['.env'] : ['.env.testing']))->load();
+        try {
+            $this->env = Dotenv::createImmutable($this->getPath()->getRoot(), (empty($_SERVER['HTTP_TEST_ENVIRONMENT']) ? ['.env'] : ['.env.testing']))->load();
+        } catch (Exception) {
+            $this->env = [];
+        }
 
         if (is_file($this->getPath()->getCacheFile('services.cache')) && ($serviceFile = file_get_contents($this->getPath()->getCacheFile('services.cache'))) !== false ) {
             $this->services = unserialize($serviceFile, [true]);

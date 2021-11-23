@@ -16,6 +16,7 @@ enum ParameterType
     case PositionedParameter;
     case Parameter;
     case Object;
+    case SimpleObject;
 
     /**
      * @param ParameterDefinition $parameterDefinition
@@ -80,6 +81,9 @@ enum ParameterType
                     className: $parameterDefinition->getIdentifier(),
                     parameters: $parameters,
                 );
+                break;
+            case self::SimpleObject:
+                
                 break;
         }
 

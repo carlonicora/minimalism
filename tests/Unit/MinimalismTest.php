@@ -18,8 +18,11 @@ class MinimalismTest extends TestCase
         $this->minimalism = new Minimalism();
     }
 
+    /**
+     *
+     */
     public function testInitialise(): void
     {
-        self::assertTrue(true);
+        self::assertNotNull($this->minimalism);
     }
 }

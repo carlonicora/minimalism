@@ -26,10 +26,10 @@ class Path implements ServiceInterface
     /**
      * Path constructor
      */
-    public function __construct()
+    public function __construct(
+    )
     {
-        //$this->root = dirname(path: __DIR__, levels: 5);
-        $this->root = dirname(path: __DIR__, levels: 2);
+        $this->root = dirname(path: __DIR__, levels: 5);
 
         $this->initialise();
 

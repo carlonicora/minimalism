@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Factories;
 use CarloNicora\Minimalism\Abstracts\AbstractFactory;
 use CarloNicora\Minimalism\Interfaces\ObjectFactoryInterface;
 use CarloNicora\Minimalism\Interfaces\ObjectInterface;
+use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
@@ -98,5 +99,35 @@ class ObjectFactory extends AbstractFactory
             name: $className,
             parameters: $parameters,
         );
+    }
+
+    /**
+     * @param string $className
+     * @param array $parameters
+     * @return SimpleObjectInterface
+     * @throws Exception
+     */
+    public function createSimple(
+        string $className,
+        array $parameters=[],
+    ): SimpleObjectInterface
+    {
+        if (array_key_exists($className, $this->objectsFactoriesDefinitions)) {
+            $objectConstructorParametersDefinitions = $this->objectsFactoriesDefinitions[$className];
+        } else {
+            $reflectionMethod = (new ReflectionClass($className))->getMethod('__construct');
+            $objectConstructorParametersDefinitions = $this->getMethodParametersDefinition($reflectionMethod);
+
+            $this->objectsFactoriesDefinitions[$className] = $objectConstructorParametersDefinitions;
+
+            $this->objectsFactoriesDefinitionsUpdated = true;
+        }
+
+        $classConstructorParameters = $this->generateMethodParametersValues(
+            methodParametersDefinition: $objectConstructorParametersDefinitions,
+            parameters: $parameters,
+        );
+
+        return new $className(...$classConstructorParameters);
     }
 }
