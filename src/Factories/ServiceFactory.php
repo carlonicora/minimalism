@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
+use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use CarloNicora\Minimalism\Services\Path;
@@ -210,5 +211,21 @@ class ServiceFactory
         }
 
         return $this->services[$this->transformerService];
+    }
+
+    /**
+     * @return LoggerInterface|null
+     */
+    public function getLogger(
+    ): ?LoggerInterface
+    {
+        $response = null;
+
+        if (array_key_exists(LoggerInterface::class, $this->services)){
+            /** @var LoggerInterface $response */
+            $response = $this->create(LoggerInterface::class);
+        }
+
+        return $response;
     }
 }

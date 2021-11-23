@@ -282,31 +282,31 @@ class Minimalism
 
         $this->send($response);
 
-        /*
-        if ($this->httpResponseCode > 500){
-            $this->factories->getServiceFactory()->getLogger()->emergency(
-                message: $exception->getMessage(),
-                context: [
-                    'file' => $exception->getFile() ?? '',
-                    'line' => $exception->getLine(),
-                    'url' => $this->factories->getServiceFactory()->getPath()->getUri()??'',
-                    'exception' => $exception->getTrace(),
-                    'responseCode' => $this->httpResponseCode,
-                ]
-            );
-        } else {
-            $this->factories->getServiceFactory()->getLogger()->error(
-                message: $exception->getMessage(),
-                context: [
-                    'file' => $exception->getFile() ?? '',
-                    'line' => $exception->getLine(),
-                    'url' => $this->factories->getServiceFactory()->getPath()->getUri()??'',
-                    'exception' => $exception->getTrace(),
-                    'responseCode' => $this->httpResponseCode,
-                ]
-            );
+        if ($this->factories->getServiceFactory()->getLogger() !== null) {
+            if ($this->httpResponseCode > 500) {
+                $this->factories->getServiceFactory()->getLogger()?->emergency(
+                    message: $exception->getMessage(),
+                    context: [
+                        'file' => $exception->getFile() ?? '',
+                        'line' => $exception->getLine(),
+                        'url' => $this->factories->getServiceFactory()->getPath()->getUri() ?? '',
+                        'exception' => $exception->getTrace(),
+                        'responseCode' => $this->httpResponseCode,
+                    ]
+                );
+            } else {
+                $this->factories->getServiceFactory()->getLogger()?->error(
+                    message: $exception->getMessage(),
+                    context: [
+                        'file' => $exception->getFile() ?? '',
+                        'line' => $exception->getLine(),
+                        'url' => $this->factories->getServiceFactory()->getPath()->getUri() ?? '',
+                        'exception' => $exception->getTrace(),
+                        'responseCode' => $this->httpResponseCode,
+                    ]
+                );
+            }
         }
-        */
     }
 
     /**
