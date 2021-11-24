@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Interfaces;
 use CarloNicora\Minimalism\Enums\LogLevel;
 use CarloNicora\Minimalism\Services\Path;
 
-interface LoggerInterface
+interface LoggerInterface extends ServiceInterface
 {
     /**
      * LoggerInterface constructor.

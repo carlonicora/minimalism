@@ -102,6 +102,14 @@ class Minimalism
     }
 
     /**
+     *
+     */
+    public function __destruct()
+    {
+        session_write_close();
+    }
+
+    /**
      * @param string $serviceName
      * @return ServiceInterface
      * @throws Exception

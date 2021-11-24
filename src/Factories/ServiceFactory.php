@@ -68,6 +68,33 @@ class ServiceFactory
     }
 
     /**
+     *
+     */
+    public function __destruct()
+    {
+        if ($this->getDefaultService() !== null) {
+            foreach ($this->getDefaultService()->getDelayedServices() ?? [] as $delayedServices) {
+                if (array_key_exists($delayedServices, $this->services)) {
+                    $this->services[$delayedServices]->destroy();
+                }
+            }
+        }
+
+        $loggerClass = null;
+        if ($this->getLogger() !== null) {
+            $this->getLogger()->destroy();
+            $loggerClass = $this->services[LoggerInterface::class];
+        }
+
+        /** @var ServiceInterface $service */
+        foreach ($this->services ?? [] as $serviceName=>$service){
+            if ($service !== null && !is_string($service) && $serviceName !== $loggerClass) {
+                $service->destroy();
+            }
+        }
+    }
+
+    /**
      * @param string $className
      * @return ServiceInterface
      */
@@ -193,10 +220,10 @@ class ServiceFactory
     }
 
     /**
-     * @return ServiceInterface|null
+     * @return DefaultServiceInterface|null
      */
     public function getDefaultService(
-    ): ?ServiceInterface
+    ): ?DefaultServiceInterface
     {
         if ($this->defaultService === null) {
             return null;
