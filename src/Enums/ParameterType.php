@@ -5,6 +5,7 @@ use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
+use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
 use RuntimeException;
 
@@ -51,7 +52,9 @@ enum ParameterType
                 }
                 break;
             case self::PositionedParameter:
-                $response = $parameters->getNextPositionedParameter();
+                if (($parameterValue = $parameters->getNextPositionedParameter()) !== null) {
+                    $response = new PositionedParameter($parameterValue);
+                }
                 break;
             case self::Parameter:
                 $response = $parameters->getNamedParameter($parameterDefinition->getName());

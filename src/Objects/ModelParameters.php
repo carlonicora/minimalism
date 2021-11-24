@@ -80,7 +80,7 @@ class ModelParameters
     public function getNextPositionedParameter(
     ): mixed
     {
-        if ($this->positionedParameters !== []){
+        if ($this->positionedParameters === []){
             return null;
         }
 
