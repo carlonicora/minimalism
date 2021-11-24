@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use Exception;
@@ -30,16 +31,21 @@ class AbstractModel implements ModelInterface
     /** @var string|null  */
     protected ?string $postRenderFunctionName=null;
 
+    /** @var ObjectFactory  */
+    protected ObjectFactory $objectFactory;
+
     /**
      * AbstractModel constructor.
      * @param MinimalismFactories $minimalismFactories
      * @param string|null $function
      */
     public function __construct(
-        protected MinimalismFactories $minimalismFactories,
+        private MinimalismFactories $minimalismFactories,
         private ?string $function=null,
     )
     {
+        $this->objectFactory = $this->minimalismFactories->getObjectFactory();
+
         if ($this->function === null) {
             if ($this->minimalismFactories->getServiceFactory()->getPath()->getUrl() === null) {
                 $this->function = 'cli';
