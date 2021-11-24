@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Factories;
 use CarloNicora\Minimalism\Abstracts\AbstractFactory;
 use CarloNicora\Minimalism\Builders\ModelBuilder;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Objects\ModelParameters;
 use Exception;
 use JsonException;
 use ReflectionClass;
@@ -62,14 +63,14 @@ class ModelFactory extends AbstractFactory
 
     /**
      * @param string|null $modelName
-     * @param array|null $parameters
+     * @param ModelParameters|null $parameters
      * @param string|null $function
      * @return ModelInterface
      * @throws Exception
      */
     public function create(
         ?string $modelName=null,
-        ?array $parameters=null,
+        ?ModelParameters $parameters=null,
         ?string $function=null
     ): ModelInterface
     {
@@ -90,12 +91,12 @@ class ModelFactory extends AbstractFactory
 
     /**
      * @param string|null $model
-     * @return array
+     * @return ModelParameters
      * @throws Exception
      */
     private function createParameters(
         ?string &$model
-    ): array
+    ): ModelParameters
     {
         if ($this->minimalismFactories->getServiceFactory()->getPath()->getUrl() === null){
             $response = $this->getCliParameters();
@@ -178,13 +179,12 @@ class ModelFactory extends AbstractFactory
     }
 
     /**
-     * @return array
+     * @return ModelParameters
      */
-    public function getCliParameters(): array
+    public function getCliParameters(
+    ): ModelParameters
     {
-        $response = [
-            'named' => []
-        ];
+        $response = new ModelParameters();
 
         $typeName = null;
         foreach ($_SERVER['argv'] ?? [] as $item) {
@@ -194,11 +194,11 @@ class ModelFactory extends AbstractFactory
                 }
                 $typeName = $item;
             } elseif ($typeName !== null) {
-                $response['named'][$typeName] = $item;
+                $response->addNamedParameter($typeName, $item);
                 $typeName = null;
             } else {
                 try {
-                    $response['named']['payload'] = json_decode($item, true, 512, JSON_THROW_ON_ERROR);
+                    $response->addNamedParameter('payload', json_decode($item, true, 512, JSON_THROW_ON_ERROR));
                 } catch (JsonException) {
                 }
             }
@@ -208,12 +208,13 @@ class ModelFactory extends AbstractFactory
     }
 
     /**
-     * @return array
-     * @throws Exception
+     * @return ModelParameters
      */
-    public function getWebParameters(): array
+    public function getWebParameters(
+    ): ModelParameters
     {
-        $response = [];
+        $response = new ModelParameters();
+
         [$uri, $namedParametersString] = array_pad(
             explode('?', $_SERVER['REQUEST_URI'] ?? ''),
             2,
@@ -230,90 +231,90 @@ class ModelFactory extends AbstractFactory
             $modelBuilder = new ModelBuilder($uriParts, $this->models, $this->minimalismFactories->getServiceFactory()->getPath()->getServicesModels());
 
             $this->modelClass = $modelBuilder->getModelClass();
-            $response['positioned'] = $modelBuilder->getParameters();
+
+            foreach ($modelBuilder->getParameters() ?? [] as $value){
+                $response->addPositionedParameter($value);
+            }
 
             unset($modelBuilder);
         }
 
-        $response['named'] = $this->getNamedParameters($namedParametersString);
+        $this->setNamedParameters($response, $namedParametersString);
 
         return $response;
     }
 
     /**
+     * @param ModelParameters $modelParameters
      * @param string|null $namedParametersString
-     * @return array
      */
-    private function getNamedParameters(
-        ?string $namedParametersString
-    ): array
+    private function setNamedParameters(
+        ModelParameters $modelParameters,
+        ?string $namedParametersString,
+    ): void
     {
-        $response = [];
         if ($namedParametersString !== null && $namedParametersString !== '') {
             $namedParameters = explode('&', $namedParametersString);
             foreach ($namedParameters ?? [] as $namedParameter) {
                 [$parameterName, $parameterValue] = explode('=', $namedParameter);
-                $response[$parameterName] = $parameterValue;
+                $modelParameters->addNamedParameter($parameterName, $parameterValue);
             }
         }
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET'){
             foreach ($_GET as $parameter => $value) {
-                $response[$parameter] = $value;
+                $modelParameters->addNamedParameter($parameter, $value);
             }
         } else {
             if (!empty($phpInput=file_get_contents('php://input'))) {
                 try {
-                    $response['payload'] = json_decode($phpInput, true, 512, JSON_THROW_ON_ERROR);
+                    $modelParameters->addNamedParameter('payload', json_decode($phpInput, true, 512, JSON_THROW_ON_ERROR));
                 } catch (Exception) {
                     try {
                         $additionalResponse = [];
                         parse_str($phpInput, $additionalResponse);
 
-                        if ($additionalResponse !== []) {
-                            $response = array_merge($response, $additionalResponse);
+                        foreach ($additionalResponse ?? [] as $parameterName=>$parameterValue){
+                            $modelParameters->addNamedParameter($parameterName, $parameterValue);
                         }
                     } catch (Exception) {
                     }
                 }
             }
 
-            $response['files'] = $this->reArrayFiles($_FILES);
-
             foreach ($_POST as $parameter => $value) {
-                $response[$parameter] = $value;
+                $modelParameters->addNamedParameter($parameter, $value);
             }
-        }
 
-        return $response;
+            $this->setFiles($modelParameters, $_FILES);
+        }
     }
 
     /**
+     * @param ModelParameters $modelParameters
      * @param array $files
-     * @return array
      */
-    private function reArrayFiles(
+    private function setFiles(
+        ModelParameters $modelParameters,
         array $files,
-    ): array
+    ): void
     {
-        $result = [];
         if (empty($files)) {
-            return $result;
+            return;
         }
 
         foreach ($files as $key => $file) {
             if (is_string($file['name'])) {
-                $result[$key] = $file;
+                $modelParameters->addFile($key, $file);
             } elseif (is_array($file['name'])) {
-                $result[$key] = [];
+                $recursiveFile = [];
                 foreach ($file as $lastKey => $value1) {
-                    $result[$key] = array_replace_recursive($result[$key], $this->recursive($lastKey, $value1));
+                    $recursiveFile = array_replace_recursive($recursiveFile, $this->recursive($lastKey, $value1));
                 }
+                $modelParameters->addFile($key, $recursiveFile);
             }
 
         }
-
-        return $result;
     }
 
     /**

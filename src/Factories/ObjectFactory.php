@@ -5,6 +5,7 @@ use CarloNicora\Minimalism\Abstracts\AbstractFactory;
 use CarloNicora\Minimalism\Interfaces\ObjectFactoryInterface;
 use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
+use CarloNicora\Minimalism\Objects\ModelParameters;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
@@ -47,13 +48,15 @@ class ObjectFactory extends AbstractFactory
 
     /**
      * @param string $className
-     * @param array $parameters
+     * @param string $name
+     * @param ModelParameters $parameters
      * @return ObjectInterface|SimpleObjectInterface
      * @throws Exception
      */
     public function create(
         string $className,
-        array $parameters=[],
+        string $name,
+        ModelParameters $parameters,
     ): ObjectInterface|SimpleObjectInterface
     {
         if (array_key_exists($className, $this->objectsFactoriesDefinitions)){
@@ -65,7 +68,7 @@ class ObjectFactory extends AbstractFactory
         if ($isSimpleObject){
             $response = $this->createSimpleObject(className: $className,parameters: $parameters);
         } else {
-            $response = $this->createComplexObject(className: $className,parameters: $parameters);
+            $response = $this->createComplexObject(className: $className,name:$name,parameters: $parameters);
         }
 
         return $response;
@@ -73,13 +76,15 @@ class ObjectFactory extends AbstractFactory
 
     /**
      * @param string $className
-     * @param array $parameters
+     * @param string $name
+     * @param ModelParameters $parameters
      * @return ObjectInterface
      * @throws Exception
      */
     private function createComplexObject(
         string $className,
-        array $parameters=[],
+        string $name,
+        ModelParameters $parameters,
     ): ObjectInterface
     {
         if (array_key_exists($className, $this->objectsFactoriesDefinitions) && array_key_exists($this->objectsFactoriesDefinitions[$className], $this->objectsFactoriesDefinitions)) {
@@ -122,20 +127,21 @@ class ObjectFactory extends AbstractFactory
         );
 
         return (new $factoryName(...$factoryConstructorParameters))->create(
-            name: $className,
+            className: $className,
+            parameterName: $name,
             parameters: $parameters,
         );
     }
 
     /**
      * @param string $className
-     * @param array $parameters
+     * @param ModelParameters $parameters
      * @return SimpleObjectInterface
      * @throws Exception
      */
     private function createSimpleObject(
         string $className,
-        array $parameters=[],
+        ModelParameters $parameters,
     ): SimpleObjectInterface
     {
         if (array_key_exists($className, $this->objectsFactoriesDefinitions)) {

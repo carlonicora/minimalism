@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Interfaces;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Objects\ModelParameters;
 
 interface ModelInterface
 {
@@ -17,9 +18,9 @@ interface ModelInterface
     );
 
     /**
-     * @param array $parameters
+     * @param ModelParameters $parameters
      */
-    public function setParameters(array $parameters): void;
+    public function setParameters(ModelParameters $parameters): void;
 
     /**
      * @return Document
@@ -47,9 +48,9 @@ interface ModelInterface
     public function getRedirectionFunction(): ?string;
 
     /**
-     * @return array|null
+     * @return ModelParameters|null
      */
-    public function getRedirectionParameters(): ?array;
+    public function getRedirectionParameters(): ?ModelParameters;
 
     /**
      * @return callable|null

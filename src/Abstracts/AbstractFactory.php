@@ -9,6 +9,7 @@ use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
+use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
 use Exception;
 use ReflectionClass;
@@ -85,13 +86,13 @@ abstract class AbstractFactory
 
     /**
      * @param ParameterDefinition[] $methodParametersDefinition
-     * @param array|null $parameters
+     * @param ModelParameters $parameters
      * @return array
      * @throws Exception
      */
     public function generateMethodParametersValues(
         array $methodParametersDefinition,
-        ?array $parameters=[],
+        ModelParameters $parameters,
     ): array
     {
         $response = [];

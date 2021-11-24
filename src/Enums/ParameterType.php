@@ -3,8 +3,8 @@ namespace CarloNicora\Minimalism\Enums;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
-use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
 use RuntimeException;
 
@@ -23,14 +23,14 @@ enum ParameterType
     /**
      * @param ParameterDefinition $parameterDefinition
      * @param MinimalismFactories $minimalismFactories
-     * @param array $parameters
+     * @param ModelParameters $parameters
      * @return mixed
      * @throws Exception
      */
     public function getParameterValue(
         ParameterDefinition $parameterDefinition,
         MinimalismFactories $minimalismFactories,
-        array $parameters,
+        ModelParameters $parameters,
     ): mixed
     {
         $response = null;
@@ -50,18 +50,18 @@ enum ParameterType
                 }
                 break;
             case self::PositionedParameter:
-                if (array_key_exists('positioned', $parameters) && array_key_exists(0, $parameters['positioned'])) {
-                    $response = new PositionedParameter(array_shift($parameters['positioned']));
-                }
+                $response = $parameters->getNextPositionedParameter();
                 break;
             case self::Parameter:
-                if (array_key_exists('named', $parameters) && array_key_exists($parameterDefinition->getName(), $parameters['named'])){
-                    $response = $parameters['named'][$parameterDefinition->getName()];
-                }
+                $response = $parameters->getNamedParameter($parameterDefinition->getName());
                 break;
             case self::Document:
             case self::Simple:
                 $response = null;
+
+                $parameterValue = $parameters->getNamedParameter($parameterDefinition->getName());
+
+                /*
                 if (array_key_exists('named', $parameters) && array_key_exists($parameterDefinition->getName(), $parameters['named'])){
                     $parameterValue = $parameters['named'][$parameterDefinition->getName()];
                 } elseif (array_key_exists($parameterDefinition->getName(), $parameters)){
@@ -69,6 +69,7 @@ enum ParameterType
                 } else {
                     $parameterValue = null;
                 }
+                */
 
                 if ($this === self::Document) {
                     if ($parameterValue !== null) {
@@ -82,6 +83,7 @@ enum ParameterType
             case self::SimpleObject:
                 $response = $minimalismFactories->getObjectFactory()->create(
                     className: $parameterDefinition->getIdentifier(),
+                    name: $parameterDefinition->getName(),
                     parameters: $parameters,
                 );
                 break;

@@ -1,15 +1,19 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
+use CarloNicora\Minimalism\Objects\ModelParameters;
+
 interface ObjectFactoryInterface
 {
     /**
-     * @param string $name
-     * @param array|null $parameters
-     * @return ObjectInterface
+     * @param string $className
+     * @param string $parameterName
+     * @param ModelParameters $parameters
+     * @return ObjectInterface|null
      */
     public function create(
-        string $name,
-        ?array $parameters=null,
-    ): ObjectInterface;
+        string $className,
+        string $parameterName,
+        ModelParameters $parameters,
+    ): ?ObjectInterface;
 }

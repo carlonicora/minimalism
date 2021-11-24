@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Abstracts;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
+use CarloNicora\Minimalism\Objects\ModelParameters;
 use Exception;
 
 class AbstractModel implements ModelInterface
@@ -17,8 +18,8 @@ class AbstractModel implements ModelInterface
     /** @var string|null  */
     protected ?string $redirection=null;
 
-    /** @var array  */
-    private array $parameters=[];
+    /** @var ModelParameters  */
+    private ModelParameters $parameters;
 
     /** @var Document  */
     protected Document $document;
@@ -57,12 +58,15 @@ class AbstractModel implements ModelInterface
         }
 
         $this->document = new Document();
+        $this->parameters = new ModelParameters();
     }
 
     /**
-     * @param array $parameters
+     * @param ModelParameters $parameters
      */
-    final public function setParameters(array $parameters): void
+    final public function setParameters(
+        ModelParameters $parameters,
+    ): void
     {
         $this->parameters = $parameters;
     }
@@ -70,7 +74,8 @@ class AbstractModel implements ModelInterface
     /**
      * @return Document
      */
-    final public function getDocument(): Document
+    final public function getDocument(
+    ): Document
     {
         return $this->document;
     }
@@ -78,7 +83,8 @@ class AbstractModel implements ModelInterface
     /**
      * @return string|null
      */
-    final public function getView(): ?string
+    final public function getView(
+    ): ?string
     {
         return $this->view;
     }
@@ -86,7 +92,8 @@ class AbstractModel implements ModelInterface
     /**
      * @return string|null
      */
-    final public function getRedirection(): ?string
+    final public function getRedirection(
+    ): ?string
     {
         return $this->redirection;
     }
@@ -94,7 +101,8 @@ class AbstractModel implements ModelInterface
     /**
      * @return array|null
      */
-    final public function getRedirectionParameters(): ?array
+    final public function getRedirectionParameters(
+    ): ?ModelParameters
     {
         return $this->redirectionParameters;
     }
@@ -102,7 +110,8 @@ class AbstractModel implements ModelInterface
     /**
      * @return string|null
      */
-    final public function getRedirectionFunction(): ?string
+    final public function getRedirectionFunction(
+    ): ?string
     {
         return $this->function;
     }
@@ -110,7 +119,8 @@ class AbstractModel implements ModelInterface
     /**
      * @return callable|null
      */
-    final public function getPreRenderFunction(): ?callable
+    final public function getPreRenderFunction(
+    ): ?callable
     {
         if ($this->preRenderFunctionName !== null){
             return [$this, $this->preRenderFunctionName];
@@ -122,7 +132,8 @@ class AbstractModel implements ModelInterface
     /**
      * @return callable|null
      */
-    final public function getPostRenderFunction(): ?callable
+    final public function getPostRenderFunction(
+    ): ?callable
     {
         if ($this->postRenderFunctionName !== null){
             return [$this, $this->postRenderFunctionName];
@@ -134,15 +145,13 @@ class AbstractModel implements ModelInterface
     /**
      * @param string $modelClass
      * @param string|null $function
-     * @param array|null $namedParameters
-     * @param array|null $positionedParameters
+     * @param ModelParameters|null $parameters
      * @return int
      */
     final protected function redirect(
         string $modelClass,
         ?string $function=null,
-        ?array $namedParameters=[],
-        ?array $positionedParameters=[]
+        ?ModelParameters $parameters=null,
     ): int
     {
         $this->redirection = $modelClass;
@@ -151,10 +160,7 @@ class AbstractModel implements ModelInterface
             $this->function = $function;
         }
 
-        $this->redirectionParameters = [
-            'named' => $namedParameters,
-            'positioned' => $positionedParameters
-        ];
+        $this->redirectionParameters = $parameters;
 
         return 302;
     }
