@@ -193,6 +193,6 @@ class AbstractModel implements ModelInterface
         string $name,
     ): mixed
     {
-        return $this->parameters['named'][$name]??null;
+        return $this->parameters->getNamedParameter($name);
     }
 }

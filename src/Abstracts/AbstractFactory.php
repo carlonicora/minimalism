@@ -68,6 +68,8 @@ abstract class AbstractFactory
                     $parameterDefinition->setType(ParameterType::PositionedParameter);
                 } elseif ($methodParameterType->implementsInterface(ParameterInterface::class)) {
                     $parameterDefinition->setType(ParameterType::Parameter);
+                } elseif ($methodParameterType->getName() === ModelParameters::class) {
+                    $parameterDefinition->setType(ParameterType::ModelParameters);
                 } elseif ($parameter->getName() === Document::class) {
                     $parameterDefinition->setType(ParameterType::Document);
                 } else {

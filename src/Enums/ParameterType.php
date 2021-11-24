@@ -19,6 +19,7 @@ enum ParameterType
     case Object;
     case SimpleObject;
     case MinimalismFactories;
+    case ModelParameters;
 
     /**
      * @param ParameterDefinition $parameterDefinition
@@ -89,6 +90,9 @@ enum ParameterType
                 break;
             case self::MinimalismFactories:
                 $response = $minimalismFactories;
+                break;
+            case self::ModelParameters:
+                $response = $parameters;
                 break;
         }
 
