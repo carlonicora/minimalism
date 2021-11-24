@@ -175,7 +175,7 @@ class ModelFactory extends AbstractFactory
         string $functionName,
     ): array
     {
-        return $this->modelsDefinitions[$modelName][$functionName]??throw new RuntimeException('no', 500);
+        return $this->modelsDefinitions[$modelName][strtolower($functionName)]??throw new RuntimeException('no', 500);
     }
 
     /**

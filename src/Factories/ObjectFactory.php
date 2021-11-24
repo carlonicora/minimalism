@@ -15,10 +15,13 @@ use RuntimeException;
 class ObjectFactory extends AbstractFactory
 {
     /** @var array  */
+    private array $objectsDefinitions=[];
+
+    /** @var array  */
     private array $objectsFactoriesDefinitions=[];
 
     /** @var bool  */
-    private bool $objectsFactoriesDefinitionsUpdated=false;
+    private bool $objectUpdated=false;
 
     /**
      * @param MinimalismFactories $minimalismFactories
@@ -30,8 +33,12 @@ class ObjectFactory extends AbstractFactory
     {
         parent::__construct(minimalismFactories: $minimalismFactories);
 
-        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'))) !== false) {
+        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))) !== false) {
             $this->objectsFactoriesDefinitions = unserialize($cache, [true]);
+        }
+
+        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))) !== false) {
+            $this->objectsDefinitions = unserialize($cache, [true]);
         }
     }
 
@@ -41,8 +48,9 @@ class ObjectFactory extends AbstractFactory
     public function __destruct(
     )
     {
-        if ($this->objectsFactoriesDefinitionsUpdated) {
-            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('minimalismObjectsDefinitions.cache'), serialize($this->objectsFactoriesDefinitions));
+        if ($this->objectUpdated) {
+            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'), serialize($this->objectsFactoriesDefinitions));
+            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'), serialize($this->objectsDefinitions));
         }
     }
 
@@ -59,16 +67,23 @@ class ObjectFactory extends AbstractFactory
         ModelParameters $parameters,
     ): ObjectInterface|SimpleObjectInterface
     {
-        if (array_key_exists($className, $this->objectsFactoriesDefinitions)){
-            $isSimpleObject = !is_string($this->objectsFactoriesDefinitions[$className]);
+        if (array_key_exists($className, $this->objectsDefinitions)){
+            $isSimpleObject = !array_key_exists($className, $this->objectsFactoriesDefinitions);
         } else {
             $isSimpleObject = (new ReflectionClass($className))->implementsInterface(SimpleObjectInterface::class);
         }
 
         if ($isSimpleObject){
-            $response = $this->createSimpleObject(className: $className,parameters: $parameters);
+            $response = $this->createSimpleObject(
+                className: $className,
+                parameters: $parameters,
+            );
         } else {
-            $response = $this->createComplexObject(className: $className,name:$name,parameters: $parameters);
+            $response = $this->createComplexObject(
+                className: $className,
+                name:$name,
+                parameters: $parameters,
+            );
         }
 
         return $response;
@@ -87,9 +102,9 @@ class ObjectFactory extends AbstractFactory
         ModelParameters $parameters,
     ): ObjectInterface
     {
-        if (array_key_exists($className, $this->objectsFactoriesDefinitions) && array_key_exists($this->objectsFactoriesDefinitions[$className], $this->objectsFactoriesDefinitions)) {
-            $factoryName = $this->objectsFactoriesDefinitions[$className];
-            $factoryConstructMethodParametersDefinitions = $this->objectsFactoriesDefinitions[$factoryName];
+        if (array_key_exists($className, $this->objectsFactoriesDefinitions)){
+            $factoryName = $this->objectsFactoriesDefinitions[$className]['factoryName'];
+            $factoryConstructMethodParametersDefinitions = $this->objectsFactoriesDefinitions[$className]['coonstructMethodParameters'];
         } else {
             $factoryName = null;
 
@@ -114,10 +129,12 @@ class ObjectFactory extends AbstractFactory
             $reflectionMethod = (new ReflectionClass($factoryName))->getMethod('__construct');
             $factoryConstructMethodParametersDefinitions = $this->getMethodParametersDefinition($reflectionMethod);
 
-            $this->objectsFactoriesDefinitions[$className] = $factoryName;
-            $this->objectsFactoriesDefinitions[$factoryName] = $factoryConstructMethodParametersDefinitions;
+            $this->objectsFactoriesDefinitions[$className] = [
+                'factoryName' => $factoryName,
+                'coonstructMethodParameters' => $factoryConstructMethodParametersDefinitions,
+            ];
 
-            $this->objectsFactoriesDefinitionsUpdated = true;
+            $this->objectUpdated = true;
         }
 
         /** @var ObjectFactoryInterface $factory */
@@ -136,23 +153,23 @@ class ObjectFactory extends AbstractFactory
     /**
      * @param string $className
      * @param ModelParameters $parameters
-     * @return SimpleObjectInterface
+     * @return SimpleObjectInterface|ObjectInterface
      * @throws Exception
      */
-    private function createSimpleObject(
+    public function createSimpleObject(
         string $className,
         ModelParameters $parameters,
-    ): SimpleObjectInterface
+    ): SimpleObjectInterface|ObjectInterface
     {
-        if (array_key_exists($className, $this->objectsFactoriesDefinitions)) {
-            $objectConstructorParametersDefinitions = $this->objectsFactoriesDefinitions[$className];
+        if (array_key_exists($className, $this->objectsDefinitions)) {
+            $objectConstructorParametersDefinitions = $this->objectsDefinitions[$className];
         } else {
             $reflectionMethod = (new ReflectionClass($className))->getMethod('__construct');
             $objectConstructorParametersDefinitions = $this->getMethodParametersDefinition($reflectionMethod);
 
-            $this->objectsFactoriesDefinitions[$className] = $objectConstructorParametersDefinitions;
+            $this->objectsDefinitions[$className] = $objectConstructorParametersDefinitions;
 
-            $this->objectsFactoriesDefinitionsUpdated = true;
+            $this->objectUpdated = true;
         }
 
         $classConstructorParameters = $this->generateMethodParametersValues(
