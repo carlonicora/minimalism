@@ -162,7 +162,7 @@ class ServiceFactory
                         $parameter = $parameter??($objectParameterDefinition->isDefaultValueAvailable() ? $objectParameterDefinition->getDefaultValue() : null);
                     }
 
-                    if ($objectParameterDefinition->hasType() && get_class($parameter) !== ReflectionUnionType::class) {
+                    if ($objectParameterDefinition->hasType()) {
                         /** @var ReflectionNamedType $namedType */
                         $namedType = $objectParameterDefinition->getType();
 

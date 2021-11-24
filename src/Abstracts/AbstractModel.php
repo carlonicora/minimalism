@@ -31,16 +31,16 @@ class AbstractModel implements ModelInterface
 
     /**
      * AbstractModel constructor.
-     * @param MinimalismFactories $factories
+     * @param MinimalismFactories $minimalismFactories
      * @param string|null $function
      */
     public function __construct(
-        protected MinimalismFactories $factories,
+        protected MinimalismFactories $minimalismFactories,
         private ?string $function=null,
     )
     {
         if ($this->function === null) {
-            if ($this->factories->getServiceFactory()->getPath()->getUrl() === null) {
+            if ($this->minimalismFactories->getServiceFactory()->getPath()->getUrl() === null) {
                 $this->function = 'cli';
             } else {
                 $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');
@@ -166,12 +166,12 @@ class AbstractModel implements ModelInterface
     final public function run(
     ): int
     {
-        $parametersDefinitions = $this->factories->getModelFactory()->getModelMethodParametersDefinition(
+        $parametersDefinitions = $this->minimalismFactories->getModelFactory()->getModelMethodParametersDefinition(
             modelName: static::class,
             functionName: $this->function,
         );
 
-        $parametersValues = $this->factories->getModelFactory()->generateMethodParametersValues(
+        $parametersValues = $this->minimalismFactories->getModelFactory()->generateMethodParametersValues(
             methodParametersDefinition: $parametersDefinitions,
             parameters: $this->parameters,
         );

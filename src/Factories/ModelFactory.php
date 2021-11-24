@@ -77,12 +77,9 @@ class ModelFactory extends AbstractFactory
             $parameters = $this->createParameters($modelName);
         }
 
-        $modelDefinition = $this->modelsDefinitions[$modelName];
-
         /** @var ModelInterface $response */
         $response = new $modelName(
-            services: $this->minimalismFactories,
-            modelDefinition: $modelDefinition,
+            minimalismFactories: $this->minimalismFactories,
             function: $function
         );
 

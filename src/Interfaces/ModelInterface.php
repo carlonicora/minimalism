@@ -8,11 +8,11 @@ interface ModelInterface
 {
     /**
      * ModelInterface constructor.
-     * @param MinimalismFactories $factories
+     * @param MinimalismFactories $minimalismFactories
      * @param string|null $function
      */
     public function __construct(
-        MinimalismFactories $factories,
+        MinimalismFactories $minimalismFactories,
         ?string $function=null
     );
 

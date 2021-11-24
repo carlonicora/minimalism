@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Enums;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
+use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use Exception;
 use RuntimeException;
 
@@ -17,6 +18,7 @@ enum ParameterType
     case Parameter;
     case Object;
     case SimpleObject;
+    case MinimalismFactories;
 
     /**
      * @param ParameterDefinition $parameterDefinition
@@ -49,7 +51,7 @@ enum ParameterType
                 break;
             case self::PositionedParameter:
                 if (array_key_exists('positioned', $parameters) && array_key_exists(0, $parameters['positioned'])) {
-                    $response = array_shift($parameters['positioned']);
+                    $response = new PositionedParameter(array_shift($parameters['positioned']));
                 }
                 break;
             case self::Parameter:
@@ -82,6 +84,9 @@ enum ParameterType
                     className: $parameterDefinition->getIdentifier(),
                     parameters: $parameters,
                 );
+                break;
+            case self::MinimalismFactories:
+                $response = $minimalismFactories;
                 break;
         }
 

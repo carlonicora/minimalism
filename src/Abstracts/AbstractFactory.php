@@ -55,6 +55,8 @@ abstract class AbstractFactory
                 if ($methodParameterType->implementsInterface(ServiceInterface::class)) {
                     $parameterDefinition->setType(ParameterType::Service);
                     $parameterDefinition->setIdentifier($methodParameterType->getName());
+                } elseif ($methodParameterType->getName() === MinimalismFactories::class){
+                    $parameterDefinition->setType(ParameterType::MinimalismFactories);
                 } elseif ($methodParameterType->implementsInterface(SimpleObjectInterface::class)) {
                     $parameterDefinition->setType(ParameterType::SimpleObject);
                     $parameterDefinition->setIdentifier($methodParameterType->getName());
