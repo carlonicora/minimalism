@@ -19,12 +19,6 @@ class ServiceFactory
     /** @var ServiceInterface[]  */
     private array $services = [];
 
-    /** @var string|null  */
-    private ?string $defaultService=null;
-
-    /** @var string|null  */
-    private ?string $transformerService=null;
-
     /** @var array  */
     private array $env;
 
@@ -135,10 +129,8 @@ class ServiceFactory
                 $reflectionClass = new ReflectionClass($className);
                 if ($reflectionClass->implementsInterface(TransformerInterface::class)) {
                     $this->services[TransformerInterface::class] = $className;
-                    $this->transformerService = $className;
                 } elseif ($reflectionClass->implementsInterface(DefaultServiceInterface::class)) {
                     $this->services[TransformerInterface::class] = $className;
-                    $this->defaultService = $className;
                 }
             } catch (ReflectionException) {
             }
@@ -250,44 +242,41 @@ class ServiceFactory
     }
 
     /**
-     * @return DefaultServiceInterface|null
+     * @return ServiceInterface|DefaultServiceInterface|null
      */
     public function getDefaultService(
-    ): ?DefaultServiceInterface
+    ): ServiceInterface|DefaultServiceInterface|null
     {
-        if ($this->defaultService === null) {
+        if (!array_key_exists(DefaultServiceInterface::class, $this->services)) {
             return null;
         }
 
-        return $this->services[$this->defaultService];
+        return $this->create(DefaultServiceInterface::class);
     }
 
     /**
-     * @return ServiceInterface|null
+     * @return ServiceInterface|TransformerInterface|null
      */
     public function getTranformerService(
-    ): ?ServiceInterface
+    ): ServiceInterface|TransformerInterface|null
     {
-        if ($this->transformerService === null){
+        if (!array_key_exists(TransformerInterface::class, $this->services)) {
             return null;
         }
 
-        return $this->services[$this->transformerService];
+        return $this->create(TransformerInterface::class);
     }
 
     /**
-     * @return LoggerInterface|null
+     * @return ServiceInterface|LoggerInterface|null
      */
     public function getLogger(
-    ): ?LoggerInterface
+    ): ServiceInterface|LoggerInterface|null
     {
-        $response = null;
-
-        if (array_key_exists(LoggerInterface::class, $this->services)){
-            /** @var LoggerInterface $response */
-            $response = $this->create(LoggerInterface::class);
+        if (!array_key_exists(LoggerInterface::class, $this->services)){
+            return null;
         }
 
-        return $response;
+        return $this->create(LoggerInterface::class);
     }
 }
