@@ -50,13 +50,7 @@ class ServiceFactory
                 }
             }
         } else {
-            $vendorServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', flags: GLOB_NOSORT);
-            $minimalismServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/vendor/carlonicora/minimalism/src/Services/*.php', flags: GLOB_NOSORT);
-            $internalServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/src/Services/*/*.php', flags: GLOB_NOSORT);
-
-            $allServicesFiles = array_merge($minimalismServicesFiles, $vendorServicesFiles, $internalServicesFiles);
-
-            foreach ($allServicesFiles ?? [] as $serviceFile) {
+            foreach ($this->getServiceFiles() ?? [] as $serviceFile) {
                 /** @noinspection UnusedFunctionResultInspection */
                 $this->create(
                     className: MinimalismFactories::getNamespace($serviceFile)
@@ -65,6 +59,19 @@ class ServiceFactory
 
             file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
         }
+    }
+
+    /**
+     * @return array
+     */
+    private function getServiceFiles(
+    ): array
+    {
+        $vendorServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', flags: GLOB_NOSORT);
+        $minimalismServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/vendor/carlonicora/minimalism/src/Services/*.php', flags: GLOB_NOSORT);
+        $internalServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/src/Services/*/*.php', flags: GLOB_NOSORT);
+
+        return array_merge($minimalismServicesFiles, $vendorServicesFiles, $internalServicesFiles);
     }
 
     /**
@@ -96,11 +103,11 @@ class ServiceFactory
 
     /**
      * @param string $className
-     * @return ServiceInterface
+     * @return ServiceInterface|null
      */
     public function create(
         string $className,
-    ): ServiceInterface
+    ): ?ServiceInterface
     {
         if (!array_key_exists($className, $this->services)){
             $response = $this->initialise(
@@ -108,6 +115,11 @@ class ServiceFactory
                 className: $className,
                 parameters: $this->env,
             );
+
+            if ($response === null){
+                return null;
+            }
+
             $this->services[$className] = $response;
 
             /** @noinspection PhpUndefinedMethodInspection */
@@ -149,13 +161,31 @@ class ServiceFactory
      */
     protected function initialise(
         ServiceFactory $serviceFactory,
-        string $className,
+        string &$className,
         ?array $parameters=null,
     ): mixed
     {
         $objectParameters = [];
 
         try {
+            $reflectionClass = new ReflectionClass($className);
+            if ($reflectionClass->isInterface()) {
+                $interfaceClassFound = false;
+                foreach ($this->getServiceFiles() ?? [] as $serviceFile){
+                    $serviceClassName = MinimalismFactories::getNamespace($serviceFile);
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    if ($serviceClassName::getBaseInterface() === $className){
+                        $className=$serviceClassName;
+                        $interfaceClassFound = true;
+                        break;
+                    }
+                }
+
+                if (!$interfaceClassFound){
+                    return null;
+                }
+            }
+
             $objectParametersDefinition = (new ReflectionClass($className))->getMethod('__construct')->getParameters();
 
             foreach ($objectParametersDefinition ?? [] as $objectParameterDefinition) {
