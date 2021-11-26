@@ -23,15 +23,11 @@ class ModelFactory extends AbstractFactory
     private ?string $modelClass=null;
 
     /**
-     * @param MinimalismFactories $minimalismFactories
      * @throws Exception
      */
-    public function __construct(
-        MinimalismFactories $minimalismFactories,
-    )
+    public function initialiseFactory(
+    ): void
     {
-        parent::__construct(minimalismFactories: $minimalismFactories);
-
         if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('models.cache'))
             && ($modelsFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('models.cache'))) !== false
             && ($serviceModelFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('servicesModels.cache'))) !== false

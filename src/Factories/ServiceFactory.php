@@ -25,7 +25,17 @@ class ServiceFactory
     /**
      *
      */
-    public function __construct()
+    public function __construct(
+        private MinimalismFactories $minimalismFactories,
+    )
+    {
+    }
+
+    /**
+     *
+     */
+    public function initialiseFactory(
+    ): void
     {
         $this->services[Path::class] = new Path();
 
@@ -195,7 +205,15 @@ class ServiceFactory
                         }
                     } else {
                         $reflect = new ReflectionClass($objectParameter->getName());
-                        if ($reflect->implementsInterface(ServiceInterface::class)) {
+                        if ($reflect->getName() === MinimalismFactories::class) {
+                            $objectParameters[] = $this->minimalismFactories;
+                        } elseif ($reflect->getName() === __CLASS__){
+                            $objectParameters[] = $this;
+                        } elseif ($reflect->getName() === ObjectFactory::class){
+                            $objectParameters[] = $this->minimalismFactories->getObjectFactory();
+                        } elseif ($reflect->getName() === ModelFactory::class){
+                            $objectParameters[] = $this->minimalismFactories->getModelFactory();
+                        } elseif ($reflect->implementsInterface(ServiceInterface::class)) {
                             $objectParameters[] = $this->create($reflect->getName());
                         }
                     }

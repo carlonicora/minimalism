@@ -24,15 +24,11 @@ class ObjectFactory extends AbstractFactory
     private bool $objectUpdated=false;
 
     /**
-     * @param MinimalismFactories $minimalismFactories
-     * @throws Exception
+     *
      */
-    public function __construct(
-        MinimalismFactories $minimalismFactories,
-    )
+    public function initialiseFactory(
+    ): void
     {
-        parent::__construct(minimalismFactories: $minimalismFactories);
-
         if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))) !== false) {
             $this->objectsFactoriesDefinitions = unserialize($cache, [true]);
         }

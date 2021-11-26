@@ -20,13 +20,19 @@ class MinimalismFactories
     public function __construct(
     )
     {
-        $this->serviceFactory = new ServiceFactory();
+        $this->serviceFactory = new ServiceFactory(
+            minimalismFactories: $this,
+        );
         $this->modelFactory = new ModelFactory(
             minimalismFactories: $this,
         );
         $this->objectFactory = new ObjectFactory(
             minimalismFactories: $this,
         );
+
+        $this->serviceFactory->initialiseFactory();
+        $this->modelFactory->initialiseFactory();
+        $this->objectFactory->initialiseFactory();
     }
 
     /**
