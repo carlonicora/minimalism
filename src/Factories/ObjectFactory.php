@@ -52,15 +52,15 @@ class ObjectFactory extends AbstractFactory
 
     /**
      * @param string $className
-     * @param string $name
-     * @param ModelParameters $parameters
+     * @param string|null $name
+     * @param ModelParameters|null $parameters
      * @return ObjectInterface|SimpleObjectInterface
      * @throws Exception
      */
     public function create(
         string $className,
-        string $name,
-        ModelParameters $parameters,
+        ?string $name=null,
+        ?ModelParameters $parameters=null,
     ): ObjectInterface|SimpleObjectInterface
     {
         if (array_key_exists($className, $this->objectsDefinitions)){
@@ -87,15 +87,15 @@ class ObjectFactory extends AbstractFactory
 
     /**
      * @param string $className
-     * @param string $name
-     * @param ModelParameters $parameters
+     * @param string|null $name
+     * @param ModelParameters|null $parameters
      * @return ObjectInterface
      * @throws Exception
      */
     private function createComplexObject(
         string $className,
-        string $name,
-        ModelParameters $parameters,
+        ?string $name,
+        ?ModelParameters $parameters,
     ): ObjectInterface
     {
         if (array_key_exists($className, $this->objectsFactoriesDefinitions)){
@@ -148,13 +148,13 @@ class ObjectFactory extends AbstractFactory
 
     /**
      * @param string $className
-     * @param ModelParameters $parameters
+     * @param ModelParameters|null $parameters
      * @return SimpleObjectInterface|ObjectInterface
      * @throws Exception
      */
     public function createSimpleObject(
         string $className,
-        ModelParameters $parameters,
+        ?ModelParameters $parameters=null,
     ): SimpleObjectInterface|ObjectInterface
     {
         if (array_key_exists($className, $this->objectsDefinitions)) {

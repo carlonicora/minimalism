@@ -20,19 +20,20 @@ enum ParameterType
     case Object;
     case SimpleObject;
     case MinimalismFactories;
+    case ObjectFactory;
     case ModelParameters;
 
     /**
      * @param ParameterDefinition $parameterDefinition
      * @param MinimalismFactories $minimalismFactories
-     * @param ModelParameters $parameters
+     * @param ModelParameters|null $parameters
      * @return mixed
      * @throws Exception
      */
     public function getParameterValue(
         ParameterDefinition $parameterDefinition,
         MinimalismFactories $minimalismFactories,
-        ModelParameters $parameters,
+        ?ModelParameters $parameters=null,
     ): mixed
     {
         $response = null;
@@ -52,18 +53,18 @@ enum ParameterType
                 }
                 break;
             case self::PositionedParameter:
-                if (($parameterValue = $parameters->getNextPositionedParameter()) !== null) {
+                if (($parameterValue = $parameters?->getNextPositionedParameter()) !== null) {
                     $response = new PositionedParameter($parameterValue);
                 }
                 break;
             case self::Parameter:
-                $response = $parameters->getNamedParameter($parameterDefinition->getName());
+                $response = $parameters?->getNamedParameter($parameterDefinition->getName());
                 break;
             case self::Document:
             case self::Simple:
                 $response = null;
 
-                $parameterValue = $parameters->getNamedParameter($parameterDefinition->getName());
+                $parameterValue = $parameters?->getNamedParameter($parameterDefinition->getName());
 
                 /*
                 if (array_key_exists('named', $parameters) && array_key_exists($parameterDefinition->getName(), $parameters['named'])){
@@ -93,6 +94,9 @@ enum ParameterType
                 break;
             case self::MinimalismFactories:
                 $response = $minimalismFactories;
+                break;
+            case self::ObjectFactory:
+                $response = $minimalismFactories->getObjectFactory();
                 break;
             case self::ModelParameters:
                 $response = $parameters;

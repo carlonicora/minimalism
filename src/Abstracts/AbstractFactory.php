@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Abstracts;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Enums\ParameterType;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use CarloNicora\Minimalism\Interfaces\ParameterInterface;
 use CarloNicora\Minimalism\Interfaces\PositionedParameterInterface;
@@ -58,6 +59,8 @@ abstract class AbstractFactory
                     $parameterDefinition->setIdentifier($methodParameterType->getName());
                 } elseif ($methodParameterType->getName() === MinimalismFactories::class){
                     $parameterDefinition->setType(ParameterType::MinimalismFactories);
+                } elseif ($methodParameterType->getName() === ObjectFactory::class){
+                    $parameterDefinition->setType(ParameterType::ObjectFactory);
                 } elseif ($methodParameterType->implementsInterface(SimpleObjectInterface::class)) {
                     $parameterDefinition->setType(ParameterType::SimpleObject);
                     $parameterDefinition->setIdentifier($methodParameterType->getName());
@@ -88,13 +91,13 @@ abstract class AbstractFactory
 
     /**
      * @param ParameterDefinition[] $methodParametersDefinition
-     * @param ModelParameters $parameters
+     * @param ModelParameters|null $parameters
      * @return array
      * @throws Exception
      */
     public function generateMethodParametersValues(
         array $methodParametersDefinition,
-        ModelParameters $parameters,
+        ?ModelParameters $parameters=null,
     ): array
     {
         $response = [];
