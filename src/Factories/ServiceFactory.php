@@ -130,7 +130,7 @@ class ServiceFactory
                 if ($reflectionClass->implementsInterface(TransformerInterface::class)) {
                     $this->services[TransformerInterface::class] = $className;
                 } elseif ($reflectionClass->implementsInterface(DefaultServiceInterface::class)) {
-                    $this->services[TransformerInterface::class] = $className;
+                    $this->services[DefaultServiceInterface::class] = $className;
                 }
             } catch (ReflectionException) {
             }
