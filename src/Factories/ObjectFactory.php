@@ -54,14 +54,14 @@ class ObjectFactory extends AbstractFactory
      * @param string $className
      * @param string|null $name
      * @param ModelParameters|null $parameters
-     * @return ObjectInterface|SimpleObjectInterface
+     * @return ObjectInterface|SimpleObjectInterface|null
      * @throws Exception
      */
     public function create(
         string $className,
         ?string $name=null,
         ?ModelParameters $parameters=null,
-    ): ObjectInterface|SimpleObjectInterface
+    ): ObjectInterface|SimpleObjectInterface|null
     {
         if (array_key_exists($className, $this->objectsDefinitions)){
             $isSimpleObject = !array_key_exists($className, $this->objectsFactoriesDefinitions);
@@ -89,14 +89,14 @@ class ObjectFactory extends AbstractFactory
      * @param string $className
      * @param string|null $name
      * @param ModelParameters|null $parameters
-     * @return ObjectInterface
+     * @return ObjectInterface|null
      * @throws Exception
      */
     private function createComplexObject(
         string $className,
         ?string $name,
         ?ModelParameters $parameters,
-    ): ObjectInterface
+    ): ?ObjectInterface
     {
         if (array_key_exists($className, $this->objectsFactoriesDefinitions)){
             $factoryName = $this->objectsFactoriesDefinitions[$className]['factoryName'];

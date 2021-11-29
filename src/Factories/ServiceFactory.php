@@ -225,9 +225,9 @@ class ServiceFactory
                             message: 'An parameter is missing: ' . $objectParameterDefinition->getName(),
                             code: 500,
                         );
-                    } else {
-                        $parameter = $parameter??($objectParameterDefinition->isDefaultValueAvailable() ? $objectParameterDefinition->getDefaultValue() : null);
                     }
+
+                    $parameter = $parameter??($objectParameterDefinition->isDefaultValueAvailable() ? $objectParameterDefinition->getDefaultValue() : null);
 
                     if ($objectParameterDefinition->hasType()) {
                         /** @var ReflectionNamedType $namedType */
