@@ -50,12 +50,16 @@ class AttributeValidator extends AbstractValidator
         if ($hasAttribute) {
             $attributeValue = $resource->attributes->get($this->name);
 
+            if (! $this->isRequired && $attributeValue === null) {
+                return true;
+            }
+
             $type = DataTypes::tryFrom(gettype($attributeValue));
             if ($this->type !== $type){
                 $this->setValidationError(
                     new ValidationError(
                         error: ValidationErrors::typeMismatch,
-                        description: $this->name . ' (expected: ' . $type->value . ' actual: ' . $this->type->value . ')',
+                        description: $this->name . ' (expected: ' . $this->type->value . ' actual: ' . $type?->value . ')',
                         validatorType: ValidatorTypes::attribute,
                     )
                 );
