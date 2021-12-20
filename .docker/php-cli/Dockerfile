@@ -1,4 +1,4 @@
-FROM php:8.1.0RC6-cli-alpine3.14
+FROM php:8.1-cli-alpine
 
 RUN apk update \
     && apk add --no-cache curl g++ make autoconf bash \
