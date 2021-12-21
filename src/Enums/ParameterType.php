@@ -62,19 +62,11 @@ enum ParameterType
                 break;
             case self::Document:
             case self::Simple:
-                $response = null;
-
-                $parameterValue = $parameters?->getNamedParameter($parameterDefinition->getName());
-
-                /*
-                if (array_key_exists('named', $parameters) && array_key_exists($parameterDefinition->getName(), $parameters['named'])){
-                    $parameterValue = $parameters['named'][$parameterDefinition->getName()];
-                } elseif (array_key_exists($parameterDefinition->getName(), $parameters)){
-                    $parameterValue = $parameters[$parameterDefinition->getName()];
+                if ($parameterDefinition->getName() === 'files'){
+                    $parameterValue = $parameters?->getFiles();
                 } else {
-                    $parameterValue = null;
+                    $parameterValue = $parameters?->getNamedParameter($parameterDefinition->getName());
                 }
-                */
 
                 if ($this === self::Document) {
                     if ($parameterValue !== null) {
