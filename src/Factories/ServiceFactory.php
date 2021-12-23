@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
@@ -247,7 +248,11 @@ class ServiceFactory
             throw new RuntimeException('Object dependecies loading failed for ' . $className, 500);
         }
 
-        return new $className(...$objectParameters);
+        /** @var ServiceInterface $response */
+        $response = new $className(...$objectParameters);
+        $response->setObjectFactory($this->minimalismFactories->getObjectFactory());
+
+        return $response;
     }
 
     /**

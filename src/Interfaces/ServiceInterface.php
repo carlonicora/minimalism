@@ -1,6 +1,8 @@
 <?php
 namespace CarloNicora\Minimalism\Interfaces;
 
+use CarloNicora\Minimalism\Factories\ObjectFactory;
+
 interface ServiceInterface
 {
     /**
@@ -17,6 +19,12 @@ interface ServiceInterface
      * from the service and add them to the session
      */
     public function destroy(): void;
+
+    /**
+     * @param ObjectFactory $objectFactory
+     * @return void
+     */
+    public function setObjectFactory(ObjectFactory $objectFactory): void;
 
     /**
      * Returns the base interface (if any) the service interface extends.

@@ -1,9 +1,9 @@
 <?php
 namespace CarloNicora\Minimalism\Services;
 
-use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Abstracts\AbstractService;
 
-class Path implements ServiceInterface
+class Path extends AbstractService
 {
     /** @var string */
     private string $root;
@@ -29,6 +29,8 @@ class Path implements ServiceInterface
     public function __construct(
     )
     {
+        parent::__construct();
+        
         $this->root = dirname(path: __DIR__, levels: 5);
 
         $this->initialise();
