@@ -30,7 +30,7 @@ class Path extends AbstractService
     )
     {
         parent::__construct();
-        
+
         $this->root = dirname(path: __DIR__, levels: 5);
 
         $this->initialise();
@@ -53,11 +53,6 @@ class Path extends AbstractService
             }
         }
     }
-
-    /**
-     *
-     */
-    public function destroy(): void {}
 
     /**
      * @param string $uri

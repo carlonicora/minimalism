@@ -20,6 +20,9 @@ class ServiceFactory
     /** @var ServiceInterface[]  */
     private array $services = [];
 
+    /** @var bool  */
+    private bool $loaded=false;
+
     /** @var array  */
     private array $env;
 
@@ -52,6 +55,7 @@ class ServiceFactory
             foreach ($this->services ?? [] as $service) {
                 if ($service !== null && !is_string($service)) {
                     $service->initialise();
+                    $service->setObjectFactory($this->minimalismFactories->getObjectFactory());
                 }
             }
         } else {
@@ -62,7 +66,7 @@ class ServiceFactory
                 );
             }
 
-            file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
+            $this->loaded = true;
         }
     }
 
@@ -103,6 +107,10 @@ class ServiceFactory
             if ($service !== null && !is_string($service) && $serviceName !== $loggerClass) {
                 $service->destroy();
             }
+        }
+
+        if ($this->loaded) {
+            file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
         }
     }
 
