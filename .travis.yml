@@ -9,6 +9,7 @@ install:
 
 # Run before the build
 before_script:
+  - apt-get install -y libargon2-0
   - mkdir -p build/logs # Create a folder to store clover files
 
 # After success, run sh to bind coveralls
