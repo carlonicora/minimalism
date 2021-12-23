@@ -1,11 +1,4 @@
+dist: xenial
+os: linux
 language: php
-
-php:
-  - '8.1.0'
-
-install:
-  - composer install
-
-# Run before the build
-before_script:
-  - mkdir -p build/logs # Create a folder to store clover files
+php: '8.1.0'
