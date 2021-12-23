@@ -10,6 +10,7 @@ install:
 # Run before the build
 before_script:
   - mkdir -p build/logs # Create a folder to store clover files
+  - mkdir -p /home/travis/cache
 
 # After success, run sh to bind coveralls
 after_success:
