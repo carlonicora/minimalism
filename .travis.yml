@@ -17,4 +17,5 @@ after_success:
   - sh -c 'if( [ "$TRAVIS_PHP_VERSION" != "hhvm" ] ); then php vendor/bin/coveralls -v; fi;'
 
 notifications:
-  slack: phlowers:MAaeOwpel8ta2BUnXOQmijxh
+  slack:
+    secure: d7dnnxI5RLf0ct25rTJXcXIadRqllxdOcwdnPvDb/HIYX2JI4DwO0PkeJn7GYfNIdQdpEh155mOOaMDt/Cb35REO8nK0T+sSfXCgrtag6VJU0H63nBXJmEhL6u5zHOglqfMVe+PD4jDr9hYoK1Ns+yFHD5LVJoFlyjyVsKrikwepX0372nFnkGOQYij4Dg63xKDSCqzgd1Y849k5l5myBEqiExtwhoKbpDouTh+QYLQ6z4g10TVLZ6dS5c+rQB+Y8ScCtqUjBA/837YNwKRlPaUqhY4A09wXNoNU4L+RuBWT93L7WOEzJLG26GRHPsuBpA8q+1Vi3TlxGTxdxHHzxeZz0XvMjlmEQZWJUxEVVJkYx8yI3hoLia0zgAjiIkPjLRm7g51sgwhKnX4RGGLs32RuRagfgPJbIN3mLqJtDfKKlhdxusKzqkpqUFTi6zAZiDhWhM8TpZpQlO8WT+vvjsgX+jgyY4M4RALERPSw1Z5aN2pKIkAbB1GNBWOvaIq1v5yrKCNp2ElQgrUZYhLr3NCP8I9DU0QpnYw+QzPuDES7YzETv89EDItYE+p9qM6kQa4fKJtkxd6WNb+aqaaTbq0YySBO/RtVeUsRQQqW/gw6pwhDieFsnwUl/aVzu+sOajFmcMFleFeQHOc6hSjCB5jYd0dp6i0e5h1a/Ht5+R0=
