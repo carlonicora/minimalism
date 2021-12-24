@@ -31,7 +31,12 @@ class Path extends AbstractService
     {
         parent::__construct();
 
-        $this->root = dirname(path: __DIR__, levels: 5);
+        $directory = __DIR__;
+        if ($directory === '/opt/project/src/Services'){
+            $this->root = dirname(path: $directory, levels: 2);
+        } else {
+            $this->root = dirname(path: $directory, levels: 5);
+        }
 
         $this->initialise();
 
