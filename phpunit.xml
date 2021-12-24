@@ -4,9 +4,13 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <report>
+            <clover outputFile="./build/logs/clover.xml"/>
+            <html outputDirectory="./build/report"/>
+        </report>
     </coverage>
     <testsuites>
-        <testsuite name="Minimalism Unit TEsts">
+        <testsuite name="Minimalism Unit Tests">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
