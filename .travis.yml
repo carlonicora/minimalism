@@ -13,7 +13,7 @@ before_script:
   - mkdir -p /home/travis/cache
 
 script:
-  - phpunit -c app/ src/ --coverage-clover build/logs/clover.xml
+  - phpunit -c --coverage-clover phpunit.xml
 
 # After success, run sh to bind coveralls
 after_success:
