@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
@@ -152,13 +153,13 @@ class AbstractModel implements ModelInterface
      * @param string $modelClass
      * @param string|null $function
      * @param ModelParameters|null $parameters
-     * @return int
+     * @return HttpCode
      */
     final protected function redirect(
         string $modelClass,
         ?string $function=null,
         ?ModelParameters $parameters=null,
-    ): int
+    ): HttpCode
     {
         $this->redirection = $modelClass;
 
@@ -168,15 +169,15 @@ class AbstractModel implements ModelInterface
 
         $this->redirectionParameters = $parameters;
 
-        return 302;
+        return HttpCode::TemporaryRedirect;
     }
 
     /**
-     * @return int
+     * @return HttpCode
      * @throws Exception
      */
     final public function run(
-    ): int
+    ): HttpCode
     {
         $parametersDefinitions = $this->minimalismFactories->getModelFactory()->getModelMethodParametersDefinition(
             modelName: static::class,

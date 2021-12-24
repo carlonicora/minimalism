@@ -115,7 +115,6 @@ class ObjectFactory extends AbstractFactory
                     }
                 }
             } catch (ReflectionException) {
-                $factoryName = null;
             }
 
             if ($factoryName === null){

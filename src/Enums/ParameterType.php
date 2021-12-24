@@ -45,12 +45,6 @@ enum ParameterType
                 $response = $minimalismFactories->getServiceFactory()->create(
                     className: $parameterDefinition->getIdentifier(),
                 );
-
-                if (is_string($response)){
-                    $response = $minimalismFactories->getServiceFactory()->create(
-                        className: $response,
-                    );
-                }
                 break;
             case self::PositionedParameter:
                 if (($parameterValue = $parameters?->getNextPositionedParameter()) !== null) {

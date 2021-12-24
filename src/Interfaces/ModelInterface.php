@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Interfaces;
 
 use CarloNicora\JsonApi\Document;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 
@@ -33,9 +34,9 @@ interface ModelInterface
     public function getView(): ?string;
 
     /**
-     * @return int
+     * @return HttpCode
      */
-    public function run(): int;
+    public function run(): HttpCode;
 
     /**
      * @return string|null

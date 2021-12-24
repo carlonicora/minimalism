@@ -1,7 +1,6 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
-use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
@@ -168,13 +167,13 @@ class ServiceFactory
      * @param ServiceFactory $serviceFactory
      * @param string $className
      * @param array|null $parameters
-     * @return mixed
+     * @return ServiceInterface|null
      */
     protected function initialise(
         ServiceFactory $serviceFactory,
         string &$className,
         ?array $parameters=null,
-    ): mixed
+    ): ?ServiceInterface
     {
         $objectParameters = [];
 
