@@ -4,7 +4,7 @@ language: php
 php: '8.1.0'
 
 install:
-  - composer require satooshi/php-coveralls:~1.0@stable
+  - composer require --dev php-coveralls/php-coveralls
   - composer install
 
 # Run before the build
