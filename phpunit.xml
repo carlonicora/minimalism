@@ -10,7 +10,9 @@
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <logging/>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="SESSION_DRIVER" value="array"/>
