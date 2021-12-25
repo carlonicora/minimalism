@@ -55,19 +55,15 @@ enum ParameterType
                 $response = $parameters?->getNamedParameter($parameterDefinition->getName());
                 break;
             case self::Document:
+                if (($parameterValue = $parameters?->getNamedParameter($parameterDefinition->getName())) !== null) {
+                    $response = new Document($parameterValue);
+                }
+                break;
             case self::Simple:
                 if ($parameterDefinition->getName() === 'files'){
-                    $parameterValue = $parameters?->getFiles();
+                    $response = $parameters?->getFiles();
                 } else {
-                    $parameterValue = $parameters?->getNamedParameter($parameterDefinition->getName());
-                }
-
-                if ($this === self::Document) {
-                    if ($parameterValue !== null) {
-                        $response = new Document($parameterValue);
-                    }
-                } else {
-                    $response = $parameterValue;
+                    $response = $parameters?->getNamedParameter($parameterDefinition->getName());
                 }
                 break;
             case self::Object:
@@ -89,15 +85,15 @@ enum ParameterType
                 break;
         }
 
-        if ($response === null && $parameterDefinition->getDefaultValue() !== null){
+        if ($response === null){
             $response = $parameterDefinition->getDefaultValue();
-        }
 
-        if ($response === null && !$parameterDefinition->allowsNull()){
-            throw new RuntimeException(
-                'Required parameter ' . $parameterDefinition->getName() . ' missing',
-                412
-            );
+            if ($response === null && !$parameterDefinition->allowsNull()){
+                throw new RuntimeException(
+                    'Required parameter ' . $parameterDefinition->getName() . ' missing',
+                    412
+                );
+            }
         }
 
         return $response;

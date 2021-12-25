@@ -1,14 +1,27 @@
-<?php
+<?php /** @noinspection PhpExpressionResultUnusedInspection */
+
 namespace CarloNicora\Minimalism\Tests\Abstracts;
 
-use CarloNicora\Minimalism\Objects\ParameterDefinition;
+use CarloNicora\Minimalism\Tests\Factories\MocksFactory;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionException;
 
 abstract class AbstractTestCase extends TestCase
 {
+    /** @var MocksFactory */
+    protected MocksFactory $mocker;
 
+    /**
+     * @return void
+     */
+    protected function setUp(
+    ): void
+    {
+        parent::setUp();
+
+        $this->mocker = new MocksFactory($this);
+    }
 
     /**
      * @param $object
