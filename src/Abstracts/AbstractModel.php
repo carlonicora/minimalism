@@ -14,8 +14,8 @@ class AbstractModel implements ModelInterface
     /** @var string|null  */
     protected ?string $view=null;
 
-    /** @var array|null  */
-    protected ?array $redirectionParameters=null;
+    /** @var ModelParameters|null  */
+    protected ?ModelParameters $redirectionParameters=null;
 
     /** @var string|null  */
     protected ?string $redirection=null;
