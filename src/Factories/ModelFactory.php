@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Abstracts\AbstractFactory;
 use CarloNicora\Minimalism\Builders\ModelBuilder;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use Exception;
@@ -171,7 +172,15 @@ class ModelFactory extends AbstractFactory
         string $functionName,
     ): array
     {
-        return $this->modelsDefinitions[$modelName][strtolower($functionName)]??throw new RuntimeException('no', 500);
+        if (!array_key_exists($modelName, $this->modelsDefinitions)){
+            throw new RuntimeException('Model not found', HttpCode::NotFound->value);
+        }
+
+        if (!array_key_exists(strtolower($functionName), $this->modelsDefinitions[$modelName])){
+            throw new RuntimeException('Method ' . $functionName . ' not implemented', HttpCode::NotImplemented->value);
+        }
+
+        return $this->modelsDefinitions[$modelName][strtolower($functionName)];
     }
 
     /**
