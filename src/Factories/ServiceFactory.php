@@ -114,12 +114,14 @@ class ServiceFactory
     }
 
     /**
-     * @param string $className
-     * @return ServiceInterface|null
+     * @template InstanceOfType
+     * @param class-string<InstanceOfType> $className
+     * @return InstanceOfType|ServiceInterface|null
+     * @noinspection PhpMixedReturnTypeCanBeReducedInspection
      */
     public function create(
         string $className,
-    ): ?ServiceInterface
+    ): mixed
     {
         if (!array_key_exists($className, $this->services)){
             $response = $this->initialise(
