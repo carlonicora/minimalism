@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
+use CarloNicora\Minimalism\Minimalism;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
@@ -36,6 +37,28 @@ class MocksFactory
         foreach ($functionsReturns ?? [] as $functionName => $functionReturns){
             $mock->method($functionName)->willReturn($functionReturns);
         }
+    }
+
+    /**
+     * @param array|null $functionsReturns
+     * @return MockObject|Minimalism
+     */
+    public function createMinimalism(
+        ?array $functionsReturns=null,
+    ): MockObject|Minimalism
+    {
+        $response = $this->test->getMockBuilder(Minimalism::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        if ($functionsReturns !== null){
+            $this->addFunctionsReturns(
+                mock: $response,
+                functionsReturns: $functionsReturns,
+            );
+        }
+
+        return $response;
     }
 
     /**

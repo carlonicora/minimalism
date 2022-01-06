@@ -121,7 +121,7 @@ class ServiceFactory
         string $className,
     ): mixed
     {
-        if (!class_exists($className)) {
+        if (!class_exists($className) && !interface_exists($className)) {
             return null;
         }
 
