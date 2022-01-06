@@ -2,14 +2,17 @@
 namespace CarloNicora\Minimalism\Interfaces;
 
 use CarloNicora\Minimalism\Enums\LogLevel;
+use CarloNicora\Minimalism\Services\Path;
 
 interface LoggerInterface extends ServiceInterface
 {
     /**
      * LoggerInterface constructor.
+     * @param Path $path
      * @param int $MINIMALISM_LOG_LEVEL
      */
     public function __construct(
+        Path $path,
         int $MINIMALISM_LOG_LEVEL=300,
     );
 
