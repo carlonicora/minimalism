@@ -47,7 +47,7 @@ class ModelFactory extends AbstractFactory
                 . DIRECTORY_SEPARATOR . 'Models'
             );
 
-            foreach ($this->minimalismFactories->getServiceFactory()->getPath()->getServicesModelsDirectories() ?? [] as $additionalDirectory) {
+            foreach ($this->minimalismFactories->getServiceFactory()->getPath()->getServicesModelsDirectories() as $additionalDirectory) {
                 $serviceModels[] = $this->loadFolderModels($additionalDirectory);
             }
             $this->minimalismFactories->getServiceFactory()->getPath()->setServicesModels($serviceModels);
@@ -118,8 +118,7 @@ class ModelFactory extends AbstractFactory
     ): array
     {
         $response = [];
-        $models = glob($folder . DIRECTORY_SEPARATOR . '*', GLOB_NOSORT);
-        foreach ($models ?? [] as $model) {
+        foreach (glob($folder . DIRECTORY_SEPARATOR . '*', GLOB_NOSORT) as $model) {
             $modelInfo = pathinfo($model);
             if (!array_key_exists('extension', $modelInfo)){
                 $response[strtolower(basename($model)) . '-folder'] = $this->loadFolderModels($model, false);
@@ -237,7 +236,7 @@ class ModelFactory extends AbstractFactory
 
             $this->modelClass = $modelBuilder->getModelClass();
 
-            foreach ($modelBuilder->getParameters() ?? [] as $value){
+            foreach ($modelBuilder->getParameters() as $value){
                 $response->addPositionedParameter($value);
             }
 
@@ -259,8 +258,7 @@ class ModelFactory extends AbstractFactory
     ): void
     {
         if ($namedParametersString !== null && $namedParametersString !== '') {
-            $namedParameters = explode('&', $namedParametersString);
-            foreach ($namedParameters ?? [] as $namedParameter) {
+            foreach (explode('&', $namedParametersString) as $namedParameter) {
                 [$parameterName, $parameterValue] = explode('=', $namedParameter);
                 $modelParameters->addNamedParameter($parameterName, $parameterValue);
             }
@@ -323,13 +321,13 @@ class ModelFactory extends AbstractFactory
     }
 
     /**
-     * @param $lastKey
-     * @param $input
+     * @param mixed $lastKey
+     * @param array $input
      * @return array
      */
     private function recursive(
-        $lastKey,
-        $input,
+        mixed $lastKey,
+        array $input,
     ): array
     {
         $result = [];

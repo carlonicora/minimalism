@@ -2,7 +2,6 @@
 namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Abstracts\AbstractFactory;
-use CarloNicora\Minimalism\Interfaces\ObjectFactoryInterface;
 use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
 use CarloNicora\Minimalism\Objects\ModelParameters;
@@ -132,7 +131,6 @@ class ObjectFactory extends AbstractFactory
             $this->objectUpdated = true;
         }
 
-        /** @var ObjectFactoryInterface $factory */
         $factoryConstructorParameters = $this->generateMethodParametersValues(
             methodParametersDefinition: $factoryConstructMethodParametersDefinitions,
             parameters: $parameters,

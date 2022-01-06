@@ -51,14 +51,14 @@ class ServiceFactory
         if (is_file($this->getPath()->getCacheFile('services.cache')) && ($serviceFile = file_get_contents($this->getPath()->getCacheFile('services.cache'))) !== false ) {
             $this->services = unserialize($serviceFile, [true]);
 
-            foreach ($this->services ?? [] as $service) {
+            foreach ($this->services as $service) {
                 if ($service !== null && !is_string($service)) {
                     $service->initialise();
                     $service->setObjectFactory($this->minimalismFactories->getObjectFactory());
                 }
             }
         } else {
-            foreach ($this->getServiceFiles() ?? [] as $serviceFile) {
+            foreach ($this->getServiceFiles() as $serviceFile) {
                 /** @noinspection UnusedFunctionResultInspection */
                 $this->create(
                     className: MinimalismFactories::getNamespace($serviceFile)
@@ -88,10 +88,8 @@ class ServiceFactory
     public function __destruct()
     {
         if ($this->getDefaultService() !== null) {
-            foreach ($this->getDefaultService()->getDelayedServices() ?? [] as $delayedServices) {
-                if (array_key_exists($delayedServices, $this->services)) {
-                    $this->services[$delayedServices]->destroy();
-                }
+            foreach ($this->getDefaultService()->getDelayedServices() as $delayedServices) {
+                $this->services[$delayedServices]->destroy();
             }
         }
 
@@ -101,7 +99,7 @@ class ServiceFactory
             $loggerClass = $this->services[LoggerInterface::class];
         }
 
-        /** @var ServiceInterface $service */
+        /** @var ServiceInterface|string $service */
         foreach ($this->services ?? [] as $serviceName=>$service){
             if ($service !== null && !is_string($service) && $serviceName !== $loggerClass) {
                 $service->destroy();
@@ -123,6 +121,10 @@ class ServiceFactory
         string $className,
     ): mixed
     {
+        if (!class_exists($className)) {
+            return null;
+        }
+
         if (!array_key_exists($className, $this->services)){
             $response = $this->initialise(
                 serviceFactory: $this,
@@ -157,6 +159,7 @@ class ServiceFactory
             } catch (ReflectionException) {
             }
         } else {
+            /** @var ServiceInterface|string $response */
             $response = $this->services[$className];
 
             if (is_string($response)){
@@ -185,7 +188,7 @@ class ServiceFactory
             $reflectionClass = new ReflectionClass($className);
             if ($reflectionClass->isInterface()) {
                 $interfaceClassFound = false;
-                foreach ($this->getServiceFiles() ?? [] as $serviceFile){
+                foreach ($this->getServiceFiles() as $serviceFile){
                     $serviceClassName = MinimalismFactories::getNamespace($serviceFile);
                     /** @noinspection PhpUndefinedMethodInspection */
                     if ($serviceClassName::getBaseInterface() === $className){
@@ -200,15 +203,19 @@ class ServiceFactory
                 }
             }
 
+            if (!$reflectionClass->implementsInterface(ServiceInterface::class)){
+                return null;
+            }
+
             $objectParametersDefinition = (new ReflectionClass($className))->getMethod('__construct')->getParameters();
 
-            foreach ($objectParametersDefinition ?? [] as $objectParameterDefinition) {
+            foreach ($objectParametersDefinition as $objectParameterDefinition) {
                 /** @var ReflectionNamedType|ReflectionUnionType $objectParameter */
                 $objectParameter = $objectParameterDefinition->getType();
                 try {
                     if (get_class($objectParameter) === ReflectionUnionType::class){
                         /** @var ReflectionNamedType $subParameter */
-                        foreach ($objectParameter->getTypes() ?? [] as $subParameter) {
+                        foreach ($objectParameter->getTypes() as $subParameter) {
                             $reflect = new ReflectionClass($subParameter->getName());
                             if ($reflect->implementsInterface(DefaultServiceInterface::class)) {
                                 $objectParameters[] = $serviceFactory->create($reflect->getName());
@@ -267,50 +274,69 @@ class ServiceFactory
     }
 
     /**
-     * @return ServiceInterface|Path
+     * @return Path
      */
     public function getPath(
-    ): ServiceInterface|Path
+    ): Path
     {
-        return $this->services[Path::class];
+        /** @var Path $response */
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
+        /** @noinspection OneTimeUseVariablesInspection */
+        $response = $this->services[Path::class];
+        return $response;
     }
 
     /**
-     * @return ServiceInterface|DefaultServiceInterface|null
+     * @return DefaultServiceInterface|null
      */
     public function getDefaultService(
-    ): ServiceInterface|DefaultServiceInterface|null
+    ): DefaultServiceInterface|null
     {
         if (!array_key_exists(DefaultServiceInterface::class, $this->services)) {
             return null;
         }
 
-        return $this->create(DefaultServiceInterface::class);
+        /** @var DefaultServiceInterface $response */
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
+        /** @noinspection OneTimeUseVariablesInspection */
+        $response = $this->create(DefaultServiceInterface::class);
+
+        return $response;
     }
 
     /**
-     * @return ServiceInterface|TransformerInterface|null
+     * @return TransformerInterface|null
      */
     public function getTranformerService(
-    ): ServiceInterface|TransformerInterface|null
+    ): TransformerInterface|null
     {
         if (!array_key_exists(TransformerInterface::class, $this->services)) {
             return null;
         }
 
-        return $this->create(TransformerInterface::class);
+        /** @var TransformerInterface $response */
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
+        /** @noinspection OneTimeUseVariablesInspection */
+        $response = $this->create(TransformerInterface::class);
+
+        return $response;
     }
 
     /**
-     * @return ServiceInterface|LoggerInterface|null
+     * @return LoggerInterface|null
      */
     public function getLogger(
-    ): ServiceInterface|LoggerInterface|null
+    ): LoggerInterface|null
     {
         if (!array_key_exists(LoggerInterface::class, $this->services)){
             return null;
         }
 
-        return $this->create(LoggerInterface::class);
+        /** @var LoggerInterface $response */
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
+        /** @noinspection OneTimeUseVariablesInspection */
+        $response = $this->create(LoggerInterface::class);
+
+        return $response;
     }
 }

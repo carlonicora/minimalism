@@ -2,6 +2,8 @@
 
 namespace CarloNicora\Minimalism\Tests\Abstracts;
 
+use CarloNicora\Minimalism\Minimalism;
+use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Factories\MocksFactory;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -12,6 +14,9 @@ abstract class AbstractTestCase extends TestCase
     /** @var MocksFactory */
     protected MocksFactory $mocker;
 
+    /** @var Minimalism|null  */
+    private ?Minimalism $minimalism=null;
+
     /**
      * @return void
      */
@@ -20,7 +25,41 @@ abstract class AbstractTestCase extends TestCase
     {
         parent::setUp();
 
+        self::deleteAllFilesInFolder(__DIR__ . '/../../cache');
+
         $this->mocker = new MocksFactory($this);
+    }
+
+    /**
+     * @param string $dir
+     * @param bool $recursive
+     */
+    private static function deleteAllFilesInFolder(
+        string $dir,
+        bool $recursive=true,
+    ): void
+    {
+        foreach(glob($dir . '/*') as $file) {
+            if(is_file($file)) {
+                unlink($file);
+            } elseif ($recursive){
+                self::deleteAllFilesInFolder($file);
+                rmdir($file);
+            }
+        }
+    }
+
+    /**
+     * @return Minimalism
+     */
+    protected function generateMinimalism(
+    ): Minimalism
+    {
+        if ($this->minimalism === null) {
+            $this->minimalism = new Minimalism();
+        }
+
+        return $this->minimalism;
     }
 
     /**

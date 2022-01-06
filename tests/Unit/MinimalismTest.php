@@ -1,28 +1,55 @@
 <?php
 namespace CarloNicora\Minimalism\Tests\Unit;
 
-use CarloNicora\Minimalism\Minimalism;
-use PHPUnit\Framework\TestCase;
+use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Services\Path;
+use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
+use Exception;
 
-class MinimalismTest extends TestCase
+class MinimalismTest extends AbstractTestCase
 {
-    /** @var Minimalism|null  */
-    private ?Minimalism $minimalism=null;
-
     /**
+     * @return void
      *
+     * @test
+     * @covers \CarloNicora\Minimalism\Minimalism::__construct()
      */
-    public function setUp(): void
+    public function SHOULD_NotThrowAnyError_WHEN_MinimalismIsInstantiated(
+    ): void
     {
-        parent::setUp();
-        $this->minimalism = new Minimalism();
+        $minimalism = $this->generateMinimalism();
+        self::assertNotNull($minimalism);
     }
 
     /**
+     * @return void
+     * @throws Exception
+     *
+     * @test
+     * @covers \CarloNicora\Minimalism\Minimalism::getService()
      *
      */
-    public function testInitialise(): void
+    public function SHOULD_ReturnPath_WHEN_GetServiceIsCalledUsingPathClass(
+    ): void
     {
-        self::assertNotNull($this->minimalism);
+        self::assertEquals(
+            expected: $this->generateMinimalism()->getMinimalismFactories()->getServiceFactory()->getPath(),
+            actual: $this->generateMinimalism()->getService(Path::class),
+        );
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     *
+     * @test
+     * @covers \CarloNicora\Minimalism\Minimalism::getMinimalismFactories()
+     */
+    public function SHOULD_ReturnValidMinimalismFactories_WHEN_IAskItFromMinimalism(
+    ): void
+    {
+        self::assertTrue(
+            condition: ($this->generateMinimalism()->getMinimalismFactories() instanceof MinimalismFactories),
+        );
     }
 }

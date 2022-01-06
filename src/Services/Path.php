@@ -32,7 +32,7 @@ class Path extends AbstractService
         parent::__construct();
 
         $directory = __DIR__;
-        if ($directory === '/opt/project/src/Services'){
+        if ($directory === '/app/src/Services'){
             $this->root = dirname(path: $directory, levels: 2);
         } else {
             $this->root = dirname(path: $directory, levels: 5);
@@ -165,12 +165,12 @@ class Path extends AbstractService
 
         foreach (array_unique(array_merge($plugins, $internal)) as $fileName) {
             $possibleModelDirectory = $fileName . DIRECTORY_SEPARATOR . 'Models';
-            if (is_dir($possibleModelDirectory) && is_dir($possibleModelDirectory)){
+            if (is_dir($possibleModelDirectory)){
                 $this->servicesModelsDirectories[] = $possibleModelDirectory;
             }
 
             $possibleViewDirectory = $fileName . DIRECTORY_SEPARATOR . 'Views';
-            if (is_dir($possibleViewDirectory) && is_dir($possibleViewDirectory)){
+            if (is_dir($possibleViewDirectory)){
                 $this->servicesViewsDirectories[] = $possibleViewDirectory;
             }
         }

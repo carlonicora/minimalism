@@ -17,7 +17,6 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionNamedType;
-use ReflectionParameter;
 use RuntimeException;
 
 abstract class AbstractFactory
@@ -41,8 +40,7 @@ abstract class AbstractFactory
     {
         $response = [];
 
-        /** @var ReflectionParameter $methodParameter */
-        foreach ($method->getParameters() ?? [] as $methodParameter) {
+        foreach ($method->getParameters() as $methodParameter) {
             $parameterDefinition = new ParameterDefinition(
                 name: $methodParameter->getName(),
                 allowsNull: $methodParameter->allowsNull(),
@@ -102,7 +100,7 @@ abstract class AbstractFactory
     {
         $response = [];
 
-        foreach ($methodParametersDefinition ?? [] as $methodParameterDefinition) {
+        foreach ($methodParametersDefinition as $methodParameterDefinition) {
             $response[] = $methodParameterDefinition->getType()->getParameterValue(
                 parameterDefinition: $methodParameterDefinition,
                 minimalismFactories: $this->minimalismFactories,

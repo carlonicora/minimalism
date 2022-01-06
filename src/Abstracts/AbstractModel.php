@@ -106,7 +106,7 @@ class AbstractModel implements ModelInterface
     }
 
     /**
-     * @return array|null
+     * @return ModelParameters|null
      */
     final public function getRedirectionParameters(
     ): ?ModelParameters

@@ -6,7 +6,6 @@ use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
-use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use Composer\InstalledVersions;
 use Exception;
 use JsonException;
@@ -96,7 +95,6 @@ class Minimalism
     {
         $data = $this->generateData($modelName);
 
-        /** @var TransformerInterface $transformer */
         if ($this->viewName !== null && ($transformer = $this->factories->getServiceFactory()->getTranformerService()) !== null){
             $this->contentType = $transformer->getContentType();
 
@@ -176,7 +174,7 @@ class Minimalism
 
             return $data;
         } catch (Exception $e) {
-            $this->httpResponseCode = HttpCode::from($e->getCode() ?? 500);
+            $this->httpResponseCode = HttpCode::from($e->getCode());
             $this->sendException($e);
             exit;
         } catch (Throwable $e){
@@ -202,14 +200,14 @@ class Minimalism
             $data->addError(
                 new Error(
                     e: $exception,
-                    httpStatusCode: $this->httpResponseCode->value,
+                    httpStatusCode: (string)$this->httpResponseCode->value,
                     detail: $exception->getMessage(),
                 )
             );
         } else {
             $data->addError(
                 new Error(
-                    httpStatusCode: $this->httpResponseCode->value,
+                    httpStatusCode: (string)$this->httpResponseCode->value,
                     detail: $exception->getMessage(),
                 )
             );
@@ -225,10 +223,10 @@ class Minimalism
 
         if ($this->factories->getServiceFactory()->getLogger() !== null) {
             if ($this->httpResponseCode->value > HttpCode::InternalServerError->value) {
-                $this->factories->getServiceFactory()->getLogger()?->emergency(
+                $this->factories->getServiceFactory()->getLogger()->emergency(
                     message: $exception->getMessage(),
                     context: [
-                        'file' => $exception->getFile() ?? '',
+                        'file' => $exception->getFile(),
                         'line' => $exception->getLine(),
                         'url' => $this->factories->getServiceFactory()->getPath()->getUri() ?? '',
                         'exception' => $exception->getTrace(),
@@ -236,10 +234,10 @@ class Minimalism
                     ]
                 );
             } else {
-                $this->factories->getServiceFactory()->getLogger()?->error(
+                $this->factories->getServiceFactory()->getLogger()->error(
                     message: $exception->getMessage(),
                     context: [
-                        'file' => $exception->getFile() ?? '',
+                        'file' => $exception->getFile(),
                         'line' => $exception->getLine(),
                         'url' => $this->factories->getServiceFactory()->getPath()->getUri() ?? '',
                         'exception' => $exception->getTrace(),

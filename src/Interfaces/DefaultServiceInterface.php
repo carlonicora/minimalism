@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Interfaces;
 interface DefaultServiceInterface extends ServiceInterface
 {
     /**
-     * @return ServiceInterface[]
+     * @return string[]
      */
     public function getDelayedServices(): array;
 
