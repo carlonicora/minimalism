@@ -50,17 +50,19 @@ class ObjectFactory extends AbstractFactory
     }
 
     /**
-     * @param string $className
+     * @template InstanceOfType
+     * @param class-string<InstanceOfType> $className
      * @param string|null $name
      * @param ModelParameters|null $parameters
-     * @return ObjectInterface|SimpleObjectInterface|null
+     * @return InstanceOfType|null
      * @throws Exception
+     * @noinspection PhpMixedReturnTypeCanBeReducedInspection
      */
     public function create(
         string $className,
         ?string $name=null,
         ?ModelParameters $parameters=null,
-    ): ObjectInterface|SimpleObjectInterface|null
+    ): mixed
     {
         if (array_key_exists($className, $this->objectsDefinitions)){
             $isSimpleObject = !array_key_exists($className, $this->objectsFactoriesDefinitions);
