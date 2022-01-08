@@ -13,6 +13,7 @@ use ReflectionException;
 use ReflectionNamedType;
 use ReflectionUnionType;
 use RuntimeException;
+use Throwable;
 
 class ServiceFactory
 {
@@ -156,7 +157,7 @@ class ServiceFactory
                 } elseif ($reflectionClass->implementsInterface(LoggerInterface::class)) {
                     $this->services[LoggerInterface::class] = $className;
                 }
-            } catch (ReflectionException) {
+            } catch (Throwable) {
             }
         } else {
             /** @var ServiceInterface|string $response */

@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Factories;
 
 use CarloNicora\Minimalism\Abstracts\AbstractFactory;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
 use CarloNicora\Minimalism\Objects\ModelParameters;
@@ -22,12 +23,17 @@ class ObjectFactory extends AbstractFactory
     /** @var bool  */
     private bool $objectUpdated=false;
 
+    /** @var array  */
+    private array $pool=[];
+
     /**
      *
      */
     public function initialiseFactory(
     ): void
     {
+        $this->pool = [];
+
         if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))) !== false) {
             $this->objectsFactoriesDefinitions = unserialize($cache, [true]);
         }
@@ -43,6 +49,7 @@ class ObjectFactory extends AbstractFactory
     public function __destruct(
     )
     {
+        $this->pool = [];
         if ($this->objectUpdated) {
             file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'), serialize($this->objectsFactoriesDefinitions));
             file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'), serialize($this->objectsDefinitions));
@@ -54,7 +61,7 @@ class ObjectFactory extends AbstractFactory
      * @param class-string<InstanceOfType> $className
      * @param string|null $name
      * @param ModelParameters|null $parameters
-     * @return InstanceOfType|null
+     * @return InstanceOfType
      * @throws Exception
      * @noinspection PhpMixedReturnTypeCanBeReducedInspection
      */
@@ -64,23 +71,31 @@ class ObjectFactory extends AbstractFactory
         ?ModelParameters $parameters=null,
     ): mixed
     {
-        if (array_key_exists($className, $this->objectsDefinitions)){
-            $isSimpleObject = !array_key_exists($className, $this->objectsFactoriesDefinitions);
-        } else {
-            $isSimpleObject = (new ReflectionClass($className))->implementsInterface(SimpleObjectInterface::class);
-        }
+        $objectId = $className . $name . serialize($parameters);
 
-        if ($isSimpleObject){
-            $response = $this->createSimpleObject(
-                className: $className,
-                parameters: $parameters,
-            );
-        } else {
-            $response = $this->createComplexObject(
-                className: $className,
-                name:$name,
-                parameters: $parameters,
-            );
+        $response = $this->pool[$objectId] ??= null;
+
+        if($response === null) {
+            if (array_key_exists($className, $this->objectsDefinitions)) {
+                $isSimpleObject = !array_key_exists($className, $this->objectsFactoriesDefinitions);
+            } else {
+                $isSimpleObject = (new ReflectionClass($className))->implementsInterface(SimpleObjectInterface::class);
+            }
+
+            if ($isSimpleObject) {
+                $response = $this->createSimpleObject(
+                    className: $className,
+                    parameters: $parameters,
+                );
+            } else {
+                $response = $this->createComplexObject(
+                    className: $className,
+                    name: $name,
+                    parameters: $parameters,
+                );
+            }
+
+            $this->pool[$objectId] = $response;
         }
 
         return $response;
@@ -119,7 +134,7 @@ class ObjectFactory extends AbstractFactory
             }
 
             if ($factoryName === null){
-                throw new RuntimeException('nope', 500);
+                throw new RuntimeException('Missing factory name', HttpCode::InternalServerError);
             }
 
             $reflectionMethod = (new ReflectionClass($factoryName))->getMethod('__construct');
