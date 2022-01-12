@@ -102,7 +102,10 @@ class ServiceFactory
 
         /** @var ServiceInterface|string $service */
         foreach ($this->services ?? [] as $serviceName=>$service){
-            if ($service !== null && !is_string($service) && $serviceName !== $loggerClass) {
+            if ($service !== null && !is_string($service)
+                && $serviceName !== $loggerClass
+                && ! in_array($serviceName, $this->getDefaultService()->getDelayedServices(), true)
+            ) {
                 $service->destroy();
             }
         }
