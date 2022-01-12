@@ -215,9 +215,7 @@ class ServiceFactory
             $class = new ReflectionClass($className);
 
             if ($class->hasMethod('__construct')) {
-                $objectParametersDefinition = $class->getMethod('__construct')->getParameters();
-
-                foreach ($objectParametersDefinition as $objectParameterDefinition) {
+                foreach ($class->getMethod('__construct')->getParameters() as $objectParameterDefinition) {
                     /** @var ReflectionNamedType|ReflectionUnionType $objectParameter */
                     $objectParameter = $objectParameterDefinition->getType();
                     try {
