@@ -29,8 +29,6 @@ class Path extends AbstractService
     public function __construct(
     )
     {
-        parent::__construct();
-
         $directory = __DIR__;
         if ($directory === '/app/src/Services'){
             $this->root = dirname(path: $directory, levels: 2);
