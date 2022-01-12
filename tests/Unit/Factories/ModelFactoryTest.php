@@ -29,8 +29,13 @@ class ModelFactoryTest extends AbstractTestCase
     public static function setUpTempDir(
     ): void
     {
+        if (!file_exists(sys_get_temp_dir())){
+            mkdir(sys_get_temp_dir());
+        }
         self::$tempDir = sys_get_temp_dir().'/tmp';
-        mkdir(self::$tempDir);
+        if (!file_exists(self::$tempDir)) {
+            mkdir(self::$tempDir);
+        }
     }
 
     /**
