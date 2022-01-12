@@ -232,6 +232,10 @@ class ModelFactory extends AbstractFactory
         /** @noinspection UnusedFunctionResultInspection */
         $this->minimalismFactories->getServiceFactory()->getPath()->sanitiseUriVersion($uri);
 
+        if (strlen($uri) > 1 && str_ends_with(haystack: $uri, needle: '/')){
+            $uri = substr($uri, 0, -1);
+        }
+
         if ($uri === '/'){
             $this->modelClass = $this->models['*'];
         } else {
