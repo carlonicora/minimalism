@@ -28,11 +28,17 @@ class ObjectFactory extends AbstractFactory
     public function initialiseFactory(
     ): void
     {
-        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))) !== false) {
+        if (
+            is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))
+            && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))) !== false
+        ) {
             $this->objectsFactoriesDefinitions = unserialize($cache, [true]);
         }
 
-        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))  && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))) !== false) {
+        if (
+            is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))
+            && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))) !== false
+        ) {
             $this->objectsDefinitions = unserialize($cache, [true]);
         }
     }
@@ -93,7 +99,7 @@ class ObjectFactory extends AbstractFactory
      * @return ObjectInterface|null
      * @throws Exception
      */
-    private function createComplexObject(
+    protected function createComplexObject(
         string $className,
         ?string $name,
         ?ModelParameters $parameters,
