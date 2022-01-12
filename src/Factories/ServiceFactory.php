@@ -104,7 +104,7 @@ class ServiceFactory
         foreach ($this->services ?? [] as $serviceName=>$service){
             if ($service !== null && !is_string($service)
                 && $serviceName !== $loggerClass
-                && ! in_array($serviceName, $this->getDefaultService()->getDelayedServices(), true)
+                && ! in_array($serviceName, $this->getDefaultService()?->getDelayedServices(), true)
             ) {
                 $service->destroy();
             }
