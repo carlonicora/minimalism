@@ -57,12 +57,8 @@ class ObjectFactory extends AbstractFactory
     {
         $this->pool = [];
         if ($this->objectUpdated) {
-            if ($this->objectsFactoriesDefinitions !== []) {
-                file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'), serialize($this->objectsFactoriesDefinitions));
-            }
-            if ($this->objectsDefinitions !== []) {
-                file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'), serialize($this->objectsDefinitions));
-            }
+            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'), serialize($this->objectsFactoriesDefinitions));
+            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'), serialize($this->objectsDefinitions));
         }
     }
 
