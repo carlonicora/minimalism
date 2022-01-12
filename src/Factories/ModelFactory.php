@@ -91,7 +91,7 @@ class ModelFactory extends AbstractFactory
      * @return ModelParameters
      * @throws Exception
      */
-    private function createParameters(
+    protected function createParameters(
         ?string &$model
     ): ModelParameters
     {
@@ -112,7 +112,7 @@ class ModelFactory extends AbstractFactory
      * @return array
      * @throws Exception
      */
-    private function loadFolderModels(
+    protected function loadFolderModels(
         string $folder,
         bool $isRoot=true,
     ): array

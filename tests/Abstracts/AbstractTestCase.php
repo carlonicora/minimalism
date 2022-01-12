@@ -30,6 +30,23 @@ abstract class AbstractTestCase extends TestCase
         $this->mocker = new MocksFactory($this);
     }
 
+    public static function recurseRmdir(
+        string $dir
+    ): bool
+    {
+        if(!is_dir($dir)) {
+            return true;
+        }
+
+        $files = array_diff(scandir($dir), array('.','..'));
+
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? self::recurseRmdir("$dir/$file") : unlink("$dir/$file");
+        }
+
+        return rmdir($dir);
+    }
+
     /**
      * @param string $dir
      * @param bool $recursive
