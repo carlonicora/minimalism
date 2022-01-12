@@ -54,8 +54,8 @@ class ServiceFactory
 
             foreach ($this->services as $service) {
                 if ($service !== null && !is_string($service)) {
-                    $service->initialise();
                     $service->setObjectFactory($this->minimalismFactories->getObjectFactory());
+                    $service->initialise();
                 }
             }
         } else {
@@ -270,6 +270,7 @@ class ServiceFactory
         /** @var ServiceInterface $response */
         $response = new $className(...$objectParameters);
         $response->setObjectFactory($this->minimalismFactories->getObjectFactory());
+        $response->initialise();
 
         return $response;
     }

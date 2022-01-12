@@ -12,14 +12,6 @@ abstract class AbstractService implements ServiceInterface
     /**
      *
      */
-    public function __construct()
-    {
-        $this->initialise();
-    }
-
-    /**
-     *
-     */
     public function initialise(
     ): void
     {
