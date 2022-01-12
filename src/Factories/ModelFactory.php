@@ -11,6 +11,7 @@ use JsonException;
 use ReflectionClass;
 use ReflectionMethod;
 use RuntimeException;
+use Throwable;
 
 class ModelFactory extends AbstractFactory
 {
@@ -155,7 +156,10 @@ class ModelFactory extends AbstractFactory
         $response = [];
 
         foreach ((new ReflectionClass($modelClassName))->getMethods(ReflectionMethod::IS_PUBLIC) as $method){
-            $response[$method->getName()] = $this->getMethodParametersDefinition($method);
+            try {
+                $response[$method->getName()] = $this->getMethodParametersDefinition($method);
+            } catch (Exception|Throwable) {
+            }
         }
 
         $this->modelsDefinitions[$modelClassName] = $response;

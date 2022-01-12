@@ -189,78 +189,83 @@ class ServiceFactory
             $reflectionClass = new ReflectionClass($className);
             if ($reflectionClass->isInterface()) {
                 $interfaceClassFound = false;
-                foreach ($this->getServiceFiles() as $serviceFile){
+                foreach ($this->getServiceFiles() as $serviceFile) {
                     $serviceClassName = MinimalismFactories::getNamespace($serviceFile);
                     /** @noinspection PhpUndefinedMethodInspection */
-                    if ($serviceClassName::getBaseInterface() === $className){
-                        $className=$serviceClassName;
+                    if ($serviceClassName::getBaseInterface() === $className) {
+                        $className = $serviceClassName;
                         $interfaceClassFound = true;
                         break;
                     }
                 }
 
-                if (!$interfaceClassFound){
+                if (!$interfaceClassFound) {
                     return null;
                 }
             }
 
-            if (!$reflectionClass->implementsInterface(ServiceInterface::class)){
+            if (!$reflectionClass->implementsInterface(ServiceInterface::class)) {
                 return null;
             }
 
-            $objectParametersDefinition = (new ReflectionClass($className))->getMethod('__construct')->getParameters();
 
-            foreach ($objectParametersDefinition as $objectParameterDefinition) {
-                /** @var ReflectionNamedType|ReflectionUnionType $objectParameter */
-                $objectParameter = $objectParameterDefinition->getType();
-                try {
-                    if (get_class($objectParameter) === ReflectionUnionType::class){
-                        /** @var ReflectionNamedType $subParameter */
-                        foreach ($objectParameter->getTypes() as $subParameter) {
-                            $reflect = new ReflectionClass($subParameter->getName());
-                            if ($reflect->implementsInterface(DefaultServiceInterface::class)) {
-                                $objectParameters[] = $serviceFactory->create($reflect->getName());
-                                break;
+            $class = new ReflectionClass($className);
+
+            if ($class->hasMethod('__construct')) {
+                $objectParametersDefinition = $class->getMethod('__construct')->getParameters();
+
+                foreach ($objectParametersDefinition as $objectParameterDefinition) {
+                    /** @var ReflectionNamedType|ReflectionUnionType $objectParameter */
+                    $objectParameter = $objectParameterDefinition->getType();
+                    try {
+                        if (get_class($objectParameter) === ReflectionUnionType::class) {
+                            /** @var ReflectionNamedType $subParameter */
+                            foreach ($objectParameter->getTypes() as $subParameter) {
+                                $reflect = new ReflectionClass($subParameter->getName());
+                                if ($reflect->implementsInterface(DefaultServiceInterface::class)) {
+                                    $objectParameters[] = $serviceFactory->create($reflect->getName());
+                                    break;
+                                }
+                            }
+                        } else {
+                            $reflect = new ReflectionClass($objectParameter->getName());
+                            if ($reflect->getName() === MinimalismFactories::class) {
+                                $objectParameters[] = $this->minimalismFactories;
+                            } elseif ($reflect->getName() === __CLASS__) {
+                                $objectParameters[] = $this;
+                            } elseif ($reflect->getName() === ObjectFactory::class) {
+                                $objectParameters[] = $this->minimalismFactories->getObjectFactory();
+                            } elseif ($reflect->getName() === ModelFactory::class) {
+                                $objectParameters[] = $this->minimalismFactories->getModelFactory();
+                            } elseif ($reflect->implementsInterface(ServiceInterface::class)) {
+                                $objectParameters[] = $this->create($reflect->getName());
                             }
                         }
-                    } else {
-                        $reflect = new ReflectionClass($objectParameter->getName());
-                        if ($reflect->getName() === MinimalismFactories::class) {
-                            $objectParameters[] = $this->minimalismFactories;
-                        } elseif ($reflect->getName() === __CLASS__){
-                            $objectParameters[] = $this;
-                        } elseif ($reflect->getName() === ObjectFactory::class){
-                            $objectParameters[] = $this->minimalismFactories->getObjectFactory();
-                        } elseif ($reflect->getName() === ModelFactory::class){
-                            $objectParameters[] = $this->minimalismFactories->getModelFactory();
-                        } elseif ($reflect->implementsInterface(ServiceInterface::class)) {
-                            $objectParameters[] = $this->create($reflect->getName());
+                    } catch (ReflectionException) {
+                        $parameter = $parameters[$objectParameterDefinition->getName()] ?? null;
+
+                        if ($parameter === null && !$objectParameterDefinition->isOptional()) {
+                            throw new RuntimeException(
+                                message: 'An parameter is missing: ' . $objectParameterDefinition->getName(),
+                                code: 500,
+                            );
                         }
+
+                        $parameter = $parameter ?? ($objectParameterDefinition->isDefaultValueAvailable() ? $objectParameterDefinition->getDefaultValue() : null);
+
+                        if ($objectParameterDefinition->hasType()) {
+                            /** @var ReflectionNamedType $namedType */
+                            $namedType = $objectParameterDefinition->getType();
+
+                            $parameter = match ($namedType->getName()) {
+                                'int' => (int)$parameter,
+                                'bool' => filter_var($parameter, FILTER_VALIDATE_BOOLEAN),
+                                default => $parameter,
+                            };
+                        }
+
+                        $objectParameters[] = $parameter;
                     }
-                } catch (ReflectionException) {
-                    $parameter = $parameters[$objectParameterDefinition->getName()]??null;
-
-                    if ($parameter === null && !$objectParameterDefinition->isOptional()) {
-                        throw new RuntimeException(
-                            message: 'An parameter is missing: ' . $objectParameterDefinition->getName(),
-                            code: 500,
-                        );
-                    }
-
-                    $parameter = $parameter??($objectParameterDefinition->isDefaultValueAvailable() ? $objectParameterDefinition->getDefaultValue() : null);
-
-                    if ($objectParameterDefinition->hasType()) {
-                        /** @var ReflectionNamedType $namedType */
-                        $namedType = $objectParameterDefinition->getType();
-
-                        $parameter = match ($namedType->getName()) {
-                            'int' => (int)$parameter,
-                            'bool' => filter_var($parameter, FILTER_VALIDATE_BOOLEAN),
-                            default => $parameter,
-                        };
-                    }
-
-                    $objectParameters[] = $parameter;
                 }
             }
         } catch (ReflectionException) {
