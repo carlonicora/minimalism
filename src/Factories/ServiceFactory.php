@@ -88,8 +88,10 @@ class ServiceFactory
      */
     public function __destruct()
     {
+        $everyDelayedServices = [];
         if ($this->getDefaultService() !== null) {
             foreach ($this->getDefaultService()->getDelayedServices() as $delayedServices) {
+                $everyDelayedServices = $delayedServices;
                 $this->services[$delayedServices]->destroy();
             }
         }
@@ -104,7 +106,7 @@ class ServiceFactory
         foreach ($this->services ?? [] as $serviceName=>$service){
             if ($service !== null && !is_string($service)
                 && $serviceName !== $loggerClass
-                && ! in_array($serviceName, $this->getDefaultService()?->getDelayedServices(), true)
+                && ! in_array($serviceName, $everyDelayedServices, true)
             ) {
                 $service->destroy();
             }
