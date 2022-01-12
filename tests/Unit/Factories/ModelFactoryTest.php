@@ -31,6 +31,8 @@ class ModelFactoryTest extends AbstractTestCase
     {
         self::$tempDir = sys_get_temp_dir().'/tmp';
         mkdir(self::$tempDir);
+
+        echo 'HERE'.self::$tempDir;
     }
 
     /**
