@@ -184,8 +184,14 @@ class ObjectFactory extends AbstractFactory
         if (array_key_exists($className, $this->objectsDefinitions)) {
             $objectConstructorParametersDefinitions = $this->objectsDefinitions[$className];
         } else {
-            $reflectionMethod = (new ReflectionClass($className))->getMethod('__construct');
-            $objectConstructorParametersDefinitions = $this->getMethodParametersDefinition($reflectionMethod);
+            $reflectionClass = new ReflectionClass($className);
+
+            if ($reflectionClass->hasMethod('__construct')) {
+                $reflectionMethod = $reflectionClass->getMethod('__construct');
+                $objectConstructorParametersDefinitions = $this->getMethodParametersDefinition($reflectionMethod);
+            } else {
+                $objectConstructorParametersDefinitions = [];
+            }
 
             $this->objectsDefinitions[$className] = $objectConstructorParametersDefinitions;
 
