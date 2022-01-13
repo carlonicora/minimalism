@@ -174,7 +174,7 @@ class Minimalism
 
             return $data;
         } catch (Exception $e) {
-            $this->httpResponseCode = HttpCode::from($e->getCode());
+            $this->httpResponseCode = HttpCode::tryFrom($e->getCode()) ?? HttpCode::InternalServerError;
             $this->sendException($e);
             exit;
         } catch (Throwable $e){
