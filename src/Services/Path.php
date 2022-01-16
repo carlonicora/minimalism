@@ -6,13 +6,13 @@ use CarloNicora\Minimalism\Abstracts\AbstractService;
 class Path extends AbstractService
 {
     /** @var string */
-    private string $root;
+    protected string $root;
 
     /** @var string|null */
-    private ?string $url=null;
+    protected ?string $url=null;
 
     /** @var string|null  */
-    private ?string $uri=null;
+    protected ?string $uri=null;
 
     /** @var array  */
     private array $servicesModels=[];
@@ -45,10 +45,10 @@ class Path extends AbstractService
      *
      */
     public function initialise(): void {
-        if (PHP_SAPI === 'cli') {
+        if ($this->isCLIMode()) {
             $this->url = null;
         } else {
-            $this->url = (((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
+            $this->url = $this->getProtocol() . '://' . (array_key_exists('HTTP_HOST', $_SERVER) ? $_SERVER['HTTP_HOST'] : '') . '/';
 
             $this->uri = $_SERVER['REQUEST_URI'] ?? '';
             if (($versioning = $this->sanitiseUriVersion($this->uri)) !== ''){
@@ -110,7 +110,7 @@ class Path extends AbstractService
         string $cacheName
     ): string
     {
-        return $this->root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . $cacheName;
+        return $this->getRoot() . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . $cacheName;
     }
 
     /**
@@ -138,6 +138,14 @@ class Path extends AbstractService
     }
 
     /**
+     * @param string $directory
+     */
+    public function addServiceModelDirectory(string $directory): void
+    {
+        $this->servicesModelsDirectories[] = $directory;
+    }
+
+    /**
      * @return array
      */
     public function getServicesViewsDirectories(): array
@@ -154,7 +162,25 @@ class Path extends AbstractService
     }
 
     /**
-     *
+     * @return string
+     */
+    public function getProtocol(): string
+    {
+        return ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['HTTPS']))
+            ? 'https'
+            : 'http';
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isCLIMode(): bool
+    {
+        return PHP_SAPI === 'cli';
+    }
+
+    /**
+     * @return void
      */
     private function loadServicesViewsAndModelsDirectories(): void
     {
@@ -164,12 +190,12 @@ class Path extends AbstractService
         foreach (array_unique(array_merge($plugins, $internal)) as $fileName) {
             $possibleModelDirectory = $fileName . DIRECTORY_SEPARATOR . 'Models';
             if (is_dir($possibleModelDirectory)){
-                $this->servicesModelsDirectories[] = $possibleModelDirectory;
+                $this->addServiceModelDirectory($possibleModelDirectory);
             }
 
             $possibleViewDirectory = $fileName . DIRECTORY_SEPARATOR . 'Views';
             if (is_dir($possibleViewDirectory)){
-                $this->servicesViewsDirectories[] = $possibleViewDirectory;
+                $this->addServiceViewDirectory($possibleViewDirectory);
             }
         }
     }
