@@ -92,7 +92,7 @@ class ServiceFactory
         if ($this->getDefaultService() !== null) {
             foreach ($this->getDefaultService()->getDelayedServices() as $delayedServices) {
                 $everyDelayedServices[] = $delayedServices;
-                $this->services[$delayedServices]->destroy();
+                $this->services[$delayedServices]?->destroy();
             }
         }
 
