@@ -124,32 +124,6 @@ class AbstractModel implements ModelInterface
     }
 
     /**
-     * @return callable|null
-     */
-    final public function getPreRenderFunction(
-    ): ?callable
-    {
-        if ($this->preRenderFunctionName !== null){
-            return [$this, $this->preRenderFunctionName];
-        }
-
-        return null;
-    }
-
-    /**
-     * @return callable|null
-     */
-    final public function getPostRenderFunction(
-    ): ?callable
-    {
-        if ($this->postRenderFunctionName !== null){
-            return [$this, $this->postRenderFunctionName];
-        }
-
-        return null;
-    }
-
-    /**
      * @param string $modelClass
      * @param string|null $function
      * @param ModelParameters|null $parameters

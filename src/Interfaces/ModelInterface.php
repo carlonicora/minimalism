@@ -54,16 +54,6 @@ interface ModelInterface
     public function getRedirectionParameters(): ?ModelParameters;
 
     /**
-     * @return callable|null
-     */
-    public function getPreRenderFunction(): ?callable;
-
-    /**
-     * @return callable|null
-     */
-    public function getPostRenderFunction(): ?callable;
-
-    /**
      * @param string $name
      * @return mixed
      */

@@ -138,10 +138,6 @@ class Minimalism
                     function: $function,
                 );
 
-                if (($preRenderFunction = $model->getPreRenderFunction()) !== null){
-                    $preRenderFunction();
-                }
-
                 $this->httpResponseCode = $model->run();
 
                 if ($this->httpResponseCode === HttpCode::TemporaryRedirect){
@@ -150,10 +146,6 @@ class Minimalism
                     $function = $model->getRedirectionFunction();
                 }
             } while ($this->httpResponseCode === HttpCode::TemporaryRedirect);
-
-            if (($postRenderFunction = $model->getPostRenderFunction()) !== null){
-                $postRenderFunction();
-            }
 
             $this->viewName = $model->getView();
             $data = $model->getDocument();
