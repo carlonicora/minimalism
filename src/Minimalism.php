@@ -214,7 +214,7 @@ class Minimalism
         $this->send($response);
 
         if ($this->factories->getServiceFactory()->getLogger() !== null) {
-            if ($this->httpResponseCode->value > HttpCode::InternalServerError->value) {
+            if ($this->httpResponseCode->value >= HttpCode::InternalServerError->value) {
                 $this->factories->getServiceFactory()->getLogger()->emergency(
                     message: $exception->getMessage(),
                     context: [
