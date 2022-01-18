@@ -114,8 +114,10 @@ class ServiceFactory
             }
         }
 
-        $loggerClass->destroy();
-        $loggerClass->unsetObjectFactory();
+        if ($loggerClass !== null) {
+            $loggerClass->destroy();
+            $loggerClass->unsetObjectFactory();
+        }
 
         if ($this->loaded) {
             file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
