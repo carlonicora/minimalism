@@ -268,7 +268,7 @@ class Minimalism
 
         echo $response;
 
-        if ($this->factories->getServiceFactory()->getPath()->getUri() !== null) {
+        if (function_exists('fastcgi_finish_request') && $this->factories->getServiceFactory()->getPath()->getUri() !== null) {
             fastcgi_finish_request();
         }
     }
