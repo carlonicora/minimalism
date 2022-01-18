@@ -27,6 +27,11 @@ interface ServiceInterface
     public function setObjectFactory(ObjectFactory $objectFactory): void;
 
     /**
+     * @return void
+     */
+    public function unsetObjectFactory(): void;
+
+    /**
      * Returns the base interface (if any) the service interface extends.
      * When a service extends a base interface, an appliation can contain
      * only one service that extends that interface.

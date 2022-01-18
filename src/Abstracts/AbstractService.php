@@ -23,7 +23,6 @@ abstract class AbstractService implements ServiceInterface
     public function destroy(
     ): void
     {
-        $this->objectFactory = null;
     }
 
     /**
@@ -35,6 +34,15 @@ abstract class AbstractService implements ServiceInterface
     ): void
     {
         $this->objectFactory = $objectFactory;
+    }
+
+    /**
+     * @return void
+     */
+    final public function unsetObjectFactory(
+    ): void
+    {
+        $this->objectFactory = null;
     }
 
     /**

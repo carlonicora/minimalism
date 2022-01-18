@@ -93,6 +93,7 @@ class ServiceFactory
             foreach ($this->getDefaultService()->getDelayedServices() as $delayedServices) {
                 $everyDelayedServices = $delayedServices;
                 $this->services[$delayedServices]->destroy();
+                $this->services[$delayedServices]->unsetObjectFactory();
             }
         }
 
@@ -109,8 +110,12 @@ class ServiceFactory
                 && ! in_array($serviceName, $everyDelayedServices, true)
             ) {
                 $service->destroy();
+                $service->unsetObjectFactory();
             }
         }
+
+        $loggerClass->destroy();
+        $loggerClass->unsetObjectFactory();
 
         if ($this->loaded) {
             file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));

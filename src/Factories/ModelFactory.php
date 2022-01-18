@@ -286,6 +286,9 @@ class ModelFactory extends AbstractFactory
                         parse_str($phpInput, $additionalResponse);
 
                         foreach ($additionalResponse ?? [] as $parameterName=>$parameterValue){
+                            if ($parameter === 'payload'){
+                                $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+                            }
                             $modelParameters->addNamedParameter($parameterName, $parameterValue);
                         }
                     } catch (Exception) {
