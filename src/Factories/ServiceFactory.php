@@ -98,24 +98,24 @@ class ServiceFactory
         }
 
         $loggerClass = null;
-        if ($this->getLogger() !== null) {
-            $this->getLogger()->destroy();
+        $logger = $this->getLogger();
+        if ($logger !== null) {
+            $logger->destroy();
+            $logger->unsetObjectFactory();
             $loggerClass = $this->services[LoggerInterface::class];
         }
 
         /** @var ServiceInterface|string $service */
         foreach ($this->services ?? [] as $serviceName=>$service){
-            if ($service !== null && !is_string($service)
+            if ($service !== null
+                && !is_string($service)
                 && $serviceName !== $loggerClass
-                && ! in_array($serviceName, $everyDelayedServices, true)
+                && !in_array($serviceName, $everyDelayedServices, true)
             ) {
                 $service->destroy();
                 $service->unsetObjectFactory();
             }
         }
-
-        $loggerClass->destroy();
-        $loggerClass->unsetObjectFactory();
 
         if ($this->loaded) {
             file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
