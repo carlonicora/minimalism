@@ -200,6 +200,8 @@ class ObjectFactoryTest extends AbstractTestCase
             $objectsDefinitionsCache
         );
 
+        $this->objectFactory->initialiseFactory();
+        $this->objectFactory->destroy();
         $this->objectFactory = null;
 
         $this->assertEquals(
