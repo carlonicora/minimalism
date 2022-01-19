@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\Minimalism\Factories\ObjectFactory;
+use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 
 abstract class AbstractService implements ServiceInterface
@@ -13,6 +14,16 @@ abstract class AbstractService implements ServiceInterface
      *
      */
     public function initialise(
+    ): void
+    {
+    }
+
+    /**
+     * @param ServiceFactory $services
+     * @return void
+     */
+    public function postIntialise(
+        ServiceFactory $services,
     ): void
     {
     }

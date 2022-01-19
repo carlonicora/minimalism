@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Interfaces;
 
 use CarloNicora\Minimalism\Factories\ObjectFactory;
+use CarloNicora\Minimalism\Factories\ServiceFactory;
 
 interface ServiceInterface
 {
@@ -11,6 +12,14 @@ interface ServiceInterface
      * This can include reading user-specific parameters from the session
      */
     public function initialise(): void;
+
+    /**
+     * @param ServiceFactory $services
+     * @return void
+     */
+    public function postIntialise(
+        ServiceFactory $services,
+    ): void;
 
     /**
      * The destroy method should contain all the functions that needs to

@@ -78,6 +78,12 @@ class ServiceFactory
 
             $this->loaded = true;
         }
+
+        foreach ($this->services ?? [] as $service) {
+            if ($service !== null && !is_string($service)) {
+                $service->postIntialise($this);
+            }
+        }
     }
 
     /**
