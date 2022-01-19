@@ -364,50 +364,6 @@ class AbstractModelTest extends AbstractTestCase
         );
     }
 
-    // todo WHAT getPreRenderFunction should return
-//    /**
-//     * @covers ::getPreRenderFunction
-//     * @return void
-//     */
-//    public function testItShouldGetPreRenderFunction(
-//    ): void
-//    {
-//        $this->assertNull($this->model->getPreRenderFunction());
-//
-//        $this->setProperty(
-//            object: $this->model,
-//            parameterName: 'preRenderFunctionName',
-//            parameterValue: 'someFunction'
-//        );
-//
-//        $this->assertEquals(
-//            expected: [$this->model, 'someFunction'],
-//            actual: $this->model->getPreRenderFunction()
-//        );
-//    }
-
-    // todo WHAT getPostRenderFunction should return
-//    /**
-//     * @covers ::getPreRenderFunction
-//     * @return void
-//     */
-//    public function testItShouldGetPreRenderFunction(
-//    ): void
-//    {
-//        $this->assertNull($this->model->getPreRenderFunction());
-//
-//        $this->setProperty(
-//            object: $this->model,
-//            parameterName: 'getPostRenderFunction',
-//            parameterValue: 'someFunction'
-//        );
-//
-//        $this->assertEquals(
-//            expected: [$this->model, 'someFunction'],
-//            actual: $this->model->getPreRenderFunction()
-//        );
-//    }
-
     /**
      * @covers ::run
      * @return void

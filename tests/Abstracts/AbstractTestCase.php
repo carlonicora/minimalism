@@ -109,4 +109,20 @@ abstract class AbstractTestCase extends TestCase
         } catch (ReflectionException) {
         }
     }
+
+    /**
+     * @param object $object
+     * @param string $methodName
+     * @param array $arguments
+     * @return mixed
+     * @throws ReflectionException
+     */
+    protected function invokeMethod(object &$object, string $methodName, array $arguments = [])
+    {
+        $reflection = new ReflectionClass($object::class);
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $arguments);
+    }
 }
