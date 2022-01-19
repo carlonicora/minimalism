@@ -36,6 +36,15 @@ class MinimalismFactories
     }
 
     /**
+     *
+     */
+    public function __destruct()
+    {
+        $this->serviceFactory->destroy();
+        $this->objectFactory->destroy();
+    }
+
+    /**
      * @return ModelFactory
      */
     public function getModelFactory(): ModelFactory
