@@ -26,12 +26,6 @@ class AbstractModel implements ModelInterface
     /** @var Document  */
     protected Document $document;
 
-    /** @var string|null  */
-    protected ?string $preRenderFunctionName=null;
-
-    /** @var string|null  */
-    protected ?string $postRenderFunctionName=null;
-
     /** @var ObjectFactory  */
     protected ObjectFactory $objectFactory;
 
