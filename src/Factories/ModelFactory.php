@@ -217,6 +217,7 @@ class ModelFactory extends AbstractFactory
 
     /**
      * @return ModelParameters
+     * @throws Exception
      */
     public function getWebParameters(
     ): ModelParameters
@@ -259,6 +260,7 @@ class ModelFactory extends AbstractFactory
     /**
      * @param ModelParameters $modelParameters
      * @param string|null $namedParametersString
+     * @throws Exception
      */
     private function setNamedParameters(
         ModelParameters $modelParameters,

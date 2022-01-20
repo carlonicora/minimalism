@@ -22,6 +22,7 @@ enum ParameterType
     case MinimalismFactories;
     case ObjectFactory;
     case ModelParameters;
+    case Enum;
 
     /**
      * @param ParameterDefinition $parameterDefinition
@@ -82,6 +83,10 @@ enum ParameterType
                 break;
             case self::ModelParameters:
                 $response = $parameters;
+                break;
+            case self::Enum:
+                /** @noinspection PhpUndefinedMethodInspection */
+                $response = ($parameterDefinition->getIdentifier())::tryFrom($parameters?->getNamedParameter($parameterDefinition->getName()));
                 break;
         }
 
