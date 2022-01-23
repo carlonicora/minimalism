@@ -299,4 +299,76 @@ class PathTest extends AbstractTestCase
 
         unset($_SERVER['HTTP_X_FORWARDED_PROTO']);
     }
+
+    /**
+     * @covers ::loadServicesViewsAndModelsDirectories
+     * @return void
+     */
+    public function testItShouldLoadServicesViewsAndModelsDirectories(
+    ): void
+    {
+        // ------- prepare temp directory -------
+        if (!file_exists(sys_get_temp_dir())){
+            mkdir(sys_get_temp_dir());
+        }
+
+        $tmpDir = sys_get_temp_dir().'/tmp';
+
+        if (!file_exists($tmpDir)) {
+            mkdir($tmpDir);
+        }
+        // ----- prepare plugin directories -----
+        mkdir($tmpDir . '/vendor/carlonicora',  0777, true);
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',  0777, true);
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',  0777, true);
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-guards/src/Models',  0777, true);
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-redis/src/Views',  0777, true);
+        // ----- prepare internal directories -----
+        mkdir($tmpDir . '/src/Services/Parser',  0777, true);
+        mkdir($tmpDir . '/src/Services/Parser/Models');
+        mkdir($tmpDir . '/src/Services/Database',  0777, true);
+        mkdir($tmpDir . '/src/Services/Database/Models');
+        mkdir($tmpDir . '/src/Services/Database/Views');
+        // ----------------------------------------
+        $this->setProperty(
+            object: $this->path,
+            parameterName: 'root',
+            parameterValue: $tmpDir
+        );
+
+        $this->invokeMethod(
+            object: $this->path,
+            methodName: 'loadServicesViewsAndModelsDirectories'
+        );
+
+        $this->assertEquals(
+            expected: [
+                $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',
+                $tmpDir . '/vendor/carlonicora/minimalism-service-guards/src/Models',
+                $tmpDir . '/src/Services/Parser/Models',
+                $tmpDir . '/src/Services/Database/Models',
+            ],
+            actual: $this->path->getServicesModelsDirectories()
+        );
+        $this->assertEquals(
+            expected: [
+                $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',
+                $tmpDir . '/vendor/carlonicora/minimalism-service-redis/src/Views',
+                $tmpDir . '/src/Services/Database/Views'
+            ],
+            actual: $this->path->getServicesViewsDirectories()
+        );
+
+        self::recurseRmdir($tmpDir);
+    }
+
+    /**
+     * @covers ::getBaseInterface
+     * @return void
+     */
+    public function testItShouldGetBaseInterface(
+    ): void
+    {
+        $this->assertNull(Path::getBaseInterface());
+    }
 }

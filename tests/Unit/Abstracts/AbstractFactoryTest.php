@@ -44,6 +44,7 @@ class AbstractFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::__construct
      * @covers ::getMethodParametersDefinition
      * @return void
      */
@@ -626,7 +627,7 @@ class AbstractFactoryTest extends AbstractTestCase
      * @covers ::getMethodParametersDefinition
      * @return void
      */
-    public function testItShouldThroeException(
+    public function testItShouldThrowException(
     ): void
     {
         $reflectionMethod = $this->createMock(ReflectionMethod::class);
@@ -660,6 +661,69 @@ class AbstractFactoryTest extends AbstractTestCase
             object: $this->factory,
             methodName: 'getMethodParametersDefinition',
             arguments: [$reflectionMethod]
+        );
+    }
+
+    /**
+     * @covers ::getMethodParametersDefinition
+     * @return void
+     */
+    public function testItShouldThrowReflectionException(
+    ): void
+    {
+        $reflectionMethod = $this->createMock(ReflectionMethod::class);
+        $reflectionParameter = $this->createMock(ReflectionParameter::class);
+        $parameter = $this->createMock(ReflectionNamedType::class);
+        $methodParameterName = ModelStub::class;
+        $reflectionMethod->expects($this->once())
+            ->method('getParameters')
+            ->willReturn([$reflectionParameter]);
+        $reflectionParameter->expects($this->once())
+            ->method('getName')
+            ->willReturn($methodParameterName);
+        $reflectionParameter->expects($this->once())
+            ->method('allowsNull')
+            ->willReturn(true);
+        $reflectionParameter->expects($this->once())
+            ->method('isDefaultValueAvailable')
+            ->willReturn(false);
+        $reflectionParameter->expects($this->once())
+            ->method('getType')
+            ->willReturn($parameter);
+        $parameter->expects($this->exactly(2))
+            ->method('getName')
+            ->willReturn('RandomClass');
+
+        $result = $this->invokeMethod(
+            object: $this->factory,
+            methodName: 'getMethodParametersDefinition',
+            arguments: [$reflectionMethod]
+        );
+
+        /** @var ParameterDefinition $parameterDefinition */
+        $parameterDefinition = $result[0];
+
+        $this->assertIsArray($result);
+        $this->assertInstanceOf(
+            expected: ParameterDefinition::class,
+            actual: $parameterDefinition
+        );
+        $this->assertTrue($parameterDefinition->allowsNull());
+        $this->assertEquals(
+            expected: $methodParameterName,
+            actual: $parameterDefinition->getName()
+        );
+        $this->assertEquals(
+            expected: 'RandomClass',
+            actual: $parameterDefinition->getIdentifier()
+        );
+        $this->assertEquals(
+            expected: ParameterType::Simple,
+            actual: $parameterDefinition->getType()
+        );
+        $this->assertEquals(
+            expected: null,
+            actual: $parameterDefinition->getDefaultValue()
         );
     }
 

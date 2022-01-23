@@ -22,6 +22,18 @@ class AbstractServiceTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldInitialise(
+    ): void
+    {
+        $this->abstractService->initialise();
+        //@todo add assertion after implementation method
+        $this->assertTrue(true);
+    }
+
+    /**
      * @covers ::destroy
      * @return void
      */
@@ -58,5 +70,15 @@ class AbstractServiceTest extends AbstractTestCase
                 parameterName: 'objectFactory'
             )
         );
+    }
+
+    /**
+     * @covers ::getBaseInterface
+     * @return void
+     */
+    public function testItShouldGetBaseInterface(
+    ): void
+    {
+        $this->assertNull($this->abstractService->getBaseInterface());
     }
 }

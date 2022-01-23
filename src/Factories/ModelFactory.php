@@ -93,7 +93,7 @@ class ModelFactory extends AbstractFactory
      * @throws Exception
      */
     protected function createParameters(
-        ?string &$model
+        ?string $model
     ): ModelParameters
     {
         if ($this->minimalismFactories->getServiceFactory()->getPath()->getUrl() === null){

@@ -20,10 +20,11 @@ class ParameterDefinitionTest extends AbstractTestCase
     {
         parent::setUp();
 
-        $this->parameterDefinition = new ParameterDefinition('someName', true);
+        $this->parameterDefinition = new ParameterDefinition('someName', true, 'someDefault');
     }
 
     /**
+     * @covers ::__construct
      * @covers ::setIdentifier
      * @covers ::getIdentifier
      * @return void
@@ -40,6 +41,19 @@ class ParameterDefinitionTest extends AbstractTestCase
         $this->assertEquals(
             expected: $identifier,
             actual: $this->parameterDefinition->getIdentifier()
+        );
+    }
+
+    /**
+     * @covers ::getDefaultValue
+     * @return void
+     */
+    public function testItShouldGetDefaultValue(
+    ): void
+    {
+        $this->assertEquals(
+            expected: 'someDefault',
+            actual: $this->parameterDefinition->getDefaultValue()
         );
     }
 

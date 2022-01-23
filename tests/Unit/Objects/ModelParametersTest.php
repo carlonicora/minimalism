@@ -22,6 +22,7 @@ class ModelParametersTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::__construct
      * @covers ::addNamedParameter
      * @covers ::getNamedParameter
      * @return void
