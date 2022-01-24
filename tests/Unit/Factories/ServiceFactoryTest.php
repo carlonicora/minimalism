@@ -375,14 +375,21 @@ class ServiceFactoryTest extends AbstractTestCase
             methodName: 'getServiceFiles'
         );
 
-        $this->assertEquals(
-            expected: [
-                '/tmp/tmp/vendor/carlonicora/minimalism-service-auth/src/Auth.php',
-                '/tmp/tmp/vendor/carlonicora/minimalism-service-auth/src/Guard.php',
-                '/tmp/tmp/src/Services/Parser/Parser.php',
-                '/tmp/tmp/src/Kernel.php',
-            ],
-            actual: $result
+        $this->assertContains(
+            needle: '/tmp/tmp/vendor/carlonicora/minimalism-service-auth/src/Auth.php',
+            haystack: $result
+        );
+        $this->assertContains(
+            needle: '/tmp/tmp/vendor/carlonicora/minimalism-service-auth/src/Guard.php',
+            haystack: $result
+        );
+        $this->assertContains(
+            needle: '/tmp/tmp/src/Services/Parser/Parser.php',
+            haystack: $result
+        );
+        $this->assertContains(
+            needle: '/tmp/tmp/src/Kernel.php',
+            haystack: $result
         );
 
         self::recurseRmdir($tmpDir);
