@@ -77,24 +77,20 @@ class ObjectFactoryTest extends AbstractTestCase
         file_put_contents($objectsDefinitionsCache, 'a:1:{i:0;O:8:"stdClass":0:{}}');
 
         $this->minimalismFactories
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(2))
             ->method('getServiceFactory')
             ->willReturn($serviceFactory);
-        $serviceFactory->expects($this->exactly(4))
+        $serviceFactory->expects($this->exactly(2))
             ->method('getPath')
             ->willReturn($path);
-        $path->expects($this->exactly(4))
+        $path->expects($this->exactly(2))
             ->method('getCacheFile')
             ->withConsecutive(
                 ['objectsFactoriesDefinitions.cache'],
-                ['objectsFactoriesDefinitions.cache'],
-                ['objectsDefinitions.cache'],
                 ['objectsDefinitions.cache']
             )
             ->willReturnOnConsecutiveCalls(
                 $objectsFactoriesDefinitionsCachePath,
-                $objectsFactoriesDefinitionsCachePath,
-                $objectsDefinitionsCache,
                 $objectsDefinitionsCache
             );
 
@@ -157,84 +153,6 @@ class ObjectFactoryTest extends AbstractTestCase
                 parameterName: 'objectsDefinitions'
             )
         );
-    }
-
-    /**
-     * @covers ::__destruct
-     * @return void
-     */
-    public function testItShouldDestruct(
-    ): void
-    {
-        $serviceFactory = $this->createMock(ServiceFactory::class);
-        $path = $this->createMock(Path::class);
-        $objectsFactoriesDefinitionsCachePath = self::$tempDir . '/objectsFactoriesDefinitions.cache';
-        $objectsDefinitionsCache = self::$tempDir . '/objectsDefinitions.cache';
-        $this->setProperty(
-            object: $this->objectFactory,
-            parameterName: 'objectUpdated',
-            parameterValue: true
-        );
-        $this->setProperty(
-            object: $this->objectFactory,
-            parameterName: 'objectsFactoriesDefinitions',
-            parameterValue: []
-        );
-        $this->setProperty(
-            object: $this->objectFactory,
-            parameterName: 'objectsDefinitions',
-            parameterValue: []
-        );
-
-        $this->minimalismFactories
-            ->expects($this->exactly(2))
-            ->method('getServiceFactory')
-            ->willReturn($serviceFactory);
-        $serviceFactory->expects($this->exactly(2))
-            ->method('getPath')
-            ->willReturn($path);
-        $path->expects($this->exactly(2))
-            ->method('getCacheFile')
-            ->withConsecutive(
-                ['objectsFactoriesDefinitions.cache'],
-                ['objectsDefinitions.cache']
-            )
-        ->willReturnOnConsecutiveCalls(
-            $objectsFactoriesDefinitionsCachePath,
-            $objectsDefinitionsCache
-        );
-
-        $this->objectFactory = null;
-
-        $this->assertEquals(
-            expected: 'a:0:{}',
-            actual: file_get_contents($objectsFactoriesDefinitionsCachePath)
-        );
-        $this->assertEquals(
-            expected: 'a:0:{}',
-            actual: file_get_contents($objectsDefinitionsCache)
-        );
-    }
-
-    /**
-     * @covers ::__destruct
-     * @return void
-     */
-    public function testItShouldNotDestruct(
-    ): void
-    {
-        $objectsFactoriesDefinitionsCachePath = self::$tempDir . '/objectsFactoriesDefinitions.cache';
-        $objectsDefinitionsCache = self::$tempDir . '/objectsDefinitions.cache';
-        $this->setProperty(
-            object: $this->objectFactory,
-            parameterName: 'objectUpdated',
-            parameterValue: false
-        );
-
-        $this->objectFactory = null;
-
-        $this->assertFileDoesNotExist($objectsFactoriesDefinitionsCachePath);
-        $this->assertFileDoesNotExist($objectsDefinitionsCache);
     }
 
     /**

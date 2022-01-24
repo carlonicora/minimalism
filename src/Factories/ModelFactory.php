@@ -217,6 +217,7 @@ class ModelFactory extends AbstractFactory
 
     /**
      * @return ModelParameters
+     * @throws Exception
      */
     public function getWebParameters(
     ): ModelParameters
@@ -259,6 +260,7 @@ class ModelFactory extends AbstractFactory
     /**
      * @param ModelParameters $modelParameters
      * @param string|null $namedParametersString
+     * @throws Exception
      */
     private function setNamedParameters(
         ModelParameters $modelParameters,
@@ -286,6 +288,9 @@ class ModelFactory extends AbstractFactory
                         parse_str($phpInput, $additionalResponse);
 
                         foreach ($additionalResponse ?? [] as $parameterName=>$parameterValue){
+                            if ($parameter === 'payload'){
+                                $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+                            }
                             $modelParameters->addNamedParameter($parameterName, $parameterValue);
                         }
                     } catch (Exception) {
@@ -294,6 +299,9 @@ class ModelFactory extends AbstractFactory
             }
 
             foreach ($_POST as $parameter => $value) {
+                if ($parameter === 'payload'){
+                    $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+                }
                 $modelParameters->addNamedParameter($parameter, $value);
             }
 

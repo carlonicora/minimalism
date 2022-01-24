@@ -389,58 +389,6 @@ class ServiceFactoryTest extends AbstractTestCase
     }
 
     /**
-     * @covers ::__destruct
-     * @return void
-     */
-    public function testItShouldDestruct(
-    ): void
-    {
-        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getDefaultService', 'getLogger', 'getService', 'getServices'])
-            ->getMock();
-        $defaultService = $this->createMock(DefaultServiceInterface::class);
-        $delayedServiceName = ServiceStub::class;
-        $delayedService = $this->createMock(ServiceStub::class);
-        $otherService = $this->createMock(ServiceInterface::class);
-        $logger = $this->createMock(LoggerInterface::class);
-        $services = [
-            $delayedServiceName => $delayedService,
-            LoggerInterface::class => $logger,
-            'otherService' => $otherService,
-        ];
-
-        $serviceFactory->expects($this->exactly(2))
-            ->method('getDefaultService')
-            ->willReturn($defaultService);
-        $defaultService->expects($this->once())
-            ->method('getDelayedServices')
-            ->willReturn([$delayedServiceName]);
-        $serviceFactory->expects($this->exactly(2))
-            ->method('getService')
-            ->withConsecutive(
-                [$delayedServiceName],
-                [LoggerInterface::class]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $delayedService,
-                $logger
-            );
-
-        $delayedService->expects($this->once())->method('destroy');
-        $serviceFactory->expects($this->exactly(2))
-            ->method('getLogger')
-            ->willReturn($logger);
-        $logger->expects($this->exactly(2))->method('destroy');
-        $serviceFactory->expects($this->once())
-            ->method('getServices')
-            ->willReturn($services);
-        $otherService->expects($this->once())->method('destroy');
-
-        $serviceFactory->__destruct();
-    }
-
-    /**
      * @covers ::getPath
      * @return void
      */
@@ -492,7 +440,6 @@ class ServiceFactoryTest extends AbstractTestCase
             ->method('create')
             ->with(DefaultServiceInterface::class)
             ->willReturn($defaultService);
-
 
         $result = $serviceFactory->getDefaultService();
 

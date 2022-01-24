@@ -26,6 +26,12 @@ class ObjectFactory extends AbstractFactory
     /** @var array  */
     private array $pool=[];
 
+    /** @var string|null  */
+    protected ?string $objectsFactoriesDefinitionsCache=null;
+
+    /** @var ?string|null  */
+    protected ?string $objectsDefinitionsCache=null;
+
     /**
      *
      */
@@ -33,35 +39,46 @@ class ObjectFactory extends AbstractFactory
     ): void
     {
         $this->pool = [];
+        $this->objectsFactoriesDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache');
+        $this->objectsDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache');
 
         if (
-            is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))
-            && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))) !== false
+            is_file($this->objectsFactoriesDefinitionsCache)
+            && ($cache = file_get_contents($this->objectsFactoriesDefinitionsCache)) !== false
         ) {
             $this->objectsFactoriesDefinitions = unserialize($cache, [true]);
         }
 
         if (
-            is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))
-            && ($cache = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))) !== false
+            is_file($this->objectsDefinitionsCache)
+            && ($cache = file_get_contents($this->objectsDefinitionsCache)) !== false
         ) {
             $this->objectsDefinitions = unserialize($cache, [true]);
         }
     }
 
     /**
-     *
+     * @return void
      */
-    public function __destruct(
-    )
+    public function __wakeup(
+    ): void
+    {
+        throw new RuntimeException('One or more services has not released ObjectFactory correctly.', HttpCode::InternalServerError->value);
+    }
+
+    /**
+     * @return void
+     */
+    public function destroy(
+    ): void
     {
         $this->pool = [];
         if ($this->objectUpdated) {
-            if (!empty($cache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache'))) {
-                file_put_contents($cache, serialize($this->objectsFactoriesDefinitions));
+            if (!empty($this->objectsFactoriesDefinitionsCache)) {
+                file_put_contents($this->objectsFactoriesDefinitionsCache, serialize($this->objectsFactoriesDefinitions));
             }
-            if (!empty($cache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache'))) {
-                file_put_contents($cache, serialize($this->objectsDefinitions));
+            if (!empty($this->objectsDefinitionsCache)) {
+                file_put_contents($this->objectsDefinitionsCache, serialize($this->objectsDefinitions));
             }
         }
     }

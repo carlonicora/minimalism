@@ -73,6 +73,9 @@ abstract class AbstractFactory
                     $parameterDefinition->setType(ParameterType::ModelParameters);
                 } elseif ($parameter->getName() === Document::class) {
                     $parameterDefinition->setType(ParameterType::Document);
+                } elseif ($methodParameterType->isEnum()){
+                    $parameterDefinition->setIdentifier($methodParameterType->getName());
+                    $parameterDefinition->setType(ParameterType::Enum);
                 } else {
                     throw new RuntimeException('Parameter type not supported', 500);
                 }
