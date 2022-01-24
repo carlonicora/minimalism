@@ -338,22 +338,42 @@ class PathTest extends AbstractTestCase
             methodName: 'loadServicesViewsAndModelsDirectories'
         );
 
-        $this->assertEquals(
-            expected: [
-                $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',
-                $tmpDir . '/vendor/carlonicora/minimalism-service-guards/src/Models',
-                $tmpDir . '/src/Services/Parser/Models',
-                $tmpDir . '/src/Services/Database/Models',
-            ],
-            actual: $this->path->getServicesModelsDirectories()
+        $this->assertCount(
+            expectedCount: 4,
+            haystack: $this->path->getServicesModelsDirectories(),
         );
-        $this->assertEquals(
-            expected: [
-                $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',
-                $tmpDir . '/vendor/carlonicora/minimalism-service-redis/src/Views',
-                $tmpDir . '/src/Services/Database/Views'
-            ],
-            actual: $this->path->getServicesViewsDirectories()
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-guards/src/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/src/Services/Parser/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/src/Services/Database/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+
+        $this->assertCount(
+            expectedCount: 3,
+            haystack: $this->path->getServicesViewsDirectories(),
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',
+            haystack: $this->path->getServicesViewsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-redis/src/Views',
+            haystack: $this->path->getServicesViewsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/src/Services/Database/Views',
+            haystack: $this->path->getServicesViewsDirectories()
         );
 
         self::recurseRmdir($tmpDir);

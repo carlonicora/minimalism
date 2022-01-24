@@ -349,6 +349,8 @@ class ServiceFactoryTest extends AbstractTestCase
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/',  0777, true);
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Auth.php', 'class Auth {}');
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Guard.php', 'class Guard {}');
+        file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/index.js', 'alert(123)');
+
         // ----- prepare default services files -----
         mkdir($tmpDir . '/src');
         file_put_contents($tmpDir . '/src/Kernel.php', 'class Kernel {}');
@@ -375,6 +377,10 @@ class ServiceFactoryTest extends AbstractTestCase
             methodName: 'getServiceFiles'
         );
 
+        $this->assertCount(
+            expectedCount: 4,
+            haystack: $result
+        );
         $this->assertContains(
             needle: '/tmp/tmp/vendor/carlonicora/minimalism-service-auth/src/Auth.php',
             haystack: $result
