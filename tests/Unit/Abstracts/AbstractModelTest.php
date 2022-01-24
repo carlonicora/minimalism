@@ -12,6 +12,7 @@ use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
+use CarloNicora\Minimalism\Tests\Stubs\ModelStub;
 
 /**
  * Class AbstractModelTest
@@ -364,49 +365,49 @@ class AbstractModelTest extends AbstractTestCase
         );
     }
 
-    // todo WHAT getPreRenderFunction should return
-//    /**
-//     * @covers ::getPreRenderFunction
-//     * @return void
-//     */
-//    public function testItShouldGetPreRenderFunction(
-//    ): void
-//    {
-//        $this->assertNull($this->model->getPreRenderFunction());
-//
-//        $this->setProperty(
-//            object: $this->model,
-//            parameterName: 'preRenderFunctionName',
-//            parameterValue: 'someFunction'
-//        );
-//
-//        $this->assertEquals(
-//            expected: [$this->model, 'someFunction'],
-//            actual: $this->model->getPreRenderFunction()
-//        );
-//    }
+    /**
+     * @covers ::redirect
+     * @return void
+     */
+    public function testItShouldReturnRedirect(
+    ): void
+    {
+        $modelClass = ModelStub::class;
+        $function = 'patch';
+        $parameters = $this->createMock(ModelParameters::class);
 
-    // todo WHAT getPostRenderFunction should return
-//    /**
-//     * @covers ::getPreRenderFunction
-//     * @return void
-//     */
-//    public function testItShouldGetPreRenderFunction(
-//    ): void
-//    {
-//        $this->assertNull($this->model->getPreRenderFunction());
-//
-//        $this->setProperty(
-//            object: $this->model,
-//            parameterName: 'getPostRenderFunction',
-//            parameterValue: 'someFunction'
-//        );
-//
-//        $this->assertEquals(
-//            expected: [$this->model, 'someFunction'],
-//            actual: $this->model->getPreRenderFunction()
-//        );
-//    }
+        $result = $this->invokeMethod(
+            object: $this->model,
+            methodName: 'redirect',
+            arguments: [$modelClass, $function, $parameters]
+        );
+
+        $this->assertEquals(
+            expected: $modelClass,
+            actual: $this->getProperty(
+                object: $this->model,
+                parameterName: 'redirection'
+            )
+        );
+        $this->assertEquals(
+            expected: $function,
+            actual: $this->getProperty(
+                object: $this->model,
+                parameterName: 'function'
+            )
+        );
+        $this->assertEquals(
+            expected: $parameters,
+            actual: $this->getProperty(
+                object: $this->model,
+                parameterName: 'redirectionParameters'
+            )
+        );
+        $this->assertEquals(
+            expected: HttpCode::TemporaryRedirect,
+            actual: $result
+        );
+    }
 
     /**
      * @covers ::run

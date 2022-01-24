@@ -25,7 +25,7 @@ class ServiceFactory
     private bool $loaded=false;
 
     /** @var array  */
-    private array $env;
+    private array $env = [];
 
     /**
      *
@@ -52,17 +52,15 @@ class ServiceFactory
     ): void
     {
         $this->services[Path::class] = new Path();
+        $this->setENV();
 
-        try {
-            $this->env = Dotenv::createImmutable($this->getPath()->getRoot(), (empty($_SERVER['HTTP_TEST_ENVIRONMENT']) ? ['.env'] : ['.env.testing']))->load();
-        } catch (Exception) {
-            $this->env = [];
-        }
-
-        if (is_file($this->getPath()->getCacheFile('services.cache')) && ($serviceFile = file_get_contents($this->getPath()->getCacheFile('services.cache'))) !== false ) {
+        if (
+            is_file($this->getPath()->getCacheFile('services.cache'))
+            && ($serviceFile = file_get_contents($this->getPath()->getCacheFile('services.cache'))) !== false
+        ) {
             $this->services = unserialize($serviceFile, [true]);
 
-            foreach ($this->services as $service) {
+            foreach ($this->getServices() as $service) {
                 if ($service !== null && !is_string($service)) {
                     $service->setObjectFactory($this->minimalismFactories->getObjectFactory());
                     $service->initialise();
@@ -76,7 +74,7 @@ class ServiceFactory
                 );
             }
 
-            $this->loaded = true;
+            $this->setLoaded(true);
         }
 
         foreach ($this->services ?? [] as $service) {
@@ -87,9 +85,63 @@ class ServiceFactory
     }
 
     /**
+     * @param bool $loaded
+     * @return void
+     */
+    protected function setLoaded(
+        bool $loaded
+    ): void
+    {
+        $this->loaded = $loaded;
+    }
+
+    /**
+     * @return void
+     */
+    public function setENV(
+    ): void
+    {
+        try {
+            $this->env = Dotenv::createImmutable(
+                $this->getPath()->getRoot(),
+                (empty($_SERVER['HTTP_TEST_ENVIRONMENT']) ? ['.env'] : ['.env.testing'])
+            )->load();
+        } catch (Exception) {
+            $this->env = [];
+        }
+    }
+
+    /**
      * @return array
      */
-    private function getServiceFiles(
+    public function getENV(
+    ): array
+    {
+        return $this->env;
+    }
+
+    /**
+     * @return ServiceInterface[]
+     */
+    public function getServices(
+    ): array
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param string $serviceName
+     * @return ServiceInterface|null|string
+     */
+    public function getService(string $serviceName): ServiceInterface|string|null
+    {
+        return $this->services[$serviceName] ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getServiceFiles(
     ): array
     {
         $vendorServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', flags: GLOB_NOSORT);
@@ -109,7 +161,7 @@ class ServiceFactory
         if ($this->getDefaultService() !== null) {
             foreach ($this->getDefaultService()->getDelayedServices() as $delayedServices) {
                 $everyDelayedServices[] = $delayedServices;
-                $this->services[$delayedServices]?->destroy();
+                $this->getService($delayedServices)?->destroy();
             }
         }
 
@@ -146,7 +198,9 @@ class ServiceFactory
                 }
             }
 
-            file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
+            if ($path = $this->getPath()) {
+                file_put_contents($path->getCacheFile('services.cache'), serialize($this->services));
+            }
         }
 
         /** @noinspection MissingLoopTerminationInspection */
@@ -173,11 +227,11 @@ class ServiceFactory
             return null;
         }
 
-        if (!array_key_exists($className, $this->services)){
+        if (!array_key_exists($className, $this->getServices())){
             $response = $this->initialise(
                 serviceFactory: $this,
                 className: $className,
-                parameters: $this->env,
+                parameters: $this->getENV(),
             );
 
             if ($response === null){
@@ -188,7 +242,7 @@ class ServiceFactory
 
             /** @noinspection PhpUndefinedMethodInspection */
             if (($baseInterface = $className::getBaseInterface()) !== null){
-                if (array_key_exists($baseInterface, $this->services)){
+                if (array_key_exists($baseInterface, $this->getServices())){
                     throw new RuntimeException('A base interface can only be extend by one service', 500);
                 }
 
@@ -208,7 +262,7 @@ class ServiceFactory
             }
         } else {
             /** @var ServiceInterface|string $response */
-            $response = $this->services[$className];
+            $response = $this->getService($className);
 
             if (is_string($response)){
                 $response = $this->services[$response];
@@ -326,15 +380,15 @@ class ServiceFactory
     }
 
     /**
-     * @return Path
+     * @return ?Path
      */
     public function getPath(
-    ): Path
+    ): ?Path
     {
         /** @var Path $response */
         /** @noinspection PhpUnnecessaryLocalVariableInspection */
         /** @noinspection OneTimeUseVariablesInspection */
-        $response = $this->services[Path::class];
+        $response = $this->getService(Path::class);
         return $response;
     }
 
@@ -344,7 +398,7 @@ class ServiceFactory
     public function getDefaultService(
     ): DefaultServiceInterface|null
     {
-        if (!array_key_exists(DefaultServiceInterface::class, $this->services)) {
+        if (!array_key_exists(DefaultServiceInterface::class, $this->getServices())) {
             return null;
         }
 
@@ -362,7 +416,7 @@ class ServiceFactory
     public function getTranformerService(
     ): TransformerInterface|null
     {
-        if (!array_key_exists(TransformerInterface::class, $this->services)) {
+        if (!array_key_exists(TransformerInterface::class, $this->getServices())) {
             return null;
         }
 
@@ -380,7 +434,7 @@ class ServiceFactory
     public function getLogger(
     ): LoggerInterface|null
     {
-        if (!array_key_exists(LoggerInterface::class, $this->services)){
+        if (!array_key_exists(LoggerInterface::class, $this->getServices())){
             return null;
         }
 

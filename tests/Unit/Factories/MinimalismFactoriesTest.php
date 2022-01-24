@@ -65,4 +65,17 @@ class MinimalismFactoriesTest extends AbstractTestCase
             actual: $this->minimalismFactories->getServiceFactory()
         );
     }
+
+    /**
+     * @covers ::getNamespace
+     * @return void
+     */
+    public function testItShouldGetNamespace(
+    ): void
+    {
+        $this->assertEquals(
+            expected: 'CarloNicora\Minimalism\Tests\Unit\Factories\MinimalismFactoriesTest',
+            actual: MinimalismFactories::getNamespace(__DIR__ . '/MinimalismFactoriesTest.php')
+        );
+    }
 }

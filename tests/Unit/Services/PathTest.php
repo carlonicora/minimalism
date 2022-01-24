@@ -299,4 +299,93 @@ class PathTest extends AbstractTestCase
 
         unset($_SERVER['HTTP_X_FORWARDED_PROTO']);
     }
+
+    /**
+     * @covers ::loadServicesViewsAndModelsDirectories
+     * @return void
+     */
+    public function testItShouldLoadServicesViewsAndModelsDirectories(
+    ): void
+    {
+        // ------- prepare temp directory -------
+        if (!file_exists(sys_get_temp_dir())){
+            mkdir(sys_get_temp_dir());
+        }
+
+        $tmpDir = sys_get_temp_dir().'/tmp';
+
+        if (!file_exists($tmpDir)) {
+            mkdir($tmpDir);
+        }
+        // ----- prepare plugin directories -----
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',  0777, true);
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',  0777, true);
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-guards/src/Models',  0777, true);
+        mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-redis/src/Views',  0777, true);
+        // ----- prepare internal directories -----
+        mkdir($tmpDir . '/src/Services/Parser/Models',  0777, true);
+        mkdir($tmpDir . '/src/Services/Database/Models',  0777, true);
+        mkdir($tmpDir . '/src/Services/Database/Views');
+        // ----------------------------------------
+        $this->setProperty(
+            object: $this->path,
+            parameterName: 'root',
+            parameterValue: $tmpDir
+        );
+
+        $this->invokeMethod(
+            object: $this->path,
+            methodName: 'loadServicesViewsAndModelsDirectories'
+        );
+
+        $this->assertCount(
+            expectedCount: 4,
+            haystack: $this->path->getServicesModelsDirectories(),
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-guards/src/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/src/Services/Parser/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/src/Services/Database/Models',
+            haystack: $this->path->getServicesModelsDirectories()
+        );
+
+        $this->assertCount(
+            expectedCount: 3,
+            haystack: $this->path->getServicesViewsDirectories(),
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',
+            haystack: $this->path->getServicesViewsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/vendor/carlonicora/minimalism-service-redis/src/Views',
+            haystack: $this->path->getServicesViewsDirectories()
+        );
+        $this->assertContains(
+            needle: $tmpDir . '/src/Services/Database/Views',
+            haystack: $this->path->getServicesViewsDirectories()
+        );
+
+        self::recurseRmdir($tmpDir);
+    }
+
+    /**
+     * @covers ::getBaseInterface
+     * @return void
+     */
+    public function testItShouldGetBaseInterface(
+    ): void
+    {
+        $this->assertNull(Path::getBaseInterface());
+    }
 }

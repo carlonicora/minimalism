@@ -172,6 +172,7 @@ class Path extends AbstractService
     }
 
     /**
+     * @codeCoverageIgnore
      * @return bool
      */
     protected function isCLIMode(): bool

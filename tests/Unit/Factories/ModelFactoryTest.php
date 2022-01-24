@@ -11,6 +11,7 @@ use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
 use CarloNicora\Minimalism\Tests\Stubs\ModelStub;
 use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 
 /**
  * Class ModelFactoryTest
@@ -288,6 +289,130 @@ class ModelFactoryTest extends AbstractTestCase
                 object: $result,
                 parameterName: 'function'
             )
+        );
+    }
+
+    /**
+     * @covers ::createParameters
+     * @return void
+     */
+    public function testItShouldCreateParametersForConsole(
+    ): void
+    {
+        $modelFactory = $this->getMockBuilder(ModelFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['getCliParameters'])
+            ->getMock();
+        $model = ModelStub::class;
+        $serviceFactory = $this->createMock(ServiceFactory::class);
+        $path = $this->createMock(Path::class);
+        $parameters = $this->createMock(ModelParameters::class);
+
+        $this->minimalismFactories
+            ->expects($this->once())
+            ->method('getServiceFactory')
+            ->willReturn($serviceFactory);
+        $serviceFactory->expects($this->once())
+            ->method('getPath')
+            ->willReturn($path);
+        $path->expects($this->once())
+            ->method('getUrl')
+            ->willReturn(null);
+        $modelFactory->expects($this->once())
+            ->method('getCliParameters')
+            ->willReturn($parameters);
+
+        $result = $this->invokeMethod(
+            object: $modelFactory,
+            methodName: 'createParameters',
+            arguments: [&$model]
+        );
+
+        $this->assertEquals(
+            expected: $parameters,
+            actual: $result
+        );
+    }
+
+    /**
+     * @covers ::createParameters
+     * @return void
+     */
+    public function testItShouldCreateParametersForWeb(
+    ): void
+    {
+        $modelFactory = $this->getMockBuilder(ModelFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['getWebParameters'])
+            ->getMock();
+        $model = ModelStub::class;
+        $serviceFactory = $this->createMock(ServiceFactory::class);
+        $path = $this->createMock(Path::class);
+        $parameters = $this->createMock(ModelParameters::class);
+
+        $this->minimalismFactories
+            ->expects($this->once())
+            ->method('getServiceFactory')
+            ->willReturn($serviceFactory);
+        $serviceFactory->expects($this->once())
+            ->method('getPath')
+            ->willReturn($path);
+        $path->expects($this->once())
+            ->method('getUrl')
+            ->willReturn('/minimalism');
+        $modelFactory->expects($this->once())
+            ->method('getWebParameters')
+            ->willReturn($parameters);
+
+        $result = $this->invokeMethod(
+            object: $modelFactory,
+            methodName: 'createParameters',
+            arguments: [&$model]
+        );
+
+        $this->assertEquals(
+            expected: $parameters,
+            actual: $result
+        );
+    }
+
+    /**
+     * @covers ::createParameters
+     * @return void
+     */
+    public function testItShouldCreateParametersWithException(
+    ): void
+    {
+        $modelFactory = $this->getMockBuilder(ModelFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['getWebParameters'])
+            ->getMock();
+        $serviceFactory = $this->createMock(ServiceFactory::class);
+        $path = $this->createMock(Path::class);
+        $model = null;
+
+        $this->minimalismFactories
+            ->expects($this->once())
+            ->method('getServiceFactory')
+            ->willReturn($serviceFactory);
+        $serviceFactory->expects($this->once())
+            ->method('getPath')
+            ->willReturn($path);
+        $path->expects($this->once())
+            ->method('getUrl')
+            ->willReturn('/minimalism');
+        $modelFactory->expects($this->once())
+            ->method('getWebParameters')
+            ->willReturn($this->createMock(ModelParameters::class));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(404);
+        $this->expectExceptionMessage('Model not found');
+
+        $this->invokeMethod(
+            object: $modelFactory,
+            methodName: 'createParameters',
+            arguments: [&$model]
         );
     }
 }
