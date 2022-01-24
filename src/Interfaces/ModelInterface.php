@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Interfaces;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Enums\HttpRequestMethod;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 
@@ -11,11 +12,11 @@ interface ModelInterface
     /**
      * ModelInterface constructor.
      * @param MinimalismFactories $minimalismFactories
-     * @param string|null $function
+     * @param HttpRequestMethod|null $function
      */
     public function __construct(
         MinimalismFactories $minimalismFactories,
-        ?string $function=null
+        ?HttpRequestMethod $function=null
     );
 
     /**
@@ -44,9 +45,9 @@ interface ModelInterface
     public function getRedirection(): ?string;
 
     /**
-     * @return string|null
+     * @return HttpRequestMethod|null
      */
-    public function getRedirectionFunction(): ?string;
+    public function getRedirectionFunction(): ?HttpRequestMethod;
 
     /**
      * @return ModelParameters|null

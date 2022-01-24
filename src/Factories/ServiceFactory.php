@@ -380,10 +380,10 @@ class ServiceFactory
     }
 
     /**
-     * @return ?Path
+     * @return Path
      */
     public function getPath(
-    ): ?Path
+    ): Path
     {
         /** @var Path $response */
         /** @noinspection PhpUnnecessaryLocalVariableInspection */

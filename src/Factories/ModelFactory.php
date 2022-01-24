@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Factories;
 use CarloNicora\Minimalism\Abstracts\AbstractFactory;
 use CarloNicora\Minimalism\Builders\ModelBuilder;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Enums\HttpRequestMethod;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use Exception;
@@ -62,14 +63,14 @@ class ModelFactory extends AbstractFactory
     /**
      * @param string|null $modelName
      * @param ModelParameters|null $parameters
-     * @param string|null $function
+     * @param HttpRequestMethod|null $function
      * @return ModelInterface
      * @throws Exception
      */
     public function create(
         ?string $modelName=null,
         ?ModelParameters $parameters=null,
-        ?string $function=null
+        ?HttpRequestMethod $function=null
     ): ModelInterface
     {
         if ($parameters === null) {
@@ -157,7 +158,9 @@ class ModelFactory extends AbstractFactory
 
         foreach ((new ReflectionClass($modelClassName))->getMethods(ReflectionMethod::IS_PUBLIC) as $method){
             try {
-                $response[$method->getName()] = $this->getMethodParametersDefinition($method);
+                if(HttpRequestMethod::tryFrom($method->getName()) !== null) {
+                    $response[$method->getName()] = $this->getMethodParametersDefinition($method);
+                }
             } catch (Exception|Throwable) {
             }
         }
@@ -167,23 +170,23 @@ class ModelFactory extends AbstractFactory
 
     /**
      * @param string $modelName
-     * @param string $functionName
+     * @param HttpRequestMethod $functionName
      * @return array
      */
     public function getModelMethodParametersDefinition(
         string $modelName,
-        string $functionName,
+        HttpRequestMethod $functionName,
     ): array
     {
         if (!array_key_exists($modelName, $this->modelsDefinitions)){
             throw new RuntimeException('Model not found', HttpCode::NotFound->value);
         }
 
-        if (!array_key_exists(strtolower($functionName), $this->modelsDefinitions[$modelName])){
-            throw new RuntimeException('Method ' . $functionName . ' not implemented', HttpCode::NotImplemented->value);
+        if (!array_key_exists(strtolower($functionName->value), $this->modelsDefinitions[$modelName])){
+            throw new RuntimeException('Method ' . $functionName->value . ' not implemented', HttpCode::NotImplemented->value);
         }
 
-        return $this->modelsDefinitions[$modelName][strtolower($functionName)];
+        return $this->modelsDefinitions[$modelName][strtolower($functionName->value)];
     }
 
     /**

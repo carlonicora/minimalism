@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Enums\HttpRequestMethod;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Interfaces\ModelInterface;
@@ -32,27 +33,27 @@ class AbstractModel implements ModelInterface
     /**
      * AbstractModel constructor.
      * @param MinimalismFactories $minimalismFactories
-     * @param string|null $function
+     * @param HttpRequestMethod|null $function
      */
     public function __construct(
         private MinimalismFactories $minimalismFactories,
-        private ?string $function=null,
+        private ?HttpRequestMethod $function=null,
     )
     {
         $this->objectFactory = $this->minimalismFactories->getObjectFactory();
 
         if ($this->function === null) {
             if ($this->minimalismFactories->getServiceFactory()->getPath()->getUrl() === null) {
-                $this->function = 'cli';
+                $this->function = HttpRequestMethod::Cli;
             } else {
-                $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');
-                if ($this->function === 'post' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
-                    if ($_SERVER['HTTP_X_HTTP_METHOD'] === 'DELETE') {
-                        $this->function = 'delete';
-                    } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
-                        $this->function = 'put';
-                    } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PATCH') {
-                        $this->function = 'patch';
+                $this->function = HttpRequestMethod::tryFrom(strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+                if ($this->function === HttpRequestMethod::Post && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+                    if ($_SERVER['HTTP_X_HTTP_METHOD'] === HttpRequestMethod::Delete) {
+                        $this->function = HttpRequestMethod::Delete;
+                    } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === HttpRequestMethod::Put) {
+                        $this->function = HttpRequestMethod::Put;
+                    } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === HttpRequestMethod::Patch) {
+                        $this->function = HttpRequestMethod::Patch;
                     }
                 }
             }
@@ -109,23 +110,23 @@ class AbstractModel implements ModelInterface
     }
 
     /**
-     * @return string|null
+     * @return HttpRequestMethod|null
      */
     final public function getRedirectionFunction(
-    ): ?string
+    ): ?HttpRequestMethod
     {
         return $this->function;
     }
 
     /**
      * @param string $modelClass
-     * @param string|null $function
+     * @param HttpRequestMethod|null $function
      * @param ModelParameters|null $parameters
      * @return HttpCode
      */
     final protected function redirect(
         string $modelClass,
-        ?string $function=null,
+        ?HttpRequestMethod $function=null,
         ?ModelParameters $parameters=null,
     ): HttpCode
     {
@@ -157,7 +158,7 @@ class AbstractModel implements ModelInterface
             parameters: $this->parameters,
         );
 
-        return $this->{$this->function}(...$parametersValues);
+        return $this->{$this->function}(...$parametersValues) ?? $this->function->getDefaultResponse();
     }
 
     /**
