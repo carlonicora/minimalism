@@ -77,24 +77,20 @@ class ObjectFactoryTest extends AbstractTestCase
         file_put_contents($objectsDefinitionsCache, 'a:1:{i:0;O:8:"stdClass":0:{}}');
 
         $this->minimalismFactories
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(2))
             ->method('getServiceFactory')
             ->willReturn($serviceFactory);
-        $serviceFactory->expects($this->exactly(4))
+        $serviceFactory->expects($this->exactly(2))
             ->method('getPath')
             ->willReturn($path);
-        $path->expects($this->exactly(4))
+        $path->expects($this->exactly(2))
             ->method('getCacheFile')
             ->withConsecutive(
                 ['objectsFactoriesDefinitions.cache'],
-                ['objectsFactoriesDefinitions.cache'],
-                ['objectsDefinitions.cache'],
                 ['objectsDefinitions.cache']
             )
             ->willReturnOnConsecutiveCalls(
                 $objectsFactoriesDefinitionsCachePath,
-                $objectsFactoriesDefinitionsCachePath,
-                $objectsDefinitionsCache,
                 $objectsDefinitionsCache
             );
 
@@ -204,6 +200,8 @@ class ObjectFactoryTest extends AbstractTestCase
             $objectsDefinitionsCache
         );
 
+        $this->objectFactory->initialiseFactory();
+        $this->objectFactory->destroy();
         $this->objectFactory = null;
 
         $this->assertEquals(

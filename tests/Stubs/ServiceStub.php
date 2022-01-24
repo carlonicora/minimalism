@@ -3,6 +3,7 @@
 namespace CarloNicora\Minimalism\Tests\Stubs;
 
 use CarloNicora\Minimalism\Factories\ObjectFactory;
+use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 
 class ServiceStub implements ServiceInterface
@@ -28,5 +29,15 @@ class ServiceStub implements ServiceInterface
     public static function getBaseInterface(): ?string
     {
         return '';
+    }
+
+    public function postIntialise(ServiceFactory $services,): void
+    {
+        // TODO: Implement postIntialise() method.
+    }
+
+    public function unsetObjectFactory(): void
+    {
+        // TODO: Implement unsetObjectFactory() method.
     }
 }

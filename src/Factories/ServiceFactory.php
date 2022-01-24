@@ -1,6 +1,7 @@
 <?php
 namespace CarloNicora\Minimalism\Factories;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
@@ -36,6 +37,15 @@ class ServiceFactory
     }
 
     /**
+     * @return void
+     */
+    public function __wakeup(
+    ): void
+    {
+        throw new RuntimeException('One or more services has not released ServiceFactory correctly.', HttpCode::InternalServerError->value);
+    }
+
+    /**
      *
      */
     public function initialiseFactory(
@@ -65,6 +75,12 @@ class ServiceFactory
             }
 
             $this->setLoaded(true);
+        }
+
+        foreach ($this->services ?? [] as $service) {
+            if ($service !== null && !is_string($service)) {
+                $service->postIntialise($this);
+            }
         }
     }
 
@@ -136,9 +152,10 @@ class ServiceFactory
     }
 
     /**
-     *
+     * @return void
      */
-    public function __destruct()
+    public function destroy(
+    ): void
     {
         $everyDelayedServices = [];
         if ($this->getDefaultService() !== null) {
@@ -156,20 +173,44 @@ class ServiceFactory
 
         /** @var ServiceInterface|string $service */
         foreach ($this->getServices() as $serviceName=>$service){
-            if ($service !== null && !is_string($service)
+            if ($service !== null
+                && !is_string($service)
                 && $serviceName !== $loggerClass
-                && ! in_array($serviceName, $everyDelayedServices, true)
+                && !in_array($serviceName, $everyDelayedServices, true)
             ) {
                 $service->destroy();
             }
         }
+    }
 
+    /**
+     *
+     */
+    public function __destruct()
+    {
         if ($this->loaded) {
+            foreach ($this->getServices() ?? [] as $service) {
+                if ($service !== null
+                    && !is_string($service)
+                ) {
+                    $service->unsetObjectFactory();
+                }
+            }
+
             file_put_contents(
                 $this->getPath()->getCacheFile('services.cache'),
                 serialize($this->getServices())
             );
         }
+
+        /** @noinspection MissingLoopTerminationInspection */
+        foreach ($this->services ?? [] as $service){
+            if ($service !== null && !is_string($service)) {
+                $service = null;
+            }
+        }
+
+        $this->services = [];
     }
 
     /**
