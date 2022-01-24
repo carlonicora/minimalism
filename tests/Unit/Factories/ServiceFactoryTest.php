@@ -350,7 +350,7 @@ class ServiceFactoryTest extends AbstractTestCase
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Auth.php', 'class Auth {}');
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Guard.php', 'class Guard {}');
         // ----- prepare default services files -----
-        mkdir($tmpDir . '/src',  0777, true);
+        mkdir($tmpDir . '/src');
         file_put_contents($tmpDir . '/src/Kernel.php', 'class Kernel {}');
         // ----- prepare internal services files -----
         mkdir($tmpDir . '/src/Services/Parser/', 0777, true);

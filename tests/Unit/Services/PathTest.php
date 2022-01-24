@@ -318,16 +318,13 @@ class PathTest extends AbstractTestCase
             mkdir($tmpDir);
         }
         // ----- prepare plugin directories -----
-        mkdir($tmpDir . '/vendor/carlonicora',  0777, true);
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',  0777, true);
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',  0777, true);
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-guards/src/Models',  0777, true);
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-redis/src/Views',  0777, true);
         // ----- prepare internal directories -----
-        mkdir($tmpDir . '/src/Services/Parser',  0777, true);
-        mkdir($tmpDir . '/src/Services/Parser/Models');
-        mkdir($tmpDir . '/src/Services/Database',  0777, true);
-        mkdir($tmpDir . '/src/Services/Database/Models');
+        mkdir($tmpDir . '/src/Services/Parser/Models',  0777, true);
+        mkdir($tmpDir . '/src/Services/Database/Models',  0777, true);
         mkdir($tmpDir . '/src/Services/Database/Views');
         // ----------------------------------------
         $this->setProperty(
