@@ -325,7 +325,7 @@ class ModelFactoryTest extends AbstractTestCase
         $result = $this->invokeMethod(
             object: $modelFactory,
             methodName: 'createParameters',
-            arguments: [$model]
+            arguments: [&$model]
         );
 
         $this->assertEquals(
@@ -367,7 +367,7 @@ class ModelFactoryTest extends AbstractTestCase
         $result = $this->invokeMethod(
             object: $modelFactory,
             methodName: 'createParameters',
-            arguments: [$model]
+            arguments: [&$model]
         );
 
         $this->assertEquals(
@@ -389,6 +389,7 @@ class ModelFactoryTest extends AbstractTestCase
             ->getMock();
         $serviceFactory = $this->createMock(ServiceFactory::class);
         $path = $this->createMock(Path::class);
+        $model = null;
 
         $this->minimalismFactories
             ->expects($this->once())
@@ -411,7 +412,7 @@ class ModelFactoryTest extends AbstractTestCase
         $this->invokeMethod(
             object: $modelFactory,
             methodName: 'createParameters',
-            arguments: [null]
+            arguments: [&$model]
         );
     }
 }
