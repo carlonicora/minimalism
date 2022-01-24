@@ -198,7 +198,9 @@ class ServiceFactory
                 }
             }
 
-            file_put_contents($this->getPath()->getCacheFile('services.cache'), serialize($this->services));
+            if ($path = $this->getPath()) {
+                file_put_contents($path->getCacheFile('services.cache'), serialize($this->services));
+            }
         }
 
         /** @noinspection MissingLoopTerminationInspection */
@@ -378,10 +380,10 @@ class ServiceFactory
     }
 
     /**
-     * @return Path
+     * @return ?Path
      */
     public function getPath(
-    ): Path
+    ): ?Path
     {
         /** @var Path $response */
         /** @noinspection PhpUnnecessaryLocalVariableInspection */
