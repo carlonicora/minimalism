@@ -307,16 +307,7 @@ class PathTest extends AbstractTestCase
     public function testItShouldLoadServicesViewsAndModelsDirectories(
     ): void
     {
-        // ------- prepare temp directory -------
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-
-        $tmpDir = sys_get_temp_dir().'/tmp';
-
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         // ----- prepare plugin directories -----
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Models',  0777, true);
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Views',  0777, true);

@@ -149,7 +149,7 @@ class ModelFactory extends AbstractFactory
      * @param string $modelClassName
      * @throws Exception
      */
-    private function initialiseModelDefinition(
+    protected function initialiseModelDefinition(
         string $modelClassName
     ): void
     {

@@ -39,13 +39,7 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testItShouldInitialiseFactoryFromFile(
     ): void
     {
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-        $tmpDir = sys_get_temp_dir().'/tmp';
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         $cacheFile = $tmpDir . '/services.cache';
         file_put_contents($cacheFile, serialize([ServiceStub::class => new ServiceStub()]));
 
@@ -71,7 +65,7 @@ class ServiceFactoryTest extends AbstractTestCase
 
         $serviceFactory->initialiseFactory();
 
-        $services = $this->getProperty(
+        $this->getProperty(
             object: $serviceFactory,
             parameterName: 'services'
         );
@@ -168,13 +162,7 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testItShouldSetENV(
     ): void
     {
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-        $tmpDir = sys_get_temp_dir().'/tmp';
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         file_put_contents($tmpDir . '/.env', 'PARAM = 123');
 
         $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
@@ -208,13 +196,7 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testItShouldSetTestingENV(
     ): void
     {
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-        $tmpDir = sys_get_temp_dir().'/tmp';
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         file_put_contents($tmpDir . '/.env.testing', 'TESTING_PARAM = 321');
         $_SERVER['HTTP_TEST_ENVIRONMENT'] = true;
 
@@ -335,22 +317,12 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testItShouldGetServiceFiles(
     ): void
     {
-        // ------- prepare temp directory -------
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-
-        $tmpDir = sys_get_temp_dir().'/tmp';
-
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         // ----- prepare vendor services files -----
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/',  0777, true);
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Auth.php', 'class Auth {}');
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Guard.php', 'class Guard {}');
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/index.js', 'alert(123)');
-
         // ----- prepare default services files -----
         mkdir($tmpDir . '/src');
         file_put_contents($tmpDir . '/src/Kernel.php', 'class Kernel {}');

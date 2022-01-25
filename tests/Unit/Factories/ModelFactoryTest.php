@@ -415,4 +415,157 @@ class ModelFactoryTest extends AbstractTestCase
             arguments: [&$model]
         );
     }
+
+    /**
+     * @covers ::loadFolderModels
+     * @return void
+     */
+    public function testItShouldLoadNotRootFolderModels(
+    ): void
+    {
+        $tmpDir = $this->createTmpDir();
+        mkdir($tmpDir . '/Models/Nested', 0777, true);
+        file_put_contents(
+            $tmpDir . '/Models/Model1.php',
+        '<?php' . PHP_EOL . 'namespace Models;' . PHP_EOL . 'class Model1 {}'
+        );
+        file_put_contents(
+            $tmpDir . '/Models/Model2.php',
+            '<?php' . PHP_EOL . 'namespace Models;' . PHP_EOL . 'class Model2 {}'
+        );
+        file_put_contents(
+            $tmpDir . '/Models/Nested/Model3.php',
+            '<?php' . PHP_EOL . 'namespace Models\Nested;' . PHP_EOL . 'class Model3 {}'
+        );
+
+        $modelFactory = $this->getMockBuilder(ModelFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['initialiseModelDefinition'])
+            ->getMock();
+
+        $modelFactory->expects($this->exactly(3))
+            ->method('initialiseModelDefinition')
+            ->withConsecutive(
+                ['Models\Model1'],
+                ['Models\Nested\Model3'],
+                ['Models\Model2'],
+            );
+
+        $result = $this->invokeMethod(
+            object: $modelFactory,
+            methodName: 'loadFolderModels',
+            arguments: [$tmpDir]
+        );
+
+        $this->assertEquals(
+            expected: [
+                'models-folder' => [
+                    'model1' => 'Models\Model1',
+                    'nested-folder' => [
+                        'model3' => 'Models\Nested\Model3',
+                    ],
+                    'model2' => 'Models\Model2',
+                ],
+            ],
+            actual: $result
+        );
+
+        $this->recurseRmdir($tmpDir);
+    }
+
+
+    /**
+     * @covers ::loadFolderModels
+     * @return void
+     */
+    public function testItShouldLoadRootFolderModels(
+    ): void
+    {
+        $tmpDir = $this->createTmpDir();
+        mkdir($tmpDir . '/Models/');
+        file_put_contents(
+            $tmpDir . '/Models/Model1.php',
+            '<?php' . PHP_EOL . 'namespace Global\Models;' . PHP_EOL . 'class Model1 {}'
+        );
+        file_put_contents(
+            $tmpDir . '/index.php',
+            '<?php' . PHP_EOL . 'namespace Global;' . PHP_EOL . 'echo 1'
+        );
+
+        $modelFactory = $this->getMockBuilder(ModelFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['initialiseModelDefinition'])
+            ->getMock();
+
+        $modelFactory->expects($this->exactly(2))
+            ->method('initialiseModelDefinition')
+            ->withConsecutive(
+                ['Global\Models\Model1'],
+                ['Global\index'],
+            );
+
+        $result = $this->invokeMethod(
+            object: $modelFactory,
+            methodName: 'loadFolderModels',
+            arguments: [$tmpDir]
+        );
+
+        $this->assertEquals(
+            expected: [
+                'models-folder' => [
+                    'model1' => 'Global\Models\Model1',
+                ],
+                'index' => 'Global\index',
+                '*' => 'Global\index'
+            ],
+            actual: $result
+        );
+
+        $this->recurseRmdir($tmpDir);
+    }
+
+    /**
+     * @covers ::recursive
+     * @return void
+     */
+    public function testItShouldTestRecursive(
+    ): void
+    {
+        $input = [
+            '01' => 'value01',
+            '02' => [
+                '021' => 'value021',
+                '022' => [
+                    '0221' => 'value0221',
+                    '0222' => ['02221' => 'value02221']
+                ]
+            ],
+            '03' => 'value03',
+        ];
+
+        $result = $this->invokeMethod(
+            object: $this->modelFactory,
+            methodName: 'recursive',
+            arguments: ['000', $input]
+        );
+
+        $this->assertEquals(
+            expected: [
+                '01' => ['000' => 'value01'],
+                '02' => [
+                    '021' => ['000' => 'value021'],
+                    '022' => [
+                        '0221' => ['000' => 'value0221'],
+                        '0222' => [
+                            '02221' => ['000' => 'value02221']
+                        ],
+                    ],
+                ],
+                '03' => ['000' => 'value03'],
+            ],
+            actual: $result
+        );
+
+        $this->assertTrue(true);
+    }
 }
