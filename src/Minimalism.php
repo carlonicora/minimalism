@@ -211,24 +211,6 @@ class Minimalism
             )
         );
 
-
-        if (is_a($exception, Exception::class)){
-            $data->addError(
-                new Error(
-                    e: $exception,
-                    httpStatusCode: (string)$this->httpResponseCode->value,
-                    detail: $exception->getMessage(),
-                )
-            );
-        } else {
-            $data->addError(
-                new Error(
-                    httpStatusCode: (string)$this->httpResponseCode->value,
-                    detail: $exception->getMessage(),
-                )
-            );
-        }
-
         try {
             $response = $data->export();
         } catch (JsonException) {
