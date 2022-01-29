@@ -57,7 +57,6 @@ abstract class AbstractTestCase extends TestCase
     public function createTmpDir(
     ): string
     {
-        // ------- prepare temp directory -------
         if (!file_exists(sys_get_temp_dir())){
             mkdir(sys_get_temp_dir());
         }

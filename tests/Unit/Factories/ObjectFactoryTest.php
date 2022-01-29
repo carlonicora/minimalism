@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
 use CarloNicora\Minimalism\Tests\Stubs\ComplexObjectStub;
 use CarloNicora\Minimalism\Tests\Stubs\SimpleObjectStub;
+use RuntimeException;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -153,6 +154,22 @@ class ObjectFactoryTest extends AbstractTestCase
                 parameterName: 'objectsDefinitions'
             )
         );
+    }
+
+    /**
+     * @covers ::__wakeup
+     * @return void
+     */
+    public function testItShouldWakeup(
+    ): void
+    {
+        $serializedFactory = serialize($this->objectFactory);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('One or more services has not released ObjectFactory correctly.');
+        $this->expectExceptionCode(500);
+
+        unserialize($serializedFactory);
     }
 
     /**

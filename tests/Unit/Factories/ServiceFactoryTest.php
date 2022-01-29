@@ -7,12 +7,12 @@ use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
-use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
 use CarloNicora\Minimalism\Tests\Stubs\ServiceStub;
 use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 
 /**
  * Class ServiceFactoryTest
@@ -30,6 +30,22 @@ class ServiceFactoryTest extends AbstractTestCase
         parent::setUp();
         $this->minimalismFactories = $this->createMock(MinimalismFactories::class);
         $this->serviceFactory = new ServiceFactory($this->minimalismFactories);
+    }
+
+    /**
+     * @covers ::__wakeup
+     * @return void
+     */
+    public function testItShouldWakeup(
+    ): void
+    {
+        $serializedFactory = serialize($this->serviceFactory);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('One or more services has not released ServiceFactory correctly.');
+        $this->expectExceptionCode(500);
+
+        unserialize($serializedFactory);
     }
 
     /**
