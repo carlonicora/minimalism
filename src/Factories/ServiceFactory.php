@@ -345,8 +345,8 @@ class ServiceFactory
 
                         if ($parameter === null && !$objectParameterDefinition->isOptional()) {
                             throw new RuntimeException(
-                                message: 'An parameter is missing: ' . $objectParameterDefinition->getName(),
-                                code: 500,
+                                message: 'A parameter is missing: ' . $objectParameterDefinition->getName(),
+                                code: HttpCode::InternalServerError->value,
                             );
                         }
 
@@ -380,10 +380,10 @@ class ServiceFactory
     }
 
     /**
-     * @return ?Path
+     * @return Path
      */
     public function getPath(
-    ): ?Path
+    ): Path
     {
         /** @var Path $response */
         /** @noinspection PhpUnnecessaryLocalVariableInspection */

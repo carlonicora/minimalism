@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Composer\InstalledVersions;
@@ -104,8 +105,12 @@ class Minimalism
                     viewFile: $this->viewName,
                 );
             } catch (Exception| Throwable $e) {
-                $this->httpResponseCode = HttpCode::InternalServerError;
-                $this->sendException($e);
+                $this->sendException(
+                    new MinimalismException(
+                        status: HttpCode::InternalServerError,
+                        message: $e->getMessage(),
+                    )
+                );
                 exit;
             }
         } else {
@@ -165,45 +170,46 @@ class Minimalism
             }
 
             return $data;
-        } catch (Exception $e) {
-            $this->httpResponseCode = HttpCode::tryFrom($e->getCode()) ?? HttpCode::InternalServerError;
+        } catch (MinimalismException $e) {
             $this->sendException($e);
             exit;
+        } catch (Exception $e) {
+            $this->sendException(
+                new MinimalismException(
+                    status: HttpCode::tryFrom($e->getCode()) ?? HttpCode::InternalServerError,
+                    message: $e->getMessage(),
+                )
+            );
+            exit;
         } catch (Throwable $e){
-            $this->httpResponseCode = HttpCode::InternalServerError;
-            $this->sendException($e);
+            $this->sendException(
+                new MinimalismException(
+                    status: HttpCode::InternalServerError,
+                    message: $e->getMessage(),
+                )
+            );
             exit;
         }
     }
 
     /**
-     * @param Exception|Throwable $exception
+     * @param MinimalismException $exception
      */
     private function sendException(
-        Exception|Throwable $exception,
+        MinimalismException $exception,
     ): void
     {
-        if ($this->httpResponseCode === HttpCode::Ok){
-            $this->httpResponseCode = HttpCode::InternalServerError;
-        }
+        $this->httpResponseCode = $exception->getStatus();
 
         $data = new Document();
-        if (is_a($exception, Exception::class)){
-            $data->addError(
-                new Error(
-                    e: $exception,
-                    httpStatusCode: (string)$this->httpResponseCode->value,
-                    detail: $exception->getMessage(),
-                )
-            );
-        } else {
-            $data->addError(
-                new Error(
-                    httpStatusCode: (string)$this->httpResponseCode->value,
-                    detail: $exception->getMessage(),
-                )
-            );
-        }
+        $data->addError(
+            new Error(
+                httpStatusCode: $exception->getHttpCode(),
+                id: $exception->getId(),
+                errorUniqueCode: $exception->getCode(),
+                title: $exception->getMessage(),
+            )
+        );
 
         try {
             $response = $data->export();

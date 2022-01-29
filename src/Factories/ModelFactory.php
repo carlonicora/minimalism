@@ -359,6 +359,7 @@ class ModelFactory extends AbstractFactory
             } elseif (is_array($file['name'])) {
                 $recursiveFile = [];
                 foreach ($file as $lastKey => $value1) {
+                    /** @noinspection SlowArrayOperationsInLoopInspection */
                     $recursiveFile = array_replace_recursive($recursiveFile, $this->recursive($lastKey, $value1));
                 }
                 $modelParameters->addFile($key, $recursiveFile);
