@@ -444,12 +444,7 @@ class ModelFactoryTest extends AbstractTestCase
             ->getMock();
 
         $modelFactory->expects($this->exactly(3))
-            ->method('initialiseModelDefinition')
-            ->withConsecutive(
-                ['Models\Model1'],
-                ['Models\Nested\Model3'],
-                ['Models\Model2'],
-            );
+            ->method('initialiseModelDefinition');
 
         $result = $this->invokeMethod(
             object: $modelFactory,
