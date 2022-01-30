@@ -457,17 +457,25 @@ class ModelFactoryTest extends AbstractTestCase
             arguments: [$tmpDir]
         );
 
+        $this->assertCount(
+            expectedCount: 3,
+            haystack: $result['models-folder']
+        );
+        $this->assertCount(
+            expectedCount: 1,
+            haystack: $result['models-folder']['nested-folder']
+        );
         $this->assertEquals(
-            expected: [
-                'models-folder' => [
-                    'model1' => 'Models\Model1',
-                    'nested-folder' => [
-                        'model3' => 'Models\Nested\Model3',
-                    ],
-                    'model2' => 'Models\Model2',
-                ],
-            ],
-            actual: $result
+            expected: 'Models\Model1',
+            actual: $result['models-folder']['model1']
+        );
+        $this->assertEquals(
+            expected: 'Models\Nested\Model3',
+            actual: $result['models-folder']['nested-folder']['model3']
+        );
+        $this->assertEquals(
+            expected: 'Models\Model2',
+            actual: $result['models-folder']['model2']
         );
 
         $this->recurseRmdir($tmpDir);
