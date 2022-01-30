@@ -188,7 +188,7 @@ class ServiceFactory
         $logger = $this->getLogger();
         if ($logger !== null) {
             $logger->destroy();
-            $loggerClass = $this->getServices()[LoggerInterface::class];
+            $loggerClass = $this->getService(LoggerInterface::class);
         }
 
         /** @var ServiceInterface|string $service */

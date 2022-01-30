@@ -65,11 +65,14 @@ class ServiceFactoryTest extends AbstractTestCase
 
         $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
             ->setConstructorArgs([$this->minimalismFactories])
-            ->onlyMethods(['setENV','getPath'])
+            ->onlyMethods(['setENV','getPath', 'addService'])
             ->getMock();
         $path = $this->createMock(Path::class);
         $objectFactory = $this->createMock(ObjectFactory::class);
 
+        $serviceFactory->expects($this->once())
+            ->method('addService')
+            ->with(Path::class, new Path());
         $serviceFactory->expects($this->exactly(2))
             ->method('getPath')
             ->willReturn($path);
@@ -436,26 +439,27 @@ class ServiceFactoryTest extends AbstractTestCase
         $defaultService->expects($this->once())
             ->method('getDelayedServices')
             ->willReturn([$delayedService1::class, $delayedService2::class]);
-        $serviceFactory->expects($this->exactly(2))
+        $serviceFactory->expects($this->exactly(3))
             ->method('getService')
             ->withConsecutive(
                 [$delayedService1::class],
-                [$delayedService2::class]
+                [$delayedService2::class],
+                [LoggerInterface::class],
             )
             ->willReturnOnConsecutiveCalls(
                 $delayedService1,
-                null
+                null,
+                'Logger'
             );
         $delayedService1->expects($this->once())
             ->method('destroy');
         $serviceFactory->expects($this->once())
             ->method('getLogger')
             ->willReturn($logger);
-        $serviceFactory->expects($this->exactly(2))
+        $serviceFactory->expects($this->once())
             ->method('getServices')
             ->willReturn([
                 $delayedService1::class => $delayedService1,
-                LoggerInterface::class => $logger,
                 $service::class => $service,
             ]);
         $service->expects($this->once())
