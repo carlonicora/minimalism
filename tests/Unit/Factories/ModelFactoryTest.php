@@ -763,36 +763,6 @@ class ModelFactoryTest extends AbstractTestCase
         unset($_SERVER['argv']);
     }
 
-//    /**
-//     * @covers ::getWebParameters
-//     * @return void
-//     */
-//    public function testItShouldGetWebParameters(
-//    ): void
-//    {
-//        $_SERVER['REQUEST_URI'] = '/v1/minimalism/index/?query=framework&order=desc&by=id';
-//        $serviceFactory = $this->createMock(ServiceFactory::class);
-//        $path = $this->createMock(Path::class);
-//
-//        $this->minimalismFactories
-//            ->expects($this->exactly(2))
-//            ->method('getServiceFactory')
-//            ->willReturn($serviceFactory);
-//        $serviceFactory->expects($this->exactly(2))
-//            ->method('getPath')
-//            ->willReturn($path);
-//
-//        $path->expects($this->once())
-//            ->method('getServicesModels')
-//            ->willReturn([]);
-//
-//        $result = $this->modelFactory->getWebParameters();
-//
-//        var_dump($result);
-//
-//        $this->assertTrue(true);
-//    }
-
     /**
      * @covers ::setNamedParameters
      * @return void
