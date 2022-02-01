@@ -51,7 +51,7 @@ class ServiceFactory
     public function initialiseFactory(
     ): void
     {
-        $this->services[Path::class] = new Path();
+        $this->addService(Path::class, new Path());
         $this->setENV();
 
         if (
@@ -98,6 +98,15 @@ class ServiceFactory
     /**
      * @return void
      */
+    protected function isLoaded(
+    ): bool
+    {
+        return $this->loaded;
+    }
+
+    /**
+     * @return void
+     */
     public function setENV(
     ): void
     {
@@ -126,7 +135,7 @@ class ServiceFactory
     public function getServices(
     ): array
     {
-        return $this->services;
+        return $this->services ?? [];
     }
 
     /**
@@ -136,6 +145,16 @@ class ServiceFactory
     public function getService(string $serviceName): ServiceInterface|string|null
     {
         return $this->services[$serviceName] ?? null;
+    }
+
+    /**
+     * @param string $key
+     * @param ServiceInterface|string $service
+     * @return void
+     */
+    public function addService(string $key, $service): void
+    {
+        $this->services[$key] = $service;
     }
 
     /**
@@ -169,11 +188,11 @@ class ServiceFactory
         $logger = $this->getLogger();
         if ($logger !== null) {
             $logger->destroy();
-            $loggerClass = $this->services[LoggerInterface::class];
+            $loggerClass = $this->getService(LoggerInterface::class);
         }
 
         /** @var ServiceInterface|string $service */
-        foreach ($this->services ?? [] as $serviceName => $service) {
+        foreach ($this->getServices() as $serviceName => $service) {
             if ($service !== null
                 && !is_string($service)
                 && $serviceName !== $loggerClass
@@ -189,8 +208,8 @@ class ServiceFactory
      */
     public function __destruct()
     {
-        if ($this->loaded) {
-            foreach ($this->services ?? [] as $service) {
+        if ($this->isLoaded()) {
+            foreach ($this->getServices() as $service) {
                 if ($service !== null
                     && !is_string($service)
                 ) {
@@ -199,12 +218,12 @@ class ServiceFactory
             }
 
             if ($path = $this->getPath()) {
-                file_put_contents($path->getCacheFile('services.cache'), serialize($this->services));
+                file_put_contents($path->getCacheFile('services.cache'), serialize($this->getServices()));
             }
         }
 
         /** @noinspection MissingLoopTerminationInspection */
-        foreach ($this->services ?? [] as $service){
+        foreach ($this->getServices() as $service){
             if ($service !== null && !is_string($service)) {
                 $service = null;
             }
@@ -238,7 +257,7 @@ class ServiceFactory
                 return null;
             }
 
-            $this->services[$className] = $response;
+            $this->addService($className, $response);
 
             /** @noinspection PhpUndefinedMethodInspection */
             if (($baseInterface = $className::getBaseInterface()) !== null){
@@ -246,17 +265,17 @@ class ServiceFactory
                     throw new RuntimeException('A base interface can only be extend by one service', 500);
                 }
 
-                $this->services[$baseInterface] = $className;
+                $this->addService($baseInterface, $className);
             }
 
             try {
                 $reflectionClass = new ReflectionClass($className);
                 if ($reflectionClass->implementsInterface(TransformerInterface::class)) {
-                    $this->services[TransformerInterface::class] = $className;
+                    $this->addService(TransformerInterface::class, $className);
                 } elseif ($reflectionClass->implementsInterface(DefaultServiceInterface::class)) {
-                    $this->services[DefaultServiceInterface::class] = $className;
+                    $this->addService(DefaultServiceInterface::class, $className);
                 } elseif ($reflectionClass->implementsInterface(LoggerInterface::class)) {
-                    $this->services[LoggerInterface::class] = $className;
+                    $this->addService(LoggerInterface::class, $className);
                 }
             } catch (Throwable) {
             }
@@ -265,7 +284,7 @@ class ServiceFactory
             $response = $this->getService($className);
 
             if (is_string($response)){
-                $response = $this->services[$response];
+                $response = $this->getService($response);
             }
         }
 
@@ -380,10 +399,10 @@ class ServiceFactory
     }
 
     /**
-     * @return Path
+     * @return ?Path
      */
     public function getPath(
-    ): Path
+    ): ?Path
     {
         /** @var Path $response */
         /** @noinspection PhpUnnecessaryLocalVariableInspection */

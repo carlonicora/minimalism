@@ -30,6 +30,10 @@ abstract class AbstractTestCase extends TestCase
         $this->mocker = new MocksFactory($this);
     }
 
+    /**
+     * @param string $dir
+     * @return bool
+     */
     public static function recurseRmdir(
         string $dir
     ): bool
@@ -45,6 +49,25 @@ abstract class AbstractTestCase extends TestCase
         }
 
         return rmdir($dir);
+    }
+
+    /**
+     * @return string
+     */
+    public function createTmpDir(
+    ): string
+    {
+        if (!file_exists(sys_get_temp_dir())){
+            mkdir(sys_get_temp_dir());
+        }
+
+        $tmpDir = sys_get_temp_dir().'/tmp';
+
+        if (!file_exists($tmpDir)) {
+            mkdir($tmpDir);
+        }
+
+        return $tmpDir;
     }
 
     /**

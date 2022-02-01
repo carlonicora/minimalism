@@ -11,8 +11,12 @@ use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
+use CarloNicora\Minimalism\Tests\Stubs\DefaultServiceStub;
+use CarloNicora\Minimalism\Tests\Stubs\LoggerServiceStub;
 use CarloNicora\Minimalism\Tests\Stubs\ServiceStub;
+use CarloNicora\Minimalism\Tests\Stubs\TransformerServiceStub;
 use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 
 /**
  * Class ServiceFactoryTest
@@ -33,29 +37,42 @@ class ServiceFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::__wakeup
+     * @return void
+     */
+    public function testItShouldWakeup(
+    ): void
+    {
+        $serializedFactory = serialize($this->serviceFactory);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('One or more services has not released ServiceFactory correctly.');
+        $this->expectExceptionCode(500);
+
+        unserialize($serializedFactory);
+    }
+
+    /**
      * @covers ::initialiseFactory
      * @return void
      */
     public function testItShouldInitialiseFactoryFromFile(
     ): void
     {
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-        $tmpDir = sys_get_temp_dir().'/tmp';
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         $cacheFile = $tmpDir . '/services.cache';
         file_put_contents($cacheFile, serialize([ServiceStub::class => new ServiceStub()]));
 
         $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
             ->setConstructorArgs([$this->minimalismFactories])
-            ->onlyMethods(['setENV','getPath'])
+            ->onlyMethods(['setENV','getPath', 'addService'])
             ->getMock();
         $path = $this->createMock(Path::class);
         $objectFactory = $this->createMock(ObjectFactory::class);
 
+        $serviceFactory->expects($this->once())
+            ->method('addService')
+            ->with(Path::class, new Path());
         $serviceFactory->expects($this->exactly(2))
             ->method('getPath')
             ->willReturn($path);
@@ -70,11 +87,6 @@ class ServiceFactoryTest extends AbstractTestCase
             ->willReturn($objectFactory);
 
         $serviceFactory->initialiseFactory();
-
-        $services = $this->getProperty(
-            object: $serviceFactory,
-            parameterName: 'services'
-        );
 
         $this->assertInstanceOf(
             expected: ServiceStub::class,
@@ -133,6 +145,7 @@ class ServiceFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::isLoaded
      * @covers ::setLoaded
      * @return void
      */
@@ -153,9 +166,9 @@ class ServiceFactoryTest extends AbstractTestCase
         );
 
         $this->assertTrue(
-            $this->getProperty(
+            $this->invokeMethod(
                 object: $this->serviceFactory,
-                parameterName: 'loaded'
+                methodName: 'isLoaded'
             )
         );
     }
@@ -168,13 +181,7 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testItShouldSetENV(
     ): void
     {
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-        $tmpDir = sys_get_temp_dir().'/tmp';
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         file_put_contents($tmpDir . '/.env', 'PARAM = 123');
 
         $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
@@ -208,13 +215,7 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testItShouldSetTestingENV(
     ): void
     {
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-        $tmpDir = sys_get_temp_dir().'/tmp';
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         file_put_contents($tmpDir . '/.env.testing', 'TESTING_PARAM = 321');
         $_SERVER['HTTP_TEST_ENVIRONMENT'] = true;
 
@@ -272,6 +273,7 @@ class ServiceFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::addService
      * @covers ::getServices
      * @return void
      */
@@ -279,8 +281,8 @@ class ServiceFactoryTest extends AbstractTestCase
     ): void
     {
         $services = [
-            Path::class => $this->createMock(Path::class),
-            ServiceStub::class => $this->createMock(ServiceStub::class),
+            Path::class => $path = $this->createMock(Path::class),
+            ServiceStub::class => $service = $this->createMock(ServiceStub::class),
         ];
 
         $this->assertEquals(
@@ -288,11 +290,8 @@ class ServiceFactoryTest extends AbstractTestCase
             actual: $this->serviceFactory->getServices()
         );
 
-        $this->setProperty(
-            object: $this->serviceFactory,
-            parameterName: 'services',
-            parameterValue: $services
-        );
+        $this->serviceFactory->addService(Path::class, $path);
+        $this->serviceFactory->addService(ServiceStub::class, $service);
 
         $this->assertEquals(
             expected: $services,
@@ -301,21 +300,19 @@ class ServiceFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::addService
      * @covers ::getService
      * @return void
      */
     public function testItShouldGetService(
     ): void
     {
-        $services = [
-            Path::class => $path = $this->createMock(Path::class),
-            ServiceStub::class => $service = $this->createMock(ServiceStub::class),
-        ];
-        $this->setProperty(
-            object: $this->serviceFactory,
-            parameterName: 'services',
-            parameterValue: $services
-        );
+        $path = $this->createMock(Path::class);
+        $service = $this->createMock(ServiceStub::class);
+
+        $this->serviceFactory->addService(Path::class, $path);
+        $this->serviceFactory->addService(ServiceStub::class, $service);
+        $this->serviceFactory->addService(TransformerInterface::class, ServiceStub::class);
 
         $this->assertNull($this->serviceFactory->getService(LoggerInterface::class));
         $this->assertEquals(
@@ -326,6 +323,10 @@ class ServiceFactoryTest extends AbstractTestCase
             expected: $service,
             actual: $this->serviceFactory->getService(ServiceStub::class)
         );
+        $this->assertEquals(
+            expected: ServiceStub::class,
+            actual: $this->serviceFactory->getService(TransformerInterface::class)
+        );
     }
 
     /**
@@ -335,29 +336,18 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testItShouldGetServiceFiles(
     ): void
     {
-        // ------- prepare temp directory -------
-        if (!file_exists(sys_get_temp_dir())){
-            mkdir(sys_get_temp_dir());
-        }
-
-        $tmpDir = sys_get_temp_dir().'/tmp';
-
-        if (!file_exists($tmpDir)) {
-            mkdir($tmpDir);
-        }
+        $tmpDir = $this->createTmpDir();
         // ----- prepare vendor services files -----
         mkdir($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/',  0777, true);
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Auth.php', 'class Auth {}');
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/Guard.php', 'class Guard {}');
         file_put_contents($tmpDir . '/vendor/carlonicora/minimalism-service-auth/src/index.js', 'alert(123)');
-
         // ----- prepare default services files -----
         mkdir($tmpDir . '/src');
         file_put_contents($tmpDir . '/src/Kernel.php', 'class Kernel {}');
         // ----- prepare internal services files -----
         mkdir($tmpDir . '/src/Services/Parser/', 0777, true);
         file_put_contents($tmpDir . '/src/Services/Parser/Parser.php', 'class Parser {}');
-        // ----------------------------------------
 
         $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
             ->disableOriginalConstructor()
@@ -399,6 +389,332 @@ class ServiceFactoryTest extends AbstractTestCase
         );
 
         self::recurseRmdir($tmpDir);
+    }
+
+    /**
+     * @covers ::destroy
+     * @return void
+     */
+    public function testItShouldDestroyWithoutService(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getDefaultService', 'getServices', 'getLogger'])
+            ->getMock();
+
+        $serviceFactory->expects($this->once())
+            ->method('getDefaultService')
+            ->willReturn(null);
+        $serviceFactory->expects($this->once())
+            ->method('getLogger')
+            ->willReturn(null);
+        $serviceFactory->expects($this->once())
+            ->method('getServices')
+            ->willReturn([]);
+
+        $serviceFactory->destroy();
+    }
+
+    /**
+     * @covers ::destroy
+     * @return void
+     */
+    public function testItShouldDestroy(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getDefaultService', 'getService', 'getServices', 'getLogger'])
+            ->getMock();
+        $defaultService = $this->createMock(DefaultServiceInterface::class);
+        $delayedService1 = $this->createMock(ServiceInterface::class);
+        $delayedService2 = $this->createMock(ServiceInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
+        $service = $this->createMock(ServiceStub::class);
+
+        $serviceFactory->expects($this->exactly(2))
+            ->method('getDefaultService')
+            ->willReturn($defaultService);
+        $defaultService->expects($this->once())
+            ->method('getDelayedServices')
+            ->willReturn([$delayedService1::class, $delayedService2::class]);
+        $serviceFactory->expects($this->exactly(3))
+            ->method('getService')
+            ->withConsecutive(
+                [$delayedService1::class],
+                [$delayedService2::class],
+                [LoggerInterface::class],
+            )
+            ->willReturnOnConsecutiveCalls(
+                $delayedService1,
+                null,
+                'Logger'
+            );
+        $delayedService1->expects($this->once())
+            ->method('destroy');
+        $serviceFactory->expects($this->once())
+            ->method('getLogger')
+            ->willReturn($logger);
+        $serviceFactory->expects($this->once())
+            ->method('getServices')
+            ->willReturn([
+                $delayedService1::class => $delayedService1,
+                $service::class => $service,
+            ]);
+        $service->expects($this->once())
+            ->method('destroy');
+
+        $serviceFactory->destroy();
+    }
+
+    /**
+     * @covers ::__destruct
+     * @return void
+     */
+    public function testItShouldDestruct(
+    ): void
+    {
+        $tmpDir = $this->createTmpDir();
+        $cacheFile = $tmpDir . '/services.cache';
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['isLoaded', 'getPath', 'getServices'])
+            ->getMock();
+        $service1 = $this->createMock(ServiceInterface::class);
+        $service2 = $this->createMock(ServiceStub::class);
+        $path = $this->createMock(Path::class);
+        $services = [
+            $service1::class => $service1,
+            $service2::class => $service2,
+            LoggerInterface::class => null,
+        ];
+
+        $serviceFactory->expects($this->once())
+            ->method('isLoaded')
+            ->willReturn(true);
+        $serviceFactory->expects($this->exactly(3))
+            ->method('getServices')
+            ->willReturn($services);
+        $service1->expects($this->once())
+            ->method('unsetObjectFactory');
+        $service2->expects($this->once())
+            ->method('unsetObjectFactory');
+        $serviceFactory->expects($this->once())
+            ->method('getPath')
+            ->willReturn($path);
+        $path->expects($this->once())
+            ->method('getCacheFile')
+            ->with('services.cache')
+            ->willReturn($cacheFile);
+
+        $serviceFactory->__destruct();
+
+        $this->assertEquals(
+            expected: $services,
+            actual: unserialize(file_get_contents($cacheFile))
+        );
+
+        $this->recurseRmdir($tmpDir);
+    }
+
+    /**
+     * @covers ::create
+     * @return void
+     */
+    public function testItShouldNotCreateNotExistedClass(
+    ): void
+    {
+        $this->assertNull(
+            $this->serviceFactory->create('NotExistedClass')
+        );
+    }
+
+    /**
+     * @covers ::create
+     * @return void
+     */
+    public function testItShouldCreateIfServiceAlreadyDefined(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getServices', 'getService'])
+            ->getMock();
+        $serviceObject = $this->createMock(ServiceStub::class);
+        $serviceName = ServiceStub::class;
+
+        $serviceFactory->expects($this->once())
+            ->method('getServices')
+            ->willReturn([ServiceStub::class => $serviceObject]);
+        $serviceFactory->expects($this->once())
+            ->method('getService')
+            ->with($serviceName)
+            ->willReturn($serviceObject);
+
+        $result = $serviceFactory->create($serviceName);
+
+        $this->assertSame(
+            expected: $serviceObject,
+            actual: $result
+        );
+    }
+
+    /**
+     * @covers ::create
+     * @return void
+     */
+    public function testItShouldCreateIfServiceAlreadyDefinedString(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getServices', 'getService'])
+            ->getMock();
+        $serviceObject = $this->createMock(ServiceStub::class);
+        $serviceName = ServiceStub::class;
+
+        $serviceFactory->expects($this->once())
+            ->method('getServices')
+            ->willReturn([
+                ServiceStub::class => 'otherService',
+                'otherService' => $serviceObject,
+            ]);
+        $serviceFactory->expects($this->exactly(2))
+            ->method('getService')
+            ->withConsecutive(
+                [$serviceName],
+                ['otherService']
+            )
+            ->willReturnOnConsecutiveCalls(
+                'otherService',
+                $serviceObject
+            );
+
+        $result = $serviceFactory->create($serviceName);
+
+        $this->assertSame(
+            expected: $serviceObject,
+            actual: $result
+        );
+    }
+
+    /**
+     * @covers ::create
+     * @return void
+     */
+    public function testItShouldNoCreateWhenInitializeNull(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getServices', 'initialise', 'getENV'])
+            ->getMock();
+        $serviceName = ServiceStub::class;
+        $env = ['KEY' => 'VALUE'];
+
+        $serviceFactory->expects($this->once())
+            ->method('getServices')
+            ->willReturn([]);
+        $serviceFactory->expects($this->once())
+            ->method('getENV')
+            ->willReturn($env);
+        $serviceFactory->expects($this->once())
+            ->method('initialise')
+            ->with($serviceFactory, $serviceName, $env)
+            ->willReturn(null);
+
+        $this->assertNull($serviceFactory->create($serviceName));
+    }
+
+    /**
+     * @covers ::create
+     * @dataProvider servicesNamesDataProvider
+     * @param string $serviceName
+     * @param ServiceInterface $serviceObject
+     * @param string $interface
+     * @return void
+     */
+    public function testItShouldCreateObject(
+        string $serviceName,
+        ServiceInterface $serviceObject,
+        string $interface
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getServices', 'initialise', 'getENV', 'addService'])
+            ->getMock();
+        $env = ['KEY' => 'VALUE'];
+
+        $serviceFactory->expects($this->exactly(2))
+            ->method('getServices')
+            ->willReturnOnConsecutiveCalls(
+                [],
+                [$serviceName => $serviceObject]
+            );
+        $serviceFactory->expects($this->once())
+            ->method('getENV')
+            ->willReturn($env);
+        $serviceFactory->expects($this->once())
+            ->method('initialise')
+            ->with($serviceFactory, $serviceName, $env)
+            ->willReturn($serviceObject);
+        $serviceFactory->expects($this->exactly(3))
+            ->method('addService')
+            ->withConsecutive(
+                [$serviceName, $serviceObject],
+                [$serviceObject->getBaseInterface(), $serviceName],
+                [$interface, $serviceName]
+            );
+
+        $result = $serviceFactory->create($serviceName);
+
+        $this->assertSame(
+            expected: $serviceObject,
+            actual: $result
+        );
+    }
+
+    /**
+     * @covers ::create
+     * @return void
+     */
+    public function testItShouldThrowExceptionForBaseInterface(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getServices', 'initialise', 'getENV', 'addService'])
+            ->getMock();
+        $env = ['KEY' => 'VALUE'];
+        $serviceName = TransformerServiceStub::class;
+        $serviceObject = new TransformerServiceStub();
+        $serviceFactory->expects($this->exactly(2))
+            ->method('getServices')
+            ->willReturnOnConsecutiveCalls(
+                [$serviceObject->getBaseInterface() => ''],
+                [
+                    $serviceObject->getBaseInterface() => '',
+                    $serviceName => $serviceObject
+                ]
+            );
+        $serviceFactory->expects($this->once())
+            ->method('getENV')
+            ->willReturn($env);
+        $serviceFactory->expects($this->once())
+            ->method('initialise')
+            ->with($serviceFactory, $serviceName, $env)
+            ->willReturn($serviceObject);
+        $serviceFactory->expects($this->once())
+            ->method('addService')
+            ->with($serviceName, $serviceObject);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('A base interface can only be extend by one service');
+        $this->expectExceptionCode(500);
+
+        $serviceFactory->create($serviceName);
     }
 
     /**
@@ -538,5 +854,18 @@ class ServiceFactoryTest extends AbstractTestCase
             expected: $logger,
             actual: $result
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function servicesNamesDataProvider(
+    ): array
+    {
+        return [
+            [TransformerServiceStub::class, new TransformerServiceStub(), TransformerInterface::class],
+            [DefaultServiceStub::class, new DefaultServiceStub(), DefaultServiceInterface::class],
+            [LoggerServiceStub::class, new LoggerServiceStub(new Path()), LoggerInterface::class],
+        ];
     }
 }

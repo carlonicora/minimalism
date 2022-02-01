@@ -25,6 +25,34 @@ class MinimalismFactoriesTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::__destruct
+     * @return void
+     */
+    public function testItShouldDestruct(
+    ): void
+    {
+        $minimalismFactories = $this->getMockBuilder(MinimalismFactories::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getServiceFactory', 'getObjectFactory'])
+            ->getMock();
+        $serviceFactory = $this->createMock(ServiceFactory::class);
+        $objectFactory = $this->createMock(ObjectFactory::class);
+
+        $minimalismFactories->expects($this->once())
+            ->method('getServiceFactory')
+            ->willReturn($serviceFactory);
+        $objectFactory->expects($this->once())
+            ->method('destroy');
+        $minimalismFactories->expects($this->once())
+            ->method('getObjectFactory')
+            ->willReturn($objectFactory);
+        $objectFactory->expects($this->once())
+            ->method('destroy');
+
+        $minimalismFactories->__destruct();
+    }
+
+    /**
      * @covers ::__construct
      * @covers ::getModelFactory
      * @return void

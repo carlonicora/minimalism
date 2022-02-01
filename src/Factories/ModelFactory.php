@@ -16,10 +16,10 @@ use Throwable;
 class ModelFactory extends AbstractFactory
 {
     /** @var array  */
-    private array $models;
+    private array $models = [];
 
     /** @var array  */
-    private array $modelsDefinitions;
+    private array $modelsDefinitions = [];
 
     /** @var string|null  */
     private ?string $modelClass=null;
@@ -38,9 +38,9 @@ class ModelFactory extends AbstractFactory
             $this->models = unserialize($modelsFile, [true]);
             $serviceModels = unserialize($serviceModelFile, [true]);
             $this->minimalismFactories->getServiceFactory()->getPath()->setServicesModels($serviceModels);
-            $this->modelsDefinitions = unserialize($modelDefinitionsFile, [true]);
+            $this->setModelsDefinitions(unserialize($modelDefinitionsFile, [true]));
         } else {
-            $this->modelsDefinitions = [];
+            $this->setModelsDefinitions([]);
             $serviceModels = [];
 
             $this->models = $this->loadFolderModels($this->minimalismFactories->getServiceFactory()->getPath()->getRoot()
@@ -53,9 +53,18 @@ class ModelFactory extends AbstractFactory
             }
             $this->minimalismFactories->getServiceFactory()->getPath()->setServicesModels($serviceModels);
 
-            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('models.cache'), serialize($this->models));
-            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('servicesModels.cache'), serialize($serviceModels));
-            file_put_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('modelsDefinitions.cache'), serialize($this->modelsDefinitions));
+            file_put_contents(
+                $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('models.cache'),
+                serialize($this->models)
+            );
+            file_put_contents(
+                $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('servicesModels.cache'),
+                serialize($serviceModels)
+            );
+            file_put_contents(
+                $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('modelsDefinitions.cache'),
+                serialize($this->getModelsDefinitions())
+            );
         }
     }
 
@@ -149,7 +158,7 @@ class ModelFactory extends AbstractFactory
      * @param string $modelClassName
      * @throws Exception
      */
-    private function initialiseModelDefinition(
+    protected function initialiseModelDefinition(
         string $modelClassName
     ): void
     {
@@ -163,6 +172,25 @@ class ModelFactory extends AbstractFactory
         }
 
         $this->modelsDefinitions[$modelClassName] = $response;
+    }
+
+    /**
+     * @return void
+     */
+    public function setModelsDefinitions(
+        $modelsDefinitions
+    ): void
+    {
+        $this->modelsDefinitions = $modelsDefinitions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getModelsDefinitions(
+    ): array
+    {
+        return $this->modelsDefinitions;
     }
 
     /**
@@ -241,7 +269,11 @@ class ModelFactory extends AbstractFactory
             $this->modelClass = $this->models['*'];
         } else {
             $uriParts = explode('/', substr($uri, 1));
-            $modelBuilder = new ModelBuilder($uriParts, $this->models, $this->minimalismFactories->getServiceFactory()->getPath()->getServicesModels());
+            $modelBuilder = new ModelBuilder(
+                $uriParts,
+                $this->models,
+                $this->minimalismFactories->getServiceFactory()->getPath()->getServicesModels()
+            );
 
             $this->modelClass = $modelBuilder->getModelClass();
 
@@ -279,17 +311,20 @@ class ModelFactory extends AbstractFactory
                 $modelParameters->addNamedParameter($parameter, $value);
             }
         } else {
-            if (!empty($phpInput=file_get_contents('php://input'))) {
+            if (!empty($phpInput = $this->getInputData())) {
                 try {
-                    $modelParameters->addNamedParameter('payload', json_decode($phpInput, true, 512, JSON_THROW_ON_ERROR));
+                    $modelParameters->addNamedParameter(
+                        'payload',
+                        json_decode($phpInput, true, 512, JSON_THROW_ON_ERROR)
+                    );
                 } catch (Exception) {
                     try {
                         $additionalResponse = [];
                         parse_str($phpInput, $additionalResponse);
 
-                        foreach ($additionalResponse ?? [] as $parameterName=>$parameterValue){
-                            if ($parameter === 'payload'){
-                                $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+                        foreach ($additionalResponse ?? [] as $parameterName => $parameterValue){
+                            if ($parameterName === 'payload'){
+                                $parameterValue = json_decode($parameterValue, true, 512, JSON_THROW_ON_ERROR);
                             }
                             $modelParameters->addNamedParameter($parameterName, $parameterValue);
                         }
@@ -313,15 +348,11 @@ class ModelFactory extends AbstractFactory
      * @param ModelParameters $modelParameters
      * @param array $files
      */
-    private function setFiles(
+    protected function setFiles(
         ModelParameters $modelParameters,
         array $files,
     ): void
     {
-        if (empty($files)) {
-            return;
-        }
-
         foreach ($files as $key => $file) {
             if (is_string($file['name'])) {
                 $modelParameters->addFile($key, $file);
@@ -333,7 +364,6 @@ class ModelFactory extends AbstractFactory
                 }
                 $modelParameters->addFile($key, $recursiveFile);
             }
-
         }
     }
 
@@ -357,5 +387,15 @@ class ModelFactory extends AbstractFactory
         }
 
         return $result;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return string
+     */
+    protected function getInputData(
+    ): string
+    {
+        return file_get_contents('php://input');
     }
 }

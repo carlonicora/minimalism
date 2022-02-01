@@ -40,8 +40,8 @@ class MinimalismFactories
      */
     public function __destruct()
     {
-        $this->serviceFactory->destroy();
-        $this->objectFactory->destroy();
+        $this->getServiceFactory()->destroy();
+        $this->getObjectFactory()->destroy();
     }
 
     /**
