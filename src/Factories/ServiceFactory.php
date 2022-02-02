@@ -328,7 +328,6 @@ class ServiceFactory
                 return null;
             }
 
-
             $class = new ReflectionClass($className);
 
             if ($class->hasMethod('__construct')) {
