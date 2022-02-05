@@ -39,8 +39,8 @@ class ObjectFactory extends AbstractFactory
     ): void
     {
         $this->pool = [];
-        $this->objectsFactoriesDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache');
-        $this->objectsDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache');
+        $this->objectsFactoriesDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('objectsFactoriesDefinitions.cache');
+        $this->objectsDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('objectsDefinitions.cache');
 
         if (
             is_file($this->objectsFactoriesDefinitionsCache)
