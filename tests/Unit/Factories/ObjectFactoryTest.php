@@ -8,8 +8,10 @@ use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
+use CarloNicora\Minimalism\Tests\Stubs\ComplexObjectFactoryStub;
 use CarloNicora\Minimalism\Tests\Stubs\ComplexObjectStub;
-use CarloNicora\Minimalism\Tests\Stubs\SimpleObjectStub;
+use CarloNicora\Minimalism\Tests\Stubs\SimpleObject1Stub;
+use CarloNicora\Minimalism\Tests\Stubs\SimpleObject2Stub;
 use RuntimeException;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -65,18 +67,27 @@ class ObjectFactoryTest extends AbstractTestCase
 
     /**
      * @covers ::initialiseFactory
+     * @covers ::setObjectsFactoriesDefinitionsCache
+     * @covers ::setObjectsDefinitionsCache
+     * @covers ::setObjectsFactoriesDefinitions
+     * @covers ::setObjectsDefinitions
      * @return void
      */
     public function testItShouldInitializeFactory(
     ): void
     {
+        $objectFactory = $this->getMockBuilder(ObjectFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['clearPool'])
+            ->getMock();
         $serviceFactory = $this->createMock(ServiceFactory::class);
         $path = $this->createMock(Path::class);
         $objectsFactoriesDefinitionsCachePath = self::$tempDir . '/objectsFactoriesDefinitions.cache';
         $objectsDefinitionsCache = self::$tempDir . '/objectsDefinitions.cache';
-        file_put_contents($objectsFactoriesDefinitionsCachePath, 'a:1:{i:0;O:8:"stdClass":0:{}}');
-        file_put_contents($objectsDefinitionsCache, 'a:1:{i:0;O:8:"stdClass":0:{}}');
+        file_put_contents($objectsFactoriesDefinitionsCachePath, serialize([new \stdClass()]));
+        file_put_contents($objectsDefinitionsCache, serialize([new \stdClass(), new \stdClass()]));
 
+        $objectFactory->expects($this->once())->method('clearPool');
         $this->minimalismFactories
             ->expects($this->exactly(2))
             ->method('getServiceFactory')
@@ -95,22 +106,7 @@ class ObjectFactoryTest extends AbstractTestCase
                 $objectsDefinitionsCache
             );
 
-        $this->objectFactory->initialiseFactory();
-
-        $this->assertEquals(
-            expected: [new \stdClass()],
-            actual: $this->getProperty(
-                object: $this->objectFactory,
-                parameterName: 'objectsFactoriesDefinitions'
-            )
-        );
-        $this->assertEquals(
-            expected: [new \stdClass()],
-            actual: $this->getProperty(
-                object: $this->objectFactory,
-                parameterName: 'objectsDefinitions'
-            )
-        );
+        $objectFactory->initialiseFactory();
     }
 
     /**
@@ -173,6 +169,63 @@ class ObjectFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::destroy
+     * @return void
+     */
+    public function testItShouldDestroyWhenCacheEmpty(
+    ): void
+    {
+        $objectFactory = $this->getMockBuilder(ObjectFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['clearPool'])
+            ->getMock();
+        $objectFactory->setObjectUpdated(true);
+        $objectFactory->setObjectsDefinitionsCache(null);
+        $objectFactory->setObjectsFactoriesDefinitionsCache(null);
+
+        $objectFactory->expects($this->once())->method('clearPool');
+
+        $objectFactory->destroy();
+    }
+
+    /**
+     * @covers ::destroy
+     * @return void
+     */
+    public function testItShouldDestroy(
+    ): void
+    {
+        $objectFactory = $this->getMockBuilder(ObjectFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['clearPool'])
+            ->getMock();
+        $objectsFactoriesDefinitionsCacheFile = self::$tempDir . '/objectsFactoriesDefinitionsCache';
+        $objectsDefinitionsCacheFile = self::$tempDir . '/objectsDefinitionsCache';
+        $objectsFactoriesDefinitions = ['objectsFactoriesDefinitions'];
+        $objectsDefinitions = ['objectsDefinitions'];
+        $objectFactory->setObjectUpdated(true);
+        $objectFactory->setObjectsDefinitionsCache(null);
+        $objectFactory->setObjectsFactoriesDefinitionsCache(null);
+        $objectFactory->setObjectsFactoriesDefinitionsCache($objectsFactoriesDefinitionsCacheFile);
+        $objectFactory->setObjectsFactoriesDefinitions($objectsFactoriesDefinitions);
+        $objectFactory->setObjectsDefinitionsCache($objectsDefinitionsCacheFile);
+        $objectFactory->setObjectsDefinitions($objectsDefinitions);
+
+        $objectFactory->expects($this->once())->method('clearPool');
+
+        $objectFactory->destroy();
+
+        $this->assertEquals(
+            expected: serialize($objectsFactoriesDefinitions),
+            actual: file_get_contents($objectsFactoriesDefinitionsCacheFile)
+        );
+        $this->assertEquals(
+            expected: serialize($objectsDefinitions),
+            actual: file_get_contents($objectsDefinitionsCacheFile)
+        );
+    }
+
+    /**
      * @covers ::create
      * @return void
      */
@@ -183,19 +236,11 @@ class ObjectFactoryTest extends AbstractTestCase
             ->setConstructorArgs([$this->minimalismFactories])
             ->onlyMethods(['createSimpleObject'])
             ->getMock();
-        $className = SimpleObjectStub::class;
+        $className = SimpleObject1Stub::class;
         $parameters = $this->createMock(ModelParameters::class);
-        $this->setProperty(
-            object: $this->objectFactory,
-            parameterName: 'objectsDefinitions',
-            parameterValue: [$className => '']
-        );
-        $this->setProperty(
-            object: $this->objectFactory,
-            parameterName: 'objectsFactoriesDefinitions',
-            parameterValue: []
-        );
-        $expectedSimpleObject = new SimpleObjectStub();
+        $this->objectFactory->setObjectsDefinitions([$className => []]);
+        $this->objectFactory->setObjectsFactoriesDefinitions([]);
+        $expectedSimpleObject = new SimpleObject1Stub();
 
         $this->objectFactory
             ->expects($this->once())
@@ -222,9 +267,9 @@ class ObjectFactoryTest extends AbstractTestCase
             ->setConstructorArgs([$this->minimalismFactories])
             ->onlyMethods(['createSimpleObject'])
             ->getMock();
-        $className = SimpleObjectStub::class;
+        $className = SimpleObject1Stub::class;
         $parameters = $this->createMock(ModelParameters::class);
-        $expectedObject = new SimpleObjectStub();
+        $expectedObject = new SimpleObject1Stub();
 
         $this->objectFactory
             ->expects($this->once())
@@ -272,6 +317,101 @@ class ObjectFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::createComplexObject
+     * @return void
+     */
+    public function testItShouldCreateComplexObjectIfFactoryDefined(
+    ): void
+    {
+        $objectFactory = $this->getMockBuilder(ObjectFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['generateMethodParametersValues'])
+            ->getMock();
+        $name = 'complexName';
+        $parameters = $this->createMock(ModelParameters::class);
+        $className = ComplexObjectStub::class;
+        $objectFactory->setObjectsFactoriesDefinitions([
+            $className => [
+                'factoryName' => ComplexObjectFactoryStub::class,
+                'coonstructMethodParameters' => []
+            ],
+        ]);
+
+        $objectFactory->expects($this->once())
+            ->method('generateMethodParametersValues')
+            ->with([], $parameters)
+            ->willReturn([]);
+
+        $result = $this->invokeMethod(
+            object: $objectFactory,
+            methodName: 'createComplexObject',
+            arguments: [$className, $name, $parameters]
+        );
+
+        $this->assertInstanceOf(
+            expected: ComplexObjectStub::class,
+            actual: $result
+        );
+    }
+
+    /**
+     * @covers ::createComplexObject
+     * @return void
+     */
+    public function testItShouldThrowExceptionWhileCreatingObject(
+    ): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(500);
+        $this->expectExceptionMessage('Missing factory name');
+
+        $this->invokeMethod(
+            object: $this->objectFactory,
+            methodName: 'createComplexObject',
+            arguments: ['NotExistedClass', null, null]
+        );
+    }
+
+    /**
+     * @covers ::createComplexObject
+     * @return void
+     */
+    public function testItShouldCreateComplexObjectIfFactoryNotDefined(
+    ): void
+    {
+        $objectFactory = $this->getMockBuilder(ObjectFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['generateMethodParametersValues', 'getMethodParametersDefinition', 'setObjectUpdated'])
+            ->getMock();
+        $name = 'complexName';
+        $parameters = $this->createMock(ModelParameters::class);
+        $className = ComplexObjectStub::class;
+
+        $objectFactory->expects($this->once())
+            ->method('getMethodParametersDefinition')
+            ->willReturn([]);
+        $objectFactory->expects($this->once())
+            ->method('generateMethodParametersValues')
+            ->with([], $parameters)
+            ->willReturn([]);
+        $objectFactory->expects($this->once())
+            ->method('setObjectUpdated')
+            ->with(true);
+
+        $result = $this->invokeMethod(
+            object: $objectFactory,
+            methodName: 'createComplexObject',
+            arguments: [$className, $name, $parameters]
+        );
+
+        $this->assertInstanceOf(
+            expected: ComplexObjectStub::class,
+            actual: $result
+        );
+    }
+
+
+    /**
      * @covers ::createSimpleObject
      * @return void
      */
@@ -280,9 +420,9 @@ class ObjectFactoryTest extends AbstractTestCase
     {
         $this->objectFactory = $this->getMockBuilder(ObjectFactory::class)
             ->setConstructorArgs([$this->minimalismFactories])
-            ->onlyMethods(['getMethodParametersDefinition', 'generateMethodParametersValues'])
+            ->onlyMethods(['getMethodParametersDefinition', 'setObjectUpdated', 'generateMethodParametersValues'])
             ->getMock();
-        $className = SimpleObjectStub::class;
+        $className = SimpleObject1Stub::class;
         $parameters = $this->createMock(ModelParameters::class);
         $this->objectFactory
             ->expects($this->once())
@@ -294,13 +434,127 @@ class ObjectFactoryTest extends AbstractTestCase
             ->method('generateMethodParametersValues')
             ->with([], $parameters)
             ->willReturn(['someParam']);
+        $this->objectFactory
+            ->expects($this->once())
+            ->method('setObjectUpdated')
+            ->with(true);
 
         $result = $this->objectFactory->createSimpleObject($className, $parameters);
 
-        $this->assertInstanceOf(SimpleObjectStub::class, $result);
+        $this->assertInstanceOf(SimpleObject1Stub::class, $result);
         $this->assertEquals(
             expected: 'someParam',
             actual: $this->getProperty(object: $result, parameterName: 'name')
+        );
+    }
+
+    /**
+     * @covers ::createSimpleObject
+     * @return void
+     */
+    public function testItShouldCreateSimpleObjectWithoutConstructor(
+    ): void
+    {
+        $this->objectFactory = $this->getMockBuilder(ObjectFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['getMethodParametersDefinition', 'setObjectUpdated', 'generateMethodParametersValues'])
+            ->getMock();
+        $className = SimpleObject2Stub::class;
+        $parameters = $this->createMock(ModelParameters::class);
+        $this->objectFactory
+            ->expects($this->once())
+            ->method('generateMethodParametersValues')
+            ->with([], $parameters)
+            ->willReturn([]);
+        $this->objectFactory
+            ->expects($this->once())
+            ->method('setObjectUpdated')
+            ->with(true);
+
+        $result = $this->objectFactory->createSimpleObject($className, $parameters);
+
+        $this->assertInstanceOf(SimpleObject2Stub::class, $result);
+    }
+
+    /**
+     * @covers ::createSimpleObject
+     * @return void
+     */
+    public function testItShouldCreateSimpleObjectWithDefinedParametersDefinition(
+    ): void
+    {
+        $this->objectFactory = $this->getMockBuilder(ObjectFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['generateMethodParametersValues'])
+            ->getMock();
+        $this->objectFactory->setObjectsDefinitions([
+            SimpleObject1Stub::class => []
+        ]);
+        $className = SimpleObject1Stub::class;
+        $parameters = $this->createMock(ModelParameters::class);
+        $this->objectFactory
+            ->expects($this->once())
+            ->method('generateMethodParametersValues')
+            ->with([], $parameters)
+            ->willReturn(['argName']);
+
+        $result = $this->objectFactory->createSimpleObject($className, $parameters);
+
+        $this->assertInstanceOf(SimpleObject1Stub::class, $result);
+        $this->assertEquals(
+            expected: 'argName',
+            actual: $this->getProperty(object: $result, parameterName: 'name')
+        );
+    }
+
+    /**
+     * @covers ::setObjectUpdated
+     * @return void
+     */
+    public function testItShouldSetObjectUpdated(
+    ): void
+    {
+        $this->assertFalse(
+            $this->getProperty(
+                object: $this->objectFactory,
+                parameterName: 'objectUpdated'
+            )
+        );
+
+        $this->objectFactory->setObjectUpdated(true);
+
+        $this->assertTrue(
+            $this->getProperty(
+                object: $this->objectFactory,
+                parameterName: 'objectUpdated'
+            )
+        );
+    }
+
+    /**
+     * @covers ::clearPool
+     * @return void
+     */
+    public function testItShouldClearPool(
+    ): void
+    {
+        $this->setProperty(
+            object: $this->objectFactory,
+            parameterName: 'pool',
+            parameterValue: [1,2,3]
+        );
+
+        $this->invokeMethod(
+            object: $this->objectFactory,
+            methodName: 'clearPool'
+        );
+
+        $this->assertEquals(
+            expected: [],
+            actual: $this->getProperty(
+                object: $this->objectFactory,
+                parameterName: 'pool'
+            )
         );
     }
 }

@@ -6,7 +6,7 @@ use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 
-class ServiceStub implements ServiceInterface
+class ServiceWithBaseInterfaceStub implements ServiceInterface
 {
     private ?ObjectFactory $objectFactory = null;
     public bool $isInitialized = false;
@@ -14,6 +14,11 @@ class ServiceStub implements ServiceInterface
     public function initialise(): void
     {
         $this->isInitialized = true;
+    }
+
+    public function postIntialise(ServiceFactory $services,): void
+    {
+        // TODO: Implement postIntialise() method.
     }
 
     public function destroy(): void
@@ -31,18 +36,13 @@ class ServiceStub implements ServiceInterface
         return $this->objectFactory;
     }
 
-    public static function getBaseInterface(): ?string
-    {
-        return '';
-    }
-
-    public function postIntialise(ServiceFactory $services,): void
-    {
-        // TODO: Implement postIntialise() method.
-    }
-
     public function unsetObjectFactory(): void
     {
         // TODO: Implement unsetObjectFactory() method.
+    }
+
+    public static function getBaseInterface(): ?string
+    {
+        return InterfaceStub::class;
     }
 }

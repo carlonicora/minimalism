@@ -3,6 +3,7 @@
 namespace CarloNicora\Minimalism\Tests\Unit\Factories;
 
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Factories\ModelFactory;
 use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
@@ -11,9 +12,14 @@ use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use CarloNicora\Minimalism\Interfaces\TransformerInterface;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
+use CarloNicora\Minimalism\Tests\Stubs\ComplexArgumentsServiceStub;
 use CarloNicora\Minimalism\Tests\Stubs\DefaultServiceStub;
+use CarloNicora\Minimalism\Tests\Stubs\InterfaceStub;
 use CarloNicora\Minimalism\Tests\Stubs\LoggerServiceStub;
+use CarloNicora\Minimalism\Tests\Stubs\ModelStub;
 use CarloNicora\Minimalism\Tests\Stubs\ServiceStub;
+use CarloNicora\Minimalism\Tests\Stubs\ServiceWithBaseInterfaceStub;
+use CarloNicora\Minimalism\Tests\Stubs\SimpleArgumentServiceStub;
 use CarloNicora\Minimalism\Tests\Stubs\TransformerServiceStub;
 use PHPUnit\Framework\MockObject\MockObject;
 use RuntimeException;
@@ -716,6 +722,288 @@ class ServiceFactoryTest extends AbstractTestCase
 
         $serviceFactory->create($serviceName);
     }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldNotInitializeWithNotExistedClass(
+    ): void
+    {
+        $className = 'NotExistedClass';
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Object dependecies loading failed for NotExistedClass');
+        $this->expectExceptionCode(500);
+
+        $this->invokeMethod(
+            object: $this->serviceFactory,
+            methodName: 'initialise',
+            arguments: [$this->createMock(ServiceFactory::class), &$className]
+        );
+    }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldNotInitializeWhenInterfaceClassNotFound(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getServiceFiles'])
+            ->getMock();
+        $className = InterfaceStub::class;
+
+        $serviceFactory->expects($this->once())
+            ->method('getServiceFiles')
+            ->willReturn([]);
+
+        $this->assertNull(
+            $this->invokeMethod(
+                object: $serviceFactory,
+                methodName: 'initialise',
+                arguments: [$this->createMock(ServiceFactory::class), &$className]
+            )
+        );
+    }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldNotInitializeWhenClassNotImplementsServiceInterface(
+    ): void
+    {
+        $className = ModelStub::class;
+
+        $this->assertNull(
+            $this->invokeMethod(
+                object: $this->serviceFactory,
+                methodName: 'initialise',
+                arguments: [$this->createMock(ServiceFactory::class), &$className]
+            )
+        );
+    }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldInitializeFromInterface(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['getServiceFiles'])
+            ->getMock();
+        $className = InterfaceStub::class;
+        $objectFactory = $this->createMock(ObjectFactory::class);
+
+        $serviceFactory->expects($this->once())
+            ->method('getServiceFiles')
+            ->willReturn([
+                __DIR__ . '/../../Stubs/LoggerServiceStub.php',
+               __DIR__ . '/../../Stubs/ServiceWithBaseInterfaceStub.php',
+            ]);
+        $this->minimalismFactories->expects($this->once())
+            ->method('getObjectFactory')
+            ->willReturn($objectFactory);
+
+        /** @var ServiceWithBaseInterfaceStub */
+        $result = $this->invokeMethod(
+            object: $serviceFactory,
+            methodName: 'initialise',
+            arguments: [$this->createMock(ServiceFactory::class), &$className]
+        );
+
+        $this->assertInstanceOf(
+            expected: ServiceWithBaseInterfaceStub::class,
+            actual: $result
+        );
+        $this->assertSame(
+            expected: $objectFactory,
+            actual: $result->getObjectFactory()
+        );
+        $this->assertTrue($result->isInitialized);
+    }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldCreateSimpleServiceWithoutConstructor(
+    ): void
+    {
+        $objectFactory = $this->createMock(ObjectFactory::class);
+        $className = ServiceStub::class;
+
+        $this->minimalismFactories
+            ->expects($this->once())
+            ->method('getObjectFactory')
+            ->willReturn($objectFactory);
+
+        /** @var ServiceStub */
+        $result = $this->invokeMethod(
+            object: $this->serviceFactory,
+            methodName: 'initialise',
+            arguments: [$this->createMock(ServiceFactory::class), &$className]
+        );
+
+        $this->assertInstanceOf(
+            expected: $className,
+            actual: $result
+        );
+        $this->assertSame(
+            expected: $objectFactory,
+            actual: $result->getObjectFactory()
+        );
+        $this->assertTrue($result->isInitialized);
+    }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldInitializeServiceWithConstructor(
+    ): void
+    {
+        $serviceFactory = $this->getMockBuilder(ServiceFactory::class)
+            ->setConstructorArgs([$this->minimalismFactories])
+            ->onlyMethods(['create'])
+            ->getMock();
+        $className = ComplexArgumentsServiceStub::class;
+        $serviceFactoryArgument = $this->createMock(ServiceFactory::class);
+        $objectFactory = $this->createMock(ObjectFactory::class);
+        $modelFactory = $this->createMock(ModelFactory::class);
+        $serviceStub = $this->createMock(ServiceStub::class);
+        $defaultService = $this->createMock(DefaultServiceStub::class);
+
+        $serviceFactoryArgument->expects($this->once())
+            ->method('create')
+            ->with(DefaultServiceStub::class)
+            ->willReturn($defaultService);
+        $this->minimalismFactories
+            ->expects($this->exactly(2))
+            ->method('getObjectFactory')
+            ->willReturn($objectFactory);
+        $this->minimalismFactories
+            ->expects($this->once())
+            ->method('getModelFactory')
+            ->willReturn($modelFactory);
+
+        $serviceFactory->expects($this->once())
+            ->method('create')
+            ->with(ServiceStub::class)
+            ->willReturn($serviceStub);
+
+        /** @var ComplexArgumentsServiceStub $result */
+        $result = $this->invokeMethod(
+            object: $serviceFactory,
+            methodName: 'initialise',
+            arguments: [$serviceFactoryArgument, &$className]
+        );
+
+        $this->assertInstanceOf(
+            expected: ComplexArgumentsServiceStub::class,
+            actual: $result
+        );
+        $this->assertSame(
+            expected: $defaultService,
+            actual: $result->defaultService
+        );
+        $this->assertSame(
+            expected: $this->minimalismFactories,
+            actual: $result->minimalismFactories
+        );
+        $this->assertSame(
+            expected: $serviceFactory,
+            actual: $result->serviceFactory
+        );
+        $this->assertSame(
+            expected: $objectFactory,
+            actual: $result->objectFactory
+        );
+        $this->assertSame(
+            expected: $modelFactory,
+            actual: $result->modelFactory
+        );
+        $this->assertSame(
+            expected: $serviceStub,
+            actual: $serviceStub
+        );
+    }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldInitializeServiceWithParameters(
+    ): void
+    {
+        $className = SimpleArgumentServiceStub::class;
+        $objectFactory = $this->createMock(ObjectFactory::class);
+
+        $this->minimalismFactories
+            ->expects($this->once())
+            ->method('getObjectFactory')
+            ->willReturn($objectFactory);
+
+        /** @var SimpleArgumentServiceStub $result */
+        $result = $this->invokeMethod(
+            object: $this->serviceFactory,
+            methodName: 'initialise',
+            arguments: [
+                $this->createMock(ServiceFactory::class),
+                &$className,
+                ['string' => 'qwerty', 'bool' => true, 'int' => 11]
+            ]
+        );
+
+        $this->assertInstanceOf(
+            expected: SimpleArgumentServiceStub::class,
+            actual: $result
+        );
+        $this->assertEquals(
+            expected: 'qwerty',
+            actual: $result->string
+        );
+        $this->assertEquals(
+            expected: true,
+            actual: $result->bool
+        );
+        $this->assertEquals(
+            expected: 11,
+            actual: $result->int
+        );
+    }
+
+    /**
+     * @covers ::initialise
+     * @return void
+     */
+    public function testItShouldThrowExceptionWhenParamIsMissing(
+    ): void
+    {
+        $className = SimpleArgumentServiceStub::class;
+
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage('A parameter is missing: string');
+        $this->expectExceptionCode(500);
+
+        /** @var SimpleArgumentServiceStub $result */
+        $this->invokeMethod(
+            object: $this->serviceFactory,
+            methodName: 'initialise',
+            arguments: [
+                $this->createMock(ServiceFactory::class),
+                &$className,
+                []
+            ]
+        );
+    }
+
 
     /**
      * @covers ::getPath

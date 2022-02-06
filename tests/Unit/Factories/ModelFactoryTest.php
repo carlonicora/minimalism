@@ -764,6 +764,48 @@ class ModelFactoryTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::getWebParameters
+     * @return void
+     */
+    public function testItShouldGetWebParametersToMainRoute(
+    ): void
+    {
+        $_SERVER['REQUEST_URI'] = '//?key=value';
+        $serviceFactory = $this->createMock(ServiceFactory::class);
+        $path = $this->createMock(Path::class);
+        $this->setProperty(
+            object: $this->modelFactory,
+            parameterName: 'models',
+            parameterValue: ['*' => ModelStub::class]
+        );
+
+        $this->minimalismFactories
+            ->expects($this->once())
+            ->method('getServiceFactory')
+            ->willReturn($serviceFactory);
+        $serviceFactory->expects($this->once())
+            ->method('getPath')
+            ->willReturn($path);
+        $path->expects($this->once())
+            ->method('sanitiseUriVersion')
+            ->with('//');
+
+        /** @var ModelParameters */
+        $result = $this->modelFactory->getWebParameters();
+
+        $this->assertInstanceOf(
+            expected: ModelParameters::class,
+            actual: $result
+        );
+        $this->assertEquals(
+            expected: 'value',
+            actual: $result->getNamedParameter('key'),
+        );
+
+        unset($_SERVER['REQUEST_URI']);
+    }
+
+    /**
      * @covers ::setNamedParameters
      * @return void
      */
