@@ -29,6 +29,7 @@ class PathTest extends AbstractTestCase
     ): void
     {
         $path = $this->getMockBuilder(Path::class)
+            ->disableOriginalConstructor()
             ->onlyMethods(['isServicesDirectory', 'initialise', 'loadServicesViewsAndModelsDirectories'])
             ->getMock();
 
@@ -41,7 +42,7 @@ class PathTest extends AbstractTestCase
         $path->__construct();
 
         $this->assertEquals(
-            expected: '/app',
+            expected: dirname(path: realpath(__DIR__ . '/../../../src/Services'), levels: 2),
             actual: $path->getRoot()
         );
     }
@@ -54,6 +55,7 @@ class PathTest extends AbstractTestCase
     ): void
     {
         $path = $this->getMockBuilder(Path::class)
+            ->disableOriginalConstructor()
             ->onlyMethods(['isServicesDirectory', 'initialise', 'loadServicesViewsAndModelsDirectories'])
             ->getMock();
 
@@ -66,7 +68,7 @@ class PathTest extends AbstractTestCase
         $path->__construct();
 
         $this->assertEquals(
-            expected: dirname(path: __DIR__, levels: 5),
+            expected: dirname(path: realpath(__DIR__ . '/../../../src/Services'), levels: 5),
             actual: $path->getRoot()
         );
     }
