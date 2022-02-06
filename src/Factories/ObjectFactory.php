@@ -33,27 +33,37 @@ class ObjectFactory extends AbstractFactory
     protected ?string $objectsDefinitionsCache=null;
 
     /**
-     *
+     * @return void
      */
     public function initialiseFactory(
     ): void
     {
-        $this->pool = [];
-        $this->objectsFactoriesDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsFactoriesDefinitions.cache');
-        $this->objectsDefinitionsCache = $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('objectsDefinitions.cache');
+        $this->clearPool();
+        $this->setObjectsFactoriesDefinitionsCache(
+            $this->minimalismFactories
+                ->getServiceFactory()
+                ->getPath()
+                ->getCacheFile('objectsFactoriesDefinitions.cache')
+        );
+        $this->setObjectsDefinitionsCache(
+            $this->minimalismFactories
+                ->getServiceFactory()
+                ->getPath()
+                ->getCacheFile('objectsDefinitions.cache')
+        );
 
         if (
-            is_file($this->objectsFactoriesDefinitionsCache)
+            is_file((string)$this->objectsFactoriesDefinitionsCache)
             && ($cache = file_get_contents($this->objectsFactoriesDefinitionsCache)) !== false
         ) {
-            $this->objectsFactoriesDefinitions = unserialize($cache, [true]);
+            $this->setObjectsFactoriesDefinitions(unserialize($cache, [true]));
         }
 
         if (
-            is_file($this->objectsDefinitionsCache)
+            is_file((string)$this->objectsDefinitionsCache)
             && ($cache = file_get_contents($this->objectsDefinitionsCache)) !== false
         ) {
-            $this->objectsDefinitions = unserialize($cache, [true]);
+            $this->setObjectsDefinitions(unserialize($cache, [true]));
         }
     }
 
@@ -63,7 +73,10 @@ class ObjectFactory extends AbstractFactory
     public function __wakeup(
     ): void
     {
-        throw new RuntimeException('One or more services has not released ObjectFactory correctly.', HttpCode::InternalServerError->value);
+        throw new RuntimeException(
+            'One or more services has not released ObjectFactory correctly.',
+            HttpCode::InternalServerError->value
+        );
     }
 
     /**
@@ -72,7 +85,8 @@ class ObjectFactory extends AbstractFactory
     public function destroy(
     ): void
     {
-        $this->pool = [];
+        $this->clearPool();
+
         if ($this->objectUpdated) {
             if (!empty($this->objectsFactoriesDefinitionsCache)) {
                 file_put_contents($this->objectsFactoriesDefinitionsCache, serialize($this->objectsFactoriesDefinitions));
@@ -161,7 +175,7 @@ class ObjectFactory extends AbstractFactory
             }
 
             if ($factoryName === null){
-                throw new RuntimeException('Missing factory name', HttpCode::InternalServerError);
+                throw new RuntimeException('Missing factory name', HttpCode::InternalServerError->value);
             }
 
             $reflectionMethod = (new ReflectionClass($factoryName))->getMethod('__construct');
@@ -172,7 +186,7 @@ class ObjectFactory extends AbstractFactory
                 'coonstructMethodParameters' => $factoryConstructMethodParametersDefinitions,
             ];
 
-            $this->objectUpdated = true;
+            $this->setObjectUpdated(true);
         }
 
         $factoryConstructorParameters = $this->generateMethodParametersValues(
@@ -212,7 +226,7 @@ class ObjectFactory extends AbstractFactory
 
             $this->objectsDefinitions[$className] = $objectConstructorParametersDefinitions;
 
-            $this->objectUpdated = true;
+            $this->setObjectUpdated(true);
         }
 
         $classConstructorParameters = $this->generateMethodParametersValues(
@@ -221,5 +235,67 @@ class ObjectFactory extends AbstractFactory
         );
 
         return new $className(...$classConstructorParameters);
+    }
+
+    /**
+     * @param array $objectsFactoriesDefinitions
+     * @return void
+     */
+    public function setObjectsFactoriesDefinitions(
+        array $objectsFactoriesDefinitions
+    ): void
+    {
+        $this->objectsFactoriesDefinitions = $objectsFactoriesDefinitions;
+    }
+
+    /**
+     * @param string|null $objectsFactoriesDefinitionsCache
+     * @return void
+     */
+    public function setObjectsFactoriesDefinitionsCache(
+        ?string $objectsFactoriesDefinitionsCache
+    ): void
+    {
+        $this->objectsFactoriesDefinitionsCache = $objectsFactoriesDefinitionsCache;
+    }
+
+    /**
+     * @param array $objectsDefinitions
+     * @return void
+     */
+    public function setObjectsDefinitions(
+        array $objectsDefinitions
+    ): void
+    {
+        $this->objectsDefinitions = $objectsDefinitions;
+    }
+
+    /**
+     * @param string|null $objectsDefinitionsCache
+     * @return void
+     */
+    public function setObjectsDefinitionsCache(
+        ?string $objectsDefinitionsCache
+    ): void
+    {
+        $this->objectsDefinitionsCache = $objectsDefinitionsCache;
+    }
+
+    /**
+     * @return void
+     */
+    public function setObjectUpdated(
+        bool $objectUpdated
+    ): void
+    {
+        $this->objectUpdated = $objectUpdated;
+    }
+
+    /**
+     * @return void
+     */
+    protected function clearPool(): void
+    {
+        $this->pool = [];
     }
 }

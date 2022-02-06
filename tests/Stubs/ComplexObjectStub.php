@@ -7,8 +7,8 @@ use CarloNicora\Minimalism\Interfaces\ObjectInterface;
 
 class ComplexObjectStub implements ObjectInterface
 {
-    public function getObjectFactoryClass(): ObjectFactoryInterface|string
+    public function getObjectFactoryClass(): ComplexObjectFactoryStub|string
     {
-        return '';
+        return ComplexObjectFactoryStub::class;
     }
 }

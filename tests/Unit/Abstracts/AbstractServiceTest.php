@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Tests\Unit\Abstracts;
 
 use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Factories\ObjectFactory;
+use CarloNicora\Minimalism\Factories\ServiceFactory;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
 
 /**
@@ -29,7 +30,19 @@ class AbstractServiceTest extends AbstractTestCase
     ): void
     {
         $this->abstractService->initialise();
-        //@todo add assertion after implementation method
+
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @covers ::postIntialise
+     * @return void
+     */
+    public function testItShouldPostInitialise(
+    ): void
+    {
+        $this->abstractService->postIntialise($this->createMock(ServiceFactory::class));
+
         $this->assertTrue(true);
     }
 
@@ -59,6 +72,25 @@ class AbstractServiceTest extends AbstractTestCase
         $this->assertSame(
             expected: $objectFactory,
             actual: $this->getProperty(
+                object: $this->abstractService,
+                parameterName: 'objectFactory'
+            )
+        );
+    }
+
+    /**
+     * @covers ::unsetObjectFactory
+     * @return void
+     */
+    public function testItShouldUsetObjectFactory(
+    ): void
+    {
+        $this->abstractService->setObjectFactory($this->createMock(ObjectFactory::class));
+
+        $this->abstractService->unsetObjectFactory();
+
+        $this->assertNull(
+            $this->getProperty(
                 object: $this->abstractService,
                 parameterName: 'objectFactory'
             )

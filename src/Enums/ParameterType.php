@@ -86,7 +86,9 @@ enum ParameterType
                 break;
             case self::Enum:
                 /** @noinspection PhpUndefinedMethodInspection */
-                $response = ($parameterDefinition->getIdentifier())::tryFrom($parameters?->getNamedParameter($parameterDefinition->getName()));
+                $response = ($parameterDefinition->getIdentifier())::tryFrom(
+                    $parameters?->getNamedParameter($parameterDefinition->getName())
+                );
                 break;
         }
 

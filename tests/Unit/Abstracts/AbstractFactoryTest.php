@@ -10,12 +10,13 @@ use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Objects\ModelParameters;
 use CarloNicora\Minimalism\Objects\ParameterDefinition;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
+use CarloNicora\Minimalism\Tests\Stubs\EnumStub;
 use CarloNicora\Minimalism\Tests\Stubs\ModelStub;
 use CarloNicora\Minimalism\Tests\Stubs\ObjectStub;
 use CarloNicora\Minimalism\Tests\Stubs\ParameterStub;
 use CarloNicora\Minimalism\Tests\Stubs\PositionedParameterStub;
 use CarloNicora\Minimalism\Tests\Stubs\ServiceStub;
-use CarloNicora\Minimalism\Tests\Stubs\SimpleObjectStub;
+use CarloNicora\Minimalism\Tests\Stubs\SimpleObject1Stub;
 use RuntimeException;
 use ReflectionMethod;
 use ReflectionNamedType;
@@ -249,7 +250,7 @@ class AbstractFactoryTest extends AbstractTestCase
         $reflectionMethod = $this->createMock(ReflectionMethod::class);
         $reflectionParameter = $this->createMock(ReflectionParameter::class);
         $parameter = $this->createMock(ReflectionNamedType::class);
-        $className = SimpleObjectStub::class;
+        $className = SimpleObject1Stub::class;
         $methodParameterName = 'setObjectFactory';
         $defaultValue = 'default-value';
         $reflectionMethod->expects($this->once())
@@ -627,6 +628,68 @@ class AbstractFactoryTest extends AbstractTestCase
      * @covers ::getMethodParametersDefinition
      * @return void
      */
+    public function testItShouldGetMethodParametersDefinitionEnum(
+    ): void
+    {
+        $method = $this->createMock(ReflectionMethod::class);
+        $methodParameter = $this->createMock(ReflectionParameter::class);
+        $parameter = $this->createMock(ReflectionNamedType::class);
+        $methodParameterName = EnumStub::class;
+        $method->expects($this->once())
+            ->method('getParameters')
+            ->willReturn([$methodParameter]);
+        $methodParameter->expects($this->once())
+            ->method('getName')
+            ->willReturn($methodParameterName);
+        $methodParameter->expects($this->once())
+            ->method('allowsNull')
+            ->willReturn(true);
+        $methodParameter->expects($this->once())
+            ->method('isDefaultValueAvailable')
+            ->willReturn(false);
+        $methodParameter->expects($this->once())
+            ->method('getType')
+            ->willReturn($parameter);
+        $parameter->expects($this->exactly(2))
+            ->method('getName')
+            ->willReturn($methodParameterName);
+
+        $result = $this->invokeMethod(
+            object: $this->factory,
+            methodName: 'getMethodParametersDefinition',
+            arguments: [$method]
+        );
+        /** @var ParameterDefinition $parameterDefinition */
+        $parameterDefinition = $result[0];
+
+        $this->assertIsArray($result);
+        $this->assertInstanceOf(
+            expected: ParameterDefinition::class,
+            actual: $parameterDefinition
+        );
+        $this->assertTrue($parameterDefinition->allowsNull());
+        $this->assertEquals(
+            expected: $methodParameterName,
+            actual: $parameterDefinition->getName()
+        );
+        $this->assertEquals(
+            expected: $methodParameterName,
+            actual: $parameterDefinition->getIdentifier()
+        );
+        $this->assertEquals(
+            expected: ParameterType::Enum,
+            actual: $parameterDefinition->getType()
+        );
+        $this->assertEquals(
+            expected: null,
+            actual: $parameterDefinition->getDefaultValue()
+        );
+    }
+
+    /**
+     * @covers ::getMethodParametersDefinition
+     * @return void
+     */
     public function testItShouldThrowException(
     ): void
     {
@@ -741,7 +804,7 @@ class AbstractFactoryTest extends AbstractTestCase
         $parameterType2 = ParameterType::MinimalismFactories;
         $methodParametersDefinition = [$methodParameterDefinition1, $methodParameterDefinition2];
         $parameters = $this->createMock(ModelParameters::class);
-        $simpleObject = new SimpleObjectStub();
+        $simpleObject = new SimpleObject1Stub();
         $id = 'id-111';
 
         $methodParameterDefinition1->expects($this->once())
@@ -749,7 +812,7 @@ class AbstractFactoryTest extends AbstractTestCase
             ->willReturn($id);
         $methodParameterDefinition1->expects($this->once())
             ->method('getName')
-            ->willReturn(SimpleObjectStub::class);
+            ->willReturn(SimpleObject1Stub::class);
         $methodParameterDefinition1->expects($this->once())
             ->method('getType')
             ->willReturn($parameterType1);
@@ -758,7 +821,7 @@ class AbstractFactoryTest extends AbstractTestCase
             ->willReturn($objectFactory);
         $objectFactory->expects($this->once())
             ->method('create')
-            ->with($id, SimpleObjectStub::class, $parameters)
+            ->with($id, SimpleObject1Stub::class, $parameters)
             ->willReturn($simpleObject);
         $methodParameterDefinition2->expects($this->once())
             ->method('getType')
