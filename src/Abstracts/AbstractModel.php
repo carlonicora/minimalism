@@ -42,7 +42,7 @@ class AbstractModel implements ModelInterface
         $this->objectFactory = $this->minimalismFactories->getObjectFactory();
 
         if ($this->function === null) {
-            if ($this->minimalismFactories->getServiceFactory()->getPath()->getUrl() === null) {
+            if ($this->minimalismFactories->getServiceFactory()->getPath()?->getUrl() === null) {
                 $this->function = 'cli';
             } else {
                 $this->function = strtolower($_SERVER['REQUEST_METHOD'] ?? 'GET');

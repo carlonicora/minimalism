@@ -30,39 +30,39 @@ class ModelFactory extends AbstractFactory
     public function initialiseFactory(
     ): void
     {
-        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('models.cache'))
-            && ($modelsFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('models.cache'))) !== false
-            && ($serviceModelFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('servicesModels.cache'))) !== false
-            && ($modelDefinitionsFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('modelsDefinitions.cache'))) !== false
+        if (is_file($this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('models.cache'))
+            && ($modelsFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('models.cache'))) !== false
+            && ($serviceModelFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('servicesModels.cache'))) !== false
+            && ($modelDefinitionsFile = file_get_contents($this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('modelsDefinitions.cache'))) !== false
         ){
             $this->models = unserialize($modelsFile, [true]);
             $serviceModels = unserialize($serviceModelFile, [true]);
-            $this->minimalismFactories->getServiceFactory()->getPath()->setServicesModels($serviceModels);
+            $this->minimalismFactories->getServiceFactory()->getPath()?->setServicesModels($serviceModels);
             $this->setModelsDefinitions(unserialize($modelDefinitionsFile, [true]));
         } else {
             $this->setModelsDefinitions([]);
             $serviceModels = [];
 
-            $this->models = $this->loadFolderModels($this->minimalismFactories->getServiceFactory()->getPath()->getRoot()
+            $this->models = $this->loadFolderModels($this->minimalismFactories->getServiceFactory()->getPath()?->getRoot()
                 . DIRECTORY_SEPARATOR . 'src'
                 . DIRECTORY_SEPARATOR . 'Models'
             );
 
-            foreach ($this->minimalismFactories->getServiceFactory()->getPath()->getServicesModelsDirectories() as $additionalDirectory) {
+            foreach ($this->minimalismFactories->getServiceFactory()->getPath()?->getServicesModelsDirectories() as $additionalDirectory) {
                 $serviceModels[] = $this->loadFolderModels($additionalDirectory);
             }
-            $this->minimalismFactories->getServiceFactory()->getPath()->setServicesModels($serviceModels);
+            $this->minimalismFactories->getServiceFactory()->getPath()?->setServicesModels($serviceModels);
 
             file_put_contents(
-                $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('models.cache'),
+                $this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('models.cache'),
                 serialize($this->models)
             );
             file_put_contents(
-                $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('servicesModels.cache'),
+                $this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('servicesModels.cache'),
                 serialize($serviceModels)
             );
             file_put_contents(
-                $this->minimalismFactories->getServiceFactory()->getPath()->getCacheFile('modelsDefinitions.cache'),
+                $this->minimalismFactories->getServiceFactory()->getPath()?->getCacheFile('modelsDefinitions.cache'),
                 serialize($this->getModelsDefinitions())
             );
         }
@@ -105,7 +105,7 @@ class ModelFactory extends AbstractFactory
         ?string &$model
     ): ModelParameters
     {
-        if ($this->minimalismFactories->getServiceFactory()->getPath()->getUrl() === null){
+        if ($this->minimalismFactories->getServiceFactory()->getPath()?->getUrl() === null){
             $response = $this->getCliParameters();
         } else {
             $response = $this->getWebParameters();
@@ -175,6 +175,7 @@ class ModelFactory extends AbstractFactory
     }
 
     /**
+     * @param $modelsDefinitions
      * @return void
      */
     public function setModelsDefinitions(
@@ -259,7 +260,7 @@ class ModelFactory extends AbstractFactory
         );
 
         /** @noinspection UnusedFunctionResultInspection */
-        $this->minimalismFactories->getServiceFactory()->getPath()->sanitiseUriVersion($uri);
+        $this->minimalismFactories->getServiceFactory()->getPath()?->sanitiseUriVersion($uri);
 
         if (strlen($uri) > 1 && str_ends_with(haystack: $uri, needle: '/')){
             $uri = substr($uri, 0, -1);
@@ -272,7 +273,7 @@ class ModelFactory extends AbstractFactory
             $modelBuilder = new ModelBuilder(
                 $uriParts,
                 $this->models,
-                $this->minimalismFactories->getServiceFactory()->getPath()->getServicesModels()
+                $this->minimalismFactories->getServiceFactory()->getPath()?->getServicesModels()
             );
 
             $this->modelClass = $modelBuilder->getModelClass();

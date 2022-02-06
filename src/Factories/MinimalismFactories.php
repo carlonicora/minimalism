@@ -86,7 +86,7 @@ class MinimalismFactories
             preg_match($pattern, $normalisedCode, matches: $m);
         }
 
-        $namespace = $m[1] ?? '';
+        $namespace = !empty($m[1]) ? $m[1] : '';
 
         return $namespace . '\\' . $serviceName;
     }

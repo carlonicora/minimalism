@@ -55,8 +55,8 @@ class ServiceFactory
         $this->setENV();
 
         if (
-            is_file($this->getPath()->getCacheFile('services.cache'))
-            && ($serviceFile = file_get_contents($this->getPath()->getCacheFile('services.cache'))) !== false
+            is_file($this->getPath()?->getCacheFile('services.cache'))
+            && ($serviceFile = file_get_contents($this->getPath()?->getCacheFile('services.cache'))) !== false
         ) {
             $this->services = unserialize($serviceFile, [true]);
 
@@ -96,7 +96,7 @@ class ServiceFactory
     }
 
     /**
-     * @return void
+     * @return bool
      */
     protected function isLoaded(
     ): bool
@@ -112,7 +112,7 @@ class ServiceFactory
     {
         try {
             $this->env = Dotenv::createImmutable(
-                $this->getPath()->getRoot(),
+                $this->getPath()?->getRoot(),
                 (empty($_SERVER['HTTP_TEST_ENVIRONMENT']) ? ['.env'] : ['.env.testing'])
             )->load();
         } catch (Exception) {
@@ -149,10 +149,10 @@ class ServiceFactory
 
     /**
      * @param string $key
-     * @param ServiceInterface|string $service
+     * @param string|ServiceInterface $service
      * @return void
      */
-    public function addService(string $key, $service): void
+    public function addService(string $key, ServiceInterface|string $service): void
     {
         $this->services[$key] = $service;
     }
@@ -163,9 +163,9 @@ class ServiceFactory
     protected function getServiceFiles(
     ): array
     {
-        $vendorServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', flags: GLOB_NOSORT);
-        $defaultServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/src/*.php', flags: GLOB_NOSORT);
-        $internalServicesFiles = glob(pattern: $this->getPath()->getRoot() . '/src/Services/*/*.php', flags: GLOB_NOSORT);
+        $vendorServicesFiles = glob(pattern: $this->getPath()?->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', flags: GLOB_NOSORT);
+        $defaultServicesFiles = glob(pattern: $this->getPath()?->getRoot() . '/src/*.php', flags: GLOB_NOSORT);
+        $internalServicesFiles = glob(pattern: $this->getPath()?->getRoot() . '/src/Services/*/*.php', flags: GLOB_NOSORT);
 
         return array_merge($vendorServicesFiles, $internalServicesFiles, $defaultServicesFiles);
     }

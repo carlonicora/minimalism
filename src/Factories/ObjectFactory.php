@@ -43,13 +43,13 @@ class ObjectFactory extends AbstractFactory
             $this->minimalismFactories
                 ->getServiceFactory()
                 ->getPath()
-                ->getCacheFile('objectsFactoriesDefinitions.cache')
+                ?->getCacheFile('objectsFactoriesDefinitions.cache')
         );
         $this->setObjectsDefinitionsCache(
             $this->minimalismFactories
                 ->getServiceFactory()
                 ->getPath()
-                ->getCacheFile('objectsDefinitions.cache')
+                ?->getCacheFile('objectsDefinitions.cache')
         );
 
         if (

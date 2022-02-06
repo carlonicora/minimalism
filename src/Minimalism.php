@@ -6,6 +6,7 @@ use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Interfaces\ModelExtenderInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Composer\InstalledVersions;
 use Exception;
@@ -143,6 +144,23 @@ class Minimalism
                     function: $function,
                 );
 
+                $interfaces = class_implements($model);
+                if ($interfaces !== false && array_key_exists(ModelExtenderInterface::class, $interfaces)){
+                    /** @var ModelExtenderInterface $model*/
+                    $extendedModel = $this->factories->getModelFactory()->create(
+                        modelName: $model->getExtendedModel(),
+                        parameters: $parameters,
+                        function: $function,
+                    );
+
+                    $this->httpResponseCode = $extendedModel->run();
+
+                    $model->setExtendedModelResult(
+                        document: $extendedModel->getDocument(),
+                        response: $this->httpResponseCode,
+                    );
+                }
+
                 $this->httpResponseCode = $model->run();
 
                 if ($this->httpResponseCode === HttpCode::TemporaryRedirect){
@@ -226,7 +244,7 @@ class Minimalism
                     context: [
                         'file' => $exception->getFile(),
                         'line' => $exception->getLine(),
-                        'url' => $this->factories->getServiceFactory()->getPath()->getUri() ?? '',
+                        'url' => $this->factories->getServiceFactory()->getPath()?->getUri() ?? '',
                         'exception' => $exception->getTrace(),
                         'responseCode' => $this->httpResponseCode->value,
                     ]
@@ -237,7 +255,7 @@ class Minimalism
                     context: [
                         'file' => $exception->getFile(),
                         'line' => $exception->getLine(),
-                        'url' => $this->factories->getServiceFactory()->getPath()->getUri() ?? '',
+                        'url' => $this->factories->getServiceFactory()->getPath()?->getUri() ?? '',
                         'exception' => $exception->getTrace(),
                         'responseCode' => $this->httpResponseCode->value,
                     ]
@@ -257,7 +275,7 @@ class Minimalism
             $response = '';
         }
 
-        if ($this->factories->getServiceFactory()->getPath()->getUrl() !== null) {
+        if ($this->factories->getServiceFactory()->getPath()?->getUrl() !== null) {
             header('Content-Type: ' . $this->contentType);
 
             header($this->httpResponseCode->getHttpResponseHeader());
@@ -274,7 +292,7 @@ class Minimalism
 
         echo $response;
 
-        if (function_exists('fastcgi_finish_request') && $this->factories->getServiceFactory()->getPath()->getUri() !== null) {
+        if (function_exists('fastcgi_finish_request') && $this->factories->getServiceFactory()->getPath()?->getUri() !== null) {
             fastcgi_finish_request();
         }
     }
