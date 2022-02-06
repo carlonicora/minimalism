@@ -1,12 +1,19 @@
 <?php
+
 namespace CarloNicora\Minimalism\Tests\Unit\Enums;
 
 use CarloNicora\JsonApi\Document;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Enums\ParameterType;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Tests\Abstracts\AbstractTestCase;
 use Exception;
 
+/**
+ * Class ParameterTypeTest
+ * @package CarloNicora\Minimalism\Tests\Unit\Enums
+ * @coversDefaultClass \CarloNicora\Minimalism\Enums\ParameterType
+ */
 class ParameterTypeTest extends AbstractTestCase
 {
     /**
@@ -267,6 +274,28 @@ class ParameterTypeTest extends AbstractTestCase
      * @return void
      * @throws Exception
      */
+    public function testEnum(
+    ): void
+    {
+        self::assertEquals(
+            expected: HttpCode::NotFound,
+            actual: ParameterType::Enum->getParameterValue(
+                parameterDefinition: $this->mocker->createParameterDefinition([
+                    'getIdentifier' => HttpCode::class,
+                    'getName' => 'Enum',
+                ]),
+                minimalismFactories: $this->mocker->createMinimalismFactories(),
+                parameters: $this->mocker->createModelParameters([
+                    'getNamedParameter' => '404'
+                ]),
+            ),
+        );
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testDefaultValue(
     ): void
     {
@@ -295,4 +324,6 @@ class ParameterTypeTest extends AbstractTestCase
             minimalismFactories: $this->mocker->createMinimalismFactories(),
         );
     }
+
+
 }

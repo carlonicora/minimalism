@@ -30,7 +30,7 @@ class Path extends AbstractService
     )
     {
         $directory = __DIR__;
-        if ($directory === '/app/src/Services'){
+        if ($this->isServicesDirectory($directory)){
             $this->root = dirname(path: $directory, levels: 2);
         } else {
             $this->root = dirname(path: $directory, levels: 5);
@@ -181,9 +181,18 @@ class Path extends AbstractService
     }
 
     /**
+     * @param string $directory
+     * @return bool
+     */
+    public function isServicesDirectory(string $directory): bool
+    {
+        return $directory === '/app/src/Services';
+    }
+
+    /**
      * @return void
      */
-    private function loadServicesViewsAndModelsDirectories(): void
+    protected function loadServicesViewsAndModelsDirectories(): void
     {
         $plugins = glob($this->root . '/vendor/*/minimalism-service-*/src', GLOB_NOSORT);
         $internal = glob($this->root . '/src/Services/*', GLOB_NOSORT);

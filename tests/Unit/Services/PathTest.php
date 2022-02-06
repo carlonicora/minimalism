@@ -22,6 +22,58 @@ class PathTest extends AbstractTestCase
     }
 
     /**
+     * @covers ::__construct
+     * @return void
+     */
+    public function testItShouldCheckConstructorWithServiceDir(
+    ): void
+    {
+        $path = $this->getMockBuilder(Path::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['isServicesDirectory', 'initialise', 'loadServicesViewsAndModelsDirectories'])
+            ->getMock();
+
+        $path->expects($this->once())
+            ->method('isServicesDirectory')
+            ->willReturn(true);
+        $path->expects($this->once())->method('initialise');
+        $path->expects($this->once())->method('loadServicesViewsAndModelsDirectories');
+
+        $path->__construct();
+
+        $this->assertEquals(
+            expected: dirname(path: realpath(__DIR__ . '/../../../src/Services'), levels: 2),
+            actual: $path->getRoot()
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @return void
+     */
+    public function testItShouldCheckConstructorWithNotServiceDir(
+    ): void
+    {
+        $path = $this->getMockBuilder(Path::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['isServicesDirectory', 'initialise', 'loadServicesViewsAndModelsDirectories'])
+            ->getMock();
+
+        $path->expects($this->once())
+            ->method('isServicesDirectory')
+            ->willReturn(false);
+        $path->expects($this->once())->method('initialise');
+        $path->expects($this->once())->method('loadServicesViewsAndModelsDirectories');
+
+        $path->__construct();
+
+        $this->assertEquals(
+            expected: dirname(path: realpath(__DIR__ . '/../../../src/Services'), levels: 5),
+            actual: $path->getRoot()
+        );
+    }
+
+    /**
      * @covers ::initialise
      * @return void
      */
@@ -298,6 +350,16 @@ class PathTest extends AbstractTestCase
         );
 
         unset($_SERVER['HTTP_X_FORWARDED_PROTO']);
+    }
+
+    /**
+     * @return void
+     */
+    public function testItShouldCheckServicesDirectory(
+    ): void
+    {
+        $this->assertFalse($this->path->isServicesDirectory('/random/directory'));
+        $this->assertTrue($this->path->isServicesDirectory('/app/src/Services'));
     }
 
     /**
