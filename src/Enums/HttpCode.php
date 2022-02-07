@@ -130,4 +130,12 @@ enum HttpCode: int
             self::NetworkAuthenticationRequired => 'Network Authentication Required',
         };
     }
+
+    /**
+     * @return bool
+     */
+    public function isSuccess(
+    ): bool{
+        return $this->value < 400;
+    }
 }
