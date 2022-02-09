@@ -6,6 +6,7 @@ use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
+use CarloNicora\Minimalism\Factories\TimerFactory;
 use CarloNicora\Minimalism\Interfaces\ModelExtenderInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Composer\InstalledVersions;
@@ -34,6 +35,7 @@ class Minimalism
     public function __construct(
     )
     {
+        TimerFactory::start();
         if (PHP_SAPI !== 'cli') {
             $this->startSession();
         }
