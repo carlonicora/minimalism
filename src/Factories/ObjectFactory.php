@@ -112,9 +112,13 @@ class ObjectFactory extends AbstractFactory
         ?ModelParameters $parameters=null,
     ): mixed
     {
+        $response = null;
+
         $objectId = $className . $name . serialize($parameters);
 
-        $response = $this->pool[$objectId] ??= null;
+        if (array_key_exists($objectId, $this->pool)){
+            $response = clone($this->pool[$objectId]);
+        }
 
         if($response === null) {
             if (array_key_exists($className, $this->objectsDefinitions)) {
@@ -136,7 +140,7 @@ class ObjectFactory extends AbstractFactory
                 );
             }
 
-            $this->pool[$objectId] = $response;
+            $this->pool[$objectId] = clone($response);
         }
 
         return $response;
