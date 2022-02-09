@@ -140,7 +140,9 @@ class ObjectFactory extends AbstractFactory
                 );
             }
 
-            $this->pool[$objectId] = clone($response);
+            if ($response !== null) {
+                $this->pool[$objectId] = clone($response);
+            }
         }
 
         return $response;
