@@ -95,99 +95,37 @@ class Minimalism
         ?string $modelName=null,
     ): void
     {
-        $data = $this->generateData($modelName);
+        try{
+            $this->factories->getServiceFactory()->postInitialise();
 
-        if ($this->viewName !== null && ($transformer = $this->factories->getServiceFactory()->getTranformerService()) !== null){
-            $this->contentType = $transformer->getContentType();
+            $data = $this->generateData($modelName);
 
-            try {
-                $response = $transformer->transform(
-                    document: $data,
-                    viewFile: $this->viewName,
-                );
-            } catch (Exception| Throwable $e) {
-                $this->sendException(
-                    new MinimalismException(
-                        status: HttpCode::InternalServerError,
-                        message: $e->getMessage(),
-                    )
-                );
-                exit;
-            }
-        } else {
-            try {
-                $response = $data->export();
-            } catch (JsonException) {
-                $response = '';
-            }
-        }
+            if ($this->viewName !== null && ($transformer = $this->factories->getServiceFactory()->getTranformerService()) !== null){
+                $this->contentType = $transformer->getContentType();
 
-        $this->send($response);
-    }
-
-    /**
-     * @param string|null $modelName
-     * @return Document
-     */
-    private function generateData(
-        ?string $modelName,
-    ): Document
-    {
-        $function = null;
-
-        try {
-            $parameters = null;
-            do {
-                $model = $this->factories->getModelFactory()->create(
-                    modelName: $modelName,
-                    parameters: $parameters,
-                    function: $function,
-                );
-
-                $interfaces = class_implements($model);
-                if ($interfaces !== false && array_key_exists(ModelExtenderInterface::class, $interfaces)){
-                    /** @var ModelExtenderInterface $model*/
-                    $extendedModel = $this->factories->getModelFactory()->create(
-                        modelName: $model->getExtendedModel(),
-                        parameters: $parameters,
-                        function: $function,
+                try {
+                    $response = $transformer->transform(
+                        document: $data,
+                        viewFile: $this->viewName,
                     );
-
-                    $this->httpResponseCode = $extendedModel->run();
-
-                    $model->setExtendedModelResult(
-                        document: $extendedModel->getDocument(),
-                        response: $this->httpResponseCode,
+                } catch (Exception| Throwable $e) {
+                    $this->sendException(
+                        new MinimalismException(
+                            status: HttpCode::InternalServerError,
+                            message: $e->getMessage(),
+                        )
                     );
+                    exit;
                 }
-
-                $this->httpResponseCode = $model->run();
-
-                if ($this->httpResponseCode === HttpCode::TemporaryRedirect){
-                    $parameters = $model->getRedirectionParameters();
-                    $modelName = $model->getRedirection();
-                    $function = $model->getRedirectionFunction();
+            } else {
+                try {
+                    $response = $data->export();
+                } catch (JsonException) {
+                    $response = '';
                 }
-            } while ($this->httpResponseCode === HttpCode::TemporaryRedirect);
-
-            $this->viewName = $model->getView();
-            $data = $model->getDocument();
-            $this->contentType = $data->getContentType();
-
-            if ($includeParameter = $model->getParameterValue('include')) {
-                $included = explode(',', $includeParameter);
-                $data->setIncludedResourceTypes($included);
             }
 
-            if ($fieldsParameter = $model->getParameterValue('fields')) {
-                $fields = [];
-                foreach ($fieldsParameter as $resourceType => $fieldList){
-                    $fields[$resourceType] = explode(',', $fieldList);
-                }
-                $data->setRequiredFields($fields);
-            }
-
-            return $data;
+            $this->send($response);
         } catch (MinimalismException $e) {
             $this->sendException($e);
             exit;
@@ -208,6 +146,71 @@ class Minimalism
             );
             exit;
         }
+    }
+
+    /**
+     * @param string|null $modelName
+     * @return Document
+     * @throws MinimalismException|Exception|Throwable
+     */
+    private function generateData(
+        ?string $modelName,
+    ): Document
+    {
+        $function = null;
+
+        $parameters = null;
+        do {
+            $model = $this->factories->getModelFactory()->create(
+                modelName: $modelName,
+                parameters: $parameters,
+                function: $function,
+            );
+
+            $interfaces = class_implements($model);
+            if ($interfaces !== false && array_key_exists(ModelExtenderInterface::class, $interfaces)){
+                /** @var ModelExtenderInterface $model*/
+                $extendedModel = $this->factories->getModelFactory()->create(
+                    modelName: $model->getExtendedModel(),
+                    parameters: $parameters,
+                    function: $function,
+                );
+
+                $this->httpResponseCode = $extendedModel->run();
+
+                $model->setExtendedModelResult(
+                    document: $extendedModel->getDocument(),
+                    response: $this->httpResponseCode,
+                );
+            }
+
+            $this->httpResponseCode = $model->run();
+
+            if ($this->httpResponseCode === HttpCode::TemporaryRedirect){
+                $parameters = $model->getRedirectionParameters();
+                $modelName = $model->getRedirection();
+                $function = $model->getRedirectionFunction();
+            }
+        } while ($this->httpResponseCode === HttpCode::TemporaryRedirect);
+
+        $this->viewName = $model->getView();
+        $data = $model->getDocument();
+        $this->contentType = $data->getContentType();
+
+        if ($includeParameter = $model->getParameterValue('include')) {
+            $included = explode(',', $includeParameter);
+            $data->setIncludedResourceTypes($included);
+        }
+
+        if ($fieldsParameter = $model->getParameterValue('fields')) {
+            $fields = [];
+            foreach ($fieldsParameter as $resourceType => $fieldList){
+                $fields[$resourceType] = explode(',', $fieldList);
+            }
+            $data->setRequiredFields($fields);
+        }
+
+        return $data;
     }
 
     /**

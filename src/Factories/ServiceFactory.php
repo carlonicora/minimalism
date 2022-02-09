@@ -76,7 +76,14 @@ class ServiceFactory
 
             $this->setLoaded(true);
         }
+    }
 
+    /**
+     * @return void
+     */
+    public function postInitialise(
+    ): void
+    {
         foreach ($this->services ?? [] as $service) {
             if ($service !== null && !is_string($service)) {
                 $service->postIntialise($this);

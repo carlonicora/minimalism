@@ -288,6 +288,7 @@ class ObjectFactory extends AbstractFactory
     }
 
     /**
+     * @param bool $objectUpdated
      * @return void
      */
     public function setObjectUpdated(
