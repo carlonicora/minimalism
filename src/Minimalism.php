@@ -297,6 +297,14 @@ class Minimalism
 
         echo $response;
 
+        if ($this->httpResponseCode->value < 400) {
+            $this->getMinimalismFactories()->getServiceFactory()->getLogger()?->info('request');
+        } elseif ($this->httpResponseCode->value < 500) {
+            $this->getMinimalismFactories()->getServiceFactory()->getLogger()?->error('request');
+        } else {
+            $this->getMinimalismFactories()->getServiceFactory()->getLogger()?->emergency('request');
+        }
+
         if (function_exists('fastcgi_finish_request') && $this->factories->getServiceFactory()->getPath()?->getUri() !== null) {
             fastcgi_finish_request();
         }
