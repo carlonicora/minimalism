@@ -169,6 +169,7 @@ class Minimalism
                 function: $function,
             );
 
+            $extendedModel = null;
             $interfaces = class_implements($model);
             if ($interfaces !== false && array_key_exists(ModelExtenderInterface::class, $interfaces)){
                 /** @var ModelExtenderInterface $model*/
@@ -186,7 +187,15 @@ class Minimalism
                 );
             }
 
-            $this->httpResponseCode = $model->run();
+            try {
+                $this->httpResponseCode = $model->run();
+            } catch (Exception $e) {
+                if ($extendedModel !== null && $e->getCode() === HttpCode::NotImplemented->value){
+                    $model = $extendedModel;
+                } else {
+                    throw $e;
+                }
+            }
 
             if ($this->httpResponseCode === HttpCode::TemporaryRedirect){
                 $parameters = $model->getRedirectionParameters();
