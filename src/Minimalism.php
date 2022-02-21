@@ -133,18 +133,20 @@ class Minimalism
             exit;
         } catch (Exception $e) {
             $this->sendException(
-                new MinimalismException(
+                exception: new MinimalismException(
                     status: HttpCode::tryFrom($e->getCode()) ?? HttpCode::InternalServerError,
                     message: $e->getMessage(),
-                )
+                ),
+                trace: $e,
             );
             exit;
         } catch (Throwable $e){
             $this->sendException(
-                new MinimalismException(
+                exception: new MinimalismException(
                     status: HttpCode::InternalServerError,
                     message: $e->getMessage(),
-                )
+                ),
+                trace: $e,
             );
             exit;
         }
@@ -226,9 +228,11 @@ class Minimalism
 
     /**
      * @param MinimalismException $exception
+     * @param Exception|Throwable|null $trace
      */
     private function sendException(
         MinimalismException $exception,
+        Exception|Throwable|null $trace=null,
     ): void
     {
         $this->httpResponseCode = $exception->getStatus();
@@ -259,7 +263,7 @@ class Minimalism
                         'file' => $exception->getFile(),
                         'line' => $exception->getLine(),
                         'url' => $this->factories->getServiceFactory()->getPath()?->getUri() ?? '',
-                        'exception' => $exception->getTrace(),
+                        'exception' => $trace ? $trace->getTrace() : $exception->getTrace(),
                         'responseCode' => $this->httpResponseCode->value,
                     ]
                 );
@@ -270,11 +274,16 @@ class Minimalism
                         'file' => $exception->getFile(),
                         'line' => $exception->getLine(),
                         'url' => $this->factories->getServiceFactory()->getPath()?->getUri() ?? '',
-                        'exception' => $exception->getTrace(),
+                        'exception' => $trace ? $trace->getTrace() : $exception->getTrace(),
                         'responseCode' => $this->httpResponseCode->value,
                     ]
                 );
             }
+        } else {
+            /** @noinspection ForgottenDebugOutputInspection */
+            error_log(
+                message: $exception->getMessage() . PHP_EOL . ($trace !== null ? $trace->getTraceAsString() : $exception->getTraceAsString()),
+            );
         }
     }
 
