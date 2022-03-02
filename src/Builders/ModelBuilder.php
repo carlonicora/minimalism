@@ -62,9 +62,9 @@ class ModelBuilder
             $mergedAdditionalModels = array_reduce(
                 array: $this->additionalModels ?? [],
                 callback: static function(array $carry, array $item)
-                    {
-                        return array_merge_recursive($carry, $item);
-                    },
+                {
+                    return array_merge_recursive($carry, $item);
+                },
                 initial: []
             );
 
@@ -77,7 +77,8 @@ class ModelBuilder
 
         $response = [];
         foreach ($parameters as $parameterKey=>$parameter){
-            if ($this->doesFolderExist($parameter, $models)) {
+            $folderExists = $this->doesFolderExist($parameter, $models);
+            if ($folderExists) {
                 $additionalParameters = $this->findModel(
                     models: $models[$this->getProperFolderName($parameter)],
                     parameters: $this->getRemainingParameters($parameters, $parameterKey)
@@ -95,6 +96,10 @@ class ModelBuilder
                 }
                 $this->modelClass = $modelClass;
                 return array_merge($response, $this->getRemainingParameters($parameters, $parameterKey));
+            }
+
+            if ($folderExists) {
+                break;
             }
 
             $response[] = $parameter;
