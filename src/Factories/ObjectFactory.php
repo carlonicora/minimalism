@@ -54,16 +54,18 @@ class ObjectFactory extends AbstractFactory
 
         if (
             is_file((string)$this->objectsFactoriesDefinitionsCache)
-            && ($cache = file_get_contents($this->objectsFactoriesDefinitionsCache)) !== false
+            && ($factoriesCache = file_get_contents($this->objectsFactoriesDefinitionsCache)) !== false
+            && ($unserialisedFactories = unserialize($factoriesCache, [true])) !== false
         ) {
-            $this->setObjectsFactoriesDefinitions(unserialize($cache, [true]));
+            $this->setObjectsFactoriesDefinitions($unserialisedFactories);
         }
 
         if (
             is_file((string)$this->objectsDefinitionsCache)
-            && ($cache = file_get_contents($this->objectsDefinitionsCache)) !== false
+            && ($objectsCache = file_get_contents($this->objectsDefinitionsCache)) !== false
+            && ($unserialisedObjects = unserialize($objectsCache, [true])) !== false
         ) {
-            $this->setObjectsDefinitions(unserialize($cache, [true]));
+            $this->setObjectsDefinitions($unserialisedObjects);
         }
     }
 
