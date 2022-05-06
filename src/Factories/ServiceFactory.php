@@ -170,11 +170,12 @@ class ServiceFactory
     protected function getServiceFiles(
     ): array
     {
+        $minimalisers = glob(pattern: $this->getPath()?->getRoot() . '/vendor/*/minimalise*/src/*.php', flags: GLOB_NOSORT);
         $vendorServicesFiles = glob(pattern: $this->getPath()?->getRoot() . '/vendor/*/minimalism-service-*/src/*.php', flags: GLOB_NOSORT);
         $defaultServicesFiles = glob(pattern: $this->getPath()?->getRoot() . '/src/*.php', flags: GLOB_NOSORT);
         $internalServicesFiles = glob(pattern: $this->getPath()?->getRoot() . '/src/Services/*/*.php', flags: GLOB_NOSORT);
 
-        return array_merge($vendorServicesFiles, $internalServicesFiles, $defaultServicesFiles);
+        return array_merge($minimalisers, $vendorServicesFiles, $internalServicesFiles, $defaultServicesFiles);
     }
 
     /**

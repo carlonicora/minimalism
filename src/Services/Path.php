@@ -194,10 +194,11 @@ class Path extends AbstractService
      */
     protected function loadServicesViewsAndModelsDirectories(): void
     {
+        $minimalisers = glob($this->root . '/vendor/*/minimalise*/src', GLOB_NOSORT);
         $plugins = glob($this->root . '/vendor/*/minimalism-service-*/src', GLOB_NOSORT);
         $internal = glob($this->root . '/src/Services/*', GLOB_NOSORT);
 
-        foreach (array_unique(array_merge($plugins, $internal)) as $fileName) {
+        foreach (array_unique(array_merge($minimalisers, $plugins, $internal)) as $fileName) {
             $possibleModelDirectory = $fileName . DIRECTORY_SEPARATOR . 'Models';
             if (is_dir($possibleModelDirectory)){
                 $this->addServiceModelDirectory($possibleModelDirectory);
