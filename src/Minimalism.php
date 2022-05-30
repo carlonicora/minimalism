@@ -72,21 +72,26 @@ class Minimalism
     private function startSession() : void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            $inCookies = false;
             if (isset($_COOKIE['PHPSESSID'])) {
-                $sessid = '';
+                $inCookies = true;
+                $sessionName = '';
 
                 if (ini_get('session.use_cookies')) {
-                    $sessid = $_COOKIE['PHPSESSID'];
+                    $sessionName = $_COOKIE['PHPSESSID'];
                 } elseif (!ini_get('session.use_only_cookies')) {
-                    $sessid = $_GET['PHPSESSID'];
+                    $sessionName = $_GET['PHPSESSID'];
                 }
 
-                if (!preg_match('/^[a-z0-9]{32}$/', $sessid)) {
+                if (!preg_match('/^[a-z\d]{32}$/', $sessionName)) {
                     return;
                 }
             }
 
-            session_start();
+            /** @noinspection NotOptimalIfConditionsInspection */
+            if (session_start() && !$inCookies){
+                setcookie('PHPSESSID', session_id(), time() + 60 * 60 * 24 * 365, '/', ini_get('session.cookie_domain'), ini_get('session.cookie_secure'), ini_get('session.cookie_httponly'));
+            }
         }
     }
 
