@@ -27,35 +27,37 @@ services which offers different views on the same interface.
 Please note that every installation of minimalism can only use one service implementing a minimalism
 interface. This means that should you like to use [MySQL](https://github.com/carlonicora/minimalism-service-mysql)
 you won't be able to use any other service which implements 
-[minimalism-interface-data](https://github.com/carlonicora/minimalism-interface-data).
+[minimalism-interface-sql](https://github.com/carlonicora/minimalism-interface-sql).
 
 Currently, the following interfaces have been created:
 
+- [Sql](https://github.com/carlonicora/minimalism-interface-sql):
+  Interface to access data in database 
 - [User](https://github.com/carlonicora/minimalism-interface-user):
 Interface to define a project-specific user to be used in generic services
 - [Mailer](https://github.com/carlonicora/minimalism-interface-mailer):
 Interface to send emails
-- [Data](https://github.com/carlonicora/minimalism-interface-data):
-Interface to access data in database
 - [Cache](https://github.com/carlonicora/minimalism-interface-cache):
 Interface to cache data
-- [Security](https://github.com/carlonicora/minimalism-interface-security):
-Interface to handle security
 - [Encrypter](https://github.com/carlonicora/minimalism-interface-encrypter):
 Interface to manage simple data encryption
+
+The interfaces do not offer functionalities, but they support services which implement
+the actual features
 
 ## Minimalism Services
 
 - [Encrypter](https://github.com/carlonicora/minimalism-service-encrypter):
-
+Encrypt ids to avoid sending int ids to the client
 - [Redis](https://github.com/carlonicora/minimalism-service-redis):
-
+Access Redis database
 - [Cacher](https://github.com/carlonicora/minimalism-service-cacher):
-
+Implement the [cache interface](https://github.com/carlonicora/minimalism-interface-cache) using
+[Redis](https://github.com/carlonicora/minimalism-service-redis)
 - [MySQL](https://github.com/carlonicora/minimalism-service-mysql):
-
+Implements the [Sql interface](https://github.com/carlonicora/minimalism-interface-sql) for MySQL
 - [Twig](https://github.com/carlonicora/minimalism-service-twig):
-
+Implements 
 - [RabbitMQ](https://github.com/carlonicora/minimalism-service-rabbitmq):
 
 - [Twig for Mailer](https://github.com/carlonicora/minimalism-service-mailer-twig):

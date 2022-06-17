@@ -90,7 +90,7 @@ class Minimalism
 
             /** @noinspection NotOptimalIfConditionsInspection */
             if (session_start() && !$inCookies){
-                setcookie('PHPSESSID', session_id(), time() + 60 * 60 * 24 * 365, '/', ini_get('session.cookie_domain'), ini_get('session.cookie_secure'), ini_get('session.cookie_httponly'));
+                setcookie('PHPSESSID', session_id(), time() + 60 * 60 * 24 * 365, '/', ini_get('session.cookie_domain'), !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off', ini_get('session.cookie_httponly'));
             }
         }
     }
