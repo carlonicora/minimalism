@@ -147,6 +147,10 @@ class AbstractModel implements ModelInterface
     final public function run(
     ): HttpCode
     {
+        if ($this->redirection !== null){
+            return HttpCode::TemporaryRedirect;
+        }
+
         $parametersDefinitions = $this->minimalismFactories->getModelFactory()->getModelMethodParametersDefinition(
             modelName: static::class,
             functionName: $this->function,

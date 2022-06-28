@@ -210,12 +210,4 @@ class Path extends AbstractService
             }
         }
     }
-
-    /**
-     * @return string|null
-     */
-    public static function getBaseInterface(): ?string
-    {
-        return  null;
-    }
 }
