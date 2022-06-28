@@ -35,6 +35,14 @@ class Minimalism
     public function __construct(
     )
     {
+        if (array_key_exists('REQUEST_URI', $_SERVER)){
+            $fileExtension = pathinfo($_SERVER['REQUEST_URI'], PATHINFO_EXTENSION);
+            if (in_array(needle: $fileExtension, haystack: ['ico', 'png', 'jpg', 'css', 'js'])){
+                header(HttpCode::NotFound->getHttpResponseHeader());
+                exit;
+            }
+        }
+
         TimerFactory::start();
         if (PHP_SAPI !== 'cli') {
             $this->startSession();
