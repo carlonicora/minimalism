@@ -31,7 +31,7 @@ class ServiceFactory
      *
      */
     public function __construct(
-        private MinimalismFactories $minimalismFactories,
+        private readonly MinimalismFactories $minimalismFactories,
     )
     {
     }

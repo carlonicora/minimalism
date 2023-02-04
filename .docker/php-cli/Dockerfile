@@ -1,7 +1,7 @@
-FROM php:8.1-cli-alpine
+FROM php:8.2-cli-alpine
 
 RUN apk update \
-    && apk add --no-cache curl g++ make autoconf bash \
+    && apk add --no-cache curl g++ make autoconf bash --update linux-headers \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && docker-php-source extract \
     && pecl install xdebug \

@@ -35,8 +35,8 @@ class AbstractModel implements ModelInterface
      * @param string|null $function
      */
     public function __construct(
-        private MinimalismFactories $minimalismFactories,
-        private ?string $function=null,
+        private readonly MinimalismFactories $minimalismFactories,
+        private ?string                      $function=null,
     )
     {
         $this->objectFactory = $this->minimalismFactories->getObjectFactory();

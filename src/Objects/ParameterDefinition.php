@@ -21,9 +21,9 @@ class ParameterDefinition
      * @param mixed|null $defaultValue
      */
     public function __construct(
-        private string $name,
-        private bool $allowsNull,
-        private mixed $defaultValue=null
+        private readonly string $name,
+        private readonly bool   $allowsNull,
+        private readonly mixed  $defaultValue=null
     )
     {
     }

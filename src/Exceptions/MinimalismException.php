@@ -15,9 +15,9 @@ class MinimalismException extends Exception
      * @param int $code
      */
     public function __construct(
-        private HttpCode $status,
-        string $message = '',
-        int $code = 0,
+        private readonly HttpCode $status,
+        string                    $message = '',
+        int                       $code = 0,
     )
     {
         parent::__construct($message, $code);

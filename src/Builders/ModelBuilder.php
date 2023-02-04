@@ -18,9 +18,9 @@ class ModelBuilder
      * @param array $additionalModels
      */
     public function __construct(
-        private array $parameters,
-        private array $models,
-        private array $additionalModels,
+        private readonly array $parameters,
+        private readonly array $models,
+        private readonly array $additionalModels,
     )
     {
         $this->modelParameters = $this->findModel();
