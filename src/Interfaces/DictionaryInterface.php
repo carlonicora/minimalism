@@ -8,4 +8,13 @@ interface DictionaryInterface
      */
     public function getEndpoint(
     ): string;
+
+    public function getIdKey(
+    ): string;
+
+    public function getPlural(
+    ): string;
+
+    public function getTableClass(
+    ): string;
 }
