@@ -2,6 +2,7 @@
 namespace CarloNicora\Minimalism\Abstracts;
 
 use CarloNicora\JsonApi\Document;
+use CarloNicora\Minimalism\Enums\HttpCache;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Factories\MinimalismFactories;
 use CarloNicora\Minimalism\Factories\ObjectFactory;
@@ -28,6 +29,12 @@ class AbstractModel implements ModelInterface
 
     /** @var ObjectFactory  */
     protected ObjectFactory $objectFactory;
+
+    /** @var HttpCache  */
+    protected HttpCache $httpCache=HttpCache::NoCache;
+
+    /** @var int  */
+    protected int $httpCacheExpiration=3600;
 
     /**
      * AbstractModel constructor.
@@ -160,6 +167,10 @@ class AbstractModel implements ModelInterface
             methodParametersDefinition: $parametersDefinitions,
             parameters: $this->parameters,
         );
+
+        if (strtolower($this->function) === 'get'){
+            $this->httpCache->write($this->httpCacheExpiration);
+        }
 
         return $this->{$this->function}(...$parametersValues);
     }
