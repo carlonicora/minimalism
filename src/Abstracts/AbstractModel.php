@@ -168,11 +168,13 @@ class AbstractModel implements ModelInterface
             parameters: $this->parameters,
         );
 
+        $response = $this->{$this->function}(...$parametersValues);
+
         if (strtolower($this->function) === 'get'){
             $this->httpCache->write($this->httpCacheExpiration);
         }
 
-        return $this->{$this->function}(...$parametersValues);
+        return $response;
     }
 
     /**
