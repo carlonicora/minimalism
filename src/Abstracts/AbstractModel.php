@@ -43,7 +43,7 @@ class AbstractModel implements ModelInterface
      */
     public function __construct(
         private readonly MinimalismFactories $minimalismFactories,
-        private ?string                      $function=null,
+        protected ?string                      $function=null,
     )
     {
         $this->objectFactory = $this->minimalismFactories->getObjectFactory();
